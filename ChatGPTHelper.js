@@ -5251,7 +5251,8 @@
                 }
 
                 #chatgpt-helper-right.collapsed {
-                    transform: translateX(calc(100% - 50px));
+                    transform: translateX(100%);
+                    width: 0 !important;
                 }
 
                 /* 折叠按钮已移除，只保留侧边栏按钮 */
@@ -5372,6 +5373,11 @@
 
                 .chatgpt-helper-content-panel.active {
                     display: flex;
+                }
+
+                .chatgpt-helper-export-panel.active {
+                    flex-direction: column;
+                    overflow: hidden;
                 }
 
                 /* 搜索栏 */
@@ -6732,7 +6738,8 @@
             // 使用更温和的方式调整布局，只调整主容器的右边距
             const updateLayout = () => {
                 const layoutStyle = document.getElementById('chatgpt-helper-layout-style');
-                const marginValue = this.isCollapsed ? 50 : this.settings.panelWidth;
+                // 修复：折叠时margin为0，展开时为面板宽度
+                const marginValue = this.isCollapsed ? 0 : this.settings.panelWidth;
                 
                 if (layoutStyle) {
                     layoutStyle.remove();
@@ -7224,13 +7231,8 @@
          * 依赖外部脚本 exporter.js 暴露的 window.ChatGPTExporterMount
          */
         renderExport(container) {
-            // 确保容器使用 flex 布局
-            if (!container.style.display) {
-                container.style.display = 'flex';
-                container.style.flexDirection = 'column';
-                container.style.height = '100%';
-                container.style.overflow = 'hidden';
-            }
+            // 通过 class 控制 flex 布局，避免 inline style 覆盖 display:none
+            container.classList.add('chatgpt-helper-export-panel');
 
             // 先创建标题栏
             const titleBar = createElement('div', {
@@ -8439,6 +8441,19 @@
                 });
             }
 
+            // 修复：确保容器引用正确（切换Tab后容器可能变化）
+            if (this.outlineManager.container !== container) {
+                this.outlineManager.container = container;
+                // 修复：如果容器变化，需要重新创建UI（因为clearElement清空了容器）
+                this.outlineManager.createUI();
+            } else {
+                // 修复：检查UI是否存在，如果不存在则重新创建
+                const outlineList = document.getElementById('outline-list');
+                if (!outlineList) {
+                    this.outlineManager.createUI();
+                }
+            }
+
             // 提取大纲数据
             const outline = this.extractOutline();
             if (outline && outline.length > 0) {
@@ -9039,23 +9054,25 @@
             let originalScrollTopDescriptor = null;
             let scrollTopRestored = false;
             
-            if (wasLockEnabled && this.scrollLockManager.originalApis && this.scrollLockManager.originalApis.scrollTopDescriptor) {
-                console.log('[ChatGPT Helper] 完全禁用 ScrollLockManager 并临时恢复原始 scrollTop setter');
+            // 修复：无论是否在底部，都先禁用锁定，允许滚动
+            if (wasLockEnabled) {
+                console.log('[ChatGPT Helper] 完全禁用 ScrollLockManager');
                 this.scrollLockManager.setEnabled(false);
-                originalScrollTopDescriptor = this.scrollLockManager.originalApis.scrollTopDescriptor;
                 
-                // 关键修复：临时恢复原始的 scrollTop setter（绕过劫持）
-                if (originalScrollTopDescriptor && isAtBottomContainer) {
-                    try {
-                        Object.defineProperty(Element.prototype, 'scrollTop', originalScrollTopDescriptor);
-                        scrollTopRestored = true;
-                        console.log('[ChatGPT Helper] 已临时恢复原始 scrollTop setter');
-                    } catch (e) {
-                        console.warn('[ChatGPT Helper] 恢复 scrollTop setter 失败:', e);
+                if (this.scrollLockManager.originalApis && this.scrollLockManager.originalApis.scrollTopDescriptor) {
+                    originalScrollTopDescriptor = this.scrollLockManager.originalApis.scrollTopDescriptor;
+                    
+                    // 关键修复：如果在底部，临时恢复原始的 scrollTop setter（绕过劫持）
+                    if (originalScrollTopDescriptor && isAtBottomContainer) {
+                        try {
+                            Object.defineProperty(Element.prototype, 'scrollTop', originalScrollTopDescriptor);
+                            scrollTopRestored = true;
+                            console.log('[ChatGPT Helper] 已临时恢复原始 scrollTop setter');
+                        } catch (e) {
+                            console.warn('[ChatGPT Helper] 恢复 scrollTop setter 失败:', e);
+                        }
                     }
                 }
-            } else if (wasLockEnabled) {
-                this.scrollLockManager.setEnabled(false);
             }
 
             // 设置 bypassLock 标志
