@@ -688,20 +688,6 @@
                 deleteBtn.addEventListener('click', () => this.batchDelete());
                 this.batchToolbar.appendChild(deleteBtn);
 
-                const exportBtn = createElement('button', {
-                    style: {
-                        padding: '4px 8px',
-                        border: '1px solid var(--gh-border)',
-                        borderRadius: '4px',
-                        background: 'var(--gh-primary)',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                    }
-                }, `📤 ${this.t('export') || '导出'}`);
-                exportBtn.addEventListener('click', () => this.batchExport());
-                this.batchToolbar.appendChild(exportBtn);
-
                 this.container.appendChild(this.batchToolbar);
             }
 
@@ -1568,7 +1554,6 @@
                 { label: '📌 置顶', action: () => this.togglePin(conv) },
                 { label: '📁 移动到...', action: () => this.showMoveToFolderDialog(conv) },
                 { label: '🏷 添加标签', action: () => this.showTagDialog(conv) },
-                { label: '📤 导出', action: () => this.exportConversation(conv) },
                 { label: '🗑 删除', action: () => this.deleteConversation(conv) }
             ];
 
