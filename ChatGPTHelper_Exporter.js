@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name               ChatGPT Exporter
-// @name:zh-CN         ChatGPT Exporter
-// @name:zh-TW         ChatGPT Exporter
-// @namespace          pionxzh
-// @version            2.29.1
-// @author             pionxzh
+// @name               ChatGPT Helper_Exporter
+// @name:zh-CN         ChatGPT Helper_Exporter
+// @name:zh-TW         ChatGPT Helper_Exporter
+// @namespace          Zhiwuyazhe_fjr
+// @version            1.0.0
+// @author             Zhiwuyazhe_fjr
 // @description        Easily export the whole ChatGPT conversation history for further analysis or sharing.
 // @description:zh-CN  轻松导出 ChatGPT 聊天记录，以便进一步分析或分享。
 // @description:zh-TW  輕鬆匯出 ChatGPT 聊天紀錄，以便進一步分析或分享。
@@ -619,6 +619,11 @@ html {
 
 (function (JSZip, html2canvas) {
   'use strict';
+  
+  // 提前暴露挂载函数，确保在脚本执行时就可访问
+  if (typeof window !== 'undefined') {
+    window.ChatGPTExporterMount = window.ChatGPTExporterMount || null; // 先占位，后面会重新定义
+  }
 
   var __defProp = Object.defineProperty;
   var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
@@ -23094,43 +23099,28 @@ ${content2}`;
   function Menu({ container }) {
     return /* @__PURE__ */ o$8(SettingProvider, { children: /* @__PURE__ */ o$8(MenuInner, { container }) });
   }
+  // 暴露一个挂载函数，供外部（例如 ChatGPT 助手面板）在自定义容器中渲染导出菜单
+  // 注意：Tampermonkey 脚本之间默认沙盒隔离，必须挂到 unsafeWindow 才能被其他脚本读取
+  (typeof unsafeWindow !== "undefined" ? unsafeWindow : window).ChatGPTExporterMount = function(targetElement) {
+    if (!targetElement) return null;
+    // 确保不会清空目标元素的内容
+    const container = document.createElement("div");
+    container.style.width = "100%";
+    container.style.height = "100%";
+    container.style.position = "relative";
+    container.style.overflow = "auto";
+    targetElement.appendChild(container);
+    D$4(/* @__PURE__ */ o$8(Menu, { container }), container);
+    return container;
+  };
   main();
   function main() {
     onloadSafe(() => {
       const styleEl = document.createElement("style");
       styleEl.id = "sentinel-css";
       document.head.append(styleEl);
-      const injectionMap = /* @__PURE__ */ new Map();
-      const injectNavMenu = (nav) => {
-        if (injectionMap.has(nav)) return;
-        const container = getMenuContainer();
-        injectionMap.set(nav, container);
-        const chatList = nav.querySelector(":scope > div.sticky.bottom-0");
-        if (chatList) {
-          chatList.prepend(container);
-        } else {
-          container.style.backgroundColor = "#171717";
-          container.style.position = "sticky";
-          container.style.bottom = "72px";
-          nav.append(container);
-        }
-      };
-      sentinel.on("nav", injectNavMenu);
-      setInterval(() => {
-        injectionMap.forEach((container, nav) => {
-          if (!nav.isConnected) {
-            container.remove();
-            injectionMap.delete(nav);
-          }
-        });
-        const navList = Array.from(document.querySelectorAll("nav")).filter((nav) => !injectionMap.has(nav));
-        navList.forEach(injectNavMenu);
-      }, 300);
-      if (isSharePage()) {
-        sentinel.on(`div[role="presentation"] > .w-full > div >.flex.w-full`, (target) => {
-          target.prepend(getMenuContainer());
-        });
-      }
+      // 原脚本会自动在左侧导航中注入菜单，这里禁用该行为，改为由外部显式挂载
+      // 其他功能（如时间戳补充）仍然保留
       let chatId = "";
       sentinel.on('[role="presentation"]', async () => {
         const currentChatId = getChatIdFromUrl();
@@ -23168,4 +23158,19 @@ ${content2}`;
     return container;
   }
 
+  // 兜底：再次确保挂载函数暴露到页面全局（unsafeWindow 优先）
+  if (typeof window !== "undefined") {
+    const g = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+    g.ChatGPTExporterMount = g.ChatGPTExporterMount || function(targetElement) {
+      if (!targetElement) return null;
+      const container = document.createElement("div");
+      container.style.width = "100%";
+      container.style.height = "100%";
+      container.style.position = "relative";
+      container.style.overflow = "auto";
+      targetElement.appendChild(container);
+      D$4(/* @__PURE__ */ o$8(Menu, { container }), container);
+      return container;
+    };
+  }
 })(JSZip, html2canvas);

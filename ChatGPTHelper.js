@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         ChatGPT 助手
-// @name:zh-cn   ChatGPT 助手
+// @name         ChatGPT Helper
+// @name:zh-cn   ChatGPT Helper
 // @namespace    http://tampermonkey.net/
 // @version      1.0.0
-// @description  ChatGPT 助手：三栏布局增强，提示词管理、对话大纲、会话管理、折叠功能
-// @author       ChatGPT Helper
+// @description  ChatGPT Helper：三栏布局增强，提示词管理、对话大纲、会话管理、折叠功能
+// @author       Zhiwuyazhe_fjr
 // @match        https://chat.openai.com/*
 // @match        https://chatgpt.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=openai.com
@@ -12,6 +12,7 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        GM_notification
+// @grant        unsafeWindow
 // @run-at       document-idle
 // @noframes
 // ==/UserScript==
@@ -41,6 +42,7 @@
             tabPrompts: '提示词',
             tabOutline: '大纲',
             tabConversations: '会话',
+            tabExport: '导出',
             tabSettings: '设置',
             searchPlaceholder: '搜索提示词...',
             addPrompt: '添加新提示词',
@@ -137,6 +139,7 @@
             tabPrompts: 'Prompts',
             tabOutline: 'Outline',
             tabConversations: 'Conversations',
+            tabExport: 'Export',
             tabSettings: 'Settings',
             searchPlaceholder: 'Search prompts...',
             addPrompt: 'Add New Prompt',
@@ -337,6 +340,7 @@
         prompts: { id: 'prompts', label: '提示词', icon: '✏️' },
         outline: { id: 'outline', label: '大纲', icon: '📋' },
         conversations: { id: 'conversations', label: '会话', icon: '💬' },
+        export: { id: 'export', label: '导出', icon: '📤' },
         settings: { id: 'settings', label: '设置', icon: '⚙️' },
     };
 
@@ -365,7 +369,7 @@
         prompts: { enabled: true },
         outline: { enabled: true, showUserQueries: true },
         conversations: { enabled: true },
-        tabOrder: ['prompts', 'outline', 'conversations'],
+        tabOrder: ['prompts', 'outline', 'conversations', 'export'],
         collapsedButtonsOrder: DEFAULT_COLLAPSED_BUTTONS_ORDER,
         themeMode: null, // 'light' | 'dark' | null
         anchorEnabled: true,
@@ -4956,7 +4960,14 @@
 
         loadSettings() {
             const saved = GM_getValue(SETTING_KEYS.SETTINGS, null);
-            return saved ? { ...DEFAULT_SETTINGS, ...saved } : DEFAULT_SETTINGS;
+            const settings = saved ? { ...DEFAULT_SETTINGS, ...saved } : DEFAULT_SETTINGS;
+            // 确保 tabOrder 包含 export（兼容旧版本）
+            if (settings.tabOrder && !settings.tabOrder.includes('export')) {
+                settings.tabOrder.push('export');
+            } else if (!settings.tabOrder) {
+                settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
+            }
+            return settings;
         }
 
         saveSettings() {
@@ -6910,7 +6921,7 @@
 
             // Tab 导航
             const tabs = createElement('div', { id: 'chatgpt-helper-tabs' });
-            const tabOrder = this.settings.tabOrder || ['prompts', 'outline', 'conversations'];
+            const tabOrder = this.settings.tabOrder || ['prompts', 'outline', 'conversations', 'export'];
             
             tabOrder.forEach(tabId => {
                 if (tabId === 'settings') return; // 设置按钮在头部
@@ -6927,6 +6938,7 @@
                 const tabLabel = tabId === 'prompts' ? this.t('tabPrompts') :
                                tabId === 'outline' ? this.t('tabOutline') :
                                tabId === 'conversations' ? this.t('tabConversations') :
+                               tabId === 'export' ? this.t('tabExport') :
                                tabId === 'settings' ? this.t('tabSettings') : def.label;
                 tab.appendChild(createElement('span', {}, tabLabel));
                 tab.addEventListener('click', () => this.switchTab(tabId));
@@ -6939,7 +6951,7 @@
             const content = createElement('div', { id: 'chatgpt-helper-content' });
             
             // 为每个Tab创建内容面板
-            ['prompts', 'outline', 'conversations', 'settings'].forEach(tabId => {
+            ['prompts', 'outline', 'conversations', 'export', 'settings'].forEach(tabId => {
                 const panel = createElement('div', {
                     className: `chatgpt-helper-content-panel ${this.currentTab === tabId ? 'active' : ''}`,
                     id: `${tabId}-content`
@@ -7025,6 +7037,12 @@
                 } else if (tabName === 'conversations') {
                     this.renderConversations(panel);
                     // 切换到其他Tab时，停用大纲管理器
+                    if (this.outlineManager) {
+                        this.outlineManager.setActive(false);
+                    }
+                } else if (tabName === 'export') {
+                    this.renderExport(panel);
+                    // 切换到导出时，同样停用大纲管理器
                     if (this.outlineManager) {
                         this.outlineManager.setActive(false);
                     }
@@ -7199,6 +7217,96 @@
                 if (p.category) categories.add(p.category);
             });
             return Array.from(categories).sort();
+        }
+
+        /**
+         * 导出 Tab：将 ChatGPT Exporter 的菜单挂载到当前面板中
+         * 依赖外部脚本 exporter.js 暴露的 window.ChatGPTExporterMount
+         */
+        renderExport(container) {
+            // 确保容器使用 flex 布局
+            if (!container.style.display) {
+                container.style.display = 'flex';
+                container.style.flexDirection = 'column';
+                container.style.height = '100%';
+                container.style.overflow = 'hidden';
+            }
+
+            // 先创建标题栏
+            const titleBar = createElement('div', {
+                className: 'chatgpt-helper-export-header',
+                id: 'chatgpt-helper-export-header',
+                style: {
+                    padding: '12px 16px',
+                    borderBottom: '1px solid var(--gh-border, #e5e7eb)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '15px',
+                    fontWeight: '500',
+                    color: 'var(--gh-text, #374151)',
+                    background: 'var(--gh-bg-secondary, #f9fafb)',
+                    flexShrink: '0',
+                    position: 'relative',
+                    zIndex: '10',
+                    boxSizing: 'border-box'
+                }
+            });
+            titleBar.appendChild(createElement('span', { style: { fontSize: '18px', lineHeight: '1' } }, '📤'));
+            titleBar.appendChild(createElement('span', { style: { lineHeight: '1' } }, this.t('tabExport') || '导出'));
+            
+            // 先添加标题栏到容器
+            container.appendChild(titleBar);
+
+            // 创建导出内容容器
+            const exportContainer = createElement('div', {
+                className: 'chatgpt-helper-export-container',
+                id: 'chatgpt-helper-export-container',
+                style: {
+                    flex: '1',
+                    overflow: 'auto',
+                    padding: '0',
+                    minHeight: '0',
+                    position: 'relative',
+                    boxSizing: 'border-box'
+                }
+            });
+            container.appendChild(exportContainer);
+
+            // 延迟挂载 Exporter，确保 DOM 结构已建立，并重试直到找到函数
+            let retryCount = 0;
+            const maxRetries = 20; // 最多重试 20 次（约 2 秒）
+            const tryMount = () => {
+                const exporterMount =
+                    (typeof unsafeWindow !== 'undefined' && unsafeWindow.ChatGPTExporterMount)
+                        ? unsafeWindow.ChatGPTExporterMount
+                        : window.ChatGPTExporterMount;
+
+                if (exporterMount && typeof exporterMount === 'function') {
+                    try {
+                        const mountedContainer = exporterMount(exportContainer);
+                        if (mountedContainer) {
+                            // 确保挂载的容器不会覆盖标题栏
+                            mountedContainer.style.width = '100%';
+                            mountedContainer.style.height = '100%';
+                            mountedContainer.style.overflow = 'auto';
+                        }
+                    } catch (e) {
+                        console.error('[ChatGPT Helper] 挂载 ChatGPT Exporter 失败:', e);
+                        exportContainer.appendChild(createElement('div', {
+                            style: { padding: '12px', fontSize: '13px', color: 'var(--gh-text-secondary)' }
+                        }, '导出模块加载失败，请检查 ChatGPT Exporter 脚本是否正常运行。'));
+                    }
+                } else if (retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(tryMount, 100); // 每 100ms 重试一次
+                } else {
+                    exportContainer.appendChild(createElement('div', {
+                        style: { padding: '12px', fontSize: '13px', color: 'var(--gh-text-secondary)' }
+                    }, '未检测到 ChatGPT Exporter，请确保已在 Tampermonkey 中启用 ChatGPTHelper_Exporter.js 脚本。'));
+                }
+            };
+            setTimeout(tryMount, 100);
         }
 
         showAddPromptDialog() {
@@ -7929,7 +8037,7 @@
                     type: 'toggle',
                     value: this.settings.tabOrder?.includes('prompts') !== false,
                     onChange: (val) => {
-                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations'];
+                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
                         if (val && !this.settings.tabOrder.includes('prompts')) {
                             this.settings.tabOrder.push('prompts');
                         } else if (!val) {
@@ -7944,7 +8052,7 @@
                     type: 'toggle',
                     value: this.settings.tabOrder?.includes('outline') !== false,
                     onChange: (val) => {
-                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations'];
+                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
                         if (val && !this.settings.tabOrder.includes('outline')) {
                             this.settings.tabOrder.push('outline');
                         } else if (!val) {
@@ -7959,11 +8067,26 @@
                     type: 'toggle',
                     value: this.settings.tabOrder?.includes('conversations') !== false,
                     onChange: (val) => {
-                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations'];
+                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
                         if (val && !this.settings.tabOrder.includes('conversations')) {
                             this.settings.tabOrder.push('conversations');
                         } else if (!val) {
                             this.settings.tabOrder = this.settings.tabOrder.filter(t => t !== 'conversations');
+                        }
+                        this.saveSettings();
+                        this.createUI();
+                    }
+                },
+                {
+                    label: this.t('tabExport') || '导出',
+                    type: 'toggle',
+                    value: this.settings.tabOrder?.includes('export') !== false,
+                    onChange: (val) => {
+                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
+                        if (val && !this.settings.tabOrder.includes('export')) {
+                            this.settings.tabOrder.push('export');
+                        } else if (!val) {
+                            this.settings.tabOrder = this.settings.tabOrder.filter(t => t !== 'export');
                         }
                         this.saveSettings();
                         this.createUI();
