@@ -6,8 +6,8 @@
 // @version            1.0.0
 // @author             Zhiwuyazhe_fjr
 // @description        Easily export the whole ChatGPT conversation history for further analysis or sharing.
-// @description:zh-CN  轻松导出 ChatGPT 聊天记录，以便进一步分析或分享。
-// @description:zh-TW  輕鬆匯出 ChatGPT 聊天紀錄，以便進一步分析或分享。
+// @description:zh-CN  配合 ChatGPT Helper 轻松导出对话记录，以便进一步分析或分享。
+// @description:zh-TW  配合 ChatGPT Helper 輕鬆匯出對話紀錄，以便進一步分析或分享。
 // @license            MIT
 // @icon               https://chat.openai.com/favicon.ico
 // @match              https://chat.openai.com/
@@ -45,7 +45,7 @@
 // @updateURL https://update.greasyfork.org/scripts/456055/ChatGPT%20Exporter.meta.js
 // ==/UserScript==
 
-(e=>{const n=document.createElement("style");n.textContent=e,document.head.append(n),setInterval(()=>{n.isConnected||document.head.append(n)},300)})(` .CheckBoxLabel {
+(e => { const n = document.createElement("style"); n.textContent = e, document.head.append(n), setInterval(() => { n.isConnected || document.head.append(n) }, 300) })(` .CheckBoxLabel {
     position: relative;
     display: flex;
     font-size: 16px;
@@ -619,7 +619,7 @@ html {
 
 (function (JSZip, html2canvas) {
   'use strict';
-  
+
   // 提前暴露挂载函数，确保在脚本执行时就可访问
   if (typeof window !== 'undefined') {
     window.ChatGPTExporterMount = window.ChatGPTExporterMount || null; // 先占位，后面会重新定义
@@ -676,20 +676,20 @@ html {
   }
   function x$4() {
     var n2, l2, u2, t2, o3, r2, e2, c2, s2;
-    for (i$6.sort(f$4); n2 = i$6.shift(); ) n2.__d && (l2 = i$6.length, t2 = void 0, o3 = void 0, r2 = void 0, c2 = (e2 = (u2 = n2).__v).__e, (s2 = u2.__P) && (t2 = [], o3 = [], (r2 = v$3({}, e2)).__v = e2.__v + 1, L$3(s2, e2, r2, u2.__n, void 0 !== s2.ownerSVGElement, null != e2.__h ? [c2] : null, t2, null == c2 ? g$5(e2) : c2, e2.__h, o3), M$3(t2, e2, o3), e2.__e != c2 && m$3(e2)), i$6.length > l2 && i$6.sort(f$4));
+    for (i$6.sort(f$4); n2 = i$6.shift();) n2.__d && (l2 = i$6.length, t2 = void 0, o3 = void 0, r2 = void 0, c2 = (e2 = (u2 = n2).__v).__e, (s2 = u2.__P) && (t2 = [], o3 = [], (r2 = v$3({}, e2)).__v = e2.__v + 1, L$3(s2, e2, r2, u2.__n, void 0 !== s2.ownerSVGElement, null != e2.__h ? [c2] : null, t2, null == c2 ? g$5(e2) : c2, e2.__h, o3), M$3(t2, e2, o3), e2.__e != c2 && m$3(e2)), i$6.length > l2 && i$6.sort(f$4));
     x$4.__r = 0;
   }
   function P$3(n2, l2, u2, t2, i2, o3, r2, f2, e2, a2, v2) {
     var p2, y2, _24, b2, m2, w2, x2, P2, C2, H2 = 0, I2 = t2 && t2.__k || s$7, T2 = I2.length, j2 = T2, z2 = l2.length;
     for (u2.__k = [], p2 = 0; p2 < z2; p2++) null != (b2 = u2.__k[p2] = null == (b2 = l2[p2]) || "boolean" == typeof b2 || "function" == typeof b2 ? null : "string" == typeof b2 || "number" == typeof b2 || "bigint" == typeof b2 ? d$6(null, b2, null, null, b2) : h$5(b2) ? d$6(k$3, { children: b2 }, null, null, null) : b2.__b > 0 ? d$6(b2.type, b2.props, b2.key, b2.ref ? b2.ref : null, b2.__v) : b2) ? (b2.__ = u2, b2.__b = u2.__b + 1, -1 === (P2 = A$4(b2, I2, x2 = p2 + H2, j2)) ? _24 = c$5 : (_24 = I2[P2] || c$5, I2[P2] = void 0, j2--), L$3(n2, b2, _24, i2, o3, r2, f2, e2, a2, v2), m2 = b2.__e, (y2 = b2.ref) && _24.ref != y2 && (_24.ref && O$2(_24.ref, null, b2), v2.push(y2, b2.__c || m2, b2)), null != m2 && (null == w2 && (w2 = m2), (C2 = _24 === c$5 || null === _24.__v) ? -1 == P2 && H2-- : P2 !== x2 && (P2 === x2 + 1 ? H2++ : P2 > x2 ? j2 > z2 - x2 ? H2 += P2 - x2 : H2-- : H2 = P2 < x2 && P2 == x2 - 1 ? P2 - x2 : 0), x2 = p2 + H2, "function" != typeof b2.type || P2 === x2 && _24.__k !== b2.__k ? "function" == typeof b2.type || P2 === x2 && !C2 ? void 0 !== b2.__d ? (e2 = b2.__d, b2.__d = void 0) : e2 = m2.nextSibling : e2 = S$3(n2, m2, e2) : e2 = $$1(b2, e2, n2), "function" == typeof u2.type && (u2.__d = e2))) : (_24 = I2[p2]) && null == _24.key && _24.__e && (_24.__e == e2 && (e2 = g$5(_24)), q$2(_24, _24, false), I2[p2] = null);
-    for (u2.__e = w2, p2 = T2; p2--; ) null != I2[p2] && ("function" == typeof u2.type && null != I2[p2].__e && I2[p2].__e == u2.__d && (u2.__d = I2[p2].__e.nextSibling), q$2(I2[p2], I2[p2]));
+    for (u2.__e = w2, p2 = T2; p2--;) null != I2[p2] && ("function" == typeof u2.type && null != I2[p2].__e && I2[p2].__e == u2.__d && (u2.__d = I2[p2].__e.nextSibling), q$2(I2[p2], I2[p2]));
   }
   function $$1(n2, l2, u2) {
     for (var t2, i2 = n2.__k, o3 = 0; i2 && o3 < i2.length; o3++) (t2 = i2[o3]) && (t2.__ = n2, l2 = "function" == typeof t2.type ? $$1(t2, l2, u2) : S$3(u2, t2.__e, l2));
     return l2;
   }
   function C$2(n2, l2) {
-    return l2 = l2 || [], null == n2 || "boolean" == typeof n2 || (h$5(n2) ? n2.some(function(n3) {
+    return l2 = l2 || [], null == n2 || "boolean" == typeof n2 || (h$5(n2) ? n2.some(function (n3) {
       C$2(n3, l2);
     }) : l2.push(n2)), l2;
   }
@@ -699,7 +699,7 @@ html {
   function A$4(n2, l2, u2, t2) {
     var i2 = n2.key, o3 = n2.type, r2 = u2 - 1, f2 = u2 + 1, e2 = l2[u2];
     if (null === e2 || e2 && i2 == e2.key && o3 === e2.type) return u2;
-    if (t2 > (null != e2 ? 1 : 0)) for (; r2 >= 0 || f2 < l2.length; ) {
+    if (t2 > (null != e2 ? 1 : 0)) for (; r2 >= 0 || f2 < l2.length;) {
       if (r2 >= 0) {
         if ((e2 = l2[r2]) && i2 == e2.key && o3 === e2.type) return r2;
         r2--;
@@ -751,13 +751,13 @@ html {
       if (w2 = u2.props, x2 = (a2 = T2.contextType) && i2[a2.__c], $2 = a2 ? x2 ? x2.props.value : a2.__ : i2, t2.__c ? m2 = (p2 = u2.__c = t2.__c).__ = p2.__E : ("prototype" in T2 && T2.prototype.render ? u2.__c = p2 = new T2(w2, $2) : (u2.__c = p2 = new b$4(w2, $2), p2.constructor = T2, p2.render = B$2), x2 && x2.sub(p2), p2.props = w2, p2.state || (p2.state = {}), p2.context = $2, p2.__n = i2, y2 = p2.__d = true, p2.__h = [], p2._sb = []), null == p2.__s && (p2.__s = p2.state), null != T2.getDerivedStateFromProps && (p2.__s == p2.state && (p2.__s = v$3({}, p2.__s)), v$3(p2.__s, T2.getDerivedStateFromProps(w2, p2.__s))), d2 = p2.props, _24 = p2.state, p2.__v = u2, y2) null == T2.getDerivedStateFromProps && null != p2.componentWillMount && p2.componentWillMount(), null != p2.componentDidMount && p2.__h.push(p2.componentDidMount);
       else {
         if (null == T2.getDerivedStateFromProps && w2 !== d2 && null != p2.componentWillReceiveProps && p2.componentWillReceiveProps(w2, $2), !p2.__e && (null != p2.shouldComponentUpdate && false === p2.shouldComponentUpdate(w2, p2.__s, $2) || u2.__v === t2.__v)) {
-          for (u2.__v !== t2.__v && (p2.props = w2, p2.state = p2.__s, p2.__d = false), u2.__e = t2.__e, u2.__k = t2.__k, u2.__k.forEach(function(n3) {
+          for (u2.__v !== t2.__v && (p2.props = w2, p2.state = p2.__s, p2.__d = false), u2.__e = t2.__e, u2.__k = t2.__k, u2.__k.forEach(function (n3) {
             n3 && (n3.__ = u2);
           }), C2 = 0; C2 < p2._sb.length; C2++) p2.__h.push(p2._sb[C2]);
           p2._sb = [], p2.__h.length && f2.push(p2);
           break n;
         }
-        null != p2.componentWillUpdate && p2.componentWillUpdate(w2, p2.__s, $2), null != p2.componentDidUpdate && p2.__h.push(function() {
+        null != p2.componentWillUpdate && p2.componentWillUpdate(w2, p2.__s, $2), null != p2.componentDidUpdate && p2.__h.push(function () {
           p2.componentDidUpdate(d2, _24, g2);
         });
       }
@@ -776,9 +776,9 @@ html {
   }
   function M$3(n2, u2, t2) {
     for (var i2 = 0; i2 < t2.length; i2++) O$2(t2[i2], t2[++i2], t2[++i2]);
-    l$5.__c && l$5.__c(u2, n2), n2.some(function(u3) {
+    l$5.__c && l$5.__c(u2, n2), n2.some(function (u3) {
       try {
-        n2 = u3.__h, u3.__h = [], n2.some(function(n3) {
+        n2 = u3.__h, u3.__h = [], n2.some(function (n3) {
           n3.call(u3);
         });
       } catch (n3) {
@@ -805,7 +805,7 @@ html {
         (y2 || v2) && (y2 && (v2 && y2.__html == v2.__html || y2.__html === l2.innerHTML) || (l2.innerHTML = y2 && y2.__html || ""));
       }
       if (H$3(l2, _24, d2, o3, e2), y2) u2.__k = [];
-      else if (P$3(l2, h$5(b2 = u2.props.children) ? b2 : [b2], u2, t2, i2, o3 && "foreignObject" !== k2, r2, f2, r2 ? r2[0] : t2.__k && g$5(t2, 0), e2, s2), null != r2) for (b2 = r2.length; b2--; ) null != r2[b2] && p$7(r2[b2]);
+      else if (P$3(l2, h$5(b2 = u2.props.children) ? b2 : [b2], u2, t2, i2, o3 && "foreignObject" !== k2, r2, f2, r2 ? r2[0] : t2.__k && g$5(t2, 0), e2, s2), null != r2) for (b2 = r2.length; b2--;) null != r2[b2] && p$7(r2[b2]);
       e2 || ("value" in _24 && void 0 !== (b2 = _24.value) && (b2 !== l2.value || "progress" === k2 && !b2 || "option" === k2 && b2 !== d2.value) && T$5(l2, "value", b2, d2.value, false), "checked" in _24 && void 0 !== (b2 = _24.checked) && b2 !== l2.checked && T$5(l2, "checked", b2, d2.checked, false));
     }
     return l2;
@@ -846,39 +846,43 @@ html {
     return arguments.length > 2 && (e2.children = arguments.length > 3 ? n$2.call(arguments, 2) : t2), d$6(l2.type, e2, i2 || l2.key, o3 || l2.ref, null);
   }
   function G$1(n2, l2) {
-    var u2 = { __c: l2 = "__cC" + e$4++, __: n2, Consumer: function(n3, l3) {
-      return n3.children(l3);
-    }, Provider: function(n3) {
-      var u3, t2;
-      return this.getChildContext || (u3 = [], (t2 = {})[l2] = this, this.getChildContext = function() {
-        return t2;
-      }, this.shouldComponentUpdate = function(n4) {
-        this.props.value !== n4.value && u3.some(function(n5) {
-          n5.__e = true, w$4(n5);
-        });
-      }, this.sub = function(n4) {
-        u3.push(n4);
-        var l3 = n4.componentWillUnmount;
-        n4.componentWillUnmount = function() {
-          u3.splice(u3.indexOf(n4), 1), l3 && l3.call(n4);
-        };
-      }), n3.children;
-    } };
+    var u2 = {
+      __c: l2 = "__cC" + e$4++, __: n2, Consumer: function (n3, l3) {
+        return n3.children(l3);
+      }, Provider: function (n3) {
+        var u3, t2;
+        return this.getChildContext || (u3 = [], (t2 = {})[l2] = this, this.getChildContext = function () {
+          return t2;
+        }, this.shouldComponentUpdate = function (n4) {
+          this.props.value !== n4.value && u3.some(function (n5) {
+            n5.__e = true, w$4(n5);
+          });
+        }, this.sub = function (n4) {
+          u3.push(n4);
+          var l3 = n4.componentWillUnmount;
+          n4.componentWillUnmount = function () {
+            u3.splice(u3.indexOf(n4), 1), l3 && l3.call(n4);
+          };
+        }), n3.children;
+      }
+    };
     return u2.Provider.__ = u2.Consumer.contextType = u2;
   }
-  n$2 = s$7.slice, l$5 = { __e: function(n2, l2, u2, t2) {
-    for (var i2, o3, r2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
-      if ((o3 = i2.constructor) && null != o3.getDerivedStateFromError && (i2.setState(o3.getDerivedStateFromError(n2)), r2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n2, t2 || {}), r2 = i2.__d), r2) return i2.__E = i2;
-    } catch (l3) {
-      n2 = l3;
+  n$2 = s$7.slice, l$5 = {
+    __e: function (n2, l2, u2, t2) {
+      for (var i2, o3, r2; l2 = l2.__;) if ((i2 = l2.__c) && !i2.__) try {
+        if ((o3 = i2.constructor) && null != o3.getDerivedStateFromError && (i2.setState(o3.getDerivedStateFromError(n2)), r2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n2, t2 || {}), r2 = i2.__d), r2) return i2.__E = i2;
+      } catch (l3) {
+        n2 = l3;
+      }
+      throw n2;
     }
-    throw n2;
-  } }, u$6 = 0, b$4.prototype.setState = function(n2, l2) {
+  }, u$6 = 0, b$4.prototype.setState = function (n2, l2) {
     var u2;
     u2 = null != this.__s && this.__s !== this.state ? this.__s : this.__s = v$3({}, this.state), "function" == typeof n2 && (n2 = n2(v$3({}, u2), this.props)), n2 && v$3(u2, n2), null != n2 && this.__v && (l2 && this._sb.push(l2), w$4(this));
-  }, b$4.prototype.forceUpdate = function(n2) {
+  }, b$4.prototype.forceUpdate = function (n2) {
     this.__v && (this.__e = true, n2 && this.__h.push(n2), w$4(this));
-  }, b$4.prototype.render = k$3, i$6 = [], r$5 = "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, f$4 = function(n2, l2) {
+  }, b$4.prototype.render = k$3, i$6 = [], r$5 = "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, f$4 = function (n2, l2) {
     return n2.__v.__b - l2.__v.__b;
   }, x$4.__r = 0, e$4 = 0;
   var _$1 = 0;
@@ -894,12 +898,12 @@ html {
     return x2 && x2.__esModule && Object.prototype.hasOwnProperty.call(x2, "default") ? x2["default"] : x2;
   }
   var sentinel_umd = { exports: {} };
-  (function(module, exports) {
-    (function(root2, factory) {
+  (function (module, exports) {
+    (function (root2, factory) {
       {
         module.exports = factory();
       }
-    })(commonjsGlobal, function() {
+    })(commonjsGlobal, function () {
       var isArray = Array.isArray, selectorToAnimationMap = {}, animationCallbacks = {}, styleEl, styleSheet, cssRules;
       return {
         /**
@@ -907,11 +911,11 @@ html {
          * @param {array} cssSelectors - List of CSS selector strings
          * @param {Function} callback - The callback function
          */
-        on: function(cssSelectors, callback) {
+        on: function (cssSelectors, callback) {
           if (!callback) return;
           if (!styleEl) {
             var doc = document, head2 = doc.head;
-            doc.addEventListener("animationstart", function(ev, callbacks, l2, i2) {
+            doc.addEventListener("animationstart", function (ev, callbacks, l2, i2) {
               callbacks = animationCallbacks[ev.animationName];
               if (!callbacks) return;
               ev.stopImmediatePropagation();
@@ -926,7 +930,7 @@ html {
             styleSheet = styleEl.sheet;
             cssRules = styleSheet.cssRules;
           }
-          (isArray(cssSelectors) ? cssSelectors : [cssSelectors]).map(function(selector, animId, isCustomName) {
+          (isArray(cssSelectors) ? cssSelectors : [cssSelectors]).map(function (selector, animId, isCustomName) {
             animId = selectorToAnimationMap[selector];
             if (!animId) {
               isCustomName = selector[0] == "!";
@@ -951,8 +955,8 @@ html {
          * @param {array} cssSelectors - List of CSS selector strings
          * @param {Function} callback - The callback function (optional)
          */
-        off: function(cssSelectors, callback) {
-          (isArray(cssSelectors) ? cssSelectors : [cssSelectors]).map(function(selector, animId, callbackList, i2) {
+        off: function (cssSelectors, callback) {
+          (isArray(cssSelectors) ? cssSelectors : [cssSelectors]).map(function (selector, animId, callbackList, i2) {
             if (!(animId = selectorToAnimationMap[selector])) return;
             callbackList = animationCallbacks[animId];
             if (callback) {
@@ -975,7 +979,7 @@ html {
         /**
          * Reset watchers and cache
          */
-        reset: function() {
+        reset: function () {
           selectorToAnimationMap = {};
           animationCallbacks = {};
           if (styleEl) styleEl.parentNode.removeChild(styleEl);
@@ -987,8 +991,8 @@ html {
   var sentinel_umdExports = sentinel_umd.exports;
   const sentinel = /* @__PURE__ */ getDefaultExportFromCjs(sentinel_umdExports);
   var dist = {};
-  var __assign$1 = commonjsGlobal && commonjsGlobal.__assign || function() {
-    __assign$1 = Object.assign || function(t2) {
+  var __assign$1 = commonjsGlobal && commonjsGlobal.__assign || function () {
+    __assign$1 = Object.assign || function (t2) {
       for (var s2, i2 = 1, n2 = arguments.length; i2 < n2; i2++) {
         s2 = arguments[i2];
         for (var p2 in s2) if (Object.prototype.hasOwnProperty.call(s2, p2))
@@ -1035,7 +1039,7 @@ html {
   function path$1(template, params) {
     var remainingParams = __assign$1({}, params);
     var allowedTypes = ["boolean", "string", "number"];
-    var renderedPath = template.replace(/:\w+/g, function(p2) {
+    var renderedPath = template.replace(/:\w+/g, function (p2) {
       var key2 = p2.slice(1);
       if (/^\d+$/.test(key2)) {
         return p2;
@@ -1061,9 +1065,9 @@ html {
   }
   dist.join = join$1;
   function removeNullOrUndef(params) {
-    return Object.keys(params).filter(function(k2) {
+    return Object.keys(params).filter(function (k2) {
       return notNullOrUndefined(params[k2]);
-    }).reduce(function(result, k2) {
+    }).reduce(function (result, k2) {
       result[k2] = params[k2];
       return result;
     }, {});
@@ -1491,7 +1495,7 @@ html {
     return result;
   }
   function _extends() {
-    _extends = Object.assign ? Object.assign.bind() : function(target) {
+    _extends = Object.assign ? Object.assign.bind() : function (target) {
       for (var i2 = 1; i2 < arguments.length; i2++) {
         var source = arguments[i2];
         for (var key2 in source) {
@@ -1515,20 +1519,20 @@ html {
   }
   function s$6(n2, u2, i2) {
     var o3 = d$5(t$2++, 2);
-    if (o3.t = n2, !o3.__c && (o3.__ = [i2 ? i2(u2) : B$1(void 0, u2), function(n3) {
+    if (o3.t = n2, !o3.__c && (o3.__ = [i2 ? i2(u2) : B$1(void 0, u2), function (n3) {
       var t2 = o3.__N ? o3.__N[0] : o3.__[0], r2 = o3.t(t2, n3);
       t2 !== r2 && (o3.__N = [r2, o3.__[1]], o3.__c.setState({}));
     }], o3.__c = r$4, !r$4.u)) {
-      var f2 = function(n3, t2, r2) {
+      var f2 = function (n3, t2, r2) {
         if (!o3.__c.__H) return true;
-        var u3 = o3.__c.__H.__.filter(function(n4) {
+        var u3 = o3.__c.__H.__.filter(function (n4) {
           return n4.__c;
         });
-        if (u3.every(function(n4) {
+        if (u3.every(function (n4) {
           return !n4.__N;
         })) return !c2 || c2.call(this, n3, t2, r2);
         var i3 = false;
-        return u3.forEach(function(n4) {
+        return u3.forEach(function (n4) {
           if (n4.__N) {
             var t3 = n4.__[0];
             n4.__ = n4.__N, n4.__N = void 0, t3 !== n4.__[0] && (i3 = true);
@@ -1537,7 +1541,7 @@ html {
       };
       r$4.u = true;
       var c2 = r$4.shouldComponentUpdate, e2 = r$4.componentWillUpdate;
-      r$4.componentWillUpdate = function(n3, t2, r2) {
+      r$4.componentWillUpdate = function (n3, t2, r2) {
         if (this.__e) {
           var u3 = c2;
           c2 = void 0, f2(n3, t2, r2), c2 = u3;
@@ -1556,15 +1560,15 @@ html {
     !l$5.__s && z$2(o3.__H, i2) && (o3.__ = u2, o3.i = i2, r$4.__h.push(o3));
   }
   function _(n2) {
-    return o$7 = 5, F$1(function() {
+    return o$7 = 5, F$1(function () {
       return { current: n2 };
     }, []);
   }
   function A$3(n2, t2, r2) {
-    o$7 = 6, y$5(function() {
-      return "function" == typeof n2 ? (n2(t2()), function() {
+    o$7 = 6, y$5(function () {
+      return "function" == typeof n2 ? (n2(t2()), function () {
         return n2(null);
-      }) : n2 ? (n2.current = t2(), function() {
+      }) : n2 ? (n2.current = t2(), function () {
         return n2.current = null;
       }) : void 0;
     }, null == r2 ? r2 : r2.concat(n2));
@@ -1574,7 +1578,7 @@ html {
     return z$2(u2.__H, r2) ? (u2.__V = n2(), u2.i = r2, u2.__h = n2, u2.__V) : u2.__;
   }
   function T$4(n2, t2) {
-    return o$7 = 8, F$1(function() {
+    return o$7 = 8, F$1(function () {
       return n2;
     }, t2);
   }
@@ -1587,58 +1591,58 @@ html {
   }
   function P$2(n2) {
     var u2 = d$5(t$2++, 10), i2 = h$4();
-    return u2.__ = n2, r$4.componentDidCatch || (r$4.componentDidCatch = function(n3, t2) {
+    return u2.__ = n2, r$4.componentDidCatch || (r$4.componentDidCatch = function (n3, t2) {
       u2.__ && u2.__(n3, t2), i2[1](n3);
-    }), [i2[0], function() {
+    }), [i2[0], function () {
       i2[1](void 0);
     }];
   }
   function V$1() {
     var n2 = d$5(t$2++, 11);
     if (!n2.__) {
-      for (var u2 = r$4.__v; null !== u2 && !u2.__m && null !== u2.__; ) u2 = u2.__;
+      for (var u2 = r$4.__v; null !== u2 && !u2.__m && null !== u2.__;) u2 = u2.__;
       var i2 = u2.__m || (u2.__m = [0, 0]);
       n2.__ = "P" + i2[0] + "-" + i2[1]++;
     }
     return n2.__;
   }
   function b$3() {
-    for (var t2; t2 = f$3.shift(); ) if (t2.__P && t2.__H) try {
+    for (var t2; t2 = f$3.shift();) if (t2.__P && t2.__H) try {
       t2.__H.__h.forEach(k$2), t2.__H.__h.forEach(w$3), t2.__H.__h = [];
     } catch (r2) {
       t2.__H.__h = [], l$5.__e(r2, t2.__v);
     }
   }
-  l$5.__b = function(n2) {
+  l$5.__b = function (n2) {
     r$4 = null, e$3 && e$3(n2);
-  }, l$5.__r = function(n2) {
+  }, l$5.__r = function (n2) {
     a$3 && a$3(n2), t$2 = 0;
     var i2 = (r$4 = n2.__c).__H;
-    i2 && (u$5 === r$4 ? (i2.__h = [], r$4.__h = [], i2.__.forEach(function(n3) {
+    i2 && (u$5 === r$4 ? (i2.__h = [], r$4.__h = [], i2.__.forEach(function (n3) {
       n3.__N && (n3.__ = n3.__N), n3.__V = c$4, n3.__N = n3.i = void 0;
     })) : (i2.__h.forEach(k$2), i2.__h.forEach(w$3), i2.__h = [], t$2 = 0)), u$5 = r$4;
-  }, l$5.diffed = function(t2) {
+  }, l$5.diffed = function (t2) {
     v$2 && v$2(t2);
     var o3 = t2.__c;
-    o3 && o3.__H && (o3.__H.__h.length && (1 !== f$3.push(o3) && i$5 === l$5.requestAnimationFrame || ((i$5 = l$5.requestAnimationFrame) || j$2)(b$3)), o3.__H.__.forEach(function(n2) {
+    o3 && o3.__H && (o3.__H.__h.length && (1 !== f$3.push(o3) && i$5 === l$5.requestAnimationFrame || ((i$5 = l$5.requestAnimationFrame) || j$2)(b$3)), o3.__H.__.forEach(function (n2) {
       n2.i && (n2.__H = n2.i), n2.__V !== c$4 && (n2.__ = n2.__V), n2.i = void 0, n2.__V = c$4;
     })), u$5 = r$4 = null;
-  }, l$5.__c = function(t2, r2) {
-    r2.some(function(t3) {
+  }, l$5.__c = function (t2, r2) {
+    r2.some(function (t3) {
       try {
-        t3.__h.forEach(k$2), t3.__h = t3.__h.filter(function(n2) {
+        t3.__h.forEach(k$2), t3.__h = t3.__h.filter(function (n2) {
           return !n2.__ || w$3(n2);
         });
       } catch (u2) {
-        r2.some(function(n2) {
+        r2.some(function (n2) {
           n2.__h && (n2.__h = []);
         }), r2 = [], l$5.__e(u2, t3.__v);
       }
     }), l$4 && l$4(t2, r2);
-  }, l$5.unmount = function(t2) {
+  }, l$5.unmount = function (t2) {
     m$2 && m$2(t2);
     var r2, u2 = t2.__c;
-    u2 && u2.__H && (u2.__H.__.forEach(function(n2) {
+    u2 && u2.__H && (u2.__H.__.forEach(function (n2) {
       try {
         k$2(n2);
       } catch (n3) {
@@ -1648,7 +1652,7 @@ html {
   };
   var g$4 = "function" == typeof requestAnimationFrame;
   function j$2(n2) {
-    var t2, r2 = function() {
+    var t2, r2 = function () {
       clearTimeout(u2), g$4 && cancelAnimationFrame(t2), setTimeout(n2);
     }, u2 = setTimeout(r2, 100);
     g$4 && (t2 = requestAnimationFrame(r2));
@@ -1662,7 +1666,7 @@ html {
     n2.__c = n2.__(), r$4 = t2;
   }
   function z$2(n2, t2) {
-    return !n2 || n2.length !== t2.length || t2.some(function(t3, r2) {
+    return !n2 || n2.length !== t2.length || t2.some(function (t3, r2) {
       return t3 !== n2[r2];
     });
   }
@@ -1694,11 +1698,11 @@ html {
     }
     return u2.displayName = "Memo(" + (n2.displayName || n2.name) + ")", u2.prototype.isReactComponent = true, u2.__f = true, u2;
   }
-  (w$2.prototype = new b$4()).isPureReactComponent = true, w$2.prototype.shouldComponentUpdate = function(n2, t2) {
+  (w$2.prototype = new b$4()).isPureReactComponent = true, w$2.prototype.shouldComponentUpdate = function (n2, t2) {
     return C$1(this.props, n2) || C$1(this.state, t2);
   };
   var R$3 = l$5.__b;
-  l$5.__b = function(n2) {
+  l$5.__b = function (n2) {
     n2.type && n2.type.__f && n2.ref && (n2.props.ref = n2.ref, n2.ref = null), R$3 && R$3(n2);
   };
   var N$2 = "undefined" != typeof Symbol && Symbol.for && Symbol.for("react.forward_ref") || 3911;
@@ -1709,31 +1713,33 @@ html {
     }
     return t2.$$typeof = N$2, t2.render = t2, t2.prototype.isReactComponent = t2.__f = true, t2.displayName = "ForwardRef(" + (n2.displayName || n2.name) + ")", t2;
   }
-  var A$2 = function(n2, t2) {
+  var A$2 = function (n2, t2) {
     return null == n2 ? null : C$2(C$2(n2).map(t2));
-  }, O$1 = { map: A$2, forEach: A$2, count: function(n2) {
-    return n2 ? C$2(n2).length : 0;
-  }, only: function(n2) {
-    var t2 = C$2(n2);
-    if (1 !== t2.length) throw "Children.only";
-    return t2[0];
-  }, toArray: C$2 }, T$3 = l$5.__e;
-  l$5.__e = function(n2, t2, e2, r2) {
+  }, O$1 = {
+    map: A$2, forEach: A$2, count: function (n2) {
+      return n2 ? C$2(n2).length : 0;
+    }, only: function (n2) {
+      var t2 = C$2(n2);
+      if (1 !== t2.length) throw "Children.only";
+      return t2[0];
+    }, toArray: C$2
+  }, T$3 = l$5.__e;
+  l$5.__e = function (n2, t2, e2, r2) {
     if (n2.then) {
-      for (var u2, o3 = t2; o3 = o3.__; ) if ((u2 = o3.__c) && u2.__c) return null == t2.__e && (t2.__e = e2.__e, t2.__k = e2.__k), u2.__c(n2, t2);
+      for (var u2, o3 = t2; o3 = o3.__;) if ((u2 = o3.__c) && u2.__c) return null == t2.__e && (t2.__e = e2.__e, t2.__k = e2.__k), u2.__c(n2, t2);
     }
     T$3(n2, t2, e2, r2);
   };
   var F = l$5.unmount;
   function I$1(n2, t2, e2) {
-    return n2 && (n2.__c && n2.__c.__H && (n2.__c.__H.__.forEach(function(n3) {
+    return n2 && (n2.__c && n2.__c.__H && (n2.__c.__H.__.forEach(function (n3) {
       "function" == typeof n3.__c && n3.__c();
-    }), n2.__c.__H = null), null != (n2 = g$3({}, n2)).__c && (n2.__c.__P === e2 && (n2.__c.__P = t2), n2.__c = null), n2.__k = n2.__k && n2.__k.map(function(n3) {
+    }), n2.__c.__H = null), null != (n2 = g$3({}, n2)).__c && (n2.__c.__P === e2 && (n2.__c.__P = t2), n2.__c = null), n2.__k = n2.__k && n2.__k.map(function (n3) {
       return I$1(n3, t2, e2);
     })), n2;
   }
   function L$2(n2, t2, e2) {
-    return n2 && (n2.__v = null, n2.__k = n2.__k && n2.__k.map(function(n3) {
+    return n2 && (n2.__v = null, n2.__k = n2.__k && n2.__k.map(function (n3) {
       return L$2(n3, t2, e2);
     }), n2.__c && n2.__c.__P === t2 && (n2.__e && e2.insertBefore(n2.__e, n2.__d), n2.__c.__e = true, n2.__c.__P = e2)), n2;
   }
@@ -1747,9 +1753,9 @@ html {
   function M$2(n2) {
     var e2, r2, u2;
     function o3(o4) {
-      if (e2 || (e2 = n2()).then(function(n3) {
+      if (e2 || (e2 = n2()).then(function (n3) {
         r2 = n3.default || n3;
-      }, function(n3) {
+      }, function (n3) {
         u2 = n3;
       }), u2) throw u2;
       if (!r2) throw e2;
@@ -1760,30 +1766,30 @@ html {
   function V() {
     this.u = null, this.o = null;
   }
-  l$5.unmount = function(n2) {
+  l$5.unmount = function (n2) {
     var t2 = n2.__c;
     t2 && t2.__R && t2.__R(), t2 && true === n2.__h && (n2.type = null), F && F(n2);
-  }, (U.prototype = new b$4()).__c = function(n2, t2) {
+  }, (U.prototype = new b$4()).__c = function (n2, t2) {
     var e2 = t2.__c, r2 = this;
     null == r2.t && (r2.t = []), r2.t.push(e2);
-    var u2 = D$3(r2.__v), o3 = false, i2 = function() {
+    var u2 = D$3(r2.__v), o3 = false, i2 = function () {
       o3 || (o3 = true, e2.__R = null, u2 ? u2(l2) : l2());
     };
     e2.__R = i2;
-    var l2 = function() {
+    var l2 = function () {
       if (!--r2.__u) {
         if (r2.state.__a) {
           var n3 = r2.state.__a;
           r2.__v.__k[0] = L$2(n3, n3.__c.__P, n3.__c.__O);
         }
         var t3;
-        for (r2.setState({ __a: r2.__b = null }); t3 = r2.t.pop(); ) t3.forceUpdate();
+        for (r2.setState({ __a: r2.__b = null }); t3 = r2.t.pop();) t3.forceUpdate();
       }
     }, c2 = true === t2.__h;
     r2.__u++ || c2 || r2.setState({ __a: r2.__b = r2.__v.__k[0] }), n2.then(i2, i2);
-  }, U.prototype.componentWillUnmount = function() {
+  }, U.prototype.componentWillUnmount = function () {
     this.t = [];
-  }, U.prototype.render = function(n2, e2) {
+  }, U.prototype.render = function (n2, e2) {
     if (this.__b) {
       if (this.__v.__k) {
         var r2 = document.createElement("div"), o3 = this.__v.__k[0].__c;
@@ -1794,55 +1800,57 @@ html {
     var i2 = e2.__a && y$6(k$3, null, n2.fallback);
     return i2 && (i2.__h = null), [y$6(k$3, null, e2.__a ? null : n2.children), i2];
   };
-  var W$1 = function(n2, t2, e2) {
-    if (++e2[1] === e2[0] && n2.o.delete(t2), n2.props.revealOrder && ("t" !== n2.props.revealOrder[0] || !n2.o.size)) for (e2 = n2.u; e2; ) {
-      for (; e2.length > 3; ) e2.pop()();
+  var W$1 = function (n2, t2, e2) {
+    if (++e2[1] === e2[0] && n2.o.delete(t2), n2.props.revealOrder && ("t" !== n2.props.revealOrder[0] || !n2.o.size)) for (e2 = n2.u; e2;) {
+      for (; e2.length > 3;) e2.pop()();
       if (e2[1] < e2[0]) break;
       n2.u = e2 = e2[2];
     }
   };
   function P$1(n2) {
-    return this.getChildContext = function() {
+    return this.getChildContext = function () {
       return n2.context;
     }, n2.children;
   }
   function j$1(n2) {
     var e2 = this, r2 = n2.i;
-    e2.componentWillUnmount = function() {
+    e2.componentWillUnmount = function () {
       D$4(null, e2.l), e2.l = null, e2.i = null;
-    }, e2.i && e2.i !== r2 && e2.componentWillUnmount(), e2.l || (e2.i = r2, e2.l = { nodeType: 1, parentNode: r2, childNodes: [], appendChild: function(n3) {
-      this.childNodes.push(n3), e2.i.appendChild(n3);
-    }, insertBefore: function(n3, t2) {
-      this.childNodes.push(n3), e2.i.appendChild(n3);
-    }, removeChild: function(n3) {
-      this.childNodes.splice(this.childNodes.indexOf(n3) >>> 1, 1), e2.i.removeChild(n3);
-    } }), D$4(y$6(P$1, { context: e2.context }, n2.__v), e2.l);
+    }, e2.i && e2.i !== r2 && e2.componentWillUnmount(), e2.l || (e2.i = r2, e2.l = {
+      nodeType: 1, parentNode: r2, childNodes: [], appendChild: function (n3) {
+        this.childNodes.push(n3), e2.i.appendChild(n3);
+      }, insertBefore: function (n3, t2) {
+        this.childNodes.push(n3), e2.i.appendChild(n3);
+      }, removeChild: function (n3) {
+        this.childNodes.splice(this.childNodes.indexOf(n3) >>> 1, 1), e2.i.removeChild(n3);
+      }
+    }), D$4(y$6(P$1, { context: e2.context }, n2.__v), e2.l);
   }
   function z$1(n2, e2) {
     var r2 = y$6(j$1, { __v: n2, i: e2 });
     return r2.containerInfo = e2, r2;
   }
-  (V.prototype = new b$4()).__a = function(n2) {
+  (V.prototype = new b$4()).__a = function (n2) {
     var t2 = this, e2 = D$3(t2.__v), r2 = t2.o.get(n2);
-    return r2[0]++, function(u2) {
-      var o3 = function() {
+    return r2[0]++, function (u2) {
+      var o3 = function () {
         t2.props.revealOrder ? (r2.push(u2), W$1(t2, n2, r2)) : u2();
       };
       e2 ? e2(o3) : o3();
     };
-  }, V.prototype.render = function(n2) {
+  }, V.prototype.render = function (n2) {
     this.u = null, this.o = /* @__PURE__ */ new Map();
     var t2 = C$2(n2.children);
     n2.revealOrder && "b" === n2.revealOrder[0] && t2.reverse();
-    for (var e2 = t2.length; e2--; ) this.o.set(t2[e2], this.u = [1, 0, this.u]);
+    for (var e2 = t2.length; e2--;) this.o.set(t2[e2], this.u = [1, 0, this.u]);
     return n2.children;
-  }, V.prototype.componentDidUpdate = V.prototype.componentDidMount = function() {
+  }, V.prototype.componentDidUpdate = V.prototype.componentDidMount = function () {
     var n2 = this;
-    this.o.forEach(function(t2, e2) {
+    this.o.forEach(function (t2, e2) {
       W$1(n2, e2, t2);
     });
   };
-  var B = "undefined" != typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, H$2 = /^(?:accent|alignment|arabic|baseline|cap|clip(?!PathU)|color|dominant|fill|flood|font|glyph(?!R)|horiz|image(!S)|letter|lighting|marker(?!H|W|U)|overline|paint|pointer|shape|stop|strikethrough|stroke|text(?!L)|transform|underline|unicode|units|v|vector|vert|word|writing|x(?!C))[A-Z]/, Z$1 = /^on(Ani|Tra|Tou|BeforeInp|Compo)/, Y$1 = /[A-Z0-9]/g, $ = "undefined" != typeof document, q = function(n2) {
+  var B = "undefined" != typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103, H$2 = /^(?:accent|alignment|arabic|baseline|cap|clip(?!PathU)|color|dominant|fill|flood|font|glyph(?!R)|horiz|image(!S)|letter|lighting|marker(?!H|W|U)|overline|paint|pointer|shape|stop|strikethrough|stroke|text(?!L)|transform|underline|unicode|units|v|vector|vert|word|writing|x(?!C))[A-Z]/, Z$1 = /^on(Ani|Tra|Tou|BeforeInp|Compo)/, Y$1 = /[A-Z0-9]/g, $ = "undefined" != typeof document, q = function (n2) {
     return ("undefined" != typeof Symbol && "symbol" == typeof Symbol() ? /fil|che|rad/ : /fil|che|ra/).test(n2);
   };
   function G(n2, t2, e2) {
@@ -1851,12 +1859,14 @@ html {
   function J(n2, t2, e2) {
     return E$2(n2, t2), "function" == typeof e2 && e2(), n2 ? n2.__c : null;
   }
-  b$4.prototype.isReactComponent = {}, ["componentWillMount", "componentWillReceiveProps", "componentWillUpdate"].forEach(function(t2) {
-    Object.defineProperty(b$4.prototype, t2, { configurable: true, get: function() {
-      return this["UNSAFE_" + t2];
-    }, set: function(n2) {
-      Object.defineProperty(this, t2, { configurable: true, writable: true, value: n2 });
-    } });
+  b$4.prototype.isReactComponent = {}, ["componentWillMount", "componentWillReceiveProps", "componentWillUpdate"].forEach(function (t2) {
+    Object.defineProperty(b$4.prototype, t2, {
+      configurable: true, get: function () {
+        return this["UNSAFE_" + t2];
+      }, set: function (n2) {
+        Object.defineProperty(this, t2, { configurable: true, writable: true, value: n2 });
+      }
+    });
   });
   var K = l$5.event;
   function Q() {
@@ -1867,14 +1877,16 @@ html {
   function nn() {
     return this.defaultPrevented;
   }
-  l$5.event = function(n2) {
+  l$5.event = function (n2) {
     return K && (n2 = K(n2)), n2.persist = Q, n2.isPropagationStopped = X$1, n2.isDefaultPrevented = nn, n2.nativeEvent = n2;
   };
-  var tn, en = { enumerable: false, configurable: true, get: function() {
-    return this.class;
-  } }, rn = l$5.vnode;
-  l$5.vnode = function(n2) {
-    "string" == typeof n2.type && function(n3) {
+  var tn, en = {
+    enumerable: false, configurable: true, get: function () {
+      return this.class;
+    }
+  }, rn = l$5.vnode;
+  l$5.vnode = function (n2) {
+    "string" == typeof n2.type && function (n3) {
       var t2 = n3.props, e2 = n3.type, u2 = {};
       for (var o3 in t2) {
         var i2 = t2[o3];
@@ -1883,26 +1895,32 @@ html {
           "defaultValue" === o3 && "value" in t2 && null == t2.value ? o3 = "value" : "download" === o3 && true === i2 ? i2 = "" : "ondoubleclick" === l2 ? o3 = "ondblclick" : "onchange" !== l2 || "input" !== e2 && "textarea" !== e2 || q(t2.type) ? "onfocus" === l2 ? o3 = "onfocusin" : "onblur" === l2 ? o3 = "onfocusout" : Z$1.test(o3) ? o3 = l2 : -1 === e2.indexOf("-") && H$2.test(o3) ? o3 = o3.replace(Y$1, "-$&").toLowerCase() : null === i2 && (i2 = void 0) : l2 = o3 = "oninput", "oninput" === l2 && u2[o3 = l2] && (o3 = "oninputCapture"), u2[o3] = i2;
         }
       }
-      "select" == e2 && u2.multiple && Array.isArray(u2.value) && (u2.value = C$2(t2.children).forEach(function(n4) {
+      "select" == e2 && u2.multiple && Array.isArray(u2.value) && (u2.value = C$2(t2.children).forEach(function (n4) {
         n4.props.selected = -1 != u2.value.indexOf(n4.props.value);
-      })), "select" == e2 && null != u2.defaultValue && (u2.value = C$2(t2.children).forEach(function(n4) {
+      })), "select" == e2 && null != u2.defaultValue && (u2.value = C$2(t2.children).forEach(function (n4) {
         n4.props.selected = u2.multiple ? -1 != u2.defaultValue.indexOf(n4.props.value) : u2.defaultValue == n4.props.value;
       })), t2.class && !t2.className ? (u2.class = t2.class, Object.defineProperty(u2, "className", en)) : (t2.className && !t2.class || t2.class && t2.className) && (u2.class = u2.className = t2.className), n3.props = u2;
     }(n2), n2.$$typeof = B, rn && rn(n2);
   };
   var un = l$5.__r;
-  l$5.__r = function(n2) {
+  l$5.__r = function (n2) {
     un && un(n2), tn = n2.__c;
   };
   var on = l$5.diffed;
-  l$5.diffed = function(n2) {
+  l$5.diffed = function (n2) {
     on && on(n2);
     var t2 = n2.props, e2 = n2.__e;
     null != e2 && "textarea" === n2.type && "value" in t2 && t2.value !== e2.value && (e2.value = null == t2.value ? "" : t2.value), tn = null;
   };
-  var ln = { ReactCurrentDispatcher: { current: { readContext: function(n2) {
-    return tn.__n[n2.__c].props.value;
-  } } } }, cn = "17.0.2";
+  var ln = {
+    ReactCurrentDispatcher: {
+      current: {
+        readContext: function (n2) {
+          return tn.__n[n2.__c].props.value;
+        }
+      }
+    }
+  }, cn = "17.0.2";
   function fn(n2) {
     return y$6.bind(null, n2);
   }
@@ -1921,9 +1939,9 @@ html {
   function dn(n2) {
     return n2 && (n2.base || 1 === n2.nodeType && n2) || null;
   }
-  var pn = function(n2, t2) {
+  var pn = function (n2, t2) {
     return n2(t2);
-  }, mn = function(n2, t2) {
+  }, mn = function (n2, t2) {
     return n2(t2);
   }, yn = k$3;
   function _n(n2) {
@@ -1938,10 +1956,10 @@ html {
   var gn = y$5, Cn = an;
   function En(n2, t2) {
     var e2 = t2(), r2 = h$4({ h: { __: e2, v: t2 } }), u2 = r2[0].h, o3 = r2[1];
-    return y$5(function() {
+    return y$5(function () {
       u2.__ = e2, u2.v = t2, E$1(u2.__, t2()) || o3({ h: u2 });
-    }, [n2, e2, t2]), p$6(function() {
-      return E$1(u2.__, u2.v()) || o3({ h: u2 }), n2(function() {
+    }, [n2, e2, t2]), p$6(function () {
+      return E$1(u2.__, u2.v()) || o3({ h: u2 }), n2(function () {
         E$1(u2.__, u2.v()) || o3({ h: u2 });
       });
     }, [n2]), e2;
@@ -2408,7 +2426,7 @@ html {
     p$6(() => {
       const handlePointerDown = (event) => {
         if (event.target && !isPointerInsideReactTreeRef.current) {
-          let handleAndDispatchPointerDownOutsideEvent = function() {
+          let handleAndDispatchPointerDownOutsideEvent = function () {
             $5cb92bef7577960e$var$handleAndDispatchCustomEvent($5cb92bef7577960e$var$POINTER_DOWN_OUTSIDE, handlePointerDownOutside, eventDetail, {
               discrete: true
             });
@@ -2512,14 +2530,14 @@ html {
     }).current;
     p$6(() => {
       if (trapped) {
-        let handleFocusIn = function(event) {
+        let handleFocusIn = function (event) {
           if (focusScope.paused || !container1) return;
           const target = event.target;
           if (container1.contains(target)) lastFocusedElementRef.current = target;
           else $d3863c46a17e8a28$var$focus(lastFocusedElementRef.current, {
             select: true
           });
-        }, handleFocusOut = function(event) {
+        }, handleFocusOut = function (event) {
           if (focusScope.paused || !container1) return;
           if (!container1.contains(event.relatedTarget)) $d3863c46a17e8a28$var$focus(lastFocusedElementRef.current, {
             select: true
@@ -2835,7 +2853,7 @@ html {
     element2.style.cssText = "outline: none; opacity: 0; position: fixed; pointer-events: none";
     return element2;
   }
-  var __assign = function() {
+  var __assign = function () {
     __assign = Object.assign || function __assign2(t2) {
       for (var s2, i2 = 1, n2 = arguments.length; i2 < n2; i2++) {
         s2 = arguments[i2];
@@ -2878,7 +2896,7 @@ html {
     return ref;
   }
   function useCallbackRef(initialValue, callback) {
-    var ref = h$4(function() {
+    var ref = h$4(function () {
       return {
         // value
         value: initialValue,
@@ -2903,8 +2921,8 @@ html {
     return ref.facade;
   }
   function useMergeRefs(refs, defaultValue) {
-    return useCallbackRef(null, function(newValue) {
-      return refs.forEach(function(ref) {
+    return useCallbackRef(null, function (newValue) {
+      return refs.forEach(function (ref) {
         return assignRef(ref, newValue);
       });
     });
@@ -2919,7 +2937,7 @@ html {
     var buffer = [];
     var assigned = false;
     var medium = {
-      read: function() {
+      read: function () {
         if (assigned) {
           throw new Error("Sidecar: could not `read` from an `assigned` medium. `read` could be used only with `useMedium`.");
         }
@@ -2928,16 +2946,16 @@ html {
         }
         return defaults;
       },
-      useMedium: function(data) {
+      useMedium: function (data) {
         var item = middleware(data, assigned);
         buffer.push(item);
-        return function() {
-          buffer = buffer.filter(function(x2) {
+        return function () {
+          buffer = buffer.filter(function (x2) {
             return x2 !== item;
           });
         };
       },
-      assignSyncMedium: function(cb) {
+      assignSyncMedium: function (cb) {
         assigned = true;
         while (buffer.length) {
           var cbs = buffer;
@@ -2945,15 +2963,15 @@ html {
           cbs.forEach(cb);
         }
         buffer = {
-          push: function(x2) {
+          push: function (x2) {
             return cb(x2);
           },
-          filter: function() {
+          filter: function () {
             return buffer;
           }
         };
       },
-      assignMedium: function(cb) {
+      assignMedium: function (cb) {
         assigned = true;
         var pendingQueue = [];
         if (buffer.length) {
@@ -2962,21 +2980,21 @@ html {
           cbs.forEach(cb);
           pendingQueue = buffer;
         }
-        var executeQueue = function() {
+        var executeQueue = function () {
           var cbs2 = pendingQueue;
           pendingQueue = [];
           cbs2.forEach(cb);
         };
-        var cycle = function() {
+        var cycle = function () {
           return Promise.resolve().then(executeQueue);
         };
         cycle();
         buffer = {
-          push: function(x2) {
+          push: function (x2) {
             pendingQueue.push(x2);
             cycle();
           },
-          filter: function(filter) {
+          filter: function (filter) {
             pendingQueue = pendingQueue.filter(filter);
             return buffer;
           }
@@ -2993,7 +3011,7 @@ html {
     medium.options = __assign({ async: true, ssr: false }, options);
     return medium;
   }
-  var SideCar$1 = function(_a) {
+  var SideCar$1 = function (_a) {
     var sideCar = _a.sideCar, rest = __rest(_a, ["sideCar"]);
     if (!sideCar) {
       throw new Error("Sidecar: please provide `sideCar` property to import the right car");
@@ -3010,10 +3028,10 @@ html {
     return SideCar$1;
   }
   var effectCar = createSidecarMedium();
-  var nothing = function() {
+  var nothing = function () {
     return;
   };
-  var RemoveScroll = k$1(function(props, parentRef) {
+  var RemoveScroll = k$1(function (props, parentRef) {
     var ref = _(null);
     var _a = h$4({
       onScrollCapture: nothing,
@@ -3040,7 +3058,7 @@ html {
     fullWidth: fullWidthClassName,
     zeroRight: zeroRightClassName
   };
-  var getNonce = function() {
+  var getNonce = function () {
     if (typeof __webpack_nonce__ !== "undefined") {
       return __webpack_nonce__;
     }
@@ -3068,11 +3086,11 @@ html {
     var head2 = document.head || document.getElementsByTagName("head")[0];
     head2.appendChild(tag);
   }
-  var stylesheetSingleton = function() {
+  var stylesheetSingleton = function () {
     var counter = 0;
     var stylesheet = null;
     return {
-      add: function(style) {
+      add: function (style) {
         if (counter == 0) {
           if (stylesheet = makeStyleTag()) {
             injectStyles(stylesheet, style);
@@ -3081,7 +3099,7 @@ html {
         }
         counter++;
       },
-      remove: function() {
+      remove: function () {
         counter--;
         if (!counter && stylesheet) {
           stylesheet.parentNode && stylesheet.parentNode.removeChild(stylesheet);
@@ -3090,20 +3108,20 @@ html {
       }
     };
   };
-  var styleHookSingleton = function() {
+  var styleHookSingleton = function () {
     var sheet = stylesheetSingleton();
-    return function(styles, isDynamic) {
-      p$6(function() {
+    return function (styles, isDynamic) {
+      p$6(function () {
         sheet.add(styles);
-        return function() {
+        return function () {
           sheet.remove();
         };
       }, [styles && isDynamic]);
     };
   };
-  var styleSingleton = function() {
+  var styleSingleton = function () {
     var useStyle = styleHookSingleton();
-    var Sheet = function(_a) {
+    var Sheet = function (_a) {
       var styles = _a.styles, dynamic = _a.dynamic;
       useStyle(styles, dynamic);
       return null;
@@ -3116,17 +3134,17 @@ html {
     right: 0,
     gap: 0
   };
-  var parse$1 = function(x2) {
+  var parse$1 = function (x2) {
     return parseInt(x2 || "", 10) || 0;
   };
-  var getOffset = function(gapMode) {
+  var getOffset = function (gapMode) {
     var cs = window.getComputedStyle(document.body);
     var left = cs[gapMode === "padding" ? "paddingLeft" : "marginLeft"];
     var top = cs[gapMode === "padding" ? "paddingTop" : "marginTop"];
     var right = cs[gapMode === "padding" ? "paddingRight" : "marginRight"];
     return [parse$1(left), parse$1(top), parse$1(right)];
   };
-  var getGapWidth = function(gapMode) {
+  var getGapWidth = function (gapMode) {
     if (gapMode === void 0) {
       gapMode = "margin";
     }
@@ -3144,7 +3162,7 @@ html {
     };
   };
   var Style = styleSingleton();
-  var getStyles = function(_a, allowRelative, gapMode, important) {
+  var getStyles = function (_a, allowRelative, gapMode, important) {
     var left = _a.left, top = _a.top, right = _a.right, gap = _a.gap;
     if (gapMode === void 0) {
       gapMode = "margin";
@@ -3155,9 +3173,9 @@ html {
       gapMode === "padding" && "padding-right: ".concat(gap, "px ").concat(important, ";")
     ].filter(Boolean).join(""), "\n  }\n  \n  .").concat(zeroRightClassName, " {\n    right: ").concat(gap, "px ").concat(important, ";\n  }\n  \n  .").concat(fullWidthClassName, " {\n    margin-right: ").concat(gap, "px ").concat(important, ";\n  }\n  \n  .").concat(zeroRightClassName, " .").concat(zeroRightClassName, " {\n    right: 0 ").concat(important, ";\n  }\n  \n  .").concat(fullWidthClassName, " .").concat(fullWidthClassName, " {\n    margin-right: 0 ").concat(important, ";\n  }\n  \n  body {\n    ").concat(removedBarSizeVariable, ": ").concat(gap, "px;\n  }\n");
   };
-  var RemoveScrollBar = function(props) {
+  var RemoveScrollBar = function (props) {
     var noRelative = props.noRelative, noImportant = props.noImportant, _a = props.gapMode, gapMode = _a === void 0 ? "margin" : _a;
-    var gap = F$1(function() {
+    var gap = F$1(function () {
       return getGapWidth(gapMode);
     }, [gapMode]);
     return y$6(Style, { styles: getStyles(gap, !noRelative, gapMode, !noImportant ? "!important" : "") });
@@ -3166,7 +3184,7 @@ html {
   if (typeof window !== "undefined") {
     try {
       var options = Object.defineProperty({}, "passive", {
-        get: function() {
+        get: function () {
           passiveSupported = true;
           return true;
         }
@@ -3178,10 +3196,10 @@ html {
     }
   }
   var nonPassive = passiveSupported ? { passive: false } : false;
-  var alwaysContainsScroll = function(node2) {
+  var alwaysContainsScroll = function (node2) {
     return node2.tagName === "TEXTAREA";
   };
-  var elementCanBeScrolled = function(node2, overflow) {
+  var elementCanBeScrolled = function (node2, overflow) {
     var styles = window.getComputedStyle(node2);
     return (
       // not-not-scrollable
@@ -3189,13 +3207,13 @@ html {
       !(styles.overflowY === styles.overflowX && !alwaysContainsScroll(node2) && styles[overflow] === "visible")
     );
   };
-  var elementCouldBeVScrolled = function(node2) {
+  var elementCouldBeVScrolled = function (node2) {
     return elementCanBeScrolled(node2, "overflowY");
   };
-  var elementCouldBeHScrolled = function(node2) {
+  var elementCouldBeHScrolled = function (node2) {
     return elementCanBeScrolled(node2, "overflowX");
   };
-  var locationCouldBeScrolled = function(axis, node2) {
+  var locationCouldBeScrolled = function (axis, node2) {
     var current = node2;
     do {
       if (typeof ShadowRoot !== "undefined" && current instanceof ShadowRoot) {
@@ -3212,7 +3230,7 @@ html {
     } while (current && current !== document.body);
     return false;
   };
-  var getVScrollVariables = function(_a) {
+  var getVScrollVariables = function (_a) {
     var scrollTop = _a.scrollTop, scrollHeight = _a.scrollHeight, clientHeight = _a.clientHeight;
     return [
       scrollTop,
@@ -3220,7 +3238,7 @@ html {
       clientHeight
     ];
   };
-  var getHScrollVariables = function(_a) {
+  var getHScrollVariables = function (_a) {
     var scrollLeft = _a.scrollLeft, scrollWidth = _a.scrollWidth, clientWidth = _a.clientWidth;
     return [
       scrollLeft,
@@ -3228,16 +3246,16 @@ html {
       clientWidth
     ];
   };
-  var elementCouldBeScrolled = function(axis, node2) {
+  var elementCouldBeScrolled = function (axis, node2) {
     return axis === "v" ? elementCouldBeVScrolled(node2) : elementCouldBeHScrolled(node2);
   };
-  var getScrollVariables = function(axis, node2) {
+  var getScrollVariables = function (axis, node2) {
     return axis === "v" ? getVScrollVariables(node2) : getHScrollVariables(node2);
   };
-  var getDirectionFactor = function(axis, direction) {
+  var getDirectionFactor = function (axis, direction) {
     return axis === "h" && direction === "rtl" ? -1 : 1;
   };
-  var handleScroll = function(axis, endTarget, event, sourceDelta, noOverscroll) {
+  var handleScroll = function (axis, endTarget, event, sourceDelta, noOverscroll) {
     var directionFactor = getDirectionFactor(axis, window.getComputedStyle(endTarget).direction);
     var delta = directionFactor * sourceDelta;
     var target = event.target;
@@ -3268,19 +3286,19 @@ html {
     }
     return shouldCancelScroll;
   };
-  var getTouchXY = function(event) {
+  var getTouchXY = function (event) {
     return "changedTouches" in event ? [event.changedTouches[0].clientX, event.changedTouches[0].clientY] : [0, 0];
   };
-  var getDeltaXY = function(event) {
+  var getDeltaXY = function (event) {
     return [event.deltaX, event.deltaY];
   };
-  var extractRef = function(ref) {
+  var extractRef = function (ref) {
     return ref && "current" in ref ? ref.current : ref;
   };
-  var deltaCompare = function(x2, y2) {
+  var deltaCompare = function (x2, y2) {
     return x2[0] === y2[0] && x2[1] === y2[1];
   };
-  var generateStyle = function(id) {
+  var generateStyle = function (id) {
     return "\n  .block-interactivity-".concat(id, " {pointer-events: none;}\n  .allow-interactivity-").concat(id, " {pointer-events: all;}\n");
   };
   var idCounter = 0;
@@ -3290,30 +3308,30 @@ html {
     var touchStartRef = _([0, 0]);
     var activeAxis = _();
     var id = h$4(idCounter++)[0];
-    var Style2 = h$4(function() {
+    var Style2 = h$4(function () {
       return styleSingleton();
     })[0];
     var lastProps = _(props);
-    p$6(function() {
+    p$6(function () {
       lastProps.current = props;
     }, [props]);
-    p$6(function() {
+    p$6(function () {
       if (props.inert) {
         document.body.classList.add("block-interactivity-".concat(id));
         var allow_1 = __spreadArray([props.lockRef.current], (props.shards || []).map(extractRef)).filter(Boolean);
-        allow_1.forEach(function(el) {
+        allow_1.forEach(function (el) {
           return el.classList.add("allow-interactivity-".concat(id));
         });
-        return function() {
+        return function () {
           document.body.classList.remove("block-interactivity-".concat(id));
-          allow_1.forEach(function(el) {
+          allow_1.forEach(function (el) {
             return el.classList.remove("allow-interactivity-".concat(id));
           });
         };
       }
       return;
     }, [props.inert, props.lockRef.current, props.shards]);
-    var shouldCancelEvent = T$4(function(event, parent) {
+    var shouldCancelEvent = T$4(function (event, parent) {
       if ("touches" in event && event.touches.length === 2) {
         return !lastProps.current.allowPinchZoom;
       }
@@ -3349,13 +3367,13 @@ html {
       var cancelingAxis = activeAxis.current || currentAxis;
       return handleScroll(cancelingAxis, parent, event, cancelingAxis === "h" ? deltaX : deltaY, true);
     }, []);
-    var shouldPrevent = T$4(function(_event) {
+    var shouldPrevent = T$4(function (_event) {
       var event = _event;
       if (!lockStack.length || lockStack[lockStack.length - 1] !== Style2) {
         return;
       }
       var delta = "deltaY" in event ? getDeltaXY(event) : getTouchXY(event);
-      var sourceEvent = shouldPreventQueue.current.filter(function(e2) {
+      var sourceEvent = shouldPreventQueue.current.filter(function (e2) {
         return e2.name === event.type && e2.target === event.target && deltaCompare(e2.delta, delta);
       })[0];
       if (sourceEvent && sourceEvent.should) {
@@ -3365,7 +3383,7 @@ html {
         return;
       }
       if (!sourceEvent) {
-        var shardNodes = (lastProps.current.shards || []).map(extractRef).filter(Boolean).filter(function(node2) {
+        var shardNodes = (lastProps.current.shards || []).map(extractRef).filter(Boolean).filter(function (node2) {
           return node2.contains(event.target);
         });
         var shouldStop = shardNodes.length > 0 ? shouldCancelEvent(event, shardNodes[0]) : !lastProps.current.noIsolation;
@@ -3376,26 +3394,26 @@ html {
         }
       }
     }, []);
-    var shouldCancel = T$4(function(name, delta, target, should) {
+    var shouldCancel = T$4(function (name, delta, target, should) {
       var event = { name, delta, target, should };
       shouldPreventQueue.current.push(event);
-      setTimeout(function() {
-        shouldPreventQueue.current = shouldPreventQueue.current.filter(function(e2) {
+      setTimeout(function () {
+        shouldPreventQueue.current = shouldPreventQueue.current.filter(function (e2) {
           return e2 !== event;
         });
       }, 1);
     }, []);
-    var scrollTouchStart = T$4(function(event) {
+    var scrollTouchStart = T$4(function (event) {
       touchStartRef.current = getTouchXY(event);
       activeAxis.current = void 0;
     }, []);
-    var scrollWheel = T$4(function(event) {
+    var scrollWheel = T$4(function (event) {
       shouldCancel(event.type, getDeltaXY(event), event.target, shouldCancelEvent(event, props.lockRef.current));
     }, []);
-    var scrollTouchMove = T$4(function(event) {
+    var scrollTouchMove = T$4(function (event) {
       shouldCancel(event.type, getTouchXY(event), event.target, shouldCancelEvent(event, props.lockRef.current));
     }, []);
-    p$6(function() {
+    p$6(function () {
       lockStack.push(Style2);
       props.setCallbacks({
         onScrollCapture: scrollWheel,
@@ -3405,8 +3423,8 @@ html {
       document.addEventListener("wheel", shouldPrevent, nonPassive);
       document.addEventListener("touchmove", shouldPrevent, nonPassive);
       document.addEventListener("touchstart", scrollTouchStart, nonPassive);
-      return function() {
-        lockStack = lockStack.filter(function(inst) {
+      return function () {
+        lockStack = lockStack.filter(function (inst) {
           return inst !== Style2;
         });
         document.removeEventListener("wheel", shouldPrevent, nonPassive);
@@ -3423,11 +3441,11 @@ html {
     );
   }
   const SideCar = exportSidecar(effectCar, RemoveScrollSideCar);
-  var ReactRemoveScroll = k$1(function(props, ref) {
+  var ReactRemoveScroll = k$1(function (props, ref) {
     return y$6(RemoveScroll, __assign({}, props, { ref, sideCar: SideCar }));
   });
   ReactRemoveScroll.classNames = RemoveScroll.classNames;
-  var getDefaultParent = function(originalTarget) {
+  var getDefaultParent = function (originalTarget) {
     if (typeof document === "undefined") {
       return null;
     }
@@ -3438,11 +3456,11 @@ html {
   var uncontrolledNodes = /* @__PURE__ */ new WeakMap();
   var markerMap = {};
   var lockCount = 0;
-  var unwrapHost = function(node2) {
+  var unwrapHost = function (node2) {
     return node2 && (node2.host || unwrapHost(node2.parentNode));
   };
-  var correctTargets = function(parent, targets) {
-    return targets.map(function(target) {
+  var correctTargets = function (parent, targets) {
+    return targets.map(function (target) {
       if (parent.contains(target)) {
         return target;
       }
@@ -3452,11 +3470,11 @@ html {
       }
       console.error("aria-hidden", target, "in not contained inside", parent, ". Doing nothing");
       return null;
-    }).filter(function(x2) {
+    }).filter(function (x2) {
       return Boolean(x2);
     });
   };
-  var applyAttributeToOthers = function(originalTarget, parentNode, markerName, controlAttribute) {
+  var applyAttributeToOthers = function (originalTarget, parentNode, markerName, controlAttribute) {
     var targets = correctTargets(parentNode, Array.isArray(originalTarget) ? originalTarget : [originalTarget]);
     if (!markerMap[markerName]) {
       markerMap[markerName] = /* @__PURE__ */ new WeakMap();
@@ -3465,7 +3483,7 @@ html {
     var hiddenNodes = [];
     var elementsToKeep = /* @__PURE__ */ new Set();
     var elementsToStop = new Set(targets);
-    var keep = function(el) {
+    var keep = function (el) {
       if (!el || elementsToKeep.has(el)) {
         return;
       }
@@ -3473,11 +3491,11 @@ html {
       keep(el.parentNode);
     };
     targets.forEach(keep);
-    var deep = function(parent) {
+    var deep = function (parent) {
       if (!parent || elementsToStop.has(parent)) {
         return;
       }
-      Array.prototype.forEach.call(parent.children, function(node2) {
+      Array.prototype.forEach.call(parent.children, function (node2) {
         if (elementsToKeep.has(node2)) {
           deep(node2);
         } else {
@@ -3503,8 +3521,8 @@ html {
     deep(parentNode);
     elementsToKeep.clear();
     lockCount++;
-    return function() {
-      hiddenNodes.forEach(function(node2) {
+    return function () {
+      hiddenNodes.forEach(function (node2) {
         var counterValue = counterMap.get(node2) - 1;
         var markerValue = markerCounter.get(node2) - 1;
         counterMap.set(node2, counterValue);
@@ -3528,14 +3546,14 @@ html {
       }
     };
   };
-  var hideOthers = function(originalTarget, parentNode, markerName) {
+  var hideOthers = function (originalTarget, parentNode, markerName) {
     if (markerName === void 0) {
       markerName = "data-aria-hidden";
     }
     var targets = Array.from(Array.isArray(originalTarget) ? originalTarget : [originalTarget]);
     var activeParentNode = getDefaultParent(originalTarget);
     if (!activeParentNode) {
-      return function() {
+      return function () {
         return null;
       };
     }
@@ -3628,20 +3646,20 @@ html {
       // Make sure `Content` is scrollable even when it doesn't live inside `RemoveScroll`
       // ie. when `Overlay` and `Content` are siblings
       /* @__PURE__ */ y$6(ReactRemoveScroll, {
-        as: $5e63c961fc1ce211$export$8c6ed5c666ac1360,
-        allowPinchZoom: true,
-        shards: [
-          context.contentRef
-        ]
-      }, /* @__PURE__ */ y$6($8927f6f2acc4f386$export$250ffa63cdc0d034.div, _extends({
-        "data-state": $5d3850c4d0b4e6c7$var$getState(context.open)
-      }, overlayProps, {
-        ref: forwardedRef,
-        style: {
-          pointerEvents: "auto",
-          ...overlayProps.style
-        }
-      })))
+      as: $5e63c961fc1ce211$export$8c6ed5c666ac1360,
+      allowPinchZoom: true,
+      shards: [
+        context.contentRef
+      ]
+    }, /* @__PURE__ */ y$6($8927f6f2acc4f386$export$250ffa63cdc0d034.div, _extends({
+      "data-state": $5d3850c4d0b4e6c7$var$getState(context.open)
+    }, overlayProps, {
+      ref: forwardedRef,
+      style: {
+        pointerEvents: "auto",
+        ...overlayProps.style
+      }
+    })))
     );
   });
   const $5d3850c4d0b4e6c7$var$CONTENT_NAME = "DialogContent";
@@ -3821,7 +3839,7 @@ html {
     return { x: f2, y: u2, placement: m2, strategy: o3, middlewareData: g2 };
   };
   function a$2(t2) {
-    return "number" != typeof t2 ? function(t3) {
+    return "number" != typeof t2 ? function (t3) {
       return { top: 0, right: 0, bottom: 0, left: 0, ...t3 };
     }(t2) : { top: t2, right: t2, bottom: t2, left: t2 };
   }
@@ -3838,15 +3856,17 @@ html {
   function u$4(t2, e2, n2) {
     return f$2(t2, c$3(e2, n2));
   }
-  const m$1 = (t2) => ({ name: "arrow", options: t2, async fn(i2) {
-    const { element: o3, padding: l2 = 0 } = null != t2 ? t2 : {}, { x: s2, y: c2, placement: f2, rects: m2, platform: g2 } = i2;
-    if (null == o3) return {};
-    const d2 = a$2(l2), p2 = { x: s2, y: c2 }, h2 = n$1(f2), y2 = e$1(f2), x2 = r$3(h2), w2 = await g2.getDimensions(o3), v2 = "y" === h2 ? "top" : "left", b2 = "y" === h2 ? "bottom" : "right", R2 = m2.reference[x2] + m2.reference[h2] - p2[h2] - m2.floating[x2], A2 = p2[h2] - m2.reference[h2], P2 = await (null == g2.getOffsetParent ? void 0 : g2.getOffsetParent(o3));
-    let T2 = P2 ? "y" === h2 ? P2.clientHeight || 0 : P2.clientWidth || 0 : 0;
-    0 === T2 && (T2 = m2.floating[x2]);
-    const O2 = R2 / 2 - A2 / 2, D2 = d2[v2], L2 = T2 - w2[x2] - d2[b2], k2 = T2 / 2 - w2[x2] / 2 + O2, E2 = u$4(D2, k2, L2), C2 = ("start" === y2 ? d2[v2] : d2[b2]) > 0 && k2 !== E2 && m2.reference[x2] <= m2.floating[x2];
-    return { [h2]: p2[h2] - (C2 ? k2 < D2 ? D2 - k2 : L2 - k2 : 0), data: { [h2]: E2, centerOffset: k2 - E2 } };
-  } }), g$2 = { left: "right", right: "left", bottom: "top", top: "bottom" };
+  const m$1 = (t2) => ({
+    name: "arrow", options: t2, async fn(i2) {
+      const { element: o3, padding: l2 = 0 } = null != t2 ? t2 : {}, { x: s2, y: c2, placement: f2, rects: m2, platform: g2 } = i2;
+      if (null == o3) return {};
+      const d2 = a$2(l2), p2 = { x: s2, y: c2 }, h2 = n$1(f2), y2 = e$1(f2), x2 = r$3(h2), w2 = await g2.getDimensions(o3), v2 = "y" === h2 ? "top" : "left", b2 = "y" === h2 ? "bottom" : "right", R2 = m2.reference[x2] + m2.reference[h2] - p2[h2] - m2.floating[x2], A2 = p2[h2] - m2.reference[h2], P2 = await (null == g2.getOffsetParent ? void 0 : g2.getOffsetParent(o3));
+      let T2 = P2 ? "y" === h2 ? P2.clientHeight || 0 : P2.clientWidth || 0 : 0;
+      0 === T2 && (T2 = m2.floating[x2]);
+      const O2 = R2 / 2 - A2 / 2, D2 = d2[v2], L2 = T2 - w2[x2] - d2[b2], k2 = T2 / 2 - w2[x2] / 2 + O2, E2 = u$4(D2, k2, L2), C2 = ("start" === y2 ? d2[v2] : d2[b2]) > 0 && k2 !== E2 && m2.reference[x2] <= m2.floating[x2];
+      return { [h2]: p2[h2] - (C2 ? k2 < D2 ? D2 - k2 : L2 - k2 : 0), data: { [h2]: E2, centerOffset: k2 - E2 } };
+    }
+  }), g$2 = { left: "right", right: "left", bottom: "top", top: "bottom" };
   function d$4(t2) {
     return t2.replace(/left|right|bottom|top/g, (t3) => g$2[t3]);
   }
@@ -3862,37 +3882,39 @@ html {
   }
   const x$1 = ["top", "right", "bottom", "left"];
   x$1.reduce((t2, e2) => t2.concat(e2, e2 + "-start", e2 + "-end"), []);
-  const b$2 = function(e2) {
-    return void 0 === e2 && (e2 = {}), { name: "flip", options: e2, async fn(n2) {
-      var r2;
-      const { placement: i2, middlewareData: o3, rects: a2, initialPlacement: l2, platform: c2, elements: f2 } = n2, { mainAxis: u2 = true, crossAxis: m2 = true, fallbackPlacements: g2, fallbackStrategy: h2 = "bestFit", flipAlignment: x2 = true, ...w2 } = e2, v2 = t$1(i2), b2 = g2 || (v2 === l2 || !x2 ? [d$4(l2)] : function(t2) {
-        const e3 = d$4(t2);
-        return [y$4(t2), e3, y$4(e3)];
-      }(l2)), R2 = [l2, ...b2], A2 = await s$5(n2, w2), P2 = [];
-      let T2 = (null == (r2 = o3.flip) ? void 0 : r2.overflows) || [];
-      if (u2 && P2.push(A2[v2]), m2) {
-        const { main: t2, cross: e3 } = p$5(i2, a2, await (null == c2.isRTL ? void 0 : c2.isRTL(f2.floating)));
-        P2.push(A2[t2], A2[e3]);
-      }
-      if (T2 = [...T2, { placement: i2, overflows: P2 }], !P2.every((t2) => t2 <= 0)) {
-        var O2, D2;
-        const t2 = (null != (O2 = null == (D2 = o3.flip) ? void 0 : D2.index) ? O2 : 0) + 1, e3 = R2[t2];
-        if (e3) return { data: { index: t2, overflows: T2 }, reset: { placement: e3 } };
-        let n3 = "bottom";
-        switch (h2) {
-          case "bestFit": {
-            var L2;
-            const t3 = null == (L2 = T2.map((t4) => [t4, t4.overflows.filter((t5) => t5 > 0).reduce((t5, e4) => t5 + e4, 0)]).sort((t4, e4) => t4[1] - e4[1])[0]) ? void 0 : L2[0].placement;
-            t3 && (n3 = t3);
-            break;
-          }
-          case "initialPlacement":
-            n3 = l2;
+  const b$2 = function (e2) {
+    return void 0 === e2 && (e2 = {}), {
+      name: "flip", options: e2, async fn(n2) {
+        var r2;
+        const { placement: i2, middlewareData: o3, rects: a2, initialPlacement: l2, platform: c2, elements: f2 } = n2, { mainAxis: u2 = true, crossAxis: m2 = true, fallbackPlacements: g2, fallbackStrategy: h2 = "bestFit", flipAlignment: x2 = true, ...w2 } = e2, v2 = t$1(i2), b2 = g2 || (v2 === l2 || !x2 ? [d$4(l2)] : function (t2) {
+          const e3 = d$4(t2);
+          return [y$4(t2), e3, y$4(e3)];
+        }(l2)), R2 = [l2, ...b2], A2 = await s$5(n2, w2), P2 = [];
+        let T2 = (null == (r2 = o3.flip) ? void 0 : r2.overflows) || [];
+        if (u2 && P2.push(A2[v2]), m2) {
+          const { main: t2, cross: e3 } = p$5(i2, a2, await (null == c2.isRTL ? void 0 : c2.isRTL(f2.floating)));
+          P2.push(A2[t2], A2[e3]);
         }
-        if (i2 !== n3) return { reset: { placement: n3 } };
+        if (T2 = [...T2, { placement: i2, overflows: P2 }], !P2.every((t2) => t2 <= 0)) {
+          var O2, D2;
+          const t2 = (null != (O2 = null == (D2 = o3.flip) ? void 0 : D2.index) ? O2 : 0) + 1, e3 = R2[t2];
+          if (e3) return { data: { index: t2, overflows: T2 }, reset: { placement: e3 } };
+          let n3 = "bottom";
+          switch (h2) {
+            case "bestFit": {
+              var L2;
+              const t3 = null == (L2 = T2.map((t4) => [t4, t4.overflows.filter((t5) => t5 > 0).reduce((t5, e4) => t5 + e4, 0)]).sort((t4, e4) => t4[1] - e4[1])[0]) ? void 0 : L2[0].placement;
+              t3 && (n3 = t3);
+              break;
+            }
+            case "initialPlacement":
+              n3 = l2;
+          }
+          if (i2 !== n3) return { reset: { placement: n3 } };
+        }
+        return {};
       }
-      return {};
-    } };
+    };
   };
   function R$2(t2, e2) {
     return { top: t2.top - e2.height, right: t2.right - e2.width, bottom: t2.bottom - e2.height, left: t2.left - e2.width };
@@ -3900,81 +3922,93 @@ html {
   function A$1(t2) {
     return x$1.some((e2) => t2[e2] >= 0);
   }
-  const P = function(t2) {
+  const P = function (t2) {
     let { strategy: e2 = "referenceHidden", ...n2 } = void 0 === t2 ? {} : t2;
-    return { name: "hide", async fn(t3) {
-      const { rects: r2 } = t3;
-      switch (e2) {
-        case "referenceHidden": {
-          const e3 = R$2(await s$5(t3, { ...n2, elementContext: "reference" }), r2.reference);
-          return { data: { referenceHiddenOffsets: e3, referenceHidden: A$1(e3) } };
+    return {
+      name: "hide", async fn(t3) {
+        const { rects: r2 } = t3;
+        switch (e2) {
+          case "referenceHidden": {
+            const e3 = R$2(await s$5(t3, { ...n2, elementContext: "reference" }), r2.reference);
+            return { data: { referenceHiddenOffsets: e3, referenceHidden: A$1(e3) } };
+          }
+          case "escaped": {
+            const e3 = R$2(await s$5(t3, { ...n2, altBoundary: true }), r2.floating);
+            return { data: { escapedOffsets: e3, escaped: A$1(e3) } };
+          }
+          default:
+            return {};
         }
-        case "escaped": {
-          const e3 = R$2(await s$5(t3, { ...n2, altBoundary: true }), r2.floating);
-          return { data: { escapedOffsets: e3, escaped: A$1(e3) } };
-        }
-        default:
-          return {};
       }
-    } };
+    };
   };
-  const T$2 = function(r2) {
-    return void 0 === r2 && (r2 = 0), { name: "offset", options: r2, async fn(i2) {
-      const { x: o3, y: a2 } = i2, l2 = await async function(r3, i3) {
-        const { placement: o4, platform: a3, elements: l3 } = r3, s2 = await (null == a3.isRTL ? void 0 : a3.isRTL(l3.floating)), c2 = t$1(o4), f2 = e$1(o4), u2 = "x" === n$1(o4), m2 = ["left", "top"].includes(c2) ? -1 : 1, g2 = s2 && u2 ? -1 : 1, d2 = "function" == typeof i3 ? i3(r3) : i3;
-        let { mainAxis: p2, crossAxis: h2, alignmentAxis: y2 } = "number" == typeof d2 ? { mainAxis: d2, crossAxis: 0, alignmentAxis: null } : { mainAxis: 0, crossAxis: 0, alignmentAxis: null, ...d2 };
-        return f2 && "number" == typeof y2 && (h2 = "end" === f2 ? -1 * y2 : y2), u2 ? { x: h2 * g2, y: p2 * m2 } : { x: p2 * m2, y: h2 * g2 };
-      }(i2, r2);
-      return { x: o3 + l2.x, y: a2 + l2.y, data: l2 };
-    } };
+  const T$2 = function (r2) {
+    return void 0 === r2 && (r2 = 0), {
+      name: "offset", options: r2, async fn(i2) {
+        const { x: o3, y: a2 } = i2, l2 = await async function (r3, i3) {
+          const { placement: o4, platform: a3, elements: l3 } = r3, s2 = await (null == a3.isRTL ? void 0 : a3.isRTL(l3.floating)), c2 = t$1(o4), f2 = e$1(o4), u2 = "x" === n$1(o4), m2 = ["left", "top"].includes(c2) ? -1 : 1, g2 = s2 && u2 ? -1 : 1, d2 = "function" == typeof i3 ? i3(r3) : i3;
+          let { mainAxis: p2, crossAxis: h2, alignmentAxis: y2 } = "number" == typeof d2 ? { mainAxis: d2, crossAxis: 0, alignmentAxis: null } : { mainAxis: 0, crossAxis: 0, alignmentAxis: null, ...d2 };
+          return f2 && "number" == typeof y2 && (h2 = "end" === f2 ? -1 * y2 : y2), u2 ? { x: h2 * g2, y: p2 * m2 } : { x: p2 * m2, y: h2 * g2 };
+        }(i2, r2);
+        return { x: o3 + l2.x, y: a2 + l2.y, data: l2 };
+      }
+    };
   };
   function O(t2) {
     return "x" === t2 ? "y" : "x";
   }
-  const D$2 = function(e2) {
-    return void 0 === e2 && (e2 = {}), { name: "shift", options: e2, async fn(r2) {
-      const { x: i2, y: o3, placement: a2 } = r2, { mainAxis: l2 = true, crossAxis: c2 = false, limiter: f2 = { fn: (t2) => {
-        let { x: e3, y: n2 } = t2;
-        return { x: e3, y: n2 };
-      } }, ...m2 } = e2, g2 = { x: i2, y: o3 }, d2 = await s$5(r2, m2), p2 = n$1(t$1(a2)), h2 = O(p2);
-      let y2 = g2[p2], x2 = g2[h2];
-      if (l2) {
-        const t2 = "y" === p2 ? "bottom" : "right";
-        y2 = u$4(y2 + d2["y" === p2 ? "top" : "left"], y2, y2 - d2[t2]);
+  const D$2 = function (e2) {
+    return void 0 === e2 && (e2 = {}), {
+      name: "shift", options: e2, async fn(r2) {
+        const { x: i2, y: o3, placement: a2 } = r2, { mainAxis: l2 = true, crossAxis: c2 = false, limiter: f2 = {
+          fn: (t2) => {
+            let { x: e3, y: n2 } = t2;
+            return { x: e3, y: n2 };
+          }
+        }, ...m2 } = e2, g2 = { x: i2, y: o3 }, d2 = await s$5(r2, m2), p2 = n$1(t$1(a2)), h2 = O(p2);
+        let y2 = g2[p2], x2 = g2[h2];
+        if (l2) {
+          const t2 = "y" === p2 ? "bottom" : "right";
+          y2 = u$4(y2 + d2["y" === p2 ? "top" : "left"], y2, y2 - d2[t2]);
+        }
+        if (c2) {
+          const t2 = "y" === h2 ? "bottom" : "right";
+          x2 = u$4(x2 + d2["y" === h2 ? "top" : "left"], x2, x2 - d2[t2]);
+        }
+        const w2 = f2.fn({ ...r2, [p2]: y2, [h2]: x2 });
+        return { ...w2, data: { x: w2.x - i2, y: w2.y - o3 } };
       }
-      if (c2) {
-        const t2 = "y" === h2 ? "bottom" : "right";
-        x2 = u$4(x2 + d2["y" === h2 ? "top" : "left"], x2, x2 - d2[t2]);
+    };
+  }, L$1 = function (e2) {
+    return void 0 === e2 && (e2 = {}), {
+      options: e2, fn(r2) {
+        const { x: i2, y: o3, placement: a2, rects: l2, middlewareData: s2 } = r2, { offset: c2 = 0, mainAxis: f2 = true, crossAxis: u2 = true } = e2, m2 = { x: i2, y: o3 }, g2 = n$1(a2), d2 = O(g2);
+        let p2 = m2[g2], h2 = m2[d2];
+        const y2 = "function" == typeof c2 ? c2({ ...l2, placement: a2 }) : c2, x2 = "number" == typeof y2 ? { mainAxis: y2, crossAxis: 0 } : { mainAxis: 0, crossAxis: 0, ...y2 };
+        if (f2) {
+          const t2 = "y" === g2 ? "height" : "width", e3 = l2.reference[g2] - l2.floating[t2] + x2.mainAxis, n2 = l2.reference[g2] + l2.reference[t2] - x2.mainAxis;
+          p2 < e3 ? p2 = e3 : p2 > n2 && (p2 = n2);
+        }
+        if (u2) {
+          var w2, v2, b2, R2;
+          const e3 = "y" === g2 ? "width" : "height", n2 = ["top", "left"].includes(t$1(a2)), r3 = l2.reference[d2] - l2.floating[e3] + (n2 && null != (w2 = null == (v2 = s2.offset) ? void 0 : v2[d2]) ? w2 : 0) + (n2 ? 0 : x2.crossAxis), i3 = l2.reference[d2] + l2.reference[e3] + (n2 ? 0 : null != (b2 = null == (R2 = s2.offset) ? void 0 : R2[d2]) ? b2 : 0) - (n2 ? x2.crossAxis : 0);
+          h2 < r3 ? h2 = r3 : h2 > i3 && (h2 = i3);
+        }
+        return { [g2]: p2, [d2]: h2 };
       }
-      const w2 = f2.fn({ ...r2, [p2]: y2, [h2]: x2 });
-      return { ...w2, data: { x: w2.x - i2, y: w2.y - o3 } };
-    } };
-  }, L$1 = function(e2) {
-    return void 0 === e2 && (e2 = {}), { options: e2, fn(r2) {
-      const { x: i2, y: o3, placement: a2, rects: l2, middlewareData: s2 } = r2, { offset: c2 = 0, mainAxis: f2 = true, crossAxis: u2 = true } = e2, m2 = { x: i2, y: o3 }, g2 = n$1(a2), d2 = O(g2);
-      let p2 = m2[g2], h2 = m2[d2];
-      const y2 = "function" == typeof c2 ? c2({ ...l2, placement: a2 }) : c2, x2 = "number" == typeof y2 ? { mainAxis: y2, crossAxis: 0 } : { mainAxis: 0, crossAxis: 0, ...y2 };
-      if (f2) {
-        const t2 = "y" === g2 ? "height" : "width", e3 = l2.reference[g2] - l2.floating[t2] + x2.mainAxis, n2 = l2.reference[g2] + l2.reference[t2] - x2.mainAxis;
-        p2 < e3 ? p2 = e3 : p2 > n2 && (p2 = n2);
+    };
+  }, k = function (n2) {
+    return void 0 === n2 && (n2 = {}), {
+      name: "size", options: n2, async fn(r2) {
+        const { placement: i2, rects: o3, platform: a2, elements: l2 } = r2, { apply: c2, ...u2 } = n2, m2 = await s$5(r2, u2), g2 = t$1(i2), d2 = e$1(i2);
+        let p2, h2;
+        "top" === g2 || "bottom" === g2 ? (p2 = g2, h2 = d2 === (await (null == a2.isRTL ? void 0 : a2.isRTL(l2.floating)) ? "start" : "end") ? "left" : "right") : (h2 = g2, p2 = "end" === d2 ? "top" : "bottom");
+        const y2 = f$2(m2.left, 0), x2 = f$2(m2.right, 0), w2 = f$2(m2.top, 0), v2 = f$2(m2.bottom, 0), b2 = { availableHeight: o3.floating.height - (["left", "right"].includes(i2) ? 2 * (0 !== w2 || 0 !== v2 ? w2 + v2 : f$2(m2.top, m2.bottom)) : m2[p2]), availableWidth: o3.floating.width - (["top", "bottom"].includes(i2) ? 2 * (0 !== y2 || 0 !== x2 ? y2 + x2 : f$2(m2.left, m2.right)) : m2[h2]) }, R2 = await a2.getDimensions(l2.floating);
+        null == c2 || c2({ ...r2, ...b2 });
+        const A2 = await a2.getDimensions(l2.floating);
+        return R2.width !== A2.width || R2.height !== A2.height ? { reset: { rects: true } } : {};
       }
-      if (u2) {
-        var w2, v2, b2, R2;
-        const e3 = "y" === g2 ? "width" : "height", n2 = ["top", "left"].includes(t$1(a2)), r3 = l2.reference[d2] - l2.floating[e3] + (n2 && null != (w2 = null == (v2 = s2.offset) ? void 0 : v2[d2]) ? w2 : 0) + (n2 ? 0 : x2.crossAxis), i3 = l2.reference[d2] + l2.reference[e3] + (n2 ? 0 : null != (b2 = null == (R2 = s2.offset) ? void 0 : R2[d2]) ? b2 : 0) - (n2 ? x2.crossAxis : 0);
-        h2 < r3 ? h2 = r3 : h2 > i3 && (h2 = i3);
-      }
-      return { [g2]: p2, [d2]: h2 };
-    } };
-  }, k = function(n2) {
-    return void 0 === n2 && (n2 = {}), { name: "size", options: n2, async fn(r2) {
-      const { placement: i2, rects: o3, platform: a2, elements: l2 } = r2, { apply: c2, ...u2 } = n2, m2 = await s$5(r2, u2), g2 = t$1(i2), d2 = e$1(i2);
-      let p2, h2;
-      "top" === g2 || "bottom" === g2 ? (p2 = g2, h2 = d2 === (await (null == a2.isRTL ? void 0 : a2.isRTL(l2.floating)) ? "start" : "end") ? "left" : "right") : (h2 = g2, p2 = "end" === d2 ? "top" : "bottom");
-      const y2 = f$2(m2.left, 0), x2 = f$2(m2.right, 0), w2 = f$2(m2.top, 0), v2 = f$2(m2.bottom, 0), b2 = { availableHeight: o3.floating.height - (["left", "right"].includes(i2) ? 2 * (0 !== w2 || 0 !== v2 ? w2 + v2 : f$2(m2.top, m2.bottom)) : m2[p2]), availableWidth: o3.floating.width - (["top", "bottom"].includes(i2) ? 2 * (0 !== y2 || 0 !== x2 ? y2 + x2 : f$2(m2.left, m2.right)) : m2[h2]) }, R2 = await a2.getDimensions(l2.floating);
-      null == c2 || c2({ ...r2, ...b2 });
-      const A2 = await a2.getDimensions(l2.floating);
-      return R2.width !== A2.width || R2.height !== A2.height ? { reset: { rects: true } } : {};
-    } };
+    };
   };
   function n(t2) {
     return t2 && t2.document && t2.location && t2.alert && t2.setInterval;
@@ -4042,7 +4076,7 @@ html {
     return w$1(v$1(t2)).left + y$3(t2).scrollLeft;
   }
   function b$1(t2, e2, n2) {
-    const o3 = c$2(e2), i2 = v$1(e2), l2 = w$1(t2, o3 && function(t3) {
+    const o3 = c$2(e2), i2 = v$1(e2), l2 = w$1(t2, o3 && function (t3) {
       const e3 = w$1(t3);
       return m(e3.width) !== t3.offsetWidth || m(e3.height) !== t3.offsetHeight;
     }(e2), "fixed" === n2);
@@ -4063,10 +4097,10 @@ html {
   function T$1(t2) {
     const e2 = o$5(t2);
     let n2 = R$1(t2);
-    for (; n2 && d$3(n2) && "static" === getComputedStyle(n2).position; ) n2 = R$1(n2);
-    return n2 && ("html" === r$2(n2) || "body" === r$2(n2) && "static" === getComputedStyle(n2).position && !h$2(n2)) ? e2 : n2 || function(t3) {
+    for (; n2 && d$3(n2) && "static" === getComputedStyle(n2).position;) n2 = R$1(n2);
+    return n2 && ("html" === r$2(n2) || "body" === r$2(n2) && "static" === getComputedStyle(n2).position && !h$2(n2)) ? e2 : n2 || function (t3) {
       let e3 = L(t3);
-      for (s$4(e3) && (e3 = e3.host); c$2(e3) && !["html", "body"].includes(r$2(e3)); ) {
+      for (s$4(e3) && (e3 = e3.host); c$2(e3) && !["html", "body"].includes(r$2(e3));) {
         if (h$2(e3)) return e3;
         e3 = e3.parentNode;
       }
@@ -4089,7 +4123,7 @@ html {
     return r2 ? f2 : f2.concat(H$1(c2));
   }
   function C(e2, n2, r2) {
-    return "viewport" === n2 ? l$3(function(t2, e3) {
+    return "viewport" === n2 ? l$3(function (t2, e3) {
       const n3 = o$5(t2), i2 = v$1(t2), r3 = n3.visualViewport;
       let l2 = i2.clientWidth, c2 = i2.clientHeight, f2 = 0, s2 = 0;
       if (r3) {
@@ -4098,10 +4132,10 @@ html {
         (t3 || !t3 && "fixed" === e3) && (f2 = r3.offsetLeft, s2 = r3.offsetTop);
       }
       return { width: l2, height: c2, x: f2, y: s2 };
-    }(e2, r2)) : f$1(n2) ? function(t2, e3) {
+    }(e2, r2)) : f$1(n2) ? function (t2, e3) {
       const n3 = w$1(t2, false, "fixed" === e3), o3 = n3.top + t2.clientTop, i2 = n3.left + t2.clientLeft;
       return { top: o3, left: i2, x: i2, y: o3, right: i2 + t2.clientWidth, bottom: o3 + t2.clientHeight, width: t2.clientWidth, height: t2.clientHeight };
-    }(n2, r2) : l$3(function(t2) {
+    }(n2, r2) : l$3(function (t2) {
       var e3;
       const n3 = v$1(t2), o3 = y$3(t2), r3 = null == (e3 = t2.ownerDocument) ? void 0 : e3.body, l2 = p$4(n3.scrollWidth, n3.clientWidth, r3 ? r3.scrollWidth : 0, r3 ? r3.clientWidth : 0), c2 = p$4(n3.scrollHeight, n3.clientHeight, r3 ? r3.scrollHeight : 0, r3 ? r3.clientHeight : 0);
       let f2 = -o3.scrollLeft + x(t2);
@@ -4111,7 +4145,7 @@ html {
   }
   function S$2(t2) {
     const e2 = H$1(t2), n2 = ["absolute", "fixed"].includes(i$3(t2).position) && c$2(t2) ? T$1(t2) : t2;
-    return f$1(n2) ? e2.filter((t3) => f$1(t3) && function(t4, e3) {
+    return f$1(n2) ? e2.filter((t3) => f$1(t3) && function (t4, e3) {
       const n3 = null == e3.getRootNode ? void 0 : e3.getRootNode();
       if (t4.contains(e3)) return true;
       if (n3 && s$4(n3)) {
@@ -4124,28 +4158,30 @@ html {
       return false;
     }(t3, n2) && "body" !== r$2(t3)) : [];
   }
-  const D$1 = { getClippingRect: function(t2) {
-    let { element: e2, boundary: n2, rootBoundary: o3, strategy: i2 } = t2;
-    const r2 = [..."clippingAncestors" === n2 ? S$2(e2) : [].concat(n2), o3], l2 = r2[0], c2 = r2.reduce((t3, n3) => {
-      const o4 = C(e2, n3, i2);
-      return t3.top = p$4(o4.top, t3.top), t3.right = g$1(o4.right, t3.right), t3.bottom = g$1(o4.bottom, t3.bottom), t3.left = p$4(o4.left, t3.left), t3;
-    }, C(e2, l2, i2));
-    return { width: c2.right - c2.left, height: c2.bottom - c2.top, x: c2.left, y: c2.top };
-  }, convertOffsetParentRelativeRectToViewportRelativeRect: function(t2) {
-    let { rect: e2, offsetParent: n2, strategy: o3 } = t2;
-    const i2 = c$2(n2), l2 = v$1(n2);
-    if (n2 === l2) return e2;
-    let f2 = { scrollLeft: 0, scrollTop: 0 };
-    const s2 = { x: 0, y: 0 };
-    if ((i2 || !i2 && "fixed" !== o3) && (("body" !== r$2(n2) || u$3(l2)) && (f2 = y$3(n2)), c$2(n2))) {
-      const t3 = w$1(n2, true);
-      s2.x = t3.x + n2.clientLeft, s2.y = t3.y + n2.clientTop;
-    }
-    return { ...e2, x: e2.x - f2.scrollLeft + s2.x, y: e2.y - f2.scrollTop + s2.y };
-  }, isElement: f$1, getDimensions: W, getOffsetParent: T$1, getDocumentElement: v$1, getElementRects: (t2) => {
-    let { reference: e2, floating: n2, strategy: o3 } = t2;
-    return { reference: b$1(e2, T$1(n2), o3), floating: { ...W(n2), x: 0, y: 0 } };
-  }, getClientRects: (t2) => Array.from(t2.getClientRects()), isRTL: (t2) => "rtl" === i$3(t2).direction };
+  const D$1 = {
+    getClippingRect: function (t2) {
+      let { element: e2, boundary: n2, rootBoundary: o3, strategy: i2 } = t2;
+      const r2 = [..."clippingAncestors" === n2 ? S$2(e2) : [].concat(n2), o3], l2 = r2[0], c2 = r2.reduce((t3, n3) => {
+        const o4 = C(e2, n3, i2);
+        return t3.top = p$4(o4.top, t3.top), t3.right = g$1(o4.right, t3.right), t3.bottom = g$1(o4.bottom, t3.bottom), t3.left = p$4(o4.left, t3.left), t3;
+      }, C(e2, l2, i2));
+      return { width: c2.right - c2.left, height: c2.bottom - c2.top, x: c2.left, y: c2.top };
+    }, convertOffsetParentRelativeRectToViewportRelativeRect: function (t2) {
+      let { rect: e2, offsetParent: n2, strategy: o3 } = t2;
+      const i2 = c$2(n2), l2 = v$1(n2);
+      if (n2 === l2) return e2;
+      let f2 = { scrollLeft: 0, scrollTop: 0 };
+      const s2 = { x: 0, y: 0 };
+      if ((i2 || !i2 && "fixed" !== o3) && (("body" !== r$2(n2) || u$3(l2)) && (f2 = y$3(n2)), c$2(n2))) {
+        const t3 = w$1(n2, true);
+        s2.x = t3.x + n2.clientLeft, s2.y = t3.y + n2.clientTop;
+      }
+      return { ...e2, x: e2.x - f2.scrollLeft + s2.x, y: e2.y - f2.scrollTop + s2.y };
+    }, isElement: f$1, getDimensions: W, getOffsetParent: T$1, getDocumentElement: v$1, getElementRects: (t2) => {
+      let { reference: e2, floating: n2, strategy: o3 } = t2;
+      return { reference: b$1(e2, T$1(n2), o3), floating: { ...W(n2), x: 0, y: 0 } };
+    }, getClientRects: (t2) => Array.from(t2.getClientRects()), isRTL: (t2) => "rtl" === i$3(t2).direction
+  };
   function N$1(t2, e2, n2, o3) {
     void 0 === o3 && (o3 = {});
     const { ancestorScroll: i2 = true, ancestorResize: r2 = true, elementResize: l2 = true, animationFrame: c2 = false } = o3, s2 = i2 && !c2, u2 = r2 && !c2, d2 = s2 || u2 ? [...f$1(t2) ? H$1(t2) : [], ...H$1(e2)] : [];
@@ -4188,7 +4224,7 @@ html {
       if (Array.isArray(a2)) {
         length = a2.length;
         if (length != b2.length) return false;
-        for (i2 = length; i2-- !== 0; ) {
+        for (i2 = length; i2-- !== 0;) {
           if (!deepEqual(a2[i2], b2[i2])) {
             return false;
           }
@@ -4200,12 +4236,12 @@ html {
       if (length !== Object.keys(b2).length) {
         return false;
       }
-      for (i2 = length; i2-- !== 0; ) {
+      for (i2 = length; i2-- !== 0;) {
         if (!Object.prototype.hasOwnProperty.call(b2, keys[i2])) {
           return false;
         }
       }
-      for (i2 = length; i2-- !== 0; ) {
+      for (i2 = length; i2-- !== 0;) {
         const key2 = keys[i2];
         if (key2 === "_owner" && a2.$$typeof) {
           continue;
@@ -4612,34 +4648,34 @@ html {
       // doesn't report size as we'd expect on SVG elements.
       // it reports their bounding box which is effectively the largest path inside the SVG.
       /* @__PURE__ */ y$6("span", {
-        ref: contentContext.onArrowChange,
-        style: {
-          position: "absolute",
-          left: contentContext.arrowX,
-          top: contentContext.arrowY,
-          [baseSide]: 0,
-          transformOrigin: {
-            top: "",
-            right: "0 0",
-            bottom: "center 0",
-            left: "100% 0"
-          }[contentContext.placedSide],
-          transform: {
-            top: "translateY(100%)",
-            right: "translateY(50%) rotate(90deg) translateX(-50%)",
-            bottom: `rotate(180deg)`,
-            left: "translateY(50%) rotate(-90deg) translateX(50%)"
-          }[contentContext.placedSide],
-          visibility: contentContext.shouldHideArrow ? "hidden" : void 0
-        }
-      }, /* @__PURE__ */ y$6($7e8f5cd07187803e$export$be92b6f5f03c0fe9, _extends({}, arrowProps, {
-        ref: forwardedRef,
-        style: {
-          ...arrowProps.style,
-          // ensures the element can be measured correctly (mostly for if SVG)
-          display: "block"
-        }
-      })))
+      ref: contentContext.onArrowChange,
+      style: {
+        position: "absolute",
+        left: contentContext.arrowX,
+        top: contentContext.arrowY,
+        [baseSide]: 0,
+        transformOrigin: {
+          top: "",
+          right: "0 0",
+          bottom: "center 0",
+          left: "100% 0"
+        }[contentContext.placedSide],
+        transform: {
+          top: "translateY(100%)",
+          right: "translateY(50%) rotate(90deg) translateX(-50%)",
+          bottom: `rotate(180deg)`,
+          left: "translateY(50%) rotate(-90deg) translateX(50%)"
+        }[contentContext.placedSide],
+        visibility: contentContext.shouldHideArrow ? "hidden" : void 0
+      }
+    }, /* @__PURE__ */ y$6($7e8f5cd07187803e$export$be92b6f5f03c0fe9, _extends({}, arrowProps, {
+      ref: forwardedRef,
+      style: {
+        ...arrowProps.style,
+        // ensures the element can be measured correctly (mostly for if SVG)
+        display: "block"
+      }
+    })))
     );
   });
   function $cf1ac5d9fe0e8206$var$isDefined(value) {
@@ -4933,9 +4969,9 @@ html {
   const $cef8881cdc69808e$export$21b07c8f274aebd5 = $cef8881cdc69808e$export$b9744d3e7456d806;
   function _typeof(obj) {
     "@babel/helpers - typeof";
-    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj2) {
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj2) {
       return typeof obj2;
-    } : function(obj2) {
+    } : function (obj2) {
       return obj2 && "function" == typeof Symbol && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
     }, _typeof(obj);
   }
@@ -4987,12 +5023,12 @@ html {
     warn.apply(void 0, args);
   }
   var loadedClb = function loadedClb2(i18n, cb) {
-    return function() {
+    return function () {
       if (i18n.isInitialized) {
         cb();
       } else {
         var initialized = function initialized2() {
-          setTimeout(function() {
+          setTimeout(function () {
             i18n.off("initialized", initialized2);
           }, 0);
           cb();
@@ -5006,7 +5042,7 @@ html {
   }
   function loadLanguages(i18n, lng, ns, cb) {
     if (typeof ns === "string") ns = [ns];
-    ns.forEach(function(n2) {
+    ns.forEach(function (n2) {
       if (i18n.options.ns.indexOf(n2) < 0) i18n.options.ns.push(n2);
     });
     i18n.loadLanguages(lng, loadedClb(i18n, cb));
@@ -5078,7 +5114,7 @@ html {
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
       if (enumerableOnly) {
-        symbols = symbols.filter(function(sym) {
+        symbols = symbols.filter(function (sym) {
           return Object.getOwnPropertyDescriptor(object, sym).enumerable;
         });
       }
@@ -5090,13 +5126,13 @@ html {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = arguments[i2] != null ? arguments[i2] : {};
       if (i2 % 2) {
-        ownKeys$8(Object(source), true).forEach(function(key2) {
+        ownKeys$8(Object(source), true).forEach(function (key2) {
           _defineProperty(target, key2, source[key2]);
         });
       } else if (Object.getOwnPropertyDescriptors) {
         Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
       } else {
-        ownKeys$8(Object(source)).forEach(function(key2) {
+        ownKeys$8(Object(source)).forEach(function (key2) {
           Object.defineProperty(target, key2, Object.getOwnPropertyDescriptor(source, key2));
         });
       }
@@ -5157,7 +5193,7 @@ html {
     }
   };
   var I18nContext = G$1();
-  var ReportNamespaces = function() {
+  var ReportNamespaces = function () {
     function ReportNamespaces2() {
       _classCallCheck(this, ReportNamespaces2);
       this.usedNamespaces = {};
@@ -5166,7 +5202,7 @@ html {
       key: "addUsedNamespaces",
       value: function addUsedNamespaces(namespaces) {
         var _this = this;
-        namespaces.forEach(function(ns) {
+        namespaces.forEach(function (ns) {
           if (!_this.usedNamespaces[ns]) _this.usedNamespaces[ns] = true;
         });
       }
@@ -5186,8 +5222,8 @@ html {
     if (null != _i) {
       var _s, _e, _x, _r, _arr = [], _n2 = true, _d = false;
       try {
-        if (_x = (_i = _i.call(arr)).next, 0 === i2) ;
-        else for (; !(_n2 = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i2); _n2 = true) ;
+        if (_x = (_i = _i.call(arr)).next, 0 === i2);
+        else for (; !(_n2 = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i2); _n2 = true);
       } catch (err) {
         _d = true, _e = err;
       } finally {
@@ -5224,7 +5260,7 @@ html {
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
       if (enumerableOnly) {
-        symbols = symbols.filter(function(sym) {
+        symbols = symbols.filter(function (sym) {
           return Object.getOwnPropertyDescriptor(object, sym).enumerable;
         });
       }
@@ -5236,13 +5272,13 @@ html {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = arguments[i2] != null ? arguments[i2] : {};
       if (i2 % 2) {
-        ownKeys$7(Object(source), true).forEach(function(key2) {
+        ownKeys$7(Object(source), true).forEach(function (key2) {
           _defineProperty(target, key2, source[key2]);
         });
       } else if (Object.getOwnPropertyDescriptors) {
         Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
       } else {
-        ownKeys$7(Object(source)).forEach(function(key2) {
+        ownKeys$7(Object(source)).forEach(function (key2) {
           Object.defineProperty(target, key2, Object.getOwnPropertyDescriptor(source, key2));
         });
       }
@@ -5251,7 +5287,7 @@ html {
   }
   var usePrevious = function usePrevious2(value, ignore2) {
     var ref = _();
-    p$6(function() {
+    p$6(function () {
       ref.current = value;
     }, [value, ignore2]);
     return ref.current;
@@ -5281,7 +5317,7 @@ html {
     var namespaces = defaultNSFromContext || i18n.options && i18n.options.defaultNS;
     namespaces = typeof namespaces === "string" ? [namespaces] : namespaces || ["translation"];
     if (i18n.reportNamespaces.addUsedNamespaces) i18n.reportNamespaces.addUsedNamespaces(namespaces);
-    var ready = (i18n.isInitialized || i18n.initializedStoreOnce) && namespaces.every(function(n2) {
+    var ready = (i18n.isInitialized || i18n.initializedStoreOnce) && namespaces.every(function (n2) {
       return hasLoadedNamespace(n2, i18n, i18nOptions);
     });
     function getT() {
@@ -5292,16 +5328,16 @@ html {
     if (props.lng) joinedNS = "".concat(props.lng).concat(joinedNS);
     var previousJoinedNS = usePrevious(joinedNS);
     var isMounted = _(true);
-    p$6(function() {
+    p$6(function () {
       var bindI18n = i18nOptions.bindI18n, bindI18nStore = i18nOptions.bindI18nStore;
       isMounted.current = true;
       if (!ready && !useSuspense) {
         if (props.lng) {
-          loadLanguages(i18n, props.lng, namespaces, function() {
+          loadLanguages(i18n, props.lng, namespaces, function () {
             if (isMounted.current) setT(getT);
           });
         } else {
-          loadNamespaces(i18n, namespaces, function() {
+          loadNamespaces(i18n, namespaces, function () {
             if (isMounted.current) setT(getT);
           });
         }
@@ -5314,18 +5350,18 @@ html {
       }
       if (bindI18n && i18n) i18n.on(bindI18n, boundReset);
       if (bindI18nStore && i18n) i18n.store.on(bindI18nStore, boundReset);
-      return function() {
+      return function () {
         isMounted.current = false;
-        if (bindI18n && i18n) bindI18n.split(" ").forEach(function(e2) {
+        if (bindI18n && i18n) bindI18n.split(" ").forEach(function (e2) {
           return i18n.off(e2, boundReset);
         });
-        if (bindI18nStore && i18n) bindI18nStore.split(" ").forEach(function(e2) {
+        if (bindI18nStore && i18n) bindI18nStore.split(" ").forEach(function (e2) {
           return i18n.store.off(e2, boundReset);
         });
       };
     }, [i18n, joinedNS]);
     var isInitial = _(true);
-    p$6(function() {
+    p$6(function () {
       if (isMounted.current && !isInitial.current) {
         setT(getT);
       }
@@ -5337,13 +5373,13 @@ html {
     ret.ready = ready;
     if (ready) return ret;
     if (!ready && !useSuspense) return ret;
-    throw new Promise(function(resolve) {
+    throw new Promise(function (resolve) {
       if (props.lng) {
-        loadLanguages(i18n, props.lng, namespaces, function() {
+        loadLanguages(i18n, props.lng, namespaces, function () {
           return resolve();
         });
       } else {
-        loadNamespaces(i18n, namespaces, function() {
+        loadNamespaces(i18n, namespaces, function () {
           return resolve();
         });
       }
@@ -5402,7 +5438,7 @@ html {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
         return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       })), keys.push.apply(keys, symbols);
     }
@@ -5411,9 +5447,9 @@ html {
   function _objectSpread$6(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys$6(Object(source), true).forEach(function(key2) {
+      i2 % 2 ? ownKeys$6(Object(source), true).forEach(function (key2) {
         _defineProperty(target, key2, source[key2]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function(key2) {
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function (key2) {
         Object.defineProperty(target, key2, Object.getOwnPropertyDescriptor(source, key2));
       });
     }
@@ -5434,7 +5470,7 @@ html {
       if (console && console[type]) console[type].apply(console, args);
     }
   };
-  var Logger = function() {
+  var Logger = function () {
     function Logger2(concreteLogger) {
       var options = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
       _classCallCheck(this, Logger2);
@@ -5511,7 +5547,7 @@ html {
     return Logger2;
   }();
   var baseLogger = new Logger();
-  var EventEmitter$1 = function() {
+  var EventEmitter$1 = function () {
     function EventEmitter2() {
       _classCallCheck(this, EventEmitter2);
       this.observers = {};
@@ -5520,7 +5556,7 @@ html {
       key: "on",
       value: function on2(events, listener) {
         var _this = this;
-        events.split(" ").forEach(function(event) {
+        events.split(" ").forEach(function (event) {
           _this.observers[event] = _this.observers[event] || [];
           _this.observers[event].push(listener);
         });
@@ -5534,7 +5570,7 @@ html {
           delete this.observers[event];
           return;
         }
-        this.observers[event] = this.observers[event].filter(function(l2) {
+        this.observers[event] = this.observers[event].filter(function (l2) {
           return l2 !== listener;
         });
       }
@@ -5546,13 +5582,13 @@ html {
         }
         if (this.observers[event]) {
           var cloned = [].concat(this.observers[event]);
-          cloned.forEach(function(observer) {
+          cloned.forEach(function (observer) {
             observer.apply(void 0, args);
           });
         }
         if (this.observers["*"]) {
           var _cloned = [].concat(this.observers["*"]);
-          _cloned.forEach(function(observer) {
+          _cloned.forEach(function (observer) {
             observer.apply(observer, [event].concat(args));
           });
         }
@@ -5563,7 +5599,7 @@ html {
   function defer() {
     var res;
     var rej;
-    var promise = new Promise(function(resolve, reject) {
+    var promise = new Promise(function (resolve, reject) {
       res = resolve;
       rej = reject;
     });
@@ -5576,7 +5612,7 @@ html {
     return "" + object;
   }
   function copy(a2, s2, t2) {
-    a2.forEach(function(m2) {
+    a2.forEach(function (m2) {
       if (s2[m2]) t2[m2] = s2[m2];
     });
   }
@@ -5654,7 +5690,7 @@ html {
   };
   function escape(data) {
     if (typeof data === "string") {
-      return data.replace(/[&<>"'\/]/g, function(s2) {
+      return data.replace(/[&<>"'\/]/g, function (s2) {
         return _entityMap[s2];
       });
     }
@@ -5665,11 +5701,11 @@ html {
   function looksLikeObjectPath(key2, nsSeparator, keySeparator) {
     nsSeparator = nsSeparator || "";
     keySeparator = keySeparator || "";
-    var possibleChars = chars.filter(function(c2) {
+    var possibleChars = chars.filter(function (c2) {
       return nsSeparator.indexOf(c2) < 0 && keySeparator.indexOf(c2) < 0;
     });
     if (possibleChars.length === 0) return true;
-    var r2 = new RegExp("(".concat(possibleChars.map(function(c2) {
+    var r2 = new RegExp("(".concat(possibleChars.map(function (c2) {
       return c2 === "?" ? "\\?" : c2;
     }).join("|"), ")"));
     var matched = !r2.test(key2);
@@ -5719,7 +5755,7 @@ html {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
         return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       })), keys.push.apply(keys, symbols);
     }
@@ -5728,9 +5764,9 @@ html {
   function _objectSpread$5(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys$5(Object(source), true).forEach(function(key2) {
+      i2 % 2 ? ownKeys$5(Object(source), true).forEach(function (key2) {
         _defineProperty(target, key2, source[key2]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function(key2) {
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function (key2) {
         Object.defineProperty(target, key2, Object.getOwnPropertyDescriptor(source, key2));
       });
     }
@@ -5754,14 +5790,14 @@ html {
     if (Reflect.construct.sham) return false;
     if (typeof Proxy === "function") return true;
     try {
-      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {
       }));
       return true;
     } catch (e2) {
       return false;
     }
   }
-  var ResourceStore = function(_EventEmitter) {
+  var ResourceStore = function (_EventEmitter) {
     _inherits(ResourceStore2, _EventEmitter);
     var _super = _createSuper$3(ResourceStore2);
     function ResourceStore2(data) {
@@ -5901,7 +5937,7 @@ html {
       value: function hasLanguageSomeTranslations(lng) {
         var data = this.getDataByLanguage(lng);
         var n2 = data && Object.keys(data) || [];
-        return !!n2.find(function(v2) {
+        return !!n2.find(function (v2) {
           return data[v2] && Object.keys(data[v2]).length > 0;
         });
       }
@@ -5920,7 +5956,7 @@ html {
     },
     handle: function handle(processors, value, key2, options, translator) {
       var _this = this;
-      processors.forEach(function(processor) {
+      processors.forEach(function (processor) {
         if (_this.processors[processor]) value = _this.processors[processor].process(value, key2, options, translator);
       });
       return value;
@@ -5930,7 +5966,7 @@ html {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
         return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       })), keys.push.apply(keys, symbols);
     }
@@ -5939,9 +5975,9 @@ html {
   function _objectSpread$4(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys$4(Object(source), true).forEach(function(key2) {
+      i2 % 2 ? ownKeys$4(Object(source), true).forEach(function (key2) {
         _defineProperty(target, key2, source[key2]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function(key2) {
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function (key2) {
         Object.defineProperty(target, key2, Object.getOwnPropertyDescriptor(source, key2));
       });
     }
@@ -5965,7 +6001,7 @@ html {
     if (Reflect.construct.sham) return false;
     if (typeof Proxy === "function") return true;
     try {
-      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {
       }));
       return true;
     } catch (e2) {
@@ -5973,7 +6009,7 @@ html {
     }
   }
   var checkedLoadedFor = {};
-  var Translator = function(_EventEmitter) {
+  var Translator = function (_EventEmitter) {
     _inherits(Translator2, _EventEmitter);
     var _super = _createSuper$2(Translator2);
     function Translator2(services) {
@@ -6168,8 +6204,8 @@ html {
             };
             if (this.options.saveMissing) {
               if (this.options.saveMissingPlurals && needsPluralHandling) {
-                lngs.forEach(function(language) {
-                  _this2.pluralResolver.getSuffixes(language, options).forEach(function(suffix) {
+                lngs.forEach(function (language) {
+                  _this2.pluralResolver.getSuffixes(language, options).forEach(function (suffix) {
                     send([language], key2 + suffix, options["defaultValue".concat(suffix)] || defaultValue);
                   });
                 });
@@ -6221,7 +6257,7 @@ html {
             if (nestBef < nestAft) options.nest = false;
           }
           if (!options.lng && this.options.compatibilityAPI !== "v1" && resolved && resolved.res) options.lng = resolved.usedLng;
-          if (options.nest !== false) res = this.interpolator.nest(res, function() {
+          if (options.nest !== false) res = this.interpolator.nest(res, function () {
             for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
               args[_key] = arguments[_key];
             }
@@ -6253,7 +6289,7 @@ html {
         var usedLng;
         var usedNS;
         if (typeof keys === "string") keys = [keys];
-        keys.forEach(function(k2) {
+        keys.forEach(function (k2) {
           if (_this4.isValidLookup(found)) return;
           var extracted = _this4.extractFromKey(k2, options);
           var key2 = extracted.key;
@@ -6264,14 +6300,14 @@ html {
           var needsZeroSuffixLookup = needsPluralHandling && !options.ordinal && options.count === 0 && _this4.pluralResolver.shouldUseIntlApi();
           var needsContextHandling = options.context !== void 0 && (typeof options.context === "string" || typeof options.context === "number") && options.context !== "";
           var codes = options.lngs ? options.lngs : _this4.languageUtils.toResolveHierarchy(options.lng || _this4.language, options.fallbackLng);
-          namespaces.forEach(function(ns) {
+          namespaces.forEach(function (ns) {
             if (_this4.isValidLookup(found)) return;
             usedNS = ns;
             if (!checkedLoadedFor["".concat(codes[0], "-").concat(ns)] && _this4.utils && _this4.utils.hasLoadedNamespace && !_this4.utils.hasLoadedNamespace(usedNS)) {
               checkedLoadedFor["".concat(codes[0], "-").concat(ns)] = true;
               _this4.logger.warn('key "'.concat(usedKey, '" for languages "').concat(codes.join(", "), `" won't get resolved as namespace "`).concat(usedNS, '" was not yet loaded'), "This means something IS WRONG in your setup. You access the t function before i18next.init / i18next.loadNamespace / i18next.changeLanguage was done. Wait for the callback or Promise to resolve before accessing it!!!");
             }
-            codes.forEach(function(code2) {
+            codes.forEach(function (code2) {
               if (_this4.isValidLookup(found)) return;
               usedLng = code2;
               var finalKeys = [key2];
@@ -6345,7 +6381,7 @@ html {
   function capitalize(string2) {
     return string2.charAt(0).toUpperCase() + string2.slice(1);
   }
-  var LanguageUtil = function() {
+  var LanguageUtil = function () {
     function LanguageUtil2(options) {
       _classCallCheck(this, LanguageUtil2);
       this.options = options;
@@ -6376,7 +6412,7 @@ html {
           var specialCases = ["hans", "hant", "latn", "cyrl", "cans", "mong", "arab"];
           var p2 = code2.split("-");
           if (this.options.lowerCaseLng) {
-            p2 = p2.map(function(part) {
+            p2 = p2.map(function (part) {
               return part.toLowerCase();
             });
           } else if (p2.length === 2) {
@@ -6408,17 +6444,17 @@ html {
         var _this = this;
         if (!codes) return null;
         var found;
-        codes.forEach(function(code2) {
+        codes.forEach(function (code2) {
           if (found) return;
           var cleanedLng = _this.formatLanguageCode(code2);
           if (!_this.options.supportedLngs || _this.isSupportedCode(cleanedLng)) found = cleanedLng;
         });
         if (!found && this.options.supportedLngs) {
-          codes.forEach(function(code2) {
+          codes.forEach(function (code2) {
             if (found) return;
             var lngOnly = _this.getLanguagePartFromCode(code2);
             if (_this.isSupportedCode(lngOnly)) return found = lngOnly;
-            found = _this.options.supportedLngs.find(function(supportedLng) {
+            found = _this.options.supportedLngs.find(function (supportedLng) {
               if (supportedLng === lngOnly) return supportedLng;
               if (supportedLng.indexOf("-") < 0 && lngOnly.indexOf("-") < 0) return;
               if (supportedLng.indexOf(lngOnly) === 0) return supportedLng;
@@ -6464,7 +6500,7 @@ html {
         } else if (typeof code2 === "string") {
           addCode(this.formatLanguageCode(code2));
         }
-        fallbackCodes.forEach(function(fc) {
+        fallbackCodes.forEach(function (fc) {
           if (codes.indexOf(fc) < 0) addCode(_this2.formatLanguageCode(fc));
         });
         return codes;
@@ -6644,8 +6680,8 @@ html {
   };
   function createRules() {
     var rules = {};
-    sets.forEach(function(set) {
-      set.lngs.forEach(function(l2) {
+    sets.forEach(function (set) {
+      set.lngs.forEach(function (l2) {
         rules[l2] = {
           numbers: set.nr,
           plurals: _rulesPluralsTypes[set.fc]
@@ -6654,7 +6690,7 @@ html {
     });
     return rules;
   }
-  var PluralResolver = function() {
+  var PluralResolver = function () {
     function PluralResolver2(languageUtils) {
       var options = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
       _classCallCheck(this, PluralResolver2);
@@ -6701,7 +6737,7 @@ html {
       key: "getPluralFormsOfKey",
       value: function getPluralFormsOfKey(code2, key2) {
         var options = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {};
-        return this.getSuffixes(code2, options).map(function(suffix) {
+        return this.getSuffixes(code2, options).map(function (suffix) {
           return "".concat(key2).concat(suffix);
         });
       }
@@ -6715,13 +6751,13 @@ html {
           return [];
         }
         if (this.shouldUseIntlApi()) {
-          return rule.resolvedOptions().pluralCategories.sort(function(pluralCategory1, pluralCategory2) {
+          return rule.resolvedOptions().pluralCategories.sort(function (pluralCategory1, pluralCategory2) {
             return suffixesOrder[pluralCategory1] - suffixesOrder[pluralCategory2];
-          }).map(function(pluralCategory) {
+          }).map(function (pluralCategory) {
             return "".concat(_this.options.prepend).concat(pluralCategory);
           });
         }
-        return rule.numbers.map(function(number2) {
+        return rule.numbers.map(function (number2) {
           return _this.getSuffix(code2, number2, options);
         });
       }
@@ -6778,7 +6814,7 @@ html {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
         return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       })), keys.push.apply(keys, symbols);
     }
@@ -6787,9 +6823,9 @@ html {
   function _objectSpread$3(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys$3(Object(source), true).forEach(function(key2) {
+      i2 % 2 ? ownKeys$3(Object(source), true).forEach(function (key2) {
         _defineProperty(target, key2, source[key2]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function(key2) {
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function (key2) {
         Object.defineProperty(target, key2, Object.getOwnPropertyDescriptor(source, key2));
       });
     }
@@ -6805,13 +6841,13 @@ html {
     }
     return path2;
   }
-  var Interpolator = function() {
+  var Interpolator = function () {
     function Interpolator2() {
       var options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
       _classCallCheck(this, Interpolator2);
       this.logger = baseLogger.create("interpolator");
       this.options = options;
-      this.format = options.interpolation && options.interpolation.format || function(value) {
+      this.format = options.interpolation && options.interpolation.format || function (value) {
         return value;
       };
       this.init(options);
@@ -6893,7 +6929,7 @@ html {
             return _this.escapeValue ? regexSafe(_this.escape(val)) : regexSafe(val);
           }
         }];
-        todos.forEach(function(todo) {
+        todos.forEach(function (todo) {
           replaces = 0;
           while (match = todo.regex.exec(str)) {
             var matchedVar = match[1].trim();
@@ -6968,7 +7004,7 @@ html {
           delete clonedOptions.defaultValue;
           var doReduce = false;
           if (match[0].indexOf(this.formatSeparator) !== -1 && !/{.*}/.test(match[1])) {
-            var r2 = match[1].split(this.formatSeparator).map(function(elem) {
+            var r2 = match[1].split(this.formatSeparator).map(function (elem) {
               return elem.trim();
             });
             match[1] = r2.shift();
@@ -6983,7 +7019,7 @@ html {
             value = "";
           }
           if (doReduce) {
-            value = formatters.reduce(function(v2, f2) {
+            value = formatters.reduce(function (v2, f2) {
               return _this2.format(v2, f2, options.lng, _objectSpread$3(_objectSpread$3({}, options), {}, {
                 interpolationkey: match[1].trim()
               }));
@@ -7001,7 +7037,7 @@ html {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
         return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       })), keys.push.apply(keys, symbols);
     }
@@ -7010,9 +7046,9 @@ html {
   function _objectSpread$2(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys$2(Object(source), true).forEach(function(key2) {
+      i2 % 2 ? ownKeys$2(Object(source), true).forEach(function (key2) {
         _defineProperty(target, key2, source[key2]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function(key2) {
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function (key2) {
         Object.defineProperty(target, key2, Object.getOwnPropertyDescriptor(source, key2));
       });
     }
@@ -7031,7 +7067,7 @@ html {
         if (!formatOptions.range) formatOptions.range = optStr.trim();
       } else {
         var opts = optStr.split(";");
-        opts.forEach(function(opt) {
+        opts.forEach(function (opt) {
           if (!opt) return;
           var _opt$split = opt.split(":"), _opt$split2 = _toArray(_opt$split), key2 = _opt$split2[0], rest = _opt$split2.slice(1);
           var val = rest.join(":").trim().replace(/^'+|'+$/g, "");
@@ -7059,42 +7095,42 @@ html {
       return formatter(val);
     };
   }
-  var Formatter = function() {
+  var Formatter = function () {
     function Formatter2() {
       var options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
       _classCallCheck(this, Formatter2);
       this.logger = baseLogger.create("formatter");
       this.options = options;
       this.formats = {
-        number: createCachedFormatter(function(lng, opt) {
+        number: createCachedFormatter(function (lng, opt) {
           var formatter = new Intl.NumberFormat(lng, _objectSpread$2({}, opt));
-          return function(val) {
+          return function (val) {
             return formatter.format(val);
           };
         }),
-        currency: createCachedFormatter(function(lng, opt) {
+        currency: createCachedFormatter(function (lng, opt) {
           var formatter = new Intl.NumberFormat(lng, _objectSpread$2(_objectSpread$2({}, opt), {}, {
             style: "currency"
           }));
-          return function(val) {
+          return function (val) {
             return formatter.format(val);
           };
         }),
-        datetime: createCachedFormatter(function(lng, opt) {
+        datetime: createCachedFormatter(function (lng, opt) {
           var formatter = new Intl.DateTimeFormat(lng, _objectSpread$2({}, opt));
-          return function(val) {
+          return function (val) {
             return formatter.format(val);
           };
         }),
-        relativetime: createCachedFormatter(function(lng, opt) {
+        relativetime: createCachedFormatter(function (lng, opt) {
           var formatter = new Intl.RelativeTimeFormat(lng, _objectSpread$2({}, opt));
-          return function(val) {
+          return function (val) {
             return formatter.format(val, opt.range || "day");
           };
         }),
-        list: createCachedFormatter(function(lng, opt) {
+        list: createCachedFormatter(function (lng, opt) {
           var formatter = new Intl.ListFormat(lng, _objectSpread$2({}, opt));
-          return function(val) {
+          return function (val) {
             return formatter.format(val);
           };
         })
@@ -7126,7 +7162,7 @@ html {
         var _this = this;
         var options = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : {};
         var formats = _format.split(this.formatSeparator);
-        var result = formats.reduce(function(mem, f2) {
+        var result = formats.reduce(function (mem, f2) {
           var _parseFormatStr = parseFormatStr(f2), formatName = _parseFormatStr.formatName, formatOptions = _parseFormatStr.formatOptions;
           if (_this.formats[formatName]) {
             var formatted = mem;
@@ -7152,7 +7188,7 @@ html {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
         return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       })), keys.push.apply(keys, symbols);
     }
@@ -7161,9 +7197,9 @@ html {
   function _objectSpread$1(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys$1(Object(source), true).forEach(function(key2) {
+      i2 % 2 ? ownKeys$1(Object(source), true).forEach(function (key2) {
         _defineProperty(target, key2, source[key2]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function(key2) {
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function (key2) {
         Object.defineProperty(target, key2, Object.getOwnPropertyDescriptor(source, key2));
       });
     }
@@ -7187,7 +7223,7 @@ html {
     if (Reflect.construct.sham) return false;
     if (typeof Proxy === "function") return true;
     try {
-      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {
       }));
       return true;
     } catch (e2) {
@@ -7200,7 +7236,7 @@ html {
       q2.pendingCount--;
     }
   }
-  var Connector = function(_EventEmitter) {
+  var Connector = function (_EventEmitter) {
     _inherits(Connector2, _EventEmitter);
     var _super = _createSuper$1(Connector2);
     function Connector2(backend, store, services) {
@@ -7237,13 +7273,13 @@ html {
         var pending = {};
         var toLoadLanguages = {};
         var toLoadNamespaces = {};
-        languages.forEach(function(lng) {
+        languages.forEach(function (lng) {
           var hasAllNamespaces = true;
-          namespaces.forEach(function(ns) {
+          namespaces.forEach(function (ns) {
             var name = "".concat(lng, "|").concat(ns);
             if (!options.reload && _this2.store.hasResourceBundle(lng, ns)) {
               _this2.state[name] = 2;
-            } else if (_this2.state[name] < 0) ;
+            } else if (_this2.state[name] < 0);
             else if (_this2.state[name] === 1) {
               if (pending[name] === void 0) pending[name] = true;
             } else {
@@ -7284,16 +7320,16 @@ html {
         }
         this.state[name] = err ? -1 : 2;
         var loaded2 = {};
-        this.queue.forEach(function(q2) {
+        this.queue.forEach(function (q2) {
           pushPath(q2.loaded, [lng], ns);
           removePending(q2, name);
           if (err) q2.errors.push(err);
           if (q2.pendingCount === 0 && !q2.done) {
-            Object.keys(q2.loaded).forEach(function(l2) {
+            Object.keys(q2.loaded).forEach(function (l2) {
               if (!loaded2[l2]) loaded2[l2] = {};
               var loadedKeys = q2.loaded[l2];
               if (loadedKeys.length) {
-                loadedKeys.forEach(function(n2) {
+                loadedKeys.forEach(function (n2) {
                   if (loaded2[l2][n2] === void 0) loaded2[l2][n2] = true;
                 });
               }
@@ -7307,7 +7343,7 @@ html {
           }
         });
         this.emit("loaded", loaded2);
-        this.queue = this.queue.filter(function(q2) {
+        this.queue = this.queue.filter(function (q2) {
           return !q2.done;
         });
       }
@@ -7338,7 +7374,7 @@ html {
             _this3.read(next.lng, next.ns, next.fcName, next.tried, next.wait, next.callback);
           }
           if (err && data && tried < _this3.maxRetries) {
-            setTimeout(function() {
+            setTimeout(function () {
               _this3.read.call(_this3, lng, ns, fcName, tried + 1, wait * 2, callback);
             }, wait);
             return;
@@ -7350,7 +7386,7 @@ html {
           try {
             var r2 = fc(lng, ns);
             if (r2 && typeof r2.then === "function") {
-              r2.then(function(data) {
+              r2.then(function (data) {
                 return resolver2(null, data);
               })["catch"](resolver2);
             } else {
@@ -7380,7 +7416,7 @@ html {
           if (!toLoad.pending.length) callback();
           return null;
         }
-        toLoad.toLoad.forEach(function(name) {
+        toLoad.toLoad.forEach(function (name) {
           _this4.loadOne(name);
         });
       }
@@ -7404,7 +7440,7 @@ html {
         var s2 = name.split("|");
         var lng = s2[0];
         var ns = s2[1];
-        this.read(lng, ns, "read", void 0, void 0, function(err, data) {
+        this.read(lng, ns, "read", void 0, void 0, function (err, data) {
           if (err) _this5.logger.warn("".concat(prefix, "loading namespace ").concat(ns, " for language ").concat(lng, " failed"), err);
           if (!err && data) _this5.logger.log("".concat(prefix, "loaded namespace ").concat(ns, " for language ").concat(lng), data);
           _this5.loaded(name, err, data);
@@ -7414,7 +7450,7 @@ html {
       key: "saveMissing",
       value: function saveMissing(languages, namespace, key2, fallbackValue, isUpdate) {
         var options = arguments.length > 5 && arguments[5] !== void 0 ? arguments[5] : {};
-        var clb = arguments.length > 6 && arguments[6] !== void 0 ? arguments[6] : function() {
+        var clb = arguments.length > 6 && arguments[6] !== void 0 ? arguments[6] : function () {
         };
         if (this.services.utils && this.services.utils.hasLoadedNamespace && !this.services.utils.hasLoadedNamespace(namespace)) {
           this.logger.warn('did not save key "'.concat(key2, '" as the namespace "').concat(namespace, '" was not yet loaded'), "This means something IS WRONG in your setup. You access the t function before i18next.init / i18next.loadNamespace / i18next.changeLanguage was done. Wait for the callback or Promise to resolve before accessing it!!!");
@@ -7435,7 +7471,7 @@ html {
                 r2 = fc(languages, namespace, key2, fallbackValue);
               }
               if (r2 && typeof r2.then === "function") {
-                r2.then(function(data) {
+                r2.then(function (data) {
                   return clb(null, data);
                 })["catch"](clb);
               } else {
@@ -7495,7 +7531,7 @@ html {
         if (typeof args[2] === "string") ret.tDescription = args[2];
         if (_typeof(args[2]) === "object" || _typeof(args[3]) === "object") {
           var options = args[3] || args[2];
-          Object.keys(options).forEach(function(key2) {
+          Object.keys(options).forEach(function (key2) {
             ret[key2] = options[key2];
           });
         }
@@ -7531,7 +7567,7 @@ html {
     var keys = Object.keys(object);
     if (Object.getOwnPropertySymbols) {
       var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
+      enumerableOnly && (symbols = symbols.filter(function (sym) {
         return Object.getOwnPropertyDescriptor(object, sym).enumerable;
       })), keys.push.apply(keys, symbols);
     }
@@ -7540,9 +7576,9 @@ html {
   function _objectSpread(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
       var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys(Object(source), true).forEach(function(key2) {
+      i2 % 2 ? ownKeys(Object(source), true).forEach(function (key2) {
         _defineProperty(target, key2, source[key2]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key2) {
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key2) {
         Object.defineProperty(target, key2, Object.getOwnPropertyDescriptor(source, key2));
       });
     }
@@ -7566,7 +7602,7 @@ html {
     if (Reflect.construct.sham) return false;
     if (typeof Proxy === "function") return true;
     try {
-      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+      Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {
       }));
       return true;
     } catch (e2) {
@@ -7577,13 +7613,13 @@ html {
   }
   function bindMemberFunctions(inst) {
     var mems = Object.getOwnPropertyNames(Object.getPrototypeOf(inst));
-    mems.forEach(function(mem) {
+    mems.forEach(function (mem) {
       if (typeof inst[mem] === "function") {
         inst[mem] = inst[mem].bind(inst);
       }
     });
   }
-  var I18n = function(_EventEmitter) {
+  var I18n = function (_EventEmitter) {
     _inherits(I18n2, _EventEmitter);
     var _super = _createSuper(I18n2);
     function I18n2() {
@@ -7607,7 +7643,7 @@ html {
           _this.init(options, callback);
           return _possibleConstructorReturn(_this, _assertThisInitialized(_this));
         }
-        setTimeout(function() {
+        setTimeout(function () {
           _this.init(options, callback);
         }, 0);
       }
@@ -7679,7 +7715,7 @@ html {
             hasLoadedNamespace: this.hasLoadedNamespace.bind(this)
           };
           s2.backendConnector = new Connector(createClassOnDemand(this.modules.backend), s2.resourceStore, s2, this.options);
-          s2.backendConnector.on("*", function(event) {
+          s2.backendConnector.on("*", function (event) {
             for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
               args[_key - 1] = arguments[_key];
             }
@@ -7694,13 +7730,13 @@ html {
             if (s2.i18nFormat.init) s2.i18nFormat.init(this);
           }
           this.translator = new Translator(this.services, this.options);
-          this.translator.on("*", function(event) {
+          this.translator.on("*", function (event) {
             for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
               args[_key2 - 1] = arguments[_key2];
             }
             _this2.emit.apply(_this2, [event].concat(args));
           });
-          this.modules.external.forEach(function(m2) {
+          this.modules.external.forEach(function (m2) {
             if (m2.init) m2.init(_this2);
           });
         }
@@ -7714,15 +7750,15 @@ html {
           this.logger.warn("init: no languageDetector is used and no lng is defined");
         }
         var storeApi = ["getResource", "hasResourceBundle", "getResourceBundle", "getDataByLanguage"];
-        storeApi.forEach(function(fcName) {
-          _this2[fcName] = function() {
+        storeApi.forEach(function (fcName) {
+          _this2[fcName] = function () {
             var _this2$store;
             return (_this2$store = _this2.store)[fcName].apply(_this2$store, arguments);
           };
         });
         var storeApiChained = ["addResource", "addResources", "addResourceBundle", "removeResourceBundle"];
-        storeApiChained.forEach(function(fcName) {
-          _this2[fcName] = function() {
+        storeApiChained.forEach(function (fcName) {
+          _this2[fcName] = function () {
             var _this2$store2;
             (_this2$store2 = _this2.store)[fcName].apply(_this2$store2, arguments);
             return _this2;
@@ -7762,24 +7798,24 @@ html {
           var append = function append2(lng) {
             if (!lng) return;
             var lngs = _this3.services.languageUtils.toResolveHierarchy(lng);
-            lngs.forEach(function(l2) {
+            lngs.forEach(function (l2) {
               if (toLoad.indexOf(l2) < 0) toLoad.push(l2);
             });
           };
           if (!usedLng) {
             var fallbacks = this.services.languageUtils.getFallbackCodes(this.options.fallbackLng);
-            fallbacks.forEach(function(l2) {
+            fallbacks.forEach(function (l2) {
               return append(l2);
             });
           } else {
             append(usedLng);
           }
           if (this.options.preload) {
-            this.options.preload.forEach(function(l2) {
+            this.options.preload.forEach(function (l2) {
               return append(l2);
             });
           }
-          this.services.backendConnector.load(toLoad, this.options.ns, function(e2) {
+          this.services.backendConnector.load(toLoad, this.options.ns, function (e2) {
             if (!e2 && !_this3.resolvedLanguage && _this3.language) _this3.setResolvedLanguage(_this3.language);
             usedCallback(e2);
           });
@@ -7794,7 +7830,7 @@ html {
         if (!lngs) lngs = this.languages;
         if (!ns) ns = this.options.ns;
         if (!callback) callback = noop$1;
-        this.services.backendConnector.reload(lngs, ns, function(err) {
+        this.services.backendConnector.reload(lngs, ns, function (err) {
           deferred.resolve();
           callback(err);
         });
@@ -7865,10 +7901,10 @@ html {
           } else {
             _this4.isLanguageChangingTo = void 0;
           }
-          deferred.resolve(function() {
+          deferred.resolve(function () {
             return _this4.t.apply(_this4, arguments);
           });
-          if (callback) callback(err, function() {
+          if (callback) callback(err, function () {
             return _this4.t.apply(_this4, arguments);
           });
         };
@@ -7882,7 +7918,7 @@ html {
             if (!_this4.translator.language) _this4.translator.changeLanguage(l2);
             if (_this4.services.languageDetector && _this4.services.languageDetector.cacheUserLanguage) _this4.services.languageDetector.cacheUserLanguage(l2);
           }
-          _this4.loadResources(l2, function(err) {
+          _this4.loadResources(l2, function (err) {
             done(err, l2);
           });
         };
@@ -7920,7 +7956,7 @@ html {
           var keySeparator = _this5.options.keySeparator || ".";
           var resultKey;
           if (options.keyPrefix && Array.isArray(key2)) {
-            resultKey = key2.map(function(k2) {
+            resultKey = key2.map(function (k2) {
               return "".concat(options.keyPrefix).concat(keySeparator).concat(k2);
             });
           } else {
@@ -7994,10 +8030,10 @@ html {
           return Promise.resolve();
         }
         if (typeof ns === "string") ns = [ns];
-        ns.forEach(function(n2) {
+        ns.forEach(function (n2) {
           if (_this7.options.ns.indexOf(n2) < 0) _this7.options.ns.push(n2);
         });
-        this.loadResources(function(err) {
+        this.loadResources(function (err) {
           deferred.resolve();
           if (callback) callback(err);
         });
@@ -8009,7 +8045,7 @@ html {
         var deferred = defer();
         if (typeof lngs === "string") lngs = [lngs];
         var preloaded = this.options.preload || [];
-        var newLngs = lngs.filter(function(lng) {
+        var newLngs = lngs.filter(function (lng) {
           return preloaded.indexOf(lng) < 0;
         });
         if (!newLngs.length) {
@@ -8017,7 +8053,7 @@ html {
           return Promise.resolve();
         }
         this.options.preload = preloaded.concat(newLngs);
-        this.loadResources(function(err) {
+        this.loadResources(function (err) {
           deferred.resolve();
           if (callback) callback(err);
         });
@@ -8046,7 +8082,7 @@ html {
           clone.logger = clone.logger.clone(options);
         }
         var membersToCopy = ["store", "services", "language"];
-        membersToCopy.forEach(function(m2) {
+        membersToCopy.forEach(function (m2) {
           clone[m2] = _this8[m2];
         });
         clone.services = _objectSpread({}, this.services);
@@ -8054,7 +8090,7 @@ html {
           hasLoadedNamespace: clone.hasLoadedNamespace.bind(clone)
         };
         clone.translator = new Translator(clone.services, clone.options);
-        clone.translator.on("*", function(event) {
+        clone.translator.on("*", function (event) {
           for (var _len4 = arguments.length, args = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
             args[_key4 - 1] = arguments[_key4];
           }
@@ -8081,7 +8117,7 @@ html {
     }]);
     return I18n2;
   }(EventEmitter$1);
-  _defineProperty(I18n, "createInstance", function() {
+  _defineProperty(I18n, "createInstance", function () {
     var options = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
     var callback = arguments.length > 1 ? arguments[1] : void 0;
     return new I18n(options, callback);
@@ -9582,7 +9618,7 @@ html {
     var sanitized = input.replace(illegalRe, replacement).replace(controlRe, replacement).replace(reservedRe, replacement).replace(windowsReservedRe, replacement).replace(windowsTrailingRe, replacement);
     return truncate2(sanitized, 255);
   }
-  var sanitizeFilename = function(input, options) {
+  var sanitizeFilename = function (input, options) {
     var replacement = options && options.replacement || "";
     var output2 = sanitize(input, replacement);
     if (replacement === "") {
@@ -11430,7 +11466,7 @@ html {
   function p$3(_24, index2, parent) {
     const next = siblingAfter(parent, index2);
     return next ? next.type === "element" && (next.tagName === "address" || next.tagName === "article" || next.tagName === "aside" || next.tagName === "blockquote" || next.tagName === "details" || next.tagName === "div" || next.tagName === "dl" || next.tagName === "fieldset" || next.tagName === "figcaption" || next.tagName === "figure" || next.tagName === "footer" || next.tagName === "form" || next.tagName === "h1" || next.tagName === "h2" || next.tagName === "h3" || next.tagName === "h4" || next.tagName === "h5" || next.tagName === "h6" || next.tagName === "header" || next.tagName === "hgroup" || next.tagName === "hr" || next.tagName === "main" || next.tagName === "menu" || next.tagName === "nav" || next.tagName === "ol" || next.tagName === "p" || next.tagName === "pre" || next.tagName === "section" || next.tagName === "table" || next.tagName === "ul") : !parent || // Confusing parent.
-    !(parent.type === "element" && (parent.tagName === "a" || parent.tagName === "audio" || parent.tagName === "del" || parent.tagName === "ins" || parent.tagName === "map" || parent.tagName === "noscript" || parent.tagName === "video"));
+      !(parent.type === "element" && (parent.tagName === "a" || parent.tagName === "audio" || parent.tagName === "del" || parent.tagName === "ins" || parent.tagName === "map" || parent.tagName === "noscript" || parent.tagName === "video"));
   }
   function li(_24, index2, parent) {
     const next = siblingAfter(parent, index2);
@@ -12077,7 +12113,7 @@ html {
             // The token starts before the line ending…
             childFlow.events[index2][1].start.offset < lineStartOffset && // …and either is not ended yet…
             (!childFlow.events[index2][1].end || // …or ends after it.
-            childFlow.events[index2][1].end.offset > lineStartOffset)
+              childFlow.events[index2][1].end.offset > lineStartOffset)
           ) {
             return;
           }
@@ -12174,7 +12210,7 @@ html {
         open = index2;
         while (open--) {
           if (events[open][0] === "exit" && events[open][1].type === "attentionSequence" && events[open][1]._open && // If the markers are the same:
-          context.sliceSerialize(events[open][1]).charCodeAt(0) === context.sliceSerialize(events[index2][1]).charCodeAt(0)) {
+            context.sliceSerialize(events[open][1]).charCodeAt(0) === context.sliceSerialize(events[index2][1]).charCodeAt(0)) {
             if ((events[open][1]._close || events[index2][1]._open) && (events[index2][1].end.offset - events[index2][1].start.offset) % 3 && !((events[open][1].end.offset - events[open][1].start.offset + events[index2][1].end.offset - events[index2][1].start.offset) % 3)) {
               continue;
             }
@@ -13192,9 +13228,9 @@ html {
       if (code2 === null || code2 === 91 || code2 === 93 && !data || /* To do: remove in the future once we’ve switched from
        * `micromark-extension-footnote` to `micromark-extension-gfm-footnote`,
        * which doesn’t need this */
-      /* Hidden footnotes hook */
-      /* c8 ignore next 3 */
-      code2 === 94 && !size && "_hiddenFootnoteSupport" in self2.parser.constructs || size > 999) {
+        /* Hidden footnotes hook */
+        /* c8 ignore next 3 */
+        code2 === 94 && !size && "_hiddenFootnoteSupport" in self2.parser.constructs || size > 999) {
         return nok(code2);
       }
       if (code2 === 93) {
@@ -14985,7 +15021,7 @@ html {
           } else if (chunk === -2) {
             tabs = true;
             size++;
-          } else if (chunk === -1) ;
+          } else if (chunk === -1);
           else {
             index2++;
             break;
@@ -15564,7 +15600,7 @@ html {
      * @param {Options | null | undefined} [options]
      * @returns {Root}
      */
-    function(value, encoding, options) {
+    function (value, encoding, options) {
       if (typeof encoding !== "string") {
         options = encoding;
         encoding = void 0;
@@ -15771,7 +15807,7 @@ html {
             }
             atMarker = void 0;
           }
-        } else if (event[1].type === "linePrefix" || event[1].type === "listItemValue" || event[1].type === "listItemMarker" || event[1].type === "listItemPrefix" || event[1].type === "listItemPrefixWhitespace") ;
+        } else if (event[1].type === "linePrefix" || event[1].type === "listItemValue" || event[1].type === "listItemMarker" || event[1].type === "listItemPrefix" || event[1].type === "listItemPrefixWhitespace");
         else {
           atMarker = void 0;
         }
@@ -15789,7 +15825,7 @@ html {
                 }
                 tailEvent[1].type = "lineEnding";
                 lineIndex = tailIndex;
-              } else if (tailEvent[1].type === "linePrefix" || tailEvent[1].type === "blockQuotePrefix" || tailEvent[1].type === "blockQuotePrefixWhitespace" || tailEvent[1].type === "blockQuoteMarker" || tailEvent[1].type === "listItemIndent") ;
+              } else if (tailEvent[1].type === "linePrefix" || tailEvent[1].type === "blockQuotePrefix" || tailEvent[1].type === "blockQuotePrefixWhitespace" || tailEvent[1].type === "blockQuoteMarker" || tailEvent[1].type === "listItemIndent");
               else {
                 break;
               }
@@ -16293,7 +16329,7 @@ html {
      * @param {Test} [test]
      * @returns {AssertAnything}
      */
-    function(test) {
+    function (test) {
       if (test === void 0 || test === null) {
         return ok;
       }
@@ -16372,7 +16408,7 @@ html {
      * @param {boolean | null | undefined} [reverse]
      * @returns {void}
      */
-    function(tree, test, visitor, reverse) {
+    function (tree, test, visitor, reverse) {
       if (typeof test === "function" && typeof visitor !== "function") {
         reverse = visitor;
         visitor = test;
@@ -16448,7 +16484,7 @@ html {
      * @param {Options | null | undefined} [options]
      * @returns {Tree}
      */
-    function(tree, find2, replace2, options) {
+    function (tree, find2, replace2, options) {
       let settings;
       let schema;
       if (typeof find2 === "string" || find2 instanceof RegExp) {
@@ -17253,8 +17289,8 @@ html {
           line.push("|");
         }
         if (options.padding !== false && // Don’t add the opening space if we’re not aligning and the cell is
-        // empty: there will be a closing space.
-        !(options.alignDelimiters === false && cell === "") && (options.delimiterStart !== false || columnIndex)) {
+          // empty: there will be a closing space.
+          !(options.alignDelimiters === false && cell === "") && (options.delimiterStart !== false || columnIndex)) {
           line.push(" ");
         }
         if (options.alignDelimiters !== false) {
@@ -18154,7 +18190,7 @@ html {
      * @param {boolean | null | undefined} [reverse]
      * @returns {void}
      */
-    function(tree, test, visitor, reverse) {
+    function (tree, test, visitor, reverse) {
       if (typeof test === "function" && typeof visitor !== "function") {
         reverse = visitor;
         visitor = test;
@@ -18482,7 +18518,7 @@ html {
       }
     }
     for (key2 in extension2) {
-      if (key2 === "extensions") ;
+      if (key2 === "extensions");
       else if (key2 === "unsafe" || key2 === "join") {
         base[key2] = [...base[key2] || [], ...extension2[key2] || []];
       } else if (key2 === "handlers") {
@@ -19039,7 +19075,7 @@ html {
     const bulletLastUsed = state.bulletLastUsed;
     let useDifferentMarker = false;
     if (parent && // Explicit `other` set.
-    (node2.ordered ? state.options.bulletOrderedOther : state.options.bulletOther) && bulletLastUsed && bullet === bulletLastUsed) {
+      (node2.ordered ? state.options.bulletOrderedOther : state.options.bulletOther) && bulletLastUsed && bullet === bulletLastUsed) {
       useDifferentMarker = true;
     }
     if (!node2.ordered) {
@@ -19181,8 +19217,8 @@ html {
     }
     if ("spread" in parent && typeof parent.spread === "boolean") {
       if (left.type === "paragraph" && // Two paragraphs.
-      (left.type === right.type || right.type === "definition" || // Paragraph followed by a setext heading.
-      right.type === "heading" && formatHeadingAsSetext(right, state))) {
+        (left.type === right.type || right.type === "definition" || // Paragraph followed by a setext heading.
+          right.type === "heading" && formatHeadingAsSetext(right, state))) {
         return;
       }
       return parent.spread ? 1 : 0;
@@ -20038,7 +20074,7 @@ html {
           let open = index2;
           while (open--) {
             if (events[open][0] === "exit" && events[open][1].type === "strikethroughSequenceTemporary" && events[open][1]._open && // If the sizes are the same:
-            events[index2][1].end.offset - events[index2][1].start.offset === events[open][1].end.offset - events[open][1].start.offset) {
+              events[index2][1].end.offset - events[index2][1].start.offset === events[open][1].end.offset - events[open][1].start.offset) {
               events[index2][1].type = "strikethroughSequence";
               events[open][1].type = "strikethroughSequence";
               const strikethrough2 = {
@@ -20236,7 +20272,7 @@ html {
       while (index2 > -1) {
         const type = self2.events[index2][1].type;
         if (type === "lineEnding" || // Note: markdown-rs uses `whitespace` instead of `linePrefix`
-        type === "linePrefix")
+          type === "linePrefix")
           index2--;
         else break;
       }
@@ -21594,20 +21630,22 @@ ${content2}`;
   }
   const Divider = () => /* @__PURE__ */ o$8("div", { className: "h-px bg-token-border-light" });
   function EventEmitter(n2) {
-    return { all: n2 = n2 || /* @__PURE__ */ new Map(), on: function(t2, e2) {
-      var i2 = n2.get(t2);
-      i2 ? i2.push(e2) : n2.set(t2, [e2]);
-    }, off: function(t2, e2) {
-      var i2 = n2.get(t2);
-      i2 && (e2 ? i2.splice(i2.indexOf(e2) >>> 0, 1) : n2.set(t2, []));
-    }, emit: function(t2, e2) {
-      var i2 = n2.get(t2);
-      i2 && i2.slice().map(function(n3) {
-        n3(e2);
-      }), (i2 = n2.get("*")) && i2.slice().map(function(n3) {
-        n3(t2, e2);
-      });
-    } };
+    return {
+      all: n2 = n2 || /* @__PURE__ */ new Map(), on: function (t2, e2) {
+        var i2 = n2.get(t2);
+        i2 ? i2.push(e2) : n2.set(t2, [e2]);
+      }, off: function (t2, e2) {
+        var i2 = n2.get(t2);
+        i2 && (e2 ? i2.splice(i2.indexOf(e2) >>> 0, 1) : n2.set(t2, []));
+      }, emit: function (t2, e2) {
+        var i2 = n2.get(t2);
+        i2 && i2.slice().map(function (n3) {
+          n3(e2);
+        }), (i2 = n2.get("*")) && i2.slice().map(function (n3) {
+          n3(t2, e2);
+        });
+      }
+    };
   }
   class RequestQueue {
     constructor(minBackoff, maxBackoff) {
@@ -21710,16 +21748,19 @@ ${content2}`;
     return /* @__PURE__ */ o$8("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 15 15", width: "15", height: "15", children: /* @__PURE__ */ o$8("path", { d: "M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z", fill: "currentColor", fillRule: "evenodd", clipRule: "evenodd" }) });
   }
   function IconJSON() {
-    return /* @__PURE__ */ o$8("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", className: "w-5 h-5", style: { marginInline: "-2px", marginTop: "2px" }, "stroke-width": "2", stroke: "currentColor", fill: "none", strokeLinecap: "round", strokeLinejoin: "round", children: [
+    return /* @__PURE__ */ o$8("svg", {
+      xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", className: "w-5 h-5", style: { marginInline: "-2px", marginTop: "2px" }, "stroke-width": "2", stroke: "currentColor", fill: "none", strokeLinecap: "round", strokeLinejoin: "round", children: [
       /* @__PURE__ */ o$8("path", { stroke: "none", d: "M0 0h24v24H0z", fill: "none" }),
       /* @__PURE__ */ o$8("path", { d: "M20 16v-8l3 8v-8" }),
       /* @__PURE__ */ o$8("path", { d: "M15 8a2 2 0 0 1 2 2v4a2 2 0 1 1 -4 0v-4a2 2 0 0 1 2 -2z" }),
       /* @__PURE__ */ o$8("path", { d: "M1 8h3v6.5a1.5 1.5 0 0 1 -3 0v-.5" }),
       /* @__PURE__ */ o$8("path", { d: "M7 15a1 1 0 0 0 1 1h1a1 1 0 0 0 1 -1v-2a1 1 0 0 0 -1 -1h-1a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1h1a1 1 0 0 1 1 1" })
-    ] });
+      ]
+    });
   }
   function IconZip() {
-    return /* @__PURE__ */ o$8("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", className: "w-4 h-4", "stroke-width": "2", stroke: "currentColor", fill: "none", strokeLinecap: "round", strokeLinejoin: "round", children: [
+    return /* @__PURE__ */ o$8("svg", {
+      xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", className: "w-4 h-4", "stroke-width": "2", stroke: "currentColor", fill: "none", strokeLinecap: "round", strokeLinejoin: "round", children: [
       /* @__PURE__ */ o$8("path", { stroke: "none", d: "M0 0h24v24H0z", fill: "none" }),
       /* @__PURE__ */ o$8("path", { d: "M6 20.735a2 2 0 0 1 -1 -1.735v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2h-1" }),
       /* @__PURE__ */ o$8("path", { d: "M11 17a2 2 0 0 1 2 2v2a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-2a2 2 0 0 1 2 -2z" }),
@@ -21729,32 +21770,35 @@ ${content2}`;
       /* @__PURE__ */ o$8("path", { d: "M13 11l-1 0" }),
       /* @__PURE__ */ o$8("path", { d: "M11 13l-1 0" }),
       /* @__PURE__ */ o$8("path", { d: "M13 15l-1 0" })
-    ] });
+      ]
+    });
   }
   function IconLoading({ className, style }) {
-    return /* @__PURE__ */ o$8("span", { style: { animation: "1.4s linear 0s infinite normal none running rotate" }, children: /* @__PURE__ */ o$8(
-      "svg",
-      {
-        xmlns: "http://www.w3.org/2000/svg",
-        viewBox: "22 22 44 44",
-        className,
-        style: { animation: "1.4s ease-in-out 0s infinite normal none running circularDash", ...style },
-        fill: "none",
-        stroke: "currentColor",
-        "stroke-width": "2",
-        children: /* @__PURE__ */ o$8(
-          "circle",
-          {
-            cx: "44",
-            cy: "44",
-            r: "20.2",
-            fill: "none",
-            stroke: "currentColor",
-            "stroke-width": "3.6"
-          }
-        )
-      }
-    ) });
+    return /* @__PURE__ */ o$8("span", {
+      style: { animation: "1.4s linear 0s infinite normal none running rotate" }, children: /* @__PURE__ */ o$8(
+        "svg",
+        {
+          xmlns: "http://www.w3.org/2000/svg",
+          viewBox: "22 22 44 44",
+          className,
+          style: { animation: "1.4s ease-in-out 0s infinite normal none running circularDash", ...style },
+          fill: "none",
+          stroke: "currentColor",
+          "stroke-width": "2",
+          children: /* @__PURE__ */ o$8(
+            "circle",
+            {
+              cx: "44",
+              cy: "44",
+              r: "20.2",
+              fill: "none",
+              stroke: "currentColor",
+              "stroke-width": "3.6"
+            }
+          )
+        }
+      )
+    });
   }
   function IconCheckBox() {
     return /* @__PURE__ */ o$8("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", style: { width: "1em", height: "1em", display: "inline-block" }, fill: "currentColor", children: /* @__PURE__ */ o$8("path", { d: "M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" }) });
@@ -21763,19 +21807,23 @@ ${content2}`;
     return /* @__PURE__ */ o$8("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", className, style: { width: "1em", height: "1em", display: "inline-block" }, fill: "currentColor", children: /* @__PURE__ */ o$8("path", { d: "M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" }) });
   }
   function IconTrash({ className, style }) {
-    return /* @__PURE__ */ o$8("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", className, style, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round", children: [
+    return /* @__PURE__ */ o$8("svg", {
+      xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", className, style, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round", children: [
       /* @__PURE__ */ o$8("path", { stroke: "none", d: "M0 0h24v24H0z", fill: "none" }),
       /* @__PURE__ */ o$8("path", { d: "M20 6a1 1 0 0 1 .117 1.993l-.117 .007h-.081l-.919 11a3 3 0 0 1 -2.824 2.995l-.176 .005h-8c-1.598 0 -2.904 -1.249 -2.992 -2.75l-.005 -.167l-.923 -11.083h-.08a1 1 0 0 1 -.117 -1.993l.117 -.007h16z", "stroke-width": "0", fill: "currentColor" }),
       /* @__PURE__ */ o$8("path", { d: "M14 2a2 2 0 0 1 2 2a1 1 0 0 1 -1.993 .117l-.007 -.117h-4l-.007 .117a1 1 0 0 1 -1.993 -.117a2 2 0 0 1 1.85 -1.995l.15 -.005h4z", "stroke-width": "0", fill: "currentColor" })
-    ] });
+      ]
+    });
   }
   function IconUpload({ className, style }) {
-    return /* @__PURE__ */ o$8("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", className, style, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round", children: [
+    return /* @__PURE__ */ o$8("svg", {
+      xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", className, style, fill: "none", "stroke-linecap": "round", "stroke-linejoin": "round", children: [
       /* @__PURE__ */ o$8("path", { stroke: "none", d: "M0 0h24v24H0z", fill: "none" }),
       /* @__PURE__ */ o$8("path", { stroke: "currentColor", d: "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" }),
       /* @__PURE__ */ o$8("path", { stroke: "currentColor", d: "M7 9l5 -5l5 5" }),
       /* @__PURE__ */ o$8("path", { stroke: "currentColor", d: "M12 4l0 12" })
-    ] });
+      ]
+    });
   }
   const CheckBox = ({
     className,
@@ -21793,8 +21841,10 @@ ${content2}`;
     p$6(() => {
       setChecked(checked);
     }, [checked]);
-    return /* @__PURE__ */ o$8("label", { className: `CheckBoxLabel ${className ?? ""}`, disabled, children: [
-      /* @__PURE__ */ o$8("span", { className: "IconWrapper", children: [
+    return /* @__PURE__ */ o$8("label", {
+      className: `CheckBoxLabel ${className ?? ""}`, disabled, children: [
+      /* @__PURE__ */ o$8("span", {
+        className: "IconWrapper", children: [
         /* @__PURE__ */ o$8(
           "input",
           {
@@ -21804,10 +21854,12 @@ ${content2}`;
             disabled
           }
         ),
-        isChecked ? /* @__PURE__ */ o$8(IconCheckBoxChecked, {}) : /* @__PURE__ */ o$8(IconCheckBox, {})
-      ] }),
+          isChecked ? /* @__PURE__ */ o$8(IconCheckBoxChecked, {}) : /* @__PURE__ */ o$8(IconCheckBox, {})
+        ]
+      }),
       /* @__PURE__ */ o$8("span", { className: "LabelText", children: label })
-    ] });
+      ]
+    });
   };
   function useGMStorage(key2, initialValue) {
     const [storedValue, setStoredValue] = h$4(() => ScriptStorage.get(key2) ?? initialValue);
@@ -21902,26 +21954,28 @@ ${content2}`;
   const useSettingContext = () => q$1(SettingContext);
   const ProjectSelect = ({ projects, selected, setSelected, disabled }) => {
     const { t: t2 } = useTranslation();
-    return /* @__PURE__ */ o$8("div", { className: "flex items-center text-gray-600 dark:text-gray-300 flex justify-between mb-3", children: [
-      t2("Select Project"),
+    return /* @__PURE__ */ o$8("div", {
+      className: "flex items-center text-gray-600 dark:text-gray-300 flex justify-between mb-3", children: [
+        t2("Select Project"),
       /* @__PURE__ */ o$8(
-        "select",
-        {
-          disabled,
-          className: "Select",
-          value: (selected == null ? void 0 : selected.id) || "",
-          onChange: (e2) => {
-            const projectId = e2.currentTarget.value;
-            const project = projects.find((p2) => p2.id === projectId);
-            setSelected(project || null);
-          },
-          children: [
+          "select",
+          {
+            disabled,
+            className: "Select",
+            value: (selected == null ? void 0 : selected.id) || "",
+            onChange: (e2) => {
+              const projectId = e2.currentTarget.value;
+              const project = projects.find((p2) => p2.id === projectId);
+              setSelected(project || null);
+            },
+            children: [
             /* @__PURE__ */ o$8("option", { value: "", children: t2("(no project)") }),
-            projects.map((project) => /* @__PURE__ */ o$8("option", { value: project.id, children: project.display.name }, project.id))
-          ]
-        }
-      )
-    ] });
+              projects.map((project) => /* @__PURE__ */ o$8("option", { value: project.id, children: project.display.name }, project.id))
+            ]
+          }
+        )
+      ]
+    });
   };
   const ConversationSelect = ({
     conversations,
@@ -21932,43 +21986,55 @@ ${content2}`;
     error: error2
   }) => {
     const { t: t2 } = useTranslation();
-    return /* @__PURE__ */ o$8(k$3, { children: [
-      /* @__PURE__ */ o$8("div", { className: "SelectToolbar", children: /* @__PURE__ */ o$8(
-        CheckBox,
-        {
-          label: t2("Select All"),
-          disabled,
-          checked: selected.length === conversations.length,
-          onCheckedChange: (checked) => {
-            setSelected(checked ? conversations : []);
-          }
-        }
-      ) }),
-      /* @__PURE__ */ o$8("ul", { className: "SelectList", children: [
-        loading && /* @__PURE__ */ o$8("li", { className: "SelectItem", children: [
-          t2("Loading"),
-          "..."
-        ] }),
-        error2 && /* @__PURE__ */ o$8("li", { className: "SelectItem", children: [
-          t2("Error"),
-          ": ",
-          error2
-        ] }),
-        !loading && !error2 && conversations.map((c2) => /* @__PURE__ */ o$8("li", { className: "SelectItem", children: /* @__PURE__ */ o$8(
+    return /* @__PURE__ */ o$8(k$3, {
+      children: [
+      /* @__PURE__ */ o$8("div", {
+        className: "SelectToolbar", children: /* @__PURE__ */ o$8(
           CheckBox,
           {
-            label: c2.title,
+            label: t2("Select All"),
             disabled,
-            checked: selected.some((x2) => x2.id === c2.id),
+            checked: selected.length === conversations.length,
             onCheckedChange: (checked) => {
-              setSelected(
-                checked ? [...selected, c2] : selected.filter((x2) => x2.id !== c2.id)
-              );
+              setSelected(checked ? conversations : []);
             }
           }
-        ) }, c2.id))
-      ] })
-    ] });
+        )
+      }),
+      /* @__PURE__ */ o$8("ul", {
+        className: "SelectList", children: [
+          loading && /* @__PURE__ */ o$8("li", {
+            className: "SelectItem", children: [
+              t2("Loading"),
+              "..."
+            ]
+          }),
+          error2 && /* @__PURE__ */ o$8("li", {
+            className: "SelectItem", children: [
+              t2("Error"),
+              ": ",
+              error2
+            ]
+          }),
+          !loading && !error2 && conversations.map((c2) => /* @__PURE__ */ o$8("li", {
+            className: "SelectItem", children: /* @__PURE__ */ o$8(
+              CheckBox,
+              {
+                label: c2.title,
+                disabled,
+                checked: selected.some((x2) => x2.id === c2.id),
+                onCheckedChange: (checked) => {
+                  setSelected(
+                    checked ? [...selected, c2] : selected.filter((x2) => x2.id !== c2.id)
+                  );
+                }
+              }
+            )
+          }, c2.id))
+        ]
+      })
+      ]
+    });
   };
   const DialogContent = ({ format }) => {
     const { t: t2 } = useTranslation();
@@ -22132,16 +22198,21 @@ ${content2}`;
         setError(err.message || "Failed to load conversations");
       }).finally(() => setLoading(false));
     }, [selectedProject, exportAllLimit]);
-    return /* @__PURE__ */ o$8(k$3, { children: [
+    return /* @__PURE__ */ o$8(k$3, {
+      children: [
       /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$f99233281efd08a0, { className: "DialogTitle", children: t2("Export Dialog Title") }),
-      /* @__PURE__ */ o$8("div", { className: "flex items-center text-gray-600 dark:text-gray-300 flex justify-between border-b-[1px] pb-3 mb-3 dark:border-gray-700", children: [
-        t2("Export from official export file"),
-        " (conversations.json) ",
-        exportSource === "API" && /* @__PURE__ */ o$8("button", { className: "btn relative btn-neutral", onClick: () => {
-          var _a;
-          return (_a = fileInputRef.current) == null ? void 0 : _a.click();
-        }, children: /* @__PURE__ */ o$8(IconUpload, { className: "w-4 h-4" }) })
-      ] }),
+      /* @__PURE__ */ o$8("div", {
+        className: "flex items-center text-gray-600 dark:text-gray-300 flex justify-between border-b-[1px] pb-3 mb-3 dark:border-gray-700", children: [
+          t2("Export from official export file"),
+          " (conversations.json) ",
+          exportSource === "API" && /* @__PURE__ */ o$8("button", {
+            className: "btn relative btn-neutral", onClick: () => {
+              var _a;
+              return (_a = fileInputRef.current) == null ? void 0 : _a.click();
+            }, children: /* @__PURE__ */ o$8(IconUpload, { className: "w-4 h-4" })
+          })
+        ]
+      }),
       /* @__PURE__ */ o$8(
         "input",
         {
@@ -22152,35 +22223,42 @@ ${content2}`;
           onChange: onUpload
         }
       ),
-      exportSource === "API" && /* @__PURE__ */ o$8("div", { className: "flex items-center text-gray-600 dark:text-gray-300 flex justify-between mb-3", children: t2("Export from API") }),
+        exportSource === "API" && /* @__PURE__ */ o$8("div", { className: "flex items-center text-gray-600 dark:text-gray-300 flex justify-between mb-3", children: t2("Export from API") }),
       /* @__PURE__ */ o$8(ProjectSelect, { projects, selected: selectedProject, setSelected: setSelectedProject, disabled: processing || loading }),
       /* @__PURE__ */ o$8(
-        ConversationSelect,
-        {
-          conversations,
-          selected,
-          setSelected,
-          disabled: processing,
-          loading,
-          error: error2
-        }
-      ),
-      /* @__PURE__ */ o$8("div", { className: "flex mt-6", style: { justifyContent: "space-between" }, children: [
+          ConversationSelect,
+          {
+            conversations,
+            selected,
+            setSelected,
+            disabled: processing,
+            loading,
+            error: error2
+          }
+        ),
+      /* @__PURE__ */ o$8("div", {
+          className: "flex mt-6", style: { justifyContent: "space-between" }, children: [
         /* @__PURE__ */ o$8("select", { className: "Select", disabled: processing, value: exportType, onChange: (e2) => setExportType(e2.currentTarget.value), children: exportAllOptions.map(({ label }) => /* @__PURE__ */ o$8("option", { value: label, children: label }, t2(label))) }),
         /* @__PURE__ */ o$8("div", { className: "flex flex-grow" }),
         /* @__PURE__ */ o$8("button", { className: "Button red", disabled: disabled || exportSource === "Local", onClick: archiveAll, children: t2("Archive") }),
         /* @__PURE__ */ o$8("button", { className: "Button red ml-4", disabled: disabled || exportSource === "Local", onClick: deleteAll, children: t2("Delete") }),
         /* @__PURE__ */ o$8("button", { className: "Button green ml-4", disabled, onClick: exportAll, children: t2("Export") })
-      ] }),
-      processing && /* @__PURE__ */ o$8(k$3, { children: [
-        /* @__PURE__ */ o$8("div", { className: "mt-2 mb-1 justify-between flex", children: [
+          ]
+        }),
+        processing && /* @__PURE__ */ o$8(k$3, {
+          children: [
+        /* @__PURE__ */ o$8("div", {
+            className: "mt-2 mb-1 justify-between flex", children: [
           /* @__PURE__ */ o$8("span", { className: "truncate mr-8", children: progress.currentName }),
           /* @__PURE__ */ o$8("span", { children: `${progress.completed}/${progress.total}` })
-        ] }),
+            ]
+          }),
         /* @__PURE__ */ o$8("div", { className: "w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700", children: /* @__PURE__ */ o$8("div", { className: "bg-blue-600 h-2.5 rounded-full", style: { width: `${progress.completed / progress.total * 100}%` } }) })
-      ] }),
+          ]
+        }),
       /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$f39c2d165cd861fe, { asChild: true, children: /* @__PURE__ */ o$8("button", { className: "IconButton CloseButton", "aria-label": "Close", children: /* @__PURE__ */ o$8(IconCross, {}) }) })
-    ] });
+      ]
+    });
   };
   const ExportDialog = ({ format, open, onOpenChange, children }) => {
     return /* @__PURE__ */ o$8(
@@ -22190,10 +22268,12 @@ ${content2}`;
         onOpenChange,
         children: [
           /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$41fb9f06171c75f4, { asChild: true, children }),
-          /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$602eac185826482c, { children: [
+          /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$602eac185826482c, {
+          children: [
             /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$c6fdb837b070b4ff, { className: "DialogOverlay" }),
             /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$7c6e2c02157bb7d2, { className: "DialogContent", children: open && /* @__PURE__ */ o$8(DialogContent, { format }) })
-          ] })
+          ]
+        })
         ]
       }
     );
@@ -22233,10 +22313,12 @@ ${content2}`;
         onTouchStart: handleClick,
         disabled,
         title: title2,
-        children: loading ? /* @__PURE__ */ o$8("div", { className: "flex justify-center items-center w-full h-full", children: /* @__PURE__ */ o$8(IconLoading, { className: "w-4 h-4" }) }) : /* @__PURE__ */ o$8(k$3, { children: [
-          Icon && /* @__PURE__ */ o$8(Icon, {}),
-          succeed && successText ? successText : text2
-        ] })
+        children: loading ? /* @__PURE__ */ o$8("div", { className: "flex justify-center items-center w-full h-full", children: /* @__PURE__ */ o$8(IconLoading, { className: "w-4 h-4" }) }) : /* @__PURE__ */ o$8(k$3, {
+          children: [
+            Icon && /* @__PURE__ */ o$8(Icon, {}),
+            succeed && successText ? successText : text2
+          ]
+        })
       }
     );
   };
@@ -22305,46 +22387,48 @@ ${content2}`;
     }));
   }
   function o$3() {
-    let n2 = [], r2 = { addEventListener(e2, t2, s2, a2) {
-      return e2.addEventListener(t2, s2, a2), r2.add(() => e2.removeEventListener(t2, s2, a2));
-    }, requestAnimationFrame(...e2) {
-      let t2 = requestAnimationFrame(...e2);
-      return r2.add(() => cancelAnimationFrame(t2));
-    }, nextFrame(...e2) {
-      return r2.requestAnimationFrame(() => r2.requestAnimationFrame(...e2));
-    }, setTimeout(...e2) {
-      let t2 = setTimeout(...e2);
-      return r2.add(() => clearTimeout(t2));
-    }, microTask(...e2) {
-      let t$12 = { current: true };
-      return t(() => {
-        t$12.current && e2[0]();
-      }), r2.add(() => {
-        t$12.current = false;
-      });
-    }, style(e2, t2, s2) {
-      let a2 = e2.style.getPropertyValue(t2);
-      return Object.assign(e2.style, { [t2]: s2 }), this.add(() => {
-        Object.assign(e2.style, { [t2]: a2 });
-      });
-    }, group(e2) {
-      let t2 = o$3();
-      return e2(t2), this.add(() => t2.dispose());
-    }, add(e2) {
-      return n2.push(e2), () => {
-        let t2 = n2.indexOf(e2);
-        if (t2 >= 0) for (let s2 of n2.splice(t2, 1)) s2();
-      };
-    }, dispose() {
-      for (let e2 of n2.splice(0)) e2();
-    } };
+    let n2 = [], r2 = {
+      addEventListener(e2, t2, s2, a2) {
+        return e2.addEventListener(t2, s2, a2), r2.add(() => e2.removeEventListener(t2, s2, a2));
+      }, requestAnimationFrame(...e2) {
+        let t2 = requestAnimationFrame(...e2);
+        return r2.add(() => cancelAnimationFrame(t2));
+      }, nextFrame(...e2) {
+        return r2.requestAnimationFrame(() => r2.requestAnimationFrame(...e2));
+      }, setTimeout(...e2) {
+        let t2 = setTimeout(...e2);
+        return r2.add(() => clearTimeout(t2));
+      }, microTask(...e2) {
+        let t$12 = { current: true };
+        return t(() => {
+          t$12.current && e2[0]();
+        }), r2.add(() => {
+          t$12.current = false;
+        });
+      }, style(e2, t2, s2) {
+        let a2 = e2.style.getPropertyValue(t2);
+        return Object.assign(e2.style, { [t2]: s2 }), this.add(() => {
+          Object.assign(e2.style, { [t2]: a2 });
+        });
+      }, group(e2) {
+        let t2 = o$3();
+        return e2(t2), this.add(() => t2.dispose());
+      }, add(e2) {
+        return n2.push(e2), () => {
+          let t2 = n2.indexOf(e2);
+          if (t2 >= 0) for (let s2 of n2.splice(t2, 1)) s2();
+        };
+      }, dispose() {
+        for (let e2 of n2.splice(0)) e2();
+      }
+    };
     return r2;
   }
   function p$2() {
     let [e2] = h$4(o$3);
     return p$6(() => () => e2.dispose(), [e2]), e2;
   }
-  let o$2 = function(t2) {
+  let o$2 = function (t2) {
     let e2 = s$2(t2);
     return wn.useCallback((...r2) => e2.current(...r2), [e2]);
   };
@@ -22355,7 +22439,7 @@ ${content2}`;
     }, [e2]), p$6(() => s$3.handoff(), []), e2;
   }
   var o$1;
-  let I = (o$1 = wn.useId) != null ? o$1 : function() {
+  let I = (o$1 = wn.useId) != null ? o$1 : function () {
     let n2 = l(), [e2, u2] = wn.useState(n2 ? () => s$3.nextId() : null);
     return l$1(() => {
       e2 === null && u2(s$3.nextId());
@@ -22408,11 +22492,13 @@ ${content2}`;
     }
     if (u2 & 1) {
       let { unmount: l2 = true, ...p2 } = o3;
-      return u$2(l2 ? 0 : 1, { [0]() {
-        return null;
-      }, [1]() {
-        return c$1({ ...p2, hidden: true, style: { display: "none" } }, e2, a2, f2);
-      } });
+      return u$2(l2 ? 0 : 1, {
+        [0]() {
+          return null;
+        }, [1]() {
+          return c$1({ ...p2, hidden: true, style: { display: "none" } }, e2, a2, f2);
+        }
+      });
     }
     return c$1(o3, e2, a2, f2);
   }
@@ -22436,9 +22522,11 @@ ${content2}`;
     return y$6(s2, Object.assign({}, g(o3, ["ref"]), s2 !== k$3 && u2, s2 !== k$3 && p2), l2);
   }
   function w(...r2) {
-    return { ref: r2.every((t2) => t2 == null) ? void 0 : (t2) => {
-      for (let e2 of r2) e2 != null && (typeof e2 == "function" ? e2(t2) : e2.current = t2);
-    } };
+    return {
+      ref: r2.every((t2) => t2 == null) ? void 0 : (t2) => {
+        for (let e2 of r2) e2 != null && (typeof e2 == "function" ? e2(t2) : e2.current = t2);
+      }
+    };
   }
   function N(...r2) {
     if (r2.length === 0) return {};
@@ -22446,13 +22534,15 @@ ${content2}`;
     let t2 = {}, e2 = {};
     for (let s2 of r2) for (let n2 in s2) n2.startsWith("on") && typeof s2[n2] == "function" ? (e2[n2] != null || (e2[n2] = []), e2[n2].push(s2[n2])) : t2[n2] = s2[n2];
     if (t2.disabled || t2["aria-disabled"]) return Object.assign(t2, Object.fromEntries(Object.keys(e2).map((s2) => [s2, void 0])));
-    for (let s2 in e2) Object.assign(t2, { [s2](n2, ...f2) {
-      let o3 = e2[s2];
-      for (let u2 of o3) {
-        if ((n2 instanceof Event || (n2 == null ? void 0 : n2.nativeEvent) instanceof Event) && n2.defaultPrevented) return;
-        u2(n2, ...f2);
+    for (let s2 in e2) Object.assign(t2, {
+      [s2](n2, ...f2) {
+        let o3 = e2[s2];
+        for (let u2 of o3) {
+          if ((n2 instanceof Event || (n2 == null ? void 0 : n2.nativeEvent) instanceof Event) && n2.defaultPrevented) return;
+          u2(n2, ...f2);
+        }
       }
-    } });
+    });
     return t2;
   }
   function D(r2) {
@@ -22471,14 +22561,14 @@ ${content2}`;
   }
   function r(n2) {
     let e2 = n2.parentElement, l2 = null;
-    for (; e2 && !(e2 instanceof HTMLFieldSetElement); ) e2 instanceof HTMLLegendElement && (l2 = e2), e2 = e2.parentElement;
+    for (; e2 && !(e2 instanceof HTMLFieldSetElement);) e2 instanceof HTMLLegendElement && (l2 = e2), e2 = e2.parentElement;
     let t2 = (e2 == null ? void 0 : e2.getAttribute("disabled")) === "";
     return t2 && i(l2) ? false : t2;
   }
   function i(n2) {
     if (!n2) return false;
     let e2 = n2.previousElementSibling;
-    for (; e2 !== null; ) {
+    for (; e2 !== null;) {
       if (e2 instanceof HTMLLegendElement) return false;
       e2 = e2.previousElementSibling;
     }
@@ -22517,7 +22607,7 @@ ${content2}`;
   }
   function M$1() {
     let [r2, t2] = h$4([]);
-    return [r2.length > 0 ? r2.join(" ") : void 0, F$1(() => function(e2) {
+    return [r2.length > 0 ? r2.join(" ") : void 0, F$1(() => function (e2) {
       let i2 = o$2((s2) => (t2((o3) => [...o3, s2]), () => t2((o3) => {
         let p2 = o3.slice(), c2 = p2.indexOf(s2);
         return c2 !== -1 && p2.splice(c2, 1), p2;
@@ -22544,7 +22634,7 @@ ${content2}`;
   }
   function H() {
     let [o3, t2] = h$4([]);
-    return [o3.length > 0 ? o3.join(" ") : void 0, F$1(() => function(e2) {
+    return [o3.length > 0 ? o3.join(" ") : void 0, F$1(() => function (e2) {
       let s2 = o$2((r2) => (t2((l2) => [...l2, r2]), () => t2((l2) => {
         let n2 = l2.slice(), p2 = n2.indexOf(r2);
         return p2 !== -1 && n2.splice(p2, 1), n2;
@@ -22566,9 +22656,13 @@ ${content2}`;
   function Z(s2) {
     var d2;
     let [n2, p2] = h$4(null), [c2, f2] = H(), [r2, h2] = M$1(), l2 = F$1(() => ({ switch: n2, setSwitch: p2, labelledby: c2, describedby: r2 }), [n2, p2, c2, r2]), T2 = {}, b2 = s2;
-    return wn.createElement(h2, { name: "Switch.Description" }, wn.createElement(f2, { name: "Switch.Label", props: { htmlFor: (d2 = l2.switch) == null ? void 0 : d2.id, onClick(t2) {
-      n2 && (t2.currentTarget.tagName === "LABEL" && t2.preventDefault(), n2.click(), n2.focus({ preventScroll: true }));
-    } } }, wn.createElement(y.Provider, { value: l2 }, X({ ourProps: T2, theirProps: b2, defaultTag: Y, name: "Switch.Group" }))));
+    return wn.createElement(h2, { name: "Switch.Description" }, wn.createElement(f2, {
+      name: "Switch.Label", props: {
+        htmlFor: (d2 = l2.switch) == null ? void 0 : d2.id, onClick(t2) {
+          n2 && (t2.currentTarget.tagName === "LABEL" && t2.preventDefault(), n2.click(), n2.focus({ preventScroll: true }));
+        }
+      }
+    }, wn.createElement(y.Provider, { value: l2 }, X({ ourProps: T2, theirProps: b2, defaultTag: Y, name: "Switch.Group" }))));
   }
   let ee = "button";
   function te(s2, n2) {
@@ -22588,7 +22682,8 @@ ${content2}`;
   }
   let ne = D(te), re = Z, Ge = Object.assign(ne, { Group: re, Label: M, Description: b });
   function Toggle({ label, checked = true, onCheckedUpdate }) {
-    return /* @__PURE__ */ o$8("div", { className: "inline-flex items-center", children: [
+    return /* @__PURE__ */ o$8("div", {
+      className: "inline-flex items-center", children: [
       /* @__PURE__ */ o$8(
         Ge,
         {
@@ -22605,8 +22700,9 @@ ${content2}`;
           )
         }
       ),
-      label && /* @__PURE__ */ o$8("span", { className: "toggle-switch-label", children: label })
-    ] });
+        label && /* @__PURE__ */ o$8("span", { className: "toggle-switch-label", children: label })
+      ]
+    });
   }
   function Variable({ name, title: title2 }) {
     return /* @__PURE__ */ o$8("strong", { className: "cursor-help select-all whitespace-nowrap", title: title2, children: name });
@@ -22654,210 +22750,270 @@ ${content2}`;
         onOpenChange,
         children: [
           /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$41fb9f06171c75f4, { asChild: true, children }),
-          /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$602eac185826482c, { children: [
+          /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$602eac185826482c, {
+          children: [
             /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$c6fdb837b070b4ff, { className: "DialogOverlay" }),
-            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$7c6e2c02157bb7d2, { className: "DialogContent", children: [
+            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$7c6e2c02157bb7d2, {
+            className: "DialogContent", children: [
               /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$f99233281efd08a0, { className: "DialogTitle", children: t2("Exporter Settings") }),
-              /* @__PURE__ */ o$8("dl", { className: "space-y-6", children: [
-                /* @__PURE__ */ o$8("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ o$8("div", { children: [
+              /* @__PURE__ */ o$8("dl", {
+              className: "space-y-6", children: [
+                /* @__PURE__ */ o$8("div", {
+                className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ o$8("div", {
+                  children: [
                   /* @__PURE__ */ o$8("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: `${t2("Language")} 🌐` }),
-                  /* @__PURE__ */ o$8("dd", { children: /* @__PURE__ */ o$8(
-                    "select",
-                    {
-                      className: "Select mt-3",
-                      value: i18n.language,
-                      onChange: (e2) => i18n.changeLanguage(e2.currentTarget.value),
-                      children: LOCALES.map(({ name, code: code2 }) => /* @__PURE__ */ o$8("option", { value: code2, children: name }, code2))
-                    }
-                  ) })
-                ] }) }),
-                /* @__PURE__ */ o$8("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ o$8("div", { children: [
+                  /* @__PURE__ */ o$8("dd", {
+                    children: /* @__PURE__ */ o$8(
+                      "select",
+                      {
+                        className: "Select mt-3",
+                        value: i18n.language,
+                        onChange: (e2) => i18n.changeLanguage(e2.currentTarget.value),
+                        children: LOCALES.map(({ name, code: code2 }) => /* @__PURE__ */ o$8("option", { value: code2, children: name }, code2))
+                      }
+                    )
+                  })
+                  ]
+                })
+              }),
+                /* @__PURE__ */ o$8("div", {
+                className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ o$8("div", {
+                  children: [
                   /* @__PURE__ */ o$8("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("File Name") }),
-                  /* @__PURE__ */ o$8("dd", { children: [
-                    /* @__PURE__ */ o$8("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
-                      t2("Available variables"),
-                      ":",
-                      " ",
+                  /* @__PURE__ */ o$8("dd", {
+                    children: [
+                    /* @__PURE__ */ o$8("p", {
+                      className: "text-sm text-gray-700 dark:text-gray-300", children: [
+                        t2("Available variables"),
+                        ":",
+                        " ",
                       /* @__PURE__ */ o$8(Variable, { name: "{title}", title: title2 }),
-                      ",",
-                      " ",
+                        ",",
+                        " ",
                       /* @__PURE__ */ o$8(Variable, { name: "{date}", title: date }),
-                      ",",
-                      " ",
+                        ",",
+                        " ",
                       /* @__PURE__ */ o$8(Variable, { name: "{timestamp}", title: timestamp$1 }),
-                      ",",
-                      " ",
+                        ",",
+                        " ",
                       /* @__PURE__ */ o$8(Variable, { name: "{chat_id}", title: chatId }),
-                      ",",
-                      " ",
+                        ",",
+                        " ",
                       /* @__PURE__ */ o$8(Variable, { name: "{create_time}", title: unixTimestampToISOString(createTime) }),
-                      ",",
-                      " ",
+                        ",",
+                        " ",
                       /* @__PURE__ */ o$8(Variable, { name: "{update_time}", title: unixTimestampToISOString(updateTime) })
-                    ] }),
+                      ]
+                    }),
                     /* @__PURE__ */ o$8("input", { className: "Input mt-4", id: "filename", value: format, onChange: (e2) => setFormat(e2.currentTarget.value) }),
-                    /* @__PURE__ */ o$8("p", { className: "mt-1 text-sm text-gray-700 dark:text-gray-300", children: [
-                      t2("Preview"),
-                      ":",
-                      " ",
+                    /* @__PURE__ */ o$8("p", {
+                      className: "mt-1 text-sm text-gray-700 dark:text-gray-300", children: [
+                        t2("Preview"),
+                        ":",
+                        " ",
                       /* @__PURE__ */ o$8("span", { className: "select-all", style: { "text-decoration": "underline", "text-underline-offset": 4 }, children: preview })
-                    ] })
-                  ] })
-                ] }) }),
-                /* @__PURE__ */ o$8("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ o$8("div", { children: [
-                  /* @__PURE__ */ o$8("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: [
-                    t2("Export All Limit"),
-                    " "
-                  ] }),
-                  /* @__PURE__ */ o$8("dd", { className: "text-sm text-gray-700 dark:text-gray-300 mt-2", children: [
-                    t2("Export All Limit Description"),
-                    " ",
-                    /* @__PURE__ */ o$8("div", { className: "flex items-center gap-4 mt-3", children: [
+                      ]
+                    })
+                    ]
+                  })
+                  ]
+                })
+              }),
+                /* @__PURE__ */ o$8("div", {
+                className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ o$8("div", {
+                  children: [
+                  /* @__PURE__ */ o$8("dt", {
+                    className: "text-md font-medium text-gray-800 dark:text-white", children: [
+                      t2("Export All Limit"),
+                      " "
+                    ]
+                  }),
+                  /* @__PURE__ */ o$8("dd", {
+                    className: "text-sm text-gray-700 dark:text-gray-300 mt-2", children: [
+                      t2("Export All Limit Description"),
+                      " ",
+                    /* @__PURE__ */ o$8("div", {
+                        className: "flex items-center gap-4 mt-3", children: [
                       /* @__PURE__ */ o$8(
-                        "input",
-                        {
-                          type: "range",
-                          min: "100",
-                          max: "20000",
-                          step: "100",
-                          value: exportAllLimit,
-                          onChange: (e2) => setExportAllLimit(
-                            Number.parseInt(
-                              e2.currentTarget.value,
-                              10
-                            )
-                          ),
-                          className: "flex-grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700",
-                          id: "exportAllLimitSlider"
-                        }
-                      ),
+                          "input",
+                          {
+                            type: "range",
+                            min: "100",
+                            max: "20000",
+                            step: "100",
+                            value: exportAllLimit,
+                            onChange: (e2) => setExportAllLimit(
+                              Number.parseInt(
+                                e2.currentTarget.value,
+                                10
+                              )
+                            ),
+                            className: "flex-grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700",
+                            id: "exportAllLimitSlider"
+                          }
+                        ),
                       /* @__PURE__ */ o$8("span", { className: "font-medium text-gray-900 dark:text-gray-300 w-12 text-right", children: exportAllLimit })
-                    ] })
-                  ] })
-                ] }) }),
-                /* @__PURE__ */ o$8("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
-                  /* @__PURE__ */ o$8("div", { children: [
+                        ]
+                      })
+                    ]
+                  })
+                  ]
+                })
+              }),
+                /* @__PURE__ */ o$8("div", {
+                className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
+                  /* @__PURE__ */ o$8("div", {
+                  children: [
                     /* @__PURE__ */ o$8("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Conversation Timestamp") }),
-                    /* @__PURE__ */ o$8("dd", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
+                    /* @__PURE__ */ o$8("dd", {
+                    className: "text-sm text-gray-700 dark:text-gray-300", children: [
                       t2("Conversation Timestamp Description"),
-                      enableTimestamp && /* @__PURE__ */ o$8(k$3, { children: [
-                        /* @__PURE__ */ o$8("div", { className: "mt-2", children: /* @__PURE__ */ o$8(
-                          Toggle,
-                          {
-                            label: t2("Use 24-hour format"),
-                            checked: timeStamp24H,
-                            onCheckedUpdate: setTimeStamp24H
-                          }
-                        ) }),
-                        /* @__PURE__ */ o$8("div", { className: "mt-2", children: /* @__PURE__ */ o$8(
-                          Toggle,
-                          {
-                            label: t2("Enable on HTML"),
-                            checked: enableTimestampHTML,
-                            onCheckedUpdate: setEnableTimestampHTML
-                          }
-                        ) }),
-                        /* @__PURE__ */ o$8("div", { className: "mt-2", children: /* @__PURE__ */ o$8(
-                          Toggle,
-                          {
-                            label: t2("Enable on Markdown"),
-                            checked: enableTimestampMarkdown,
-                            onCheckedUpdate: setEnableTimestampMarkdown
-                          }
-                        ) })
-                      ] })
-                    ] })
-                  ] }),
-                  /* @__PURE__ */ o$8("div", { className: "absolute right-4", children: /* @__PURE__ */ o$8(Toggle, { label: "", checked: enableTimestamp, onCheckedUpdate: setEnableTimestamp }) })
-                ] }),
-                /* @__PURE__ */ o$8("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
-                  /* @__PURE__ */ o$8("div", { children: [
-                    /* @__PURE__ */ o$8("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Export Metadata") }),
-                    /* @__PURE__ */ o$8("dd", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
-                      t2("Export Metadata Description"),
-                      enableMeta && /* @__PURE__ */ o$8(k$3, { children: [
-                        /* @__PURE__ */ o$8("p", { className: "mt-2 text-sm text-gray-700 dark:text-gray-300", children: [
-                          t2("Available variables"),
-                          ":",
-                          " ",
-                          /* @__PURE__ */ o$8(Variable, { name: "{title}", title: title2 }),
-                          ",",
-                          " ",
-                          /* @__PURE__ */ o$8(Variable, { name: "{date}", title: date }),
-                          ",",
-                          " ",
-                          /* @__PURE__ */ o$8(Variable, { name: "{timestamp}", title: timestamp$1 }),
-                          ",",
-                          " ",
-                          /* @__PURE__ */ o$8(Variable, { name: "{source}", title: source }),
-                          ",",
-                          " ",
-                          /* @__PURE__ */ o$8(Variable, { name: "{model}", title: "ChatGPT-3.5" }),
-                          ",",
-                          " ",
-                          /* @__PURE__ */ o$8(Variable, { name: "{model_name}", title: "text-davinci-002-render-sha" }),
-                          ",",
-                          " ",
-                          /* @__PURE__ */ o$8(Variable, { name: "{create_time}", title: "2023-04-10T21:45:35.027Z" }),
-                          ",",
-                          " ",
-                          /* @__PURE__ */ o$8(Variable, { name: "{update_time}", title: "2023-04-10T21:45:35.027Z" })
-                        ] }),
-                        exportMetaList.map((meta, i2) => /* @__PURE__ */ o$8("div", { className: "flex items-center mt-2", children: [
-                          /* @__PURE__ */ o$8(
-                            "input",
+                      enableTimestamp && /* @__PURE__ */ o$8(k$3, {
+                        children: [
+                        /* @__PURE__ */ o$8("div", {
+                          className: "mt-2", children: /* @__PURE__ */ o$8(
+                            Toggle,
                             {
-                              className: "Input",
-                              value: meta.name,
-                              onChange: (e2) => {
-                                const list2 = [...exportMetaList];
-                                list2[i2] = { ...list2[i2], name: e2.currentTarget.value };
-                                setExportMetaList(list2);
-                              }
-                            }
-                          ),
-                          /* @__PURE__ */ o$8("span", { className: "mx-2", children: "→" }),
-                          /* @__PURE__ */ o$8(
-                            "input",
-                            {
-                              className: "Input",
-                              value: meta.value,
-                              onChange: (e2) => {
-                                const list2 = [...exportMetaList];
-                                list2[i2] = { ...list2[i2], value: e2.currentTarget.value };
-                                setExportMetaList(list2);
-                              }
-                            }
-                          ),
-                          /* @__PURE__ */ o$8(
-                            "button",
-                            {
-                              className: "ml-2 rounded-full p-1 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition ease-in-out duration-150",
-                              "aria-label": "Remove",
-                              onClick: () => setExportMetaList(exportMetaList.filter((_24, j2) => j2 !== i2)),
-                              children: /* @__PURE__ */ o$8(IconTrash, { className: "w-4 h-4" })
+                              label: t2("Use 24-hour format"),
+                              checked: timeStamp24H,
+                              onCheckedUpdate: setTimeStamp24H
                             }
                           )
-                        ] }, i2)),
-                        /* @__PURE__ */ o$8("div", { className: "flex justify-center items-center mt-2 pr-8", children: /* @__PURE__ */ o$8(
-                          "button",
-                          {
-                            className: "w-full border border-[#6f6e77] dark:border-gray-[#86858d] rounded-md py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition ease-in-out duration-150",
-                            "aria-label": "Add",
-                            onClick: () => setExportMetaList([...exportMetaList, { name: "", value: "" }]),
-                            children: "+"
-                          }
-                        ) })
-                      ] })
-                    ] })
-                  ] }),
+                        }),
+                        /* @__PURE__ */ o$8("div", {
+                          className: "mt-2", children: /* @__PURE__ */ o$8(
+                            Toggle,
+                            {
+                              label: t2("Enable on HTML"),
+                              checked: enableTimestampHTML,
+                              onCheckedUpdate: setEnableTimestampHTML
+                            }
+                          )
+                        }),
+                        /* @__PURE__ */ o$8("div", {
+                          className: "mt-2", children: /* @__PURE__ */ o$8(
+                            Toggle,
+                            {
+                              label: t2("Enable on Markdown"),
+                              checked: enableTimestampMarkdown,
+                              onCheckedUpdate: setEnableTimestampMarkdown
+                            }
+                          )
+                        })
+                        ]
+                      })
+                    ]
+                  })
+                  ]
+                }),
+                  /* @__PURE__ */ o$8("div", { className: "absolute right-4", children: /* @__PURE__ */ o$8(Toggle, { label: "", checked: enableTimestamp, onCheckedUpdate: setEnableTimestamp }) })
+                ]
+              }),
+                /* @__PURE__ */ o$8("div", {
+                className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
+                  /* @__PURE__ */ o$8("div", {
+                  children: [
+                    /* @__PURE__ */ o$8("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Export Metadata") }),
+                    /* @__PURE__ */ o$8("dd", {
+                    className: "text-sm text-gray-700 dark:text-gray-300", children: [
+                      t2("Export Metadata Description"),
+                      enableMeta && /* @__PURE__ */ o$8(k$3, {
+                        children: [
+                        /* @__PURE__ */ o$8("p", {
+                          className: "mt-2 text-sm text-gray-700 dark:text-gray-300", children: [
+                            t2("Available variables"),
+                            ":",
+                            " ",
+                          /* @__PURE__ */ o$8(Variable, { name: "{title}", title: title2 }),
+                            ",",
+                            " ",
+                          /* @__PURE__ */ o$8(Variable, { name: "{date}", title: date }),
+                            ",",
+                            " ",
+                          /* @__PURE__ */ o$8(Variable, { name: "{timestamp}", title: timestamp$1 }),
+                            ",",
+                            " ",
+                          /* @__PURE__ */ o$8(Variable, { name: "{source}", title: source }),
+                            ",",
+                            " ",
+                          /* @__PURE__ */ o$8(Variable, { name: "{model}", title: "ChatGPT-3.5" }),
+                            ",",
+                            " ",
+                          /* @__PURE__ */ o$8(Variable, { name: "{model_name}", title: "text-davinci-002-render-sha" }),
+                            ",",
+                            " ",
+                          /* @__PURE__ */ o$8(Variable, { name: "{create_time}", title: "2023-04-10T21:45:35.027Z" }),
+                            ",",
+                            " ",
+                          /* @__PURE__ */ o$8(Variable, { name: "{update_time}", title: "2023-04-10T21:45:35.027Z" })
+                          ]
+                        }),
+                          exportMetaList.map((meta, i2) => /* @__PURE__ */ o$8("div", {
+                            className: "flex items-center mt-2", children: [
+                          /* @__PURE__ */ o$8(
+                              "input",
+                              {
+                                className: "Input",
+                                value: meta.name,
+                                onChange: (e2) => {
+                                  const list2 = [...exportMetaList];
+                                  list2[i2] = { ...list2[i2], name: e2.currentTarget.value };
+                                  setExportMetaList(list2);
+                                }
+                              }
+                            ),
+                          /* @__PURE__ */ o$8("span", { className: "mx-2", children: "→" }),
+                          /* @__PURE__ */ o$8(
+                              "input",
+                              {
+                                className: "Input",
+                                value: meta.value,
+                                onChange: (e2) => {
+                                  const list2 = [...exportMetaList];
+                                  list2[i2] = { ...list2[i2], value: e2.currentTarget.value };
+                                  setExportMetaList(list2);
+                                }
+                              }
+                            ),
+                          /* @__PURE__ */ o$8(
+                              "button",
+                              {
+                                className: "ml-2 rounded-full p-1 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition ease-in-out duration-150",
+                                "aria-label": "Remove",
+                                onClick: () => setExportMetaList(exportMetaList.filter((_24, j2) => j2 !== i2)),
+                                children: /* @__PURE__ */ o$8(IconTrash, { className: "w-4 h-4" })
+                              }
+                            )
+                            ]
+                          }, i2)),
+                        /* @__PURE__ */ o$8("div", {
+                            className: "flex justify-center items-center mt-2 pr-8", children: /* @__PURE__ */ o$8(
+                              "button",
+                              {
+                                className: "w-full border border-[#6f6e77] dark:border-gray-[#86858d] rounded-md py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition ease-in-out duration-150",
+                                "aria-label": "Add",
+                                onClick: () => setExportMetaList([...exportMetaList, { name: "", value: "" }]),
+                                children: "+"
+                              }
+                            )
+                          })
+                        ]
+                      })
+                    ]
+                  })
+                  ]
+                }),
                   /* @__PURE__ */ o$8("div", { className: "absolute right-4", children: /* @__PURE__ */ o$8(Toggle, { label: "", checked: enableMeta, onCheckedUpdate: setEnableMeta }) })
-                ] })
-              ] }),
+                ]
+              })
+              ]
+            }),
               /* @__PURE__ */ o$8("div", { className: "flex mt-6", style: { justifyContent: "flex-end" }, children: /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$f39c2d165cd861fe, { asChild: true, children: /* @__PURE__ */ o$8("button", { className: "Button green font-bold", children: t2("Save") }) }) }),
               /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$f39c2d165cd861fe, { asChild: true, children: /* @__PURE__ */ o$8("button", { className: "IconButton CloseButton", "aria-label": "Close", children: /* @__PURE__ */ o$8(IconCross, {}) }) })
-            ] })
-          ] })
+            ]
+          })
+          ]
+        })
         ]
       }
     );
@@ -22909,34 +23065,37 @@ ${content2}`;
         }
       );
     }
-    return /* @__PURE__ */ o$8(k$3, { children: [
-      isMobile && open && /* @__PURE__ */ o$8(
-        "div",
-        {
-          className: "dropdown-backdrop animate-fadeIn",
-          onClick: () => setOpen(false)
-        }
-      ),
+    return /* @__PURE__ */ o$8(k$3, {
+      children: [
+        isMobile && open && /* @__PURE__ */ o$8(
+          "div",
+          {
+            className: "dropdown-backdrop animate-fadeIn",
+            onClick: () => setOpen(false)
+          }
+        ),
       /* @__PURE__ */ o$8(
-        $cef8881cdc69808e$export$be92b6f5f03c0fe9,
-        {
-          openDelay: 0,
-          closeDelay: 300,
-          open,
-          onOpenChange: setOpen,
-          children: [
-            /* @__PURE__ */ o$8($cef8881cdc69808e$export$41fb9f06171c75f4, { children: /* @__PURE__ */ o$8(
-              MenuItem,
-              {
-                className: "mt-1",
-                text: t2("ExportHelper"),
-                icon: IconArrowRightFromBracket,
-                onClick: () => {
-                  setOpen(true);
-                  return true;
+          $cef8881cdc69808e$export$be92b6f5f03c0fe9,
+          {
+            openDelay: 0,
+            closeDelay: 300,
+            open,
+            onOpenChange: setOpen,
+            children: [
+            /* @__PURE__ */ o$8($cef8881cdc69808e$export$41fb9f06171c75f4, {
+              children: /* @__PURE__ */ o$8(
+                MenuItem,
+                {
+                  className: "mt-1",
+                  text: t2("ExportHelper"),
+                  icon: IconArrowRightFromBracket,
+                  onClick: () => {
+                    setOpen(true);
+                    return true;
+                  }
                 }
-              }
-            ) }),
+              )
+            }),
             /* @__PURE__ */ o$8(
               Portal,
               {
@@ -22963,116 +23122,124 @@ ${content2}`;
                     collisionPadding: isMobile ? 0 : 8,
                     children: [
                       /* @__PURE__ */ o$8(
-                        SettingDialog,
-                        {
-                          open: settingOpen,
-                          onOpenChange: setSettingOpen,
-                          children: /* @__PURE__ */ o$8("div", { className: "row-full", children: /* @__PURE__ */ o$8(MenuItem, { text: t2("Setting"), icon: IconSetting }) })
-                        }
-                      ),
+                      SettingDialog,
+                      {
+                        open: settingOpen,
+                        onOpenChange: setSettingOpen,
+                        children: /* @__PURE__ */ o$8("div", { className: "row-full", children: /* @__PURE__ */ o$8(MenuItem, { text: t2("Setting"), icon: IconSetting }) })
+                      }
+                    ),
                       /* @__PURE__ */ o$8(
-                        MenuItem,
-                        {
-                          text: t2("Copy Text"),
-                          successText: t2("Copied!"),
-                          icon: IconCopy,
-                          className: "row-full",
-                          onClick: onClickText
-                        }
-                      ),
+                      MenuItem,
+                      {
+                        text: t2("Copy Text"),
+                        successText: t2("Copied!"),
+                        icon: IconCopy,
+                        className: "row-full",
+                        onClick: onClickText
+                      }
+                    ),
                       /* @__PURE__ */ o$8(
-                        MenuItem,
-                        {
-                          text: t2("Screenshot"),
-                          icon: IconCamera,
-                          className: "row-half",
-                          onClick: onClickPng
-                        }
-                      ),
+                      MenuItem,
+                      {
+                        text: t2("Screenshot"),
+                        icon: IconCamera,
+                        className: "row-half",
+                        onClick: onClickPng
+                      }
+                    ),
                       /* @__PURE__ */ o$8(
-                        MenuItem,
-                        {
-                          text: t2("Markdown"),
-                          icon: IconMarkdown,
-                          className: "row-half",
-                          onClick: onClickMarkdown
-                        }
-                      ),
+                      MenuItem,
+                      {
+                        text: t2("Markdown"),
+                        icon: IconMarkdown,
+                        className: "row-half",
+                        onClick: onClickMarkdown
+                      }
+                    ),
                       /* @__PURE__ */ o$8(
-                        MenuItem,
-                        {
-                          text: t2("HTML"),
-                          icon: FileCode,
-                          className: "row-half",
-                          onClick: onClickHtml
-                        }
-                      ),
+                      MenuItem,
+                      {
+                        text: t2("HTML"),
+                        icon: FileCode,
+                        className: "row-half",
+                        onClick: onClickHtml
+                      }
+                    ),
                       /* @__PURE__ */ o$8(
-                        $5d3850c4d0b4e6c7$export$be92b6f5f03c0fe9,
-                        {
-                          open: jsonOpen,
-                          onOpenChange: setJsonOpen,
+                      $5d3850c4d0b4e6c7$export$be92b6f5f03c0fe9,
+                      {
+                        open: jsonOpen,
+                        onOpenChange: setJsonOpen,
+                        children: [
+                            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$41fb9f06171c75f4, {
+                          asChild: true, children: /* @__PURE__ */ o$8(
+                            MenuItem,
+                            {
+                              text: t2("JSON"),
+                              icon: IconJSON,
+                              className: "row-half",
+                              onClick: onClickJSON
+                            }
+                          )
+                        }),
+                            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$602eac185826482c, {
                           children: [
-                            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$41fb9f06171c75f4, { asChild: true, children: /* @__PURE__ */ o$8(
-                              MenuItem,
-                              {
-                                text: t2("JSON"),
-                                icon: IconJSON,
-                                className: "row-half",
-                                onClick: onClickJSON
-                              }
-                            ) }),
-                            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$602eac185826482c, { children: [
                               /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$c6fdb837b070b4ff, { className: "DialogOverlay" }),
-                              /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$7c6e2c02157bb7d2, { className: "DialogContent", style: { width: "320px" }, children: [
+                              /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$7c6e2c02157bb7d2, {
+                            className: "DialogContent", style: { width: "320px" }, children: [
                                 /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$f99233281efd08a0, { className: "DialogTitle", children: t2("JSON") }),
                                 /* @__PURE__ */ o$8(
-                                  MenuItem,
-                                  {
-                                    text: t2("OpenAI Official Format"),
-                                    icon: IconCopy,
-                                    className: "row-full",
-                                    onClick: onClickOfficialJSON
-                                  }
-                                ),
+                              MenuItem,
+                              {
+                                text: t2("OpenAI Official Format"),
+                                icon: IconCopy,
+                                className: "row-full",
+                                onClick: onClickOfficialJSON
+                              }
+                            ),
                                 /* @__PURE__ */ o$8(
-                                  MenuItem,
-                                  {
-                                    text: "JSONL (TavernAI, SillyTavern)",
-                                    icon: IconCopy,
-                                    className: "row-full",
-                                    onClick: onClickTavern
-                                  }
-                                ),
+                              MenuItem,
+                              {
+                                text: "JSONL (TavernAI, SillyTavern)",
+                                icon: IconCopy,
+                                className: "row-full",
+                                onClick: onClickTavern
+                              }
+                            ),
                                 /* @__PURE__ */ o$8(
-                                  MenuItem,
-                                  {
-                                    text: "Ooba (text-generation-webui)",
-                                    icon: IconCopy,
-                                    className: "row-full",
-                                    onClick: onClickOoba
-                                  }
-                                )
-                              ] })
-                            ] })
+                              MenuItem,
+                              {
+                                text: "Ooba (text-generation-webui)",
+                                icon: IconCopy,
+                                className: "row-full",
+                                onClick: onClickOoba
+                              }
+                            )
+                            ]
+                          })
                           ]
-                        }
-                      ),
+                        })
+                        ]
+                      }
+                    ),
                       /* @__PURE__ */ o$8(
-                        ExportDialog,
-                        {
-                          format,
-                          open: exportOpen,
-                          onOpenChange: setExportOpen,
-                          children: /* @__PURE__ */ o$8("div", { className: "row-full", children: /* @__PURE__ */ o$8(
+                      ExportDialog,
+                      {
+                        format,
+                        open: exportOpen,
+                        onOpenChange: setExportOpen,
+                        children: /* @__PURE__ */ o$8("div", {
+                          className: "row-full", children: /* @__PURE__ */ o$8(
                             MenuItem,
                             {
                               text: t2("Export All"),
                               icon: IconZip
                             }
-                          ) })
-                        }
-                      ),
+                          )
+                        })
+                      }
+                    ),
                       !isMobile && /* @__PURE__ */ o$8(
                         $cef8881cdc69808e$export$21b07c8f274aebd5,
                         {
@@ -23090,11 +23257,12 @@ ${content2}`;
                 )
               }
             )
-          ]
-        }
-      ),
+            ]
+          }
+        ),
       /* @__PURE__ */ o$8(Divider, {})
-    ] });
+      ]
+    });
   }
   function Menu({ container }) {
     return /* @__PURE__ */ o$8(SettingProvider, { children: /* @__PURE__ */ o$8(MenuInner, { container }) });
@@ -23146,7 +23314,8 @@ ${content2}`;
         }
       );
     }
-    return /* @__PURE__ */ o$8(k$3, { children: [
+    return /* @__PURE__ */ o$8(k$3, {
+      children: [
       /* @__PURE__ */ o$8(
         SettingDialog,
         {
@@ -23198,7 +23367,8 @@ ${content2}`;
           open: jsonOpen,
           onOpenChange: setJsonOpen,
           children: [
-            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$41fb9f06171c75f4, { asChild: true, children: /* @__PURE__ */ o$8(
+            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$41fb9f06171c75f4, {
+            asChild: true, children: /* @__PURE__ */ o$8(
               MenuItem,
               {
                 text: t2("JSON"),
@@ -23206,40 +23376,45 @@ ${content2}`;
                 className: "row-half",
                 onClick: onClickJSON
               }
-            ) }),
-            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$602eac185826482c, { children: [
+            )
+          }),
+            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$602eac185826482c, {
+            children: [
               /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$c6fdb837b070b4ff, { className: "DialogOverlay" }),
-              /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$7c6e2c02157bb7d2, { className: "DialogContent", style: { width: "320px" }, children: [
+              /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$7c6e2c02157bb7d2, {
+              className: "DialogContent", style: { width: "320px" }, children: [
                 /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$f99233281efd08a0, { className: "DialogTitle", children: t2("JSON") }),
                 /* @__PURE__ */ o$8(
-                  MenuItem,
-                  {
-                    text: t2("OpenAI Official Format"),
-                    icon: IconCopy,
-                    className: "row-full",
-                    onClick: onClickOfficialJSON
-                  }
-                ),
+                MenuItem,
+                {
+                  text: t2("OpenAI Official Format"),
+                  icon: IconCopy,
+                  className: "row-full",
+                  onClick: onClickOfficialJSON
+                }
+              ),
                 /* @__PURE__ */ o$8(
-                  MenuItem,
-                  {
-                    text: "JSONL (TavernAI, SillyTavern)",
-                    icon: IconCopy,
-                    className: "row-full",
-                    onClick: onClickTavern
-                  }
-                ),
+                MenuItem,
+                {
+                  text: "JSONL (TavernAI, SillyTavern)",
+                  icon: IconCopy,
+                  className: "row-full",
+                  onClick: onClickTavern
+                }
+              ),
                 /* @__PURE__ */ o$8(
-                  MenuItem,
-                  {
-                    text: "Ooba (text-generation-webui)",
-                    icon: IconCopy,
-                    className: "row-full",
-                    onClick: onClickOoba
-                  }
-                )
-              ] })
-            ] })
+                MenuItem,
+                {
+                  text: "Ooba (text-generation-webui)",
+                  icon: IconCopy,
+                  className: "row-full",
+                  onClick: onClickOoba
+                }
+              )
+              ]
+            })
+            ]
+          })
           ]
         }
       ),
@@ -23249,20 +23424,23 @@ ${content2}`;
           format,
           open: exportOpen,
           onOpenChange: setExportOpen,
-          children: /* @__PURE__ */ o$8("div", { className: "row-full", children: /* @__PURE__ */ o$8(
-            MenuItem,
-            {
-              text: t2("Export All"),
-              icon: IconZip
-            }
-          ) })
+          children: /* @__PURE__ */ o$8("div", {
+            className: "row-full", children: /* @__PURE__ */ o$8(
+              MenuItem,
+              {
+                text: t2("Export All"),
+                icon: IconZip
+              }
+            )
+          })
         }
       )
-    ] });
+      ]
+    });
   }
   // 暴露一个挂载函数，供外部（例如 ChatGPT 助手面板）在自定义容器中渲染导出菜单
   // 注意：Tampermonkey 脚本之间默认沙盒隔离，必须挂到 unsafeWindow 才能被其他脚本读取
-  (typeof unsafeWindow !== "undefined" ? unsafeWindow : window).ChatGPTExporterMount = function(targetElement) {
+  (typeof unsafeWindow !== "undefined" ? unsafeWindow : window).ChatGPTExporterMount = function (targetElement) {
     if (!targetElement) return null;
     // 确保不会清空目标元素的内容
     const container = document.createElement("div");
@@ -23330,7 +23508,7 @@ ${content2}`;
   // 兜底：再次确保挂载函数暴露到页面全局（unsafeWindow 优先）
   if (typeof window !== "undefined") {
     const g = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
-    g.ChatGPTExporterMount = g.ChatGPTExporterMount || function(targetElement) {
+    g.ChatGPTExporterMount = g.ChatGPTExporterMount || function (targetElement) {
       if (!targetElement) return null;
       const container = document.createElement("div");
       container.style.width = "100%";
