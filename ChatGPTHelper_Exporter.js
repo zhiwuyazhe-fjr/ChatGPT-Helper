@@ -23099,6 +23099,167 @@ ${content2}`;
   function Menu({ container }) {
     return /* @__PURE__ */ o$8(SettingProvider, { children: /* @__PURE__ */ o$8(MenuInner, { container }) });
   }
+  // 创建一个直接显示功能按钮的组件（跳过"导出助手"入口）
+  function DirectMenu({ container }) {
+    return /* @__PURE__ */ o$8(SettingProvider, { children: /* @__PURE__ */ o$8(DirectMenuInner, { container }) });
+  }
+  function DirectMenuInner({ container }) {
+    const { t: t2 } = useTranslation();
+    const disabled = getHistoryDisabled();
+    const [jsonOpen, setJsonOpen] = h$4(false);
+    const [exportOpen, setExportOpen] = h$4(false);
+    const [settingOpen, setSettingOpen] = h$4(false);
+    const {
+      format,
+      enableTimestamp,
+      timeStamp24H,
+      enableMeta,
+      exportMetaList
+    } = useSettingContext();
+    p$6(() => {
+      if (enableTimestamp) {
+        document.body.setAttribute("data-time-format", timeStamp24H ? "24" : "12");
+      } else {
+        document.body.removeAttribute("data-time-format");
+      }
+    }, [enableTimestamp, timeStamp24H]);
+    const metaList = F$1(() => enableMeta ? exportMetaList : [], [enableMeta, exportMetaList]);
+    const onClickText = T$4(() => exportToText(), []);
+    const onClickPng = T$4(() => exportToPng(format), [format]);
+    const onClickMarkdown = T$4(() => exportToMarkdown(format, metaList), [format, metaList]);
+    const onClickHtml = T$4(() => exportToHtml(format, metaList), [format, metaList]);
+    const onClickJSON = T$4(() => {
+      setJsonOpen(true);
+      return true;
+    }, []);
+    const onClickOfficialJSON = T$4(() => exportToJson(format), [format]);
+    const onClickTavern = T$4(() => exportToTavern(format), [format]);
+    const onClickOoba = T$4(() => exportToOoba(format), [format]);
+    if (disabled) {
+      return /* @__PURE__ */ o$8(
+        MenuItem,
+        {
+          className: "mt-1",
+          text: "Chat History disabled",
+          icon: IconArrowRightFromBracket,
+          disabled: true
+        }
+      );
+    }
+    return /* @__PURE__ */ o$8(k$3, { children: [
+      /* @__PURE__ */ o$8(
+        SettingDialog,
+        {
+          open: settingOpen,
+          onOpenChange: setSettingOpen,
+          children: /* @__PURE__ */ o$8("div", { className: "row-full", children: /* @__PURE__ */ o$8(MenuItem, { text: t2("Setting"), icon: IconSetting }) })
+        }
+      ),
+      /* @__PURE__ */ o$8(
+        MenuItem,
+        {
+          text: t2("Copy Text"),
+          successText: t2("Copied!"),
+          icon: IconCopy,
+          className: "row-full",
+          onClick: onClickText
+        }
+      ),
+      /* @__PURE__ */ o$8(
+        MenuItem,
+        {
+          text: t2("Screenshot"),
+          icon: IconCamera,
+          className: "row-half",
+          onClick: onClickPng
+        }
+      ),
+      /* @__PURE__ */ o$8(
+        MenuItem,
+        {
+          text: t2("Markdown"),
+          icon: IconMarkdown,
+          className: "row-half",
+          onClick: onClickMarkdown
+        }
+      ),
+      /* @__PURE__ */ o$8(
+        MenuItem,
+        {
+          text: t2("HTML"),
+          icon: FileCode,
+          className: "row-half",
+          onClick: onClickHtml
+        }
+      ),
+      /* @__PURE__ */ o$8(
+        $5d3850c4d0b4e6c7$export$be92b6f5f03c0fe9,
+        {
+          open: jsonOpen,
+          onOpenChange: setJsonOpen,
+          children: [
+            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$41fb9f06171c75f4, { asChild: true, children: /* @__PURE__ */ o$8(
+              MenuItem,
+              {
+                text: t2("JSON"),
+                icon: IconJSON,
+                className: "row-half",
+                onClick: onClickJSON
+              }
+            ) }),
+            /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$602eac185826482c, { children: [
+              /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$c6fdb837b070b4ff, { className: "DialogOverlay" }),
+              /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$7c6e2c02157bb7d2, { className: "DialogContent", style: { width: "320px" }, children: [
+                /* @__PURE__ */ o$8($5d3850c4d0b4e6c7$export$f99233281efd08a0, { className: "DialogTitle", children: t2("JSON") }),
+                /* @__PURE__ */ o$8(
+                  MenuItem,
+                  {
+                    text: t2("OpenAI Official Format"),
+                    icon: IconCopy,
+                    className: "row-full",
+                    onClick: onClickOfficialJSON
+                  }
+                ),
+                /* @__PURE__ */ o$8(
+                  MenuItem,
+                  {
+                    text: "JSONL (TavernAI, SillyTavern)",
+                    icon: IconCopy,
+                    className: "row-full",
+                    onClick: onClickTavern
+                  }
+                ),
+                /* @__PURE__ */ o$8(
+                  MenuItem,
+                  {
+                    text: "Ooba (text-generation-webui)",
+                    icon: IconCopy,
+                    className: "row-full",
+                    onClick: onClickOoba
+                  }
+                )
+              ] })
+            ] })
+          ]
+        }
+      ),
+      /* @__PURE__ */ o$8(
+        ExportDialog,
+        {
+          format,
+          open: exportOpen,
+          onOpenChange: setExportOpen,
+          children: /* @__PURE__ */ o$8("div", { className: "row-full", children: /* @__PURE__ */ o$8(
+            MenuItem,
+            {
+              text: t2("Export All"),
+              icon: IconZip
+            }
+          ) })
+        }
+      )
+    ] });
+  }
   // 暴露一个挂载函数，供外部（例如 ChatGPT 助手面板）在自定义容器中渲染导出菜单
   // 注意：Tampermonkey 脚本之间默认沙盒隔离，必须挂到 unsafeWindow 才能被其他脚本读取
   (typeof unsafeWindow !== "undefined" ? unsafeWindow : window).ChatGPTExporterMount = function(targetElement) {
@@ -23109,8 +23270,16 @@ ${content2}`;
     container.style.height = "100%";
     container.style.position = "relative";
     container.style.overflow = "auto";
+    // 添加样式，使按钮直接显示，不需要下拉菜单
+    container.style.padding = "8px";
+    container.style.display = "grid";
+    container.style.gridTemplateColumns = "repeat(2, 1fr)";
+    container.style.gap = "4px";
+    container.style.alignContent = "start";
+    container.style.overflowY = "auto";
     targetElement.appendChild(container);
-    D$4(/* @__PURE__ */ o$8(Menu, { container }), container);
+    // 使用 DirectMenu 而不是 Menu，直接显示功能按钮
+    D$4(/* @__PURE__ */ o$8(DirectMenu, { container }), container);
     return container;
   };
   main();
