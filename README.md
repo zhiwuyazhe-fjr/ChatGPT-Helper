@@ -48,13 +48,13 @@ ChatGPT Helper 是一个 Chrome 浏览器扩展，以极简为特色，用于增
 <td width="50%">
   <div align="center">
     <img src="docs/screenshot-features1.png" alt="功能展示 1" width="380">
-    <p><em>功能展示 - 提示词管理、大纲导航、会话管理、导出</em></p>
+    <p><em>提示词管理</em></p>
   </div>
 </td>
 <td width="50%">
   <div align="center">
     <img src="docs/screenshot-features2.png" alt="功能展示 2" width="380">
-    <p><em>功能展示 - 提示词管理、大纲导航、会话管理、导出</em></p>
+    <p><em>大纲导航</em></p>
   </div>
 </td>
 </tr>
@@ -62,13 +62,13 @@ ChatGPT Helper 是一个 Chrome 浏览器扩展，以极简为特色，用于增
 <td width="50%">
   <div align="center">
     <img src="docs/screenshot-features3.png" alt="功能展示 3" width="380">
-    <p><em>功能展示 - 提示词管理、大纲导航、会话管理、导出</em></p>
+    <p><em>会话管理</em></p>
   </div>
 </td>
 <td width="50%">
   <div align="center">
     <img src="docs/screenshot-features4.png" alt="功能展示 4" width="380">
-    <p><em>功能展示 - 提示词管理、大纲导航、会话管理、导出</em></p>
+    <p><em>导出</em></p>
   </div>
 </td>
 </tr>
@@ -97,7 +97,8 @@ ChatGPT Helper 是一个 Chrome 浏览器扩展，以极简为特色，用于增
 
 ### 3. 本地运行
 
-1. 打开 Chrome 浏览器，访问 `chrome://extensions/`
+1. release中下载压缩包，并解压文件夹
+2. 打开 Chrome 浏览器，访问 `chrome://extensions/`
 2. 开启右上角「开发者模式」
 3. 点击「加载已解压的扩展程序」
 4. 选择项目根目录
