@@ -1,22 +1,8 @@
-// ==UserScript==
-// @name         ChatGPT Helper
-// @name:zh-cn   ChatGPT Helper
-// @namespace    http://tampermonkey.net/
-// @version      1.0.0
-// @description  ChatGPT Helper：三栏布局增强，提示词管理、对话大纲、会话管理、折叠功能
-// @author       Zhiwuyazhe_fjr
-// @match        https://chat.openai.com/*
-// @match        https://chatgpt.com/*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=openai.com
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_deleteValue
-// @grant        GM_notification
-// @grant        unsafeWindow
-// @run-at       document-idle
-// @noframes
-// ==/UserScript==
+﻿// Chrome Extension Content Script - ChatGPT Helper
 
+if (!window.__MY_EXT__) {
+    window.__MY_EXT__ = {};
+}
 (function () {
     'use strict';
 
@@ -318,7 +304,7 @@
 
     // 语言检测函数
     function detectLanguage() {
-        const savedLang = GM_getValue(SETTING_KEYS.LANGUAGE, 'auto');
+        const savedLang = window.GM_getValue(SETTING_KEYS.LANGUAGE, 'auto');
         if (savedLang !== 'auto' && I18N[savedLang]) {
             return savedLang;
         }
@@ -474,9 +460,59 @@
         }
 
         loadData() {
-            const saved = GM_getValue('chatgpt_conversations', null);
-            if (saved) {
+            // 确保从缓存中读取数据
+            let saved = null;
+            
+            // 首先检查缓存是否已初始化
+            if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized && window.__MY_EXT__.storageCache) {
+                // 缓存已初始化，直接从缓存读取
+                const cacheKeys = Object.keys(window.__MY_EXT__.storageCache || {});
+                console.log('[ChatGPT Helper] 缓存已初始化，缓存中的键:', cacheKeys);
+                saved = window.__MY_EXT__.storageCache['chatgpt_conversations'];
+                console.log('[ChatGPT Helper] 从已初始化的缓存读取数据:', saved !== undefined && saved !== null ? '找到数据' : '未找到数据');
+                if (saved !== undefined && saved !== null) {
+                    console.log('[ChatGPT Helper] 缓存中的数据类型:', typeof saved, Array.isArray(saved) ? '(数组)' : '(对象)');
+                }
+            } else if (window.__MY_EXT__ && window.__MY_EXT__.storageCache) {
+                // 缓存存在但可能未完全初始化，尝试读取
+                saved = window.__MY_EXT__.storageCache['chatgpt_conversations'];
+                console.log('[ChatGPT Helper] 从缓存读取数据（缓存可能未完全初始化）');
+            }
+            
+            // 如果缓存中没有，使用 GM_getValue（会触发缓存更新）
+            if (saved === undefined || saved === null) {
+                saved = window.GM_getValue('chatgpt_conversations', null);
+                console.log('[ChatGPT Helper] 使用 GM_getValue 读取数据:', saved ? '找到数据' : '未找到数据');
+                if (saved) {
+                    console.log('[ChatGPT Helper] GM_getValue 返回的数据类型:', typeof saved);
+                }
+            }
+            
+            if (saved && typeof saved === 'object') {
+                const conversationCount = Object.keys(saved.conversations || {}).length;
+                console.log('[ChatGPT Helper] 加载会话数据:', conversationCount, '个会话');
+                console.log('[ChatGPT Helper] 会话数据结构:', {
+                    folders: saved.folders?.length || 0,
+                    tags: saved.tags?.length || 0,
+                    conversations: conversationCount,
+                    lastUsedFolderId: saved.lastUsedFolderId
+                });
                 return saved;
+            }
+            console.log('[ChatGPT Helper] 使用默认会话数据结构（未找到保存的数据）');
+            // 尝试直接从 Chrome storage 读取（异步方式，用于调试）
+            if (window.__MY_EXT__ && window.__MY_EXT__.GM && window.__MY_EXT__.GM.getValue) {
+                window.__MY_EXT__.GM.getValue('chatgpt_conversations', null).then((asyncValue) => {
+                    if (asyncValue && typeof asyncValue === 'object') {
+                        const asyncCount = Object.keys(asyncValue.conversations || {}).length;
+                        console.log('[ChatGPT Helper] 异步读取发现数据:', asyncCount, '个会话');
+                        if (asyncCount > 0) {
+                            console.warn('[ChatGPT Helper] 警告：异步读取发现数据，但同步读取未找到。可能需要等待缓存初始化。');
+                        }
+                    }
+                }).catch((err) => {
+                    console.error('[ChatGPT Helper] 异步读取错误:', err);
+                });
             }
             return {
                 folders: [{ id: 'inbox', name: '📥 收件箱', icon: '📥', isDefault: true }],
@@ -485,15 +521,56 @@
                 lastUsedFolderId: 'inbox',
             };
         }
+        
+        // 重新加载数据（用于缓存初始化后）
+        reloadData() {
+            const oldCount = Object.keys(this.data.conversations || {}).length;
+            this.data = this.loadData();
+            const newCount = Object.keys(this.data.conversations || {}).length;
+            if (newCount !== oldCount) {
+                console.log('[ChatGPT Helper] 数据已重新加载，会话数量从', oldCount, '变为', newCount);
+                // 如果 UI 已创建，需要重新渲染
+                if (this.container && this.container.children.length > 0) {
+                    this.createUI();
+                }
+            }
+        }
 
         saveData() {
-            GM_setValue('chatgpt_conversations', this.data);
+            window.GM_setValue('chatgpt_conversations', this.data);
         }
 
         createUI() {
+            // 在创建 UI 前，如果缓存已初始化，重新加载数据
+            if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized) {
+                const oldCount = Object.keys(this.data.conversations || {}).length;
+                this.data = this.loadData();
+                const newCount = Object.keys(this.data.conversations || {}).length;
+                if (newCount !== oldCount) {
+                    console.log('[ChatGPT Helper] 在 createUI 时重新加载数据，会话数量从', oldCount, '变为', newCount);
+                }
+            } else {
+                // 如果缓存还未初始化，等待初始化后重新加载（但不重新调用 createUI，避免递归）
+                const checkCache = (retries = 50) => {
+                    if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized) {
+                        const oldCount = Object.keys(this.data.conversations || {}).length;
+                        this.data = this.loadData();
+                        const newCount = Object.keys(this.data.conversations || {}).length;
+                        if (newCount !== oldCount) {
+                            console.log('[ChatGPT Helper] 缓存初始化后重新加载数据，会话数量从', oldCount, '变为', newCount);
+                            // 只更新数据，不重新调用 createUI（避免递归）
+                            // UI 会在下次切换标签页时自动更新
+                        }
+                    } else if (retries > 0) {
+                        setTimeout(() => checkCache(retries - 1), 100);
+                    }
+                };
+                checkCache();
+            }
+            
             clearElement(this.container);
 
-            // 工具栏（参考 Gemini 助手）
+            // 工具栏
             const toolbar = createElement('div', {
                 className: 'chatgpt-helper-conversations-toolbar',
                 style: {
@@ -507,7 +584,7 @@
                 }
             });
 
-            // 文件夹选择（参考 Gemini 助手）
+            // 文件夹选择
             const folderSelect = createElement('select', {
                 className: 'chatgpt-helper-folder-select',
                 style: {
@@ -536,7 +613,7 @@
             });
             toolbar.appendChild(folderSelect);
 
-            // 同步按钮（参考 Gemini 助手 - 使用图标按钮）
+            // 同步按钮
             const syncBtn = createElement('button', {
                 className: 'chatgpt-helper-conversations-toolbar-btn sync',
                 title: this.t('syncConversations') || '同步会话',
@@ -568,7 +645,7 @@
             });
             toolbar.appendChild(syncBtn);
 
-            // 新建文件夹按钮（参考 Gemini 助手 - 使用图标按钮）
+            // 新建文件夹按钮
             const addFolderBtn = createElement('button', {
                 className: 'chatgpt-helper-conversations-toolbar-btn add-folder',
                 title: this.t('newFolder') || '新建文件夹',
@@ -600,7 +677,7 @@
             });
             toolbar.appendChild(addFolderBtn);
 
-            // 批量操作按钮（参考 Gemini 助手 - 使用图标按钮）
+            // 批量操作按钮
             const batchBtn = createElement('button', {
                 className: 'chatgpt-helper-conversations-toolbar-btn batch-mode' + (this.batchMode ? ' active' : ''),
                 title: this.t('batchMode') || '批量操作',
@@ -745,7 +822,7 @@
             if (!this.listContainer) return;
             clearElement(this.listContainer);
 
-            // 参考 Gemini 助手：使用文件夹展开/折叠模式（手风琴）
+            // 使用文件夹展开/折叠模式（手风琴）
             const folders = this.data.folders || [];
             let hasVisibleItems = false;
 
@@ -774,7 +851,7 @@
 
                 hasVisibleItems = true;
 
-                // 创建文件夹项（参考 Gemini 助手）
+                // 创建文件夹项
                 const folderItem = this.createFolderItem(folder, index, conversations.length);
                 this.listContainer.appendChild(folderItem);
 
@@ -846,7 +923,7 @@
         }
 
         createFolderItem(folder, index, count) {
-            // 参考 Gemini 助手的文件夹样式
+            // 文件夹样式
             const item = createElement('div', {
                 className: 'chatgpt-helper-folder-item' + (folder.isDefault ? ' default' : ''),
                 'data-folder-id': folder.id,
@@ -1711,7 +1788,7 @@
                 return;
             }
 
-            // 参考 Gemini 助手：正确处理绕过锁定标志
+            // 正确处理绕过锁定标志
             const shouldBypass = options && typeof options === 'object' && options.__bypassLock;
             if (shouldBypass) {
                 container.__ghBypassLock = true;
@@ -1734,7 +1811,7 @@
                     container.scrollTop = options;
                 }
             } finally {
-                // 参考 Gemini 助手：在 finally 中清理绕过标志
+                // 在 finally 中清理绕过标志
                 if (shouldBypass) {
                     delete container.__ghBypassLock;
                 }
@@ -2041,16 +2118,16 @@
                 ts: Date.now()
             };
 
-            const allData = GM_getValue('chatgpt_reading_progress', {});
+            const allData = window.GM_getValue('chatgpt_reading_progress', {});
             allData[key] = data;
-            GM_setValue('chatgpt_reading_progress', allData);
+            window.GM_setValue('chatgpt_reading_progress', allData);
         }
 
         async restoreProgress() {
             if (!this.settings.readingHistory?.autoRestore) return false;
 
             const key = this.getKey();
-            const allData = GM_getValue('chatgpt_reading_progress', {});
+            const allData = window.GM_getValue('chatgpt_reading_progress', {});
             const data = allData[key];
 
             if (!data) return false;
@@ -2093,7 +2170,7 @@
         }
 
         cleanup() {
-            const lastRun = GM_getValue('chatgpt_progress_cleanup_last_run', 0);
+            const lastRun = window.GM_getValue('chatgpt_progress_cleanup_last_run', 0);
             const now = Date.now();
             if (now - lastRun < 24 * 60 * 60 * 1000) return;
 
@@ -2101,7 +2178,7 @@
             if (days === -1) return;
 
             const expireTime = days * 24 * 60 * 60 * 1000;
-            const allData = GM_getValue('chatgpt_reading_progress', {});
+            const allData = window.GM_getValue('chatgpt_reading_progress', {});
             let changed = false;
 
             Object.keys(allData).forEach(key => {
@@ -2112,9 +2189,9 @@
             });
 
             if (changed) {
-                GM_setValue('chatgpt_reading_progress', allData);
+                window.GM_setValue('chatgpt_reading_progress', allData);
             }
-            GM_setValue('chatgpt_progress_cleanup_last_run', now);
+            window.GM_setValue('chatgpt_progress_cleanup_last_run', now);
         }
     }
 
@@ -2484,7 +2561,7 @@
      */
     class OutlineManager {
         constructor(config) {
-            // 保留原始 config（对齐 gemini助手.js：executeAutoUpdate 使用 config 回调）
+            // 保留原始 config
             this.config = config;
             this.container = config.container;
             this.settings = config.settings;
@@ -2704,7 +2781,6 @@
         triggerAutoUpdate() {
             const interval = (this.settings.outline?.updateInterval || 5) * 1000;
 
-            // 对齐 Gemini 助手的策略：
             // 如果已经存在定时器，不重复设置，避免高频 DOM 变更导致频繁刷新
             if (!this.updateDebounceTimer) {
                 this.updateDebounceTimer = setTimeout(() => {
@@ -2719,12 +2795,12 @@
                 this.updateDebounceTimer = null;
             }
 
-            // 触发更新回调（对齐 gemini助手.js）
+            // 触发更新回调
             if (this.config && this.config.onAutoUpdate) {
                 this.config.onAutoUpdate();
             }
 
-            // 同时发送两个事件：兼容 ChatGPT 助手内部监听 + 对齐 Gemini 行为
+            // 同时发送两个事件：兼容 ChatGPT 助手内部监听
             try { window.dispatchEvent(new CustomEvent('chatgpt-helper-outline-auto-refresh')); } catch (e) { }
             try { window.dispatchEvent(new CustomEvent('gemini-helper-outline-auto-refresh')); } catch (e) { }
         }
@@ -2861,7 +2937,7 @@
             locateBtn.addEventListener('click', () => this.locateCurrentPosition());
             row1.appendChild(locateBtn);
 
-            // 滚动列表按钮（参考 Gemini 助手）
+            // 滚动列表按钮
             const scrollBtn = createElement('button', {
                 className: 'outline-toolbar-btn',
                 id: 'outline-scroll-btn',
@@ -3136,7 +3212,7 @@
             items.forEach((item) => {
                 item.forceExpanded = false;
                 if (item.children && item.children.length > 0) {
-                    // 对齐 gemini助手.js：使用 level 而不是 relativeLevel
+                    // 使用 level 而不是 relativeLevel
                     const allChildrenHidden = item.children.every((child) => child.level > displayLevel);
                     item.collapsed = allChildrenHidden;
                     this.clearForceExpandedState(item.children, displayLevel);
@@ -3401,7 +3477,7 @@
 
                     let targetElement = item.element;
 
-                    // 1. 检查元素是否有效（对齐 gemini助手.js）
+                    // 1. 检查元素是否有效
                     if (!targetElement || !targetElement.isConnected) {
                         // 尝试重新查找
                         // 简单的重新查找策略：在文档中根据文本内容找一个最相似的 H? 标签
@@ -3596,7 +3672,7 @@
             // 保存设置
             if (this.onSettingsChange) this.onSettingsChange();
 
-            // 触发大纲刷新（对齐 gemini助手.js）
+            // 触发大纲刷新
             try { window.dispatchEvent(new CustomEvent('gemini-helper-outline-auto-refresh')); } catch (e) { }
             try { window.dispatchEvent(new CustomEvent('chatgpt-helper-outline-auto-refresh')); } catch (e) { }
         }
@@ -3619,7 +3695,7 @@
             }
         }
 
-        // 定位到当前页面位置对应的大纲项（对齐 gemini助手.js）
+        // 定位到当前页面位置对应的大纲项
         locateCurrentPosition() {
             if (!this.state.tree || this.state.tree.length === 0) return;
             if (!this.siteAdapter) return;
@@ -3765,7 +3841,7 @@
             }, 50);
         }
 
-        // 设置层级（对齐 gemini助手.js）
+        // 设置层级
         setLevel(level) {
             this.state.expandLevel = level;
             // 更新外部设置
@@ -4339,7 +4415,7 @@
 
             // 桌面通知
             if (tabSettings.showNotification && typeof GM_notification !== 'undefined') {
-                GM_notification({
+                window.GM_notification({
                     title: 'ChatGPT 回复完成',
                     text: this.lastSessionName || '新消息',
                     timeout: 5000,
@@ -4935,16 +5011,16 @@
         }
 
         loadPrompts() {
-            const saved = GM_getValue(SETTING_KEYS.PROMPTS, null);
+            const saved = window.GM_getValue(SETTING_KEYS.PROMPTS, null);
             return saved || DEFAULT_PROMPTS;
         }
 
         savePrompts() {
-            GM_setValue(SETTING_KEYS.PROMPTS, this.prompts);
+            window.GM_setValue(SETTING_KEYS.PROMPTS, this.prompts);
         }
 
         loadSettings() {
-            const saved = GM_getValue(SETTING_KEYS.SETTINGS, null);
+            const saved = window.GM_getValue(SETTING_KEYS.SETTINGS, null);
             const settings = saved ? { ...DEFAULT_SETTINGS, ...saved } : DEFAULT_SETTINGS;
             // 确保 tabOrder 包含 export（兼容旧版本）
             if (settings.tabOrder && !settings.tabOrder.includes('export')) {
@@ -4956,7 +5032,7 @@
         }
 
         saveSettings() {
-            GM_setValue(SETTING_KEYS.SETTINGS, this.settings);
+            window.GM_setValue(SETTING_KEYS.SETTINGS, this.settings);
         }
 
         init() {
@@ -5010,7 +5086,7 @@
                             this.tabRenameManager.start();
                         }
 
-                        // 监听大纲自动刷新事件（与 Gemini 助手行为对齐）
+                        // 监听大纲自动刷新事件
                         window.addEventListener('chatgpt-helper-outline-auto-refresh', () => {
                             if (this.currentTab === 'outline') {
                                 this.refreshOutline();
@@ -5051,7 +5127,7 @@
             const style = document.createElement('style');
             style.id = 'chatgpt-helper-styles';
             style.textContent = `
-                /* CSS Variables - 参考 Gemini 助手的配色方案 */
+                /* CSS Variables */
                 :root {
                     --gh-bg: #ffffff;
                     --gh-bg-secondary: #f9fafb;
@@ -5131,7 +5207,7 @@
                     transition: margin-right 0.3s ease;
                 }
 
-                /* 右栏：核心功能区（参考 Gemini 助手） */
+                /* 右栏：核心功能区 */
                 #chatgpt-helper-right {
                     position: fixed;
                     right: 0;
@@ -5774,7 +5850,7 @@
                     font-variant-numeric: tabular-nums;
                 }
                 
-                /* 用户提问节点（Level 0）- 参考 Gemini 助手 */
+                /* 用户提问节点（Level 0） */
                 .outline-item.user-query-node {
                     border-left: 3px solid var(--gh-border-active, #6366f1);
                     font-weight: 500;
@@ -5801,7 +5877,7 @@
                     background: rgba(66, 133, 244, 0.25);
                 }
                 
-                /* 用户问题徽章：图标+角标数字 - 参考 Gemini 助手 */
+                /* 用户问题徽章：图标+角标数字 */
                 .outline-item.user-query-node .user-query-badge {
                     position: relative;
                     display: inline-flex;
@@ -5849,7 +5925,7 @@
                     box-shadow: 0 0 0 1.5px #020617;
                 }
                 
-                /* 大纲项切换按钮 - 参考 Gemini 助手 */
+                /* 大纲项切换按钮 */
                 .outline-item-toggle {
                     width: 24px;
                     min-width: 24px;
@@ -5893,7 +5969,7 @@
                     display: inline-flex !important;
                 }
                 
-                /* 大纲项文本 - 参考 Gemini 助手 */
+                /* 大纲项文本 */
                 .outline-item-text {
                     flex: 1;
                     overflow: hidden;
@@ -5902,7 +5978,7 @@
                     line-height: 24px;
                 }
                 
-                /* 用户提问复制按钮 - 参考 Gemini 助手 */
+                /* 用户提问复制按钮 */
                 .outline-item-copy-btn {
                     position: absolute;
                     right: 8px;
@@ -6210,7 +6286,7 @@
                     margin: 4px 0;
                 }
 
-                /* 锚点标记 - 侧边小标记（参考 Gemini 助手） */
+                /* 锚点标记 - 侧边小标记 */
                 .chatgpt-helper-anchor-marker {
                     position: absolute;
                     left: 0;
@@ -6236,7 +6312,7 @@
                     to { opacity: 1; transform: translateX(-50%) translateY(0); }
                 }
 
-                /* 底部导航按钮组（参考 Gemini 助手） */
+                /* 底部导航按钮组 */
                 .scroll-nav-container {
                     display: flex;
                     flex-direction: row;
@@ -6315,7 +6391,7 @@
                     box-shadow: none;
                 }
 
-                /* 会话模块样式（参考 Gemini 助手） */
+                /* 会话模块样式 */
                 .chatgpt-helper-folder-item {
                     display: flex;
                     align-items: center;
@@ -6468,7 +6544,7 @@
                     text-align: center;
                 }
                 
-                /* 会话工具栏样式（参考 Gemini 助手） */
+                /* 会话工具栏样式 */
                 .chatgpt-helper-conversations-toolbar {
                     display: flex;
                     gap: 6px;
@@ -6552,7 +6628,7 @@
                     border-color: var(--gh-border-active, #6366f1);
                 }
                 
-                /* 设置面板样式（参考 Gemini 助手） */
+                /* 设置面板样式 */
                 .chatgpt-helper-setting-section {
                     margin-bottom: 16px;
                     background: var(--gh-bg-secondary, #f9fafb);
@@ -6839,7 +6915,7 @@
 
             const controls = createElement('div', { id: 'chatgpt-helper-controls' });
 
-            // 主题切换按钮（参考 Gemini 助手）
+            // 主题切换按钮
             const themeBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
                 title: '切换主题',
@@ -6956,7 +7032,7 @@
             // 确保每次重建 UI 之后都挂载拖拽手柄
             this.initResizeHandle();
 
-            // 底部导航按钮组（参考 Gemini 助手）
+            // 底部导航按钮组
             const scrollNavContainer = createElement('div', {
                 className: 'scroll-nav-container',
                 id: 'scroll-nav-container',
@@ -7262,21 +7338,24 @@
 
             // 延迟挂载 Exporter，确保 DOM 结构已建立，并重试直到找到函数
             let retryCount = 0;
-            const maxRetries = 20; // 最多重试 20 次（约 2 秒）
+            const maxRetries = 50; // 最多重试 50 次（约 5 秒）
             const tryMount = () => {
+                // 优先从命名空间获取，否则从 window 获取
                 const exporterMount =
-                    (typeof unsafeWindow !== 'undefined' && unsafeWindow.ChatGPTExporterMount)
-                        ? unsafeWindow.ChatGPTExporterMount
+                    (window.__MY_EXT__ && window.__MY_EXT__.ChatGPTExporterMount)
+                        ? window.__MY_EXT__.ChatGPTExporterMount
                         : window.ChatGPTExporterMount;
 
                 if (exporterMount && typeof exporterMount === 'function') {
                     try {
+                        console.log('[ChatGPT Helper] 找到 ChatGPTExporterMount，开始挂载');
                         const mountedContainer = exporterMount(exportContainer);
                         if (mountedContainer) {
                             // 确保挂载的容器不会覆盖标题栏
                             mountedContainer.style.width = '100%';
                             mountedContainer.style.height = '100%';
                             mountedContainer.style.overflow = 'auto';
+                            console.log('[ChatGPT Helper] ChatGPT Exporter 挂载成功');
                         }
                     } catch (e) {
                         console.error('[ChatGPT Helper] 挂载 ChatGPT Exporter 失败:', e);
@@ -7286,14 +7365,22 @@
                     }
                 } else if (retryCount < maxRetries) {
                     retryCount++;
+                    if (retryCount % 10 === 0) {
+                        console.log(`[ChatGPT Helper] 等待 ChatGPTExporterMount... (${retryCount}/${maxRetries})`);
+                    }
                     setTimeout(tryMount, 100); // 每 100ms 重试一次
                 } else {
+                    console.warn('[ChatGPT Helper] ChatGPTExporterMount 未找到，当前状态:', {
+                        hasMyExt: !!window.__MY_EXT__,
+                        hasNamespaceMount: typeof window.__MY_EXT__?.ChatGPTExporterMount === 'function',
+                        hasWindowMount: typeof window.ChatGPTExporterMount === 'function'
+                    });
                     exportContainer.appendChild(createElement('div', {
                         style: { padding: '12px', fontSize: '13px', color: 'var(--gh-text-secondary)' }
-                    }, '未检测到 ChatGPT Exporter，请确保已在 Tampermonkey 中启用 ChatGPTHelper_Exporter.js 脚本。'));
+                    }, '未检测到 ChatGPT Exporter，请确保扩展已正确加载。'));
                 }
             };
-            setTimeout(tryMount, 100);
+            setTimeout(tryMount, 200); // 延迟 200ms 开始尝试
         }
 
         showAddPromptDialog() {
@@ -7484,9 +7571,22 @@
                 this.conversationManager.t = this.t;
             }
             this.conversationManager.createUI();
+            
+            // 检查并显示会话数据状态
+            const data = this.conversationManager.data;
+            console.log('[ChatGPT Helper] 会话管理器数据:', {
+                folders: data.folders?.length || 0,
+                conversations: Object.keys(data.conversations || {}).length,
+                hasData: Object.keys(data.conversations || {}).length > 0
+            });
+            
+            // 如果没有会话数据，显示提示信息
+            if (Object.keys(data.conversations || {}).length === 0) {
+                console.log('[ChatGPT Helper] 当前没有保存的会话，这是正常的（新安装或未同步）');
+            }
         }
 
-        // 创建可折叠区域辅助方法（参考 Gemini 助手）
+        // 创建可折叠区域辅助方法
         createCollapsibleSection(title, content, options = {}) {
             const { defaultExpanded = false } = options;
             const section = createElement('div', {
@@ -7902,7 +8002,7 @@
                 }
             ]);
 
-            // 折叠按钮设置（可折叠）- 参考 Gemini 助手实现
+            // 折叠按钮设置（可折叠）
             const collapsedContainer = createElement('div', {});
             const collapsedBtnDesc = createElement('div', {
                 className: 'setting-item-desc',
@@ -8093,7 +8193,7 @@
                         { value: 'en', label: t('english') }
                     ],
                     onChange: (val) => {
-                        GM_setValue(SETTING_KEYS.LANGUAGE, val);
+                        window.GM_setValue(SETTING_KEYS.LANGUAGE, val);
                         currentLang = val === 'auto' ? detectLanguage() : val;
                         this.lang = currentLang;
                         // 重新渲染UI以应用新语言
@@ -8103,7 +8203,7 @@
                 }
             ]);
 
-            // 阅读历史设置（参考 Gemini 助手，可折叠）
+            // 阅读历史设置（可折叠）
             const readingHistorySection = this.createSettingSection(this.t('readingHistory') || '阅读历史', [
                 {
                     label: this.t('enableReadingHistoryLabel') || '启用阅读历史',
@@ -8147,7 +8247,7 @@
                 }
             ]);
 
-            // 大纲设置（参考 Gemini 助手，可折叠）
+            // 大纲设置（可折叠）
             const outlineSettingsSection = this.createSettingSection(this.t('outlineSettings') || '大纲设置', [
                 {
                     label: this.t('autoUpdateOutlineLabel') || '对话期间自动更新大纲',
@@ -8210,7 +8310,7 @@
                 }
             ]);
 
-            // 标签页设置（对齐 Gemini 助手，可折叠）
+            // 标签页设置（可折叠）
             const tabSettingsSection = this.createSettingSection(this.t('tabSettings') || '标签页设置', [
                 {
                     label: this.t('tabAutoRenameLabel') || '自动重命名标签页',
@@ -8332,7 +8432,7 @@
                 }
             ]);
 
-            // 复制功能设置（可折叠，对齐 Gemini 助手）
+            // 复制功能设置（可折叠）
             const copySettingsSection = this.createSettingSection(this.t('copySettings') || '复制功能', [
                 {
                     label: this.t('enableFormulaCopyLabel') || '启用公式复制',
@@ -8799,7 +8899,7 @@
                             btn.title = '返回跳转前位置';
                         }
                     } else if (btnConfig.id === 'theme') {
-                        // 根据当前主题设置图标（参考 Gemini 助手）
+                        // 根据当前主题设置图标
                         const isDark = document.body.dataset.ghMode === 'dark' ||
                             document.documentElement.getAttribute('data-gh-mode') === 'dark' ||
                             /\bdark\b/i.test(document.body.className);
@@ -9680,7 +9780,7 @@
             this.showToast('已清除锚点');
         }
 
-        // 显示锚点标记（参考 Gemini 助手）
+        // 显示锚点标记
         showAnchorMarker(scrollTop) {
             // 先移除已有标记
             this.hideAnchorMarker();
@@ -10054,7 +10154,7 @@
                 anchorBtn.title = hasAnchor ? '返回跳转前位置' : '暂无锚点';
             }
 
-            // 更新底部导航按钮（参考 Gemini 助手）
+            // 更新底部导航按钮
             const navAnchorBtn = document.getElementById('scroll-anchor-btn');
             if (navAnchorBtn) {
                 if (hasAnchor) {
@@ -10073,7 +10173,7 @@
             try {
                 console.log('[ChatGPT Helper] toggleTheme 被调用');
 
-                // 参考 Gemini 助手的实现：检测当前主题（更全面的检测）
+                // 检测当前主题（更全面的检测）
                 const bodyClass = document.body.className;
                 const htmlClass = document.documentElement.className;
                 const bodyStyle = window.getComputedStyle(document.body);
@@ -10257,7 +10357,7 @@
 
         monitorTheme() {
             const checkTheme = () => {
-                // 参考 Gemini 助手的实现：优先级 Class > Data > Style
+                // 优先级 Class > Data > Style
                 const bodyClass = document.body.className;
                 const htmlClass = document.documentElement.className;
                 const bodyStyle = window.getComputedStyle(document.body);
@@ -10517,7 +10617,7 @@
         }
     }
 
-    // 初始化 - 等待页面完全加载
+    // 初始化 - 等待页面完全加载和缓存初始化
     function initHelper() {
         // 确保页面已经加载
         if (document.readyState === 'loading') {
@@ -10525,22 +10625,60 @@
             return;
         }
 
-        // 延迟初始化，等待 ChatGPT 的 React 应用完全渲染
-        setTimeout(() => {
-            try {
-                new ChatGPTHelper();
-            } catch (e) {
-                console.error('[ChatGPT Helper] 初始化失败:', e);
-                // 重试一次
+        // 等待 GM API 适配器的缓存初始化完成
+        const waitForCache = (retries = 40) => {
+            if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized) {
+                // 缓存已初始化，继续初始化 Helper
+                console.log('[ChatGPT Helper] 缓存已初始化，开始初始化 Helper');
+                // 再等待一小段时间，确保缓存数据完全加载
+                setTimeout(() => {
+                    try {
+                        const helper = new ChatGPTHelper();
+                        // 延迟检查会话数据（因为 conversationManager 是延迟创建的）
+                        setTimeout(() => {
+                            if (helper.conversationManager) {
+                                // 重新加载数据（确保从已初始化的缓存读取）
+                                helper.conversationManager.reloadData();
+                                const data = helper.conversationManager.data;
+                                console.log('[ChatGPT Helper] 会话数据加载完成:', {
+                                    folders: data.folders?.length || 0,
+                                    conversations: Object.keys(data.conversations || {}).length,
+                                    hasData: Object.keys(data.conversations || {}).length > 0
+                                });
+                                if (Object.keys(data.conversations || {}).length === 0) {
+                                    console.log('[ChatGPT Helper] 提示：当前没有保存的会话。使用 Helper 的功能后，会话数据会自动保存。');
+                                }
+                            }
+                        }, 1000);
+                    } catch (e) {
+                        console.error('[ChatGPT Helper] 初始化失败:', e);
+                        // 重试一次
+                        setTimeout(() => {
+                            try {
+                                new ChatGPTHelper();
+                            } catch (e2) {
+                                console.error('[ChatGPT Helper] 重试初始化失败:', e2);
+                            }
+                        }, 2000);
+                    }
+                }, 300);
+            } else if (retries > 0) {
+                // 缓存还未初始化，等待 50ms 后重试
+                setTimeout(() => waitForCache(retries - 1), 50);
+            } else {
+                // 超时，直接初始化（使用默认值）
+                console.warn('[ChatGPT Helper] 缓存初始化超时，使用默认值初始化');
                 setTimeout(() => {
                     try {
                         new ChatGPTHelper();
-                    } catch (e2) {
-                        console.error('[ChatGPT Helper] 重试初始化失败:', e2);
+                    } catch (e) {
+                        console.error('[ChatGPT Helper] 初始化失败:', e);
                     }
-                }, 2000);
+                }, 300);
             }
-        }, 1000);
+        };
+        
+        waitForCache();
     }
 
     initHelper();

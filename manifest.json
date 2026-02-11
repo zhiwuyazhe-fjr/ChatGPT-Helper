@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "ChatGPT Helper",
+  "version": "1.0.0",
+  "description": "ChatGPT Helper：极简助手，三栏布局增强，提示词管理、对话大纲、会话管理、折叠功能，配合导出功能，支持导出为PDF、HTML、Markdown格式",
+  "author": "zhiwuyazhe_fjr",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "https://new.oaifree.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://new.oaifree.com/*"
+      ],
+      "js": [
+        "libs/jszip.min.js",
+        "libs/html2canvas.min.js",
+        "content-scripts/gm-api-adapter.js",
+        "content-scripts/chatgpt-helper-exporter.js",
+        "content-scripts/chatgpt-helper.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "libs/*.js"
+      ],
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://new.oaifree.com/*"
+      ]
+    }
+  ]
+}

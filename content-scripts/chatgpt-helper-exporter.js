@@ -1,51 +1,14 @@
-// ==UserScript==
-// @name               ChatGPT Helper_Exporter
-// @name:zh-CN         ChatGPT Helper_Exporter
-// @name:zh-TW         ChatGPT Helper_Exporter
-// @namespace          Zhiwuyazhe_fjr
-// @version            1.0.0
-// @author             Zhiwuyazhe_fjr
-// @description        Easily export the whole ChatGPT conversation history for further analysis or sharing.
-// @description:zh-CN  配合 ChatGPT Helper 轻松导出对话记录，以便进一步分析或分享。
-// @description:zh-TW  配合 ChatGPT Helper 輕鬆匯出對話紀錄，以便進一步分析或分享。
-// @license            MIT
-// @icon               https://chat.openai.com/favicon.ico
-// @match              https://chat.openai.com/
-// @match              https://chat.openai.com/?model=*
-// @match              https://chat.openai.com/c/*
-// @match              https://chat.openai.com/g/*
-// @match              https://chat.openai.com/gpts
-// @match              https://chat.openai.com/gpts/*
-// @match              https://chat.openai.com/share/*
-// @match              https://chat.openai.com/share/*/continue
-// @match              https://chatgpt.com/
-// @match              https://chatgpt.com/?model=*
-// @match              https://chatgpt.com/c/*
-// @match              https://chatgpt.com/g/*
-// @match              https://chatgpt.com/gpts
-// @match              https://chatgpt.com/gpts/*
-// @match              https://chatgpt.com/share/*
-// @match              https://chatgpt.com/share/*/continue
-// @match              https://new.oaifree.com/
-// @match              https://new.oaifree.com/?model=*
-// @match              https://new.oaifree.com/c/*
-// @match              https://new.oaifree.com/g/*
-// @match              https://new.oaifree.com/gpts
-// @match              https://new.oaifree.com/gpts/*
-// @match              https://new.oaifree.com/share/*
-// @match              https://new.oaifree.com/share/*/continue
-// @require            https://cdn.jsdelivr.net/npm/jszip@3.9.1/dist/jszip.min.js
-// @require            https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js
-// @grant              GM_deleteValue
-// @grant              GM_getValue
-// @grant              GM_setValue
-// @grant              unsafeWindow
-// @run-at             document-end
-// @downloadURL https://update.greasyfork.org/scripts/456055/ChatGPT%20Exporter.user.js
-// @updateURL https://update.greasyfork.org/scripts/456055/ChatGPT%20Exporter.meta.js
-// ==/UserScript==
+﻿// Chrome Extension Content Script - ChatGPT Helper Exporter
 
-(e => { const n = document.createElement("style"); n.textContent = e, document.head.append(n), setInterval(() => { n.isConnected || document.head.append(n) }, 300) })(` .CheckBoxLabel {
+if (!window.__MY_EXT__) {
+    window.__MY_EXT__ = {};
+}
+
+// 保存全局 window 和 document 的引用，供 IIFE 内部使用
+const _globalWindow = window;
+const _globalDocument = document;
+
+(e => { const n = _globalDocument.createElement("style"); n.textContent = e, _globalDocument.head.append(n), setInterval(() => { n.isConnected || _globalDocument.head.append(n) }, 300) })(` .CheckBoxLabel {
     position: relative;
     display: flex;
     font-size: 16px;
@@ -619,11 +582,61 @@ html {
 
 (function (JSZip, html2canvas) {
   'use strict';
+  
+  // 使用外部保存的全局 window 和 document 引用
+  const win = _globalWindow;
+  const doc = _globalDocument;
+  
+  // 在 IIFE 内部创建 document 和 window 变量，指向全局对象（用于兼容压缩代码中的直接引用）
+  // 注意：不能直接赋值给 document，所以使用 var 声明
+  var document = doc;
+  var window = win;
+  
+  // 确保全局函数可用（用于兼容压缩代码中的直接引用）
+  if (!window.setTimeout) window.setTimeout = win.setTimeout.bind(win);
+  if (!window.clearTimeout) window.clearTimeout = win.clearTimeout.bind(win);
+  if (!window.setInterval) window.setInterval = win.setInterval.bind(win);
+  if (!window.clearInterval) window.clearInterval = win.clearInterval.bind(win);
+  if (!window.requestAnimationFrame) window.requestAnimationFrame = win.requestAnimationFrame?.bind(win);
+  if (!window.cancelAnimationFrame) window.cancelAnimationFrame = win.cancelAnimationFrame?.bind(win);
+
+  // 等待 GM API 适配器初始化完成
+  const waitForGMAPI = (callback, retries = 40) => {
+    // 更严格的检查：确保 GM 对象和所有必需的方法都存在
+    const isGMReady = win.__MY_EXT__ && 
+                      win.__MY_EXT__.GM && 
+                      typeof win.__MY_EXT__.GM.getValueSync === 'function' &&
+                      typeof win.__MY_EXT__.GM.setValueSync === 'function' &&
+                      typeof win.__MY_EXT__.GM.deleteValueSync === 'function' &&
+                      typeof win.GM_getValue === 'function';
+    
+    if (isGMReady) {
+      console.log('[ChatGPT Exporter] GM API 已就绪，开始执行主逻辑');
+      callback();
+    } else if (retries > 0) {
+      setTimeout(() => waitForGMAPI(callback, retries - 1), 50);
+    } else {
+      console.warn('[ChatGPT Exporter] GM API 适配器初始化超时，使用降级方案');
+      console.warn('[ChatGPT Exporter] GM API 状态:', {
+        hasMyExt: !!win.__MY_EXT__,
+        hasGM: !!win.__MY_EXT__?.GM,
+        hasGetValue: typeof win.GM_getValue === 'function',
+        hasGetValueSync: typeof win.__MY_EXT__?.GM?.getValueSync === 'function'
+      });
+      // 降级方案：直接使用全局函数（如果存在）
+      callback();
+    }
+  };
 
   // 提前暴露挂载函数，确保在脚本执行时就可访问
-  if (typeof window !== 'undefined') {
-    window.ChatGPTExporterMount = window.ChatGPTExporterMount || null; // 先占位，后面会重新定义
+  if (typeof win !== 'undefined') {
+    win.ChatGPTExporterMount = win.ChatGPTExporterMount || null; // 先占位，后面会重新定义
   }
+
+  // 延迟执行主逻辑，等待 GM API 适配器初始化
+  console.log('[ChatGPT Exporter] 开始等待 GM API 适配器...');
+  waitForGMAPI(() => {
+    console.log('[ChatGPT Exporter] 进入主逻辑执行');
 
   var __defProp = Object.defineProperty;
   var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
@@ -1093,10 +1106,60 @@ html {
   const KEY_EXPORT_ALL_LIMIT = "exporter:export_all_limit";
   const KEY_OAI_LOCALE = "oai/apps/locale";
   const KEY_OAI_HISTORY_DISABLED = "oai/apps/historyDisabled";
-  var _GM_deleteValue = /* @__PURE__ */ (() => typeof GM_deleteValue != "undefined" ? GM_deleteValue : void 0)();
-  var _GM_getValue = /* @__PURE__ */ (() => typeof GM_getValue != "undefined" ? GM_getValue : void 0)();
-  var _GM_setValue = /* @__PURE__ */ (() => typeof GM_setValue != "undefined" ? GM_setValue : void 0)();
-  var _unsafeWindow = /* @__PURE__ */ (() => typeof unsafeWindow != "undefined" ? unsafeWindow : void 0)();
+  // 安全地获取 GM API 函数，添加完整的空值检查
+  // 使用外部保存的全局 window 引用
+  var _GM_deleteValue = (function() {
+    try {
+      if (typeof win.GM_deleteValue === 'function') return win.GM_deleteValue;
+      if (win.__MY_EXT__ && win.__MY_EXT__.GM) {
+        if (typeof win.__MY_EXT__.GM.deleteValueSync === 'function') {
+          return win.__MY_EXT__.GM.deleteValueSync;
+        }
+      }
+    } catch (e) {
+      console.error('[ChatGPT Exporter] 获取 GM_deleteValue 时出错:', e);
+    }
+    return null;
+  })();
+  var _GM_getValue = (function() {
+    try {
+      if (typeof win.GM_getValue === 'function') return win.GM_getValue;
+      if (win.__MY_EXT__ && win.__MY_EXT__.GM) {
+        if (typeof win.__MY_EXT__.GM.getValueSync === 'function') {
+          return win.__MY_EXT__.GM.getValueSync;
+        }
+      }
+    } catch (e) {
+      console.error('[ChatGPT Exporter] 获取 GM_getValue 时出错:', e);
+    }
+    return null;
+  })();
+  var _GM_setValue = (function() {
+    try {
+      if (typeof win.GM_setValue === 'function') return win.GM_setValue;
+      if (win.__MY_EXT__ && win.__MY_EXT__.GM) {
+        if (typeof win.__MY_EXT__.GM.setValueSync === 'function') {
+          return function(k, v) { 
+            try {
+              win.__MY_EXT__.GM.setValueSync(k, v);
+            } catch (e) {
+              console.error('[ChatGPT Exporter] 调用 GM_setValue 时出错:', e);
+            }
+          };
+        }
+      }
+    } catch (e) {
+      console.error('[ChatGPT Exporter] 获取 GM_setValue 时出错:', e);
+    }
+    return null;
+  })();
+  
+  console.log('[ChatGPT Exporter] GM API 函数获取结果:', {
+    hasDeleteValue: typeof _GM_deleteValue === 'function',
+    hasGetValue: typeof _GM_getValue === 'function',
+    hasSetValue: typeof _GM_setValue === 'function'
+  });
+  var window = window;
   function getBase64FromImg(el) {
     const canvas = document.createElement("canvas");
     canvas.width = el.naturalWidth;
@@ -1132,11 +1195,11 @@ html {
   }
   function getPageAccessToken() {
     var _a, _b, _c, _d, _e, _f;
-    return ((_f = (_e = (_d = (_c = (_b = (_a = _unsafeWindow == null ? void 0 : _unsafeWindow.__remixContext) == null ? void 0 : _a.state) == null ? void 0 : _b.loaderData) == null ? void 0 : _c.root) == null ? void 0 : _d.clientBootstrap) == null ? void 0 : _e.session) == null ? void 0 : _f.accessToken) ?? null;
+    return ((_f = (_e = (_d = (_c = (_b = (_a = win == null ? void 0 : win.__remixContext) == null ? void 0 : _a.state) == null ? void 0 : _b.loaderData) == null ? void 0 : _c.root) == null ? void 0 : _d.clientBootstrap) == null ? void 0 : _e.session) == null ? void 0 : _f.accessToken) ?? null;
   }
   function getUserProfile() {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i;
-    const user = ((_c = (_b = (_a = _unsafeWindow == null ? void 0 : _unsafeWindow.__NEXT_DATA__) == null ? void 0 : _a.props) == null ? void 0 : _b.pageProps) == null ? void 0 : _c.user) ?? ((_i = (_h = (_g = (_f = (_e = (_d = _unsafeWindow == null ? void 0 : _unsafeWindow.__remixContext) == null ? void 0 : _d.state) == null ? void 0 : _e.loaderData) == null ? void 0 : _f.root) == null ? void 0 : _g.clientBootstrap) == null ? void 0 : _h.session) == null ? void 0 : _i.user);
+    const user = ((_c = (_b = (_a = window == null ? void 0 : window.__NEXT_DATA__) == null ? void 0 : _a.props) == null ? void 0 : _b.pageProps) == null ? void 0 : _c.user) ?? ((_i = (_h = (_g = (_f = (_e = (_d = window == null ? void 0 : window.__remixContext) == null ? void 0 : _d.state) == null ? void 0 : _e.loaderData) == null ? void 0 : _f.root) == null ? void 0 : _g.clientBootstrap) == null ? void 0 : _h.session) == null ? void 0 : _i.user);
     if (!user) throw new Error("No user found.");
     return user;
   }
@@ -1167,7 +1230,7 @@ html {
       console.error(e2);
     }
     try {
-      const avatars = Array.from(document.querySelectorAll("img[alt]:not([aria-hidden])"));
+      const avatars = Array.from(doc.querySelectorAll("img[alt]:not([aria-hidden])"));
       const avatar = avatars.find((avatar2) => !avatar2.src.startsWith("data:"));
       if (avatar) return getBase64FromImg(avatar);
     } catch (e2) {
@@ -1176,7 +1239,7 @@ html {
     return defaultAvatar;
   }
   function checkIfConversationStarted() {
-    return !!document.querySelector('[data-testid^="conversation-turn-"]');
+    return !!doc.querySelector('[data-testid^="conversation-turn-"]');
   }
   const generateKey = (args) => JSON.stringify(args);
   function memorize(fn2) {
@@ -1389,7 +1452,7 @@ html {
   const fetchAccountsCheck = memorize(_fetchAccountsCheck);
   const getCookie = (key2) => {
     var _a;
-    return ((_a = document.cookie.match(`(^|;)\\s*${key2}\\s*=\\s*([^;]+)`)) == null ? void 0 : _a.pop()) || "";
+    return ((_a = doc.cookie.match(`(^|;)\\s*${key2}\\s*=\\s*([^;]+)`)) == null ? void 0 : _a.pop()) || "";
   };
   async function getTeamAccountId() {
     const accountsCheck = await fetchAccountsCheck();
@@ -2280,7 +2343,9 @@ html {
       const { asChild, ...primitiveProps } = props;
       const Comp = asChild ? $5e63c961fc1ce211$export$8c6ed5c666ac1360 : node2;
       p$6(() => {
-        window[Symbol.for("radix-ui")] = true;
+        if (win) {
+          win[Symbol.for("radix-ui")] = true;
+        }
       }, []);
       return /* @__PURE__ */ y$6(Comp, _extends({}, primitiveProps, {
         ref: forwardedRef
@@ -2297,7 +2362,7 @@ html {
       () => target.dispatchEvent(event)
     );
   }
-  function $addc16e1bbe58fd0$export$3a72a57244d6e765(onEscapeKeyDownProp, ownerDocument = globalThis === null || globalThis === void 0 ? void 0 : globalThis.document) {
+  function $addc16e1bbe58fd0$export$3a72a57244d6e765(onEscapeKeyDownProp, ownerDocument = doc || (globalThis === null || globalThis === void 0 ? void 0 : globalThis.document)) {
     const onEscapeKeyDown = $b1b2314f5f9a1d84$export$25bec8c6f54ee79a(onEscapeKeyDownProp);
     p$6(() => {
       const handleKeyDown = (event) => {
@@ -2324,7 +2389,7 @@ html {
     const { disableOutsidePointerEvents = false, onEscapeKeyDown, onPointerDownOutside, onFocusOutside, onInteractOutside, onDismiss, ...layerProps } = props;
     const context = q$1($5cb92bef7577960e$var$DismissableLayerContext);
     const [node1, setNode] = h$4(null);
-    const ownerDocument = (_node$ownerDocument = node1 === null || node1 === void 0 ? void 0 : node1.ownerDocument) !== null && _node$ownerDocument !== void 0 ? _node$ownerDocument : globalThis === null || globalThis === void 0 ? void 0 : globalThis.document;
+    const ownerDocument = (_node$ownerDocument = node1 === null || node1 === void 0 ? void 0 : node1.ownerDocument) !== null && _node$ownerDocument !== void 0 ? _node$ownerDocument : (doc || (globalThis === null || globalThis === void 0 ? void 0 : globalThis.document));
     const [, force] = h$4({});
     const composedRefs = $6ed0406888f73fc4$export$c7b2cbe3552a0d05(
       forwardedRef,
@@ -2418,7 +2483,7 @@ html {
       onPointerDownCapture: $e42e1063c40fb3ef$export$b9ecd428b558ff10(props.onPointerDownCapture, pointerDownOutside.onPointerDownCapture)
     }));
   });
-  function $5cb92bef7577960e$var$usePointerDownOutside(onPointerDownOutside, ownerDocument = globalThis === null || globalThis === void 0 ? void 0 : globalThis.document) {
+  function $5cb92bef7577960e$var$usePointerDownOutside(onPointerDownOutside, ownerDocument = doc || (globalThis === null || globalThis === void 0 ? void 0 : globalThis.document)) {
     const handlePointerDownOutside = $b1b2314f5f9a1d84$export$25bec8c6f54ee79a(onPointerDownOutside);
     const isPointerInsideReactTreeRef = _(false);
     const handleClickRef = _(() => {
@@ -2444,13 +2509,19 @@ html {
         }
         isPointerInsideReactTreeRef.current = false;
       };
-      const timerId = window.setTimeout(() => {
-        ownerDocument.addEventListener("pointerdown", handlePointerDown);
+      const timerId = (win.setTimeout || setTimeout)(() => {
+        if (ownerDocument) {
+          ownerDocument.addEventListener("pointerdown", handlePointerDown);
+        }
       }, 0);
       return () => {
-        window.clearTimeout(timerId);
-        ownerDocument.removeEventListener("pointerdown", handlePointerDown);
-        ownerDocument.removeEventListener("click", handleClickRef.current);
+        if (win.clearTimeout || clearTimeout) {
+          (win.clearTimeout || clearTimeout)(timerId);
+        }
+        if (ownerDocument) {
+          ownerDocument.removeEventListener("pointerdown", handlePointerDown);
+          ownerDocument.removeEventListener("click", handleClickRef.current);
+        }
       };
     }, [
       ownerDocument,
@@ -2461,7 +2532,7 @@ html {
       onPointerDownCapture: () => isPointerInsideReactTreeRef.current = true
     };
   }
-  function $5cb92bef7577960e$var$useFocusOutside(onFocusOutside, ownerDocument = globalThis === null || globalThis === void 0 ? void 0 : globalThis.document) {
+  function $5cb92bef7577960e$var$useFocusOutside(onFocusOutside, ownerDocument = doc || (globalThis === null || globalThis === void 0 ? void 0 : globalThis.document)) {
     const handleFocusOutside = $b1b2314f5f9a1d84$export$25bec8c6f54ee79a(onFocusOutside);
     const isFocusInsideReactTreeRef = _(false);
     p$6(() => {
@@ -4767,7 +4838,7 @@ html {
     });
     const handleOpen = T$4(() => {
       clearTimeout(closeTimerRef.current);
-      openTimerRef.current = window.setTimeout(
+      openTimerRef.current = (win.setTimeout || setTimeout)(
         () => setOpen(true),
         openDelay
       );
@@ -4777,7 +4848,7 @@ html {
     ]);
     const handleClose = T$4(() => {
       clearTimeout(openTimerRef.current);
-      if (!hasSelectionRef.current && !isPointerDownOnContentRef.current) closeTimerRef.current = window.setTimeout(
+      if (!hasSelectionRef.current && !isPointerDownOnContentRef.current) closeTimerRef.current = (win.setTimeout || setTimeout)(
         () => setOpen(false),
         closeDelay
       );
@@ -9633,10 +9704,10 @@ html {
     return x2 != null;
   }
   function onloadSafe(fn2) {
-    if (document.readyState === "complete") {
+    if (doc.readyState === "complete") {
       fn2();
     } else {
-      window.addEventListener("load", fn2);
+      win.addEventListener("load", fn2);
     }
   }
   function sleep(ms) {
@@ -23439,33 +23510,63 @@ ${content2}`;
     });
   }
   // 暴露一个挂载函数，供外部（例如 ChatGPT 助手面板）在自定义容器中渲染导出菜单
-  // 注意：Tampermonkey 脚本之间默认沙盒隔离，必须挂到 unsafeWindow 才能被其他脚本读取
-  (typeof unsafeWindow !== "undefined" ? unsafeWindow : window).ChatGPTExporterMount = function (targetElement) {
-    if (!targetElement) return null;
-    // 确保不会清空目标元素的内容
-    const container = document.createElement("div");
-    container.style.width = "100%";
-    container.style.height = "100%";
-    container.style.position = "relative";
-    container.style.overflow = "auto";
-    // 添加样式，使按钮直接显示，不需要下拉菜单
-    container.style.padding = "8px";
-    container.style.display = "grid";
-    container.style.gridTemplateColumns = "repeat(2, 1fr)";
-    container.style.gap = "4px";
-    container.style.alignContent = "start";
-    container.style.overflowY = "auto";
-    targetElement.appendChild(container);
-    // 使用 DirectMenu 而不是 Menu，直接显示功能按钮
-    D$4(/* @__PURE__ */ o$8(DirectMenu, { container }), container);
-    return container;
-  };
+  // Chrome Extension content scripts 可以直接访问 window，无需 unsafeWindow
+  console.log('[ChatGPT Exporter] 开始定义 ChatGPTExporterMount 函数...');
+  
+  try {
+    win.ChatGPTExporterMount = function (targetElement) {
+      if (!targetElement) return null;
+      // 确保不会清空目标元素的内容
+      const container = doc.createElement("div");
+      container.style.width = "100%";
+      container.style.height = "100%";
+      container.style.position = "relative";
+      container.style.overflow = "auto";
+      // 添加样式，使按钮直接显示，不需要下拉菜单
+      container.style.padding = "8px";
+      container.style.display = "grid";
+      container.style.gridTemplateColumns = "repeat(2, 1fr)";
+      container.style.gap = "4px";
+      container.style.alignContent = "start";
+      container.style.overflowY = "auto";
+      targetElement.appendChild(container);
+      // 使用 DirectMenu 而不是 Menu，直接显示功能按钮
+      try {
+        if (typeof D$4 !== 'undefined' && typeof DirectMenu !== 'undefined') {
+          console.log('[ChatGPT Exporter] 开始渲染 DirectMenu...');
+          D$4(/* @__PURE__ */ o$8(DirectMenu, { container }), container);
+          console.log('[ChatGPT Exporter] DirectMenu 渲染完成');
+        } else {
+          console.error('[ChatGPT Exporter] D$4 或 DirectMenu 未定义', {
+            hasD4: typeof D$4 !== 'undefined',
+            hasDirectMenu: typeof DirectMenu !== 'undefined'
+          });
+        }
+      } catch (e) {
+        console.error('[ChatGPT Exporter] 渲染 DirectMenu 时出错:', e);
+        console.error('[ChatGPT Exporter] 错误堆栈:', e.stack);
+        // 显示错误信息给用户
+        container.appendChild(doc.createElement('div')).textContent = '导出功能加载失败: ' + e.message;
+      }
+      return container;
+    };
+    console.log('[ChatGPT Exporter] ChatGPTExporterMount 函数定义成功');
+    
+    // 立即挂载到命名空间（在函数定义后立即执行）
+    if (!win.__MY_EXT__) {
+      win.__MY_EXT__ = {};
+    }
+    win.__MY_EXT__.ChatGPTExporterMount = win.ChatGPTExporterMount;
+    console.log('[ChatGPT Exporter] ChatGPTExporterMount 已定义并挂载到命名空间');
+  } catch (error) {
+    console.error('[ChatGPT Exporter] 定义 ChatGPTExporterMount 时出错:', error);
+  }
   main();
   function main() {
     onloadSafe(() => {
-      const styleEl = document.createElement("style");
+      const styleEl = doc.createElement("style");
       styleEl.id = "sentinel-css";
-      document.head.append(styleEl);
+      doc.head.append(styleEl);
       // 原脚本会自动在左侧导航中注入菜单，这里禁用该行为，改为由外部显式挂载
       // 其他功能（如时间戳补充）仍然保留
       let chatId = "";
@@ -23505,9 +23606,9 @@ ${content2}`;
     return container;
   }
 
-  // 兜底：再次确保挂载函数暴露到页面全局（unsafeWindow 优先）
+  // 兜底：再次确保挂载函数暴露到页面全局
   if (typeof window !== "undefined") {
-    const g = typeof unsafeWindow !== "undefined" ? unsafeWindow : window;
+    const g = window;
     g.ChatGPTExporterMount = g.ChatGPTExporterMount || function (targetElement) {
       if (!targetElement) return null;
       const container = document.createElement("div");
@@ -23520,4 +23621,39 @@ ${content2}`;
       return container;
     };
   }
-})(JSZip, html2canvas);
+  }); // 结束 waitForGMAPI 回调
+})(typeof JSZip !== 'undefined' ? JSZip : null, typeof html2canvas !== 'undefined' ? html2canvas : null);
+
+// 挂载到命名空间 - 确保 ChatGPTExporterMount 正确暴露
+(function() {
+    'use strict';
+    // 立即尝试挂载
+    const mountExporter = () => {
+        if (window.ChatGPTExporterMount && typeof window.ChatGPTExporterMount === 'function') {
+            if (!window.__MY_EXT__) {
+                window.__MY_EXT__ = {};
+            }
+            window.__MY_EXT__.ChatGPTExporterMount = window.ChatGPTExporterMount;
+            console.log('[ChatGPT Exporter] 已挂载到命名空间 window.__MY_EXT__.ChatGPTExporterMount');
+            return true;
+        }
+        return false;
+    };
+    
+    // 立即尝试挂载
+    if (!mountExporter()) {
+        // 如果还没定义，延迟重试（最多重试 40 次，约 2 秒）
+        let retries = 40;
+        const checkAndMount = () => {
+            if (mountExporter() || retries <= 0) {
+                if (retries <= 0 && !window.__MY_EXT__?.ChatGPTExporterMount) {
+                    console.warn('[ChatGPT Exporter] 挂载超时，ChatGPTExporterMount 可能未正确定义');
+                }
+                return;
+            }
+            retries--;
+            setTimeout(checkAndMount, 50);
+        };
+        setTimeout(checkAndMount, 50);
+    }
+})();
