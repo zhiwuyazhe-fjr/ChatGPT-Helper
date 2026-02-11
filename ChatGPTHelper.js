@@ -38,7 +38,7 @@
     // ==================== 国际化 ====================
     const I18N = {
         'zh-CN': {
-            panelTitle: 'ChatGPT 助手',
+            panelTitle: 'ChatGPT Helper',
             tabPrompts: '提示词',
             tabOutline: '大纲',
             tabConversations: '会话',
@@ -659,7 +659,7 @@
                 this.batchToolbar.appendChild(createElement('span', {
                     style: { color: 'var(--gh-text)', fontWeight: '500' }
                 }, `${this.t('selected') || '已选择'} ${this.selectedIds.size} ${this.t('items') || '项'}`));
-                
+
                 const moveBtn = createElement('button', {
                     style: {
                         padding: '4px 8px',
@@ -757,7 +757,7 @@
                 // 搜索过滤
                 if (this.searchQuery) {
                     const query = this.searchQuery.toLowerCase();
-                    conversations = conversations.filter(c => 
+                    conversations = conversations.filter(c =>
                         c.title && c.title.toLowerCase().includes(query)
                     );
                 }
@@ -938,7 +938,7 @@
             // 搜索过滤
             if (this.searchQuery) {
                 const query = this.searchQuery.toLowerCase();
-                conversations = conversations.filter(c => 
+                conversations = conversations.filter(c =>
                     c.title && c.title.toLowerCase().includes(query)
                 );
             }
@@ -1126,7 +1126,7 @@
         syncConversations() {
             // 使用适配器的 getConversationList 方法
             const conversations = this.adapter.getConversationList();
-            
+
             if (!conversations || conversations.length === 0) {
                 this.showToast(this.t('noConversations') || '未找到会话，请先打开侧边栏');
                 return;
@@ -1246,7 +1246,7 @@
                 return;
             }
             if (!confirm(`确定要删除 ${this.selectedIds.size} 个会话吗？`)) return;
-            
+
             this.selectedIds.forEach(id => {
                 delete this.data.conversations[id];
             });
@@ -1312,10 +1312,10 @@
         extractMessages() {
             const messages = [];
             const messageElements = this.adapter.getChatMessages();
-            
+
             messageElements.forEach((el, index) => {
-                const role = el.getAttribute('data-message-author-role') || 
-                            (el.querySelector('[data-message-author-role="user"]') ? 'user' : 'assistant');
+                const role = el.getAttribute('data-message-author-role') ||
+                    (el.querySelector('[data-message-author-role="user"]') ? 'user' : 'assistant');
                 const content = (el.innerText || el.textContent || '').trim();
                 if (content) {
                     messages.push({ role, content });
@@ -1665,7 +1665,7 @@
     }
 
     // ==================== 阶段1：核心滚动和锚点系统 ====================
-    
+
     /**
      * 滚动管理器
      * 提供统一的滚动接口，适配不同站点的滚动容器
@@ -1710,13 +1710,13 @@
                 }
                 return;
             }
-            
+
             // 参考 Gemini 助手：正确处理绕过锁定标志
             const shouldBypass = options && typeof options === 'object' && options.__bypassLock;
             if (shouldBypass) {
                 container.__ghBypassLock = true;
             }
-            
+
             try {
                 if (typeof options === 'object') {
                     container.scrollTo(options);
@@ -1757,7 +1757,7 @@
     class HistoryLoader {
         constructor(scrollManager, showToastFunc) {
             this.scrollManager = scrollManager;
-            this.showToast = showToastFunc || (() => {});
+            this.showToast = showToastFunc || (() => { });
             this.isLoading = false;
             this.aborted = false;
             this.overlay = null;
@@ -1915,7 +1915,7 @@
     class AnchorManager {
         constructor(scrollManager, showToastFunc) {
             this.scrollManager = scrollManager;
-            this.showToast = showToastFunc || (() => {});
+            this.showToast = showToastFunc || (() => { });
             this.previousAnchor = null; // 上一个位置（跳转前）
             this.currentAnchor = null; // 当前锚点（跳转目标）
             this.onAnchorChange = null; // UI 更新回调
@@ -1977,7 +1977,7 @@
             this.settings = settings;
             this.scrollManager = scrollManager;
             this.adapter = adapter;
-            this.showToast = showToastFunc || (() => {});
+            this.showToast = showToastFunc || (() => { });
             this.lastSaveTime = 0;
             this.isRecording = false;
             this.scrollHandler = null;
@@ -2119,7 +2119,7 @@
     }
 
     // ==================== 滚动锁定管理器 ====================
-    
+
     /**
      * 滚动锁定管理器
      * 通过劫持原生滚动 API 和 MutationObserver 修正来实现防自动滚动
@@ -2366,8 +2366,8 @@
                 if (!this.enabled) return;
 
                 let hasNewContent = false;
-                const responseContainer = this.siteAdapter?.getResponseContainer?.() || 
-                                        this.siteAdapter?.getScrollContainer?.();
+                const responseContainer = this.siteAdapter?.getResponseContainer?.() ||
+                    this.siteAdapter?.getScrollContainer?.();
                 if (!responseContainer) return;
 
                 mutations.forEach((mutation) => {
@@ -2375,8 +2375,8 @@
                         for (const node of mutation.addedNodes) {
                             if (node.nodeType === 1) {
                                 // 检查是否是消息节点
-                                if (responseContainer.contains(node) || 
-                                    node.querySelector && responseContainer.querySelector && 
+                                if (responseContainer.contains(node) ||
+                                    node.querySelector && responseContainer.querySelector &&
                                     responseContainer.querySelector('[data-message-id]')) {
                                     hasNewContent = true;
                                     break;
@@ -2429,7 +2429,7 @@
     }
 
     // ==================== 宽度样式管理器 ====================
-    
+
     /**
      * 宽度样式管理器
      * 负责页面宽度的动态调整
@@ -2464,7 +2464,7 @@
                 '[role="main"]',
                 'div[class*="flex"][class*="flex-col"]',
             ];
-            
+
             return selectors.map(selector => {
                 return `${selector} { max-width: ${globalWidth} !important; margin-left: auto !important; margin-right: auto !important; }`;
             }).join('\n');
@@ -2477,7 +2477,7 @@
     }
 
     // ==================== 阶段2：大纲管理器 ====================
-    
+
     /**
      * 大纲管理器
      * 负责大纲的 UI 渲染、交互和状态管理
@@ -2534,9 +2534,9 @@
         }
 
         updateAutoUpdateState() {
-            const shouldEnable = this.settings.outline?.enabled && 
-                                this.settings.outline?.autoUpdate && 
-                                this.isActive;
+            const shouldEnable = this.settings.outline?.enabled &&
+                this.settings.outline?.autoUpdate &&
+                this.isActive;
             if (shouldEnable) {
                 this.startObserver();
             } else {
@@ -2545,9 +2545,9 @@
         }
 
         updateSyncScrollState() {
-            const shouldEnable = this.settings.outline?.enabled && 
-                                this.settings.outline?.syncScroll && 
-                                this.isActive;
+            const shouldEnable = this.settings.outline?.enabled &&
+                this.settings.outline?.syncScroll &&
+                this.isActive;
             if (shouldEnable) {
                 this.startSyncScroll();
             } else {
@@ -2725,8 +2725,8 @@
             }
 
             // 同时发送两个事件：兼容 ChatGPT 助手内部监听 + 对齐 Gemini 行为
-            try { window.dispatchEvent(new CustomEvent('chatgpt-helper-outline-auto-refresh')); } catch (e) {}
-            try { window.dispatchEvent(new CustomEvent('gemini-helper-outline-auto-refresh')); } catch (e) {}
+            try { window.dispatchEvent(new CustomEvent('chatgpt-helper-outline-auto-refresh')); } catch (e) { }
+            try { window.dispatchEvent(new CustomEvent('gemini-helper-outline-auto-refresh')); } catch (e) { }
         }
 
         createUI() {
@@ -2952,17 +2952,17 @@
             content.appendChild(resultBar);
 
             // 大纲列表包装器
-            const listWrapper = createElement('div', { 
-                className: 'outline-list-wrapper', 
-                id: 'outline-list-wrapper' 
+            const listWrapper = createElement('div', {
+                className: 'outline-list-wrapper',
+                id: 'outline-list-wrapper'
             });
-            const list = createElement('div', { 
-                className: 'outline-list', 
-                id: 'outline-list' 
+            const list = createElement('div', {
+                className: 'outline-list',
+                id: 'outline-list'
             });
             listWrapper.appendChild(list);
             content.appendChild(listWrapper);
-            
+
 
             this.container.appendChild(content);
         }
@@ -2974,8 +2974,8 @@
             clearElement(listContainer);
 
             if (!outlineData || outlineData.length === 0) {
-                listContainer.appendChild(createElement('div', { 
-                    className: 'outline-empty' 
+                listContainer.appendChild(createElement('div', {
+                    className: 'outline-empty'
                 }, this.t('outlineEmpty') || '暂无大纲'));
                 return;
             }
@@ -3014,7 +3014,7 @@
             const displayLevel = this.state.expandLevel ?? 6;
             const minDisplayLevel = this.state.includeUserQueries ? 0 : 1;
             let effectiveDisplayLevel = displayLevel < minDisplayLevel ? minDisplayLevel : displayLevel;
-            
+
             // 只有在树结构发生变化时才重新初始化折叠状态
             // 如果树结构没变，保持用户当前的手动操作状态
             if (isTreeChanged) {
@@ -3420,22 +3420,22 @@
                         if (this.onJumpBefore) {
                             this.onJumpBefore();
                         }
-                        
+
                         // 获取滚动容器
                         const scrollContainer = this.siteAdapter?.getScrollContainer?.();
-                        
+
                         if (scrollContainer && scrollContainer !== document.documentElement && scrollContainer !== document.body) {
                             // 如果存在自定义滚动容器，手动计算滚动位置，使目标元素位于容器顶部
                             const containerRect = scrollContainer.getBoundingClientRect();
                             const targetRect = targetElement.getBoundingClientRect();
-                            
+
                             // 计算目标元素相对于滚动容器的位置
                             const targetTop = targetRect.top - containerRect.top + scrollContainer.scrollTop;
-                            
+
                             // 设置滚动位置，使目标元素位于容器顶部（留出一些顶部边距避免被固定头部遮挡）
                             const offset = 60; // 顶部偏移量，避免被固定头部遮挡，稍微增加以避免偏上
                             const scrollTop = targetTop - offset;
-                            
+
                             // 使用 __bypassLock 绕过 ScrollLockManager
                             scrollContainer.__ghBypassLock = true;
                             scrollContainer.scrollTo({ top: Math.max(0, scrollTop), behavior: 'smooth' });
@@ -3447,7 +3447,7 @@
                             // 传入 __bypassLock: true 以绕过 ScrollLockManager 的拦截
                             // 使用 block: 'start' 使目标元素位于视口顶部
                             targetElement.scrollIntoView({ behavior: 'smooth', block: 'start', __bypassLock: true });
-                            
+
                             // 微调：确保目标元素正好在页面顶部（考虑固定头部）
                             setTimeout(() => {
                                 const rect = targetElement.getBoundingClientRect();
@@ -3457,7 +3457,7 @@
                                 }
                             }, 100);
                         }
-                        
+
                         targetElement.classList.add('outline-highlight');
                         setTimeout(() => targetElement.classList.remove('outline-highlight'), 2000);
                     } else {
@@ -3597,8 +3597,8 @@
             if (this.onSettingsChange) this.onSettingsChange();
 
             // 触发大纲刷新（对齐 gemini助手.js）
-            try { window.dispatchEvent(new CustomEvent('gemini-helper-outline-auto-refresh')); } catch (e) {}
-            try { window.dispatchEvent(new CustomEvent('chatgpt-helper-outline-auto-refresh')); } catch (e) {}
+            try { window.dispatchEvent(new CustomEvent('gemini-helper-outline-auto-refresh')); } catch (e) { }
+            try { window.dispatchEvent(new CustomEvent('chatgpt-helper-outline-auto-refresh')); } catch (e) { }
         }
 
         toggleExpandAll() {
@@ -3857,7 +3857,7 @@
     }
 
     // ==================== 阶段3：复制管理器 ====================
-    
+
     /**
      * 复制管理器
      * 负责公式双击复制、表格 Markdown 复制等功能
@@ -3865,7 +3865,7 @@
     class CopyManager {
         constructor(settings, showToastFunc) {
             this.settings = settings;
-            this.showToast = showToastFunc || (() => {});
+            this.showToast = showToastFunc || (() => { });
             this.formulaCopyInitialized = false;
             this.tableCopyInitialized = false;
             this.formulaDblClickHandler = null;
@@ -3915,19 +3915,19 @@
                 if (!mathEl) return;
 
                 let latex = null;
-                
+
                 // 方法1: 尝试从 data 属性获取
-                latex = mathEl.getAttribute('data-latex') || 
-                        mathEl.getAttribute('data-math') ||
-                        mathEl.getAttribute('data-formula');
+                latex = mathEl.getAttribute('data-latex') ||
+                    mathEl.getAttribute('data-math') ||
+                    mathEl.getAttribute('data-formula');
 
                 // 方法2: 尝试从 KaTeX 的 annotation 元素获取
                 if (!latex) {
                     const annotation = mathEl.querySelector('[data-latex], [data-math], annotation[encoding="application/x-tex"]');
                     if (annotation) {
-                        latex = annotation.getAttribute('data-latex') || 
-                                annotation.getAttribute('data-math') ||
-                                annotation.textContent;
+                        latex = annotation.getAttribute('data-latex') ||
+                            annotation.getAttribute('data-math') ||
+                            annotation.textContent;
                     }
                 }
 
@@ -3959,9 +3959,9 @@
                 let copyText = latex;
                 if (this.settings.formulaCopy?.delimiterEnabled !== false) {
                     // 判断是块级还是行内（根据元素大小或类名）
-                    const isBlock = mathEl.classList.contains('katex-display') || 
-                                   mathEl.offsetHeight > 40 ||
-                                   mathEl.closest('[class*="block"]');
+                    const isBlock = mathEl.classList.contains('katex-display') ||
+                        mathEl.offsetHeight > 40 ||
+                        mathEl.closest('[class*="block"]');
                     copyText = isBlock ? `$$${latex}$$` : `$${latex}$`;
                 }
 
@@ -4149,14 +4149,14 @@
 
             const getCellContent = (cell) => {
                 let text = cell.innerText || cell.textContent || '';
-                
+
                 // 处理公式：尝试提取 LaTeX
                 const mathElements = cell.querySelectorAll('[class*="katex"], [class*="math"]');
                 mathElements.forEach(mathEl => {
-                    const latex = mathEl.getAttribute('data-latex') || 
-                                 mathEl.getAttribute('data-math') ||
-                                 mathEl.getAttribute('aria-label') ||
-                                 mathEl.textContent;
+                    const latex = mathEl.getAttribute('data-latex') ||
+                        mathEl.getAttribute('data-math') ||
+                        mathEl.getAttribute('aria-label') ||
+                        mathEl.textContent;
                     if (latex) {
                         // 替换公式文本为 LaTeX
                         text = text.replace(mathEl.textContent, `$${latex}$`);
@@ -4239,7 +4239,7 @@
     }
 
     // ==================== 阶段4：标签页增强 ====================
-    
+
     /**
      * 标签页重命名管理器
      * 负责自动重命名标签页、显示状态、通知、隐私模式
@@ -4248,7 +4248,7 @@
         constructor(adapter, settings, showToastFunc) {
             this.adapter = adapter;
             this.settings = settings;
-            this.showToast = showToastFunc || (() => {});
+            this.showToast = showToastFunc || (() => { });
             this.lastSessionName = null;
             this.intervalId = null;
             this.isRunning = false;
@@ -4368,7 +4368,7 @@
                     this.notificationAudio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFAP';
                 }
                 this.notificationAudio.volume = Math.max(0.1, Math.min(1.0, volume));
-                this.notificationAudio.play().catch(() => {});
+                this.notificationAudio.play().catch(() => { });
             } catch (e) {
                 // 忽略错误
             }
@@ -4474,22 +4474,22 @@
 
         getSidebarContainer() {
             // ChatGPT 侧边栏容器（按优先级）
-            return document.querySelector('nav[aria-label*="Chat history"]') || 
-                   document.querySelector('nav[aria-label*="聊天历史"]') ||
-                   document.querySelector('aside[aria-label*="Chat history"]') ||
-                   document.querySelector('aside[aria-label*="聊天历史"]') ||
-                   document.querySelector('[data-testid="sidebar"]') ||
-                   document.querySelector('nav') ||
-                   document.querySelector('aside');
+            return document.querySelector('nav[aria-label*="Chat history"]') ||
+                document.querySelector('nav[aria-label*="聊天历史"]') ||
+                document.querySelector('aside[aria-label*="Chat history"]') ||
+                document.querySelector('aside[aria-label*="聊天历史"]') ||
+                document.querySelector('[data-testid="sidebar"]') ||
+                document.querySelector('nav') ||
+                document.querySelector('aside');
         }
 
         getChatContainer() {
             // ChatGPT 对话区域容器（按优先级）
             return document.querySelector('main[class*="flex"]') ||
-                   document.querySelector('main') || 
-                   document.querySelector('[role="main"]') ||
-                   document.querySelector('.flex-1') ||
-                   document.querySelector('[class*="flex"][class*="flex-col"]');
+                document.querySelector('main') ||
+                document.querySelector('[role="main"]') ||
+                document.querySelector('.flex-1') ||
+                document.querySelector('[class*="flex"][class*="flex-col"]');
         }
 
         insertPrompt(content) {
@@ -4517,16 +4517,16 @@
                     editor.focus();
                     const selection = window.getSelection();
                     const range = document.createRange();
-                    
+
                     // 选择所有内容
                     range.selectNodeContents(editor);
                     range.collapse(false); // 移动到末尾
                     selection.removeAllRanges();
                     selection.addRange(range);
-                    
+
                     // 插入文本
                     document.execCommand('insertText', false, content);
-                    
+
                     // 触发输入事件
                     editor.dispatchEvent(new Event('input', { bubbles: true }));
                     editor.dispatchEvent(new Event('change', { bubbles: true }));
@@ -4551,29 +4551,29 @@
         getResponseContainer() {
             // 关键修复：ChatGPT 的滚动发生在容器内部的子元素上
             // 需要查找真正可滚动的子元素，而不是容器本身
-            
+
             // 1. 先找到主容器
             const mainContainer = document.querySelector('main[class*="flex"]') ||
-                                 document.querySelector('main') ||
-                                 document.querySelector('[role="main"]') ||
-                                 document.querySelector('.flex-1');
-            
+                document.querySelector('main') ||
+                document.querySelector('[role="main"]') ||
+                document.querySelector('.flex-1');
+
             if (mainContainer) {
                 // 2. 在容器内部查找真正可滚动的子元素
                 // 方法：遍历所有子元素，找到 scrollHeight > clientHeight 且可以设置 scrollTop 的元素
                 const findScrollableChild = (element, depth = 0) => {
                     if (depth > 5) return null; // 限制深度
-                    
+
                     // 检查当前元素是否可滚动
                     const style = window.getComputedStyle(element);
-                    const hasOverflow = style.overflowY === 'auto' || 
-                                       style.overflowY === 'scroll' ||
-                                       style.overflow === 'auto' ||
-                                       style.overflow === 'scroll';
-                    
+                    const hasOverflow = style.overflowY === 'auto' ||
+                        style.overflowY === 'scroll' ||
+                        style.overflow === 'auto' ||
+                        style.overflow === 'scroll';
+
                     // 检查是否真正可滚动（内容超出容器）
                     const isScrollable = element.scrollHeight > element.clientHeight && element.clientHeight > 0;
-                    
+
                     if (isScrollable && hasOverflow) {
                         // 测试是否可以设置 scrollTop（排除只读元素）
                         try {
@@ -4587,19 +4587,19 @@
                             // 忽略错误
                         }
                     }
-                    
+
                     // 递归查找子元素
                     for (const child of element.children) {
                         const found = findScrollableChild(child, depth + 1);
                         if (found) return found;
                     }
-                    
+
                     return null;
                 };
-                
+
                 // 先检查容器本身
                 const containerStyle = window.getComputedStyle(mainContainer);
-                if (mainContainer.scrollHeight > mainContainer.clientHeight && 
+                if (mainContainer.scrollHeight > mainContainer.clientHeight &&
                     (containerStyle.overflowY === 'auto' || containerStyle.overflowY === 'scroll')) {
                     // 测试容器是否可以滚动
                     try {
@@ -4613,14 +4613,14 @@
                         // 忽略错误
                     }
                 }
-                
+
                 // 在容器内部查找可滚动的子元素
                 const scrollableChild = findScrollableChild(mainContainer);
                 if (scrollableChild) {
                     console.log('[ChatGPT Helper] 找到可滚动的子元素:', scrollableChild);
                     return scrollableChild;
                 }
-                
+
                 // 如果找不到，尝试更激进的查找：查找所有有 overflow 样式的元素
                 const allElements = mainContainer.querySelectorAll('*');
                 for (const el of allElements) {
@@ -4643,14 +4643,14 @@
                     }
                 }
             }
-            
+
             // 3. 回退：查找包含消息的元素，向上查找可滚动的父元素
             const messageSelectors = [
                 '[data-message-author-role]',
                 '.group[data-testid*="conversation-turn"]',
                 '[class*="group"]',
             ];
-            
+
             for (const selector of messageSelectors) {
                 const message = document.querySelector(selector);
                 if (message) {
@@ -4678,7 +4678,7 @@
                     }
                 }
             }
-            
+
             // 4. 最后回退到 body
             console.log('[ChatGPT Helper] 未找到可滚动容器，回退到 body');
             return document.body;
@@ -4687,7 +4687,7 @@
         getChatMessages() {
             const container = this.getResponseContainer();
             if (!container) return [];
-            
+
             // ChatGPT 消息选择器
             const messageSelectors = [
                 '[data-message-author-role]',
@@ -4695,14 +4695,14 @@
                 '.group',
                 '[class*="group"]',
             ];
-            
+
             for (const selector of messageSelectors) {
                 const messages = container.querySelectorAll(selector);
                 if (messages.length > 0) {
                     return Array.from(messages);
                 }
             }
-            
+
             return [];
         }
 
@@ -4758,10 +4758,10 @@
             for (const selector of selectors) {
                 const el = document.querySelector(selector);
                 if (el) {
-                    const model = el.getAttribute('data-model') || 
-                                 el.getAttribute('aria-label') ||
-                                 el.getAttribute('title') ||
-                                 el.textContent?.trim();
+                    const model = el.getAttribute('data-model') ||
+                        el.getAttribute('aria-label') ||
+                        el.getAttribute('title') ||
+                        el.textContent?.trim();
                     if (model && model.length < 50) {
                         return model.replace(/model\s*:?\s*/i, '').trim();
                     }
@@ -4804,18 +4804,18 @@
                 // 使用innerText避免乱码
                 const title = (item.innerText || item.textContent || '').trim().replace(/\s+/g, ' ') || '未命名对话';
                 const url = href.startsWith('http') ? href : `https://chat.openai.com${href}`;
-                
+
                 // 检查是否置顶
-                const isPinned = item.closest('[class*="pinned"]') !== null || 
-                                item.closest('[data-pinned="true"]') !== null ||
-                                item.getAttribute('data-pinned') === 'true';
+                const isPinned = item.closest('[class*="pinned"]') !== null ||
+                    item.closest('[data-pinned="true"]') !== null ||
+                    item.getAttribute('data-pinned') === 'true';
 
                 // 尝试从 DOM 中提取最近更新时间
                 let updatedAt = null;
                 try {
                     // ChatGPT 侧边栏可能在链接附近包含 <time datetime="...">
                     const timeEl = item.querySelector('time[datetime]') ||
-                                   item.closest('li, div, article, section')?.querySelector('time[datetime]');
+                        item.closest('li, div, article, section')?.querySelector('time[datetime]');
                     if (timeEl) {
                         const dt = timeEl.getAttribute('datetime') || timeEl.dateTime;
                         const ts = Date.parse(dt);
@@ -4890,8 +4890,8 @@
             this.prompts = this.loadPrompts();
             this.settings = this.loadSettings();
             this.isCollapsed = !this.settings.defaultPanelState;
-            this.currentTab = this.settings.tabOrder && this.settings.tabOrder.length > 0 
-                ? this.settings.tabOrder[0] 
+            this.currentTab = this.settings.tabOrder && this.settings.tabOrder.length > 0
+                ? this.settings.tabOrder[0]
                 : 'prompts';
             this.selectedCategory = t('allCategory');
             this.searchQuery = '';
@@ -4964,22 +4964,22 @@
                 console.log('[ChatGPT Helper] 开始初始化...');
                 this.createStyles();
                 this.createLayout();
-                
+
                 // 确保面板创建后再创建 UI
                 setTimeout(() => {
                     if (this.panel) {
                         this.createUI();
                         this.createCollapsedButtons();
                         this.bindEvents();
-                        
+
                         // 启动主题监听
                         this.monitorTheme();
-                        
+
                         // 阶段1：启动阅读历史记录
                         if (this.settings.readingHistory?.persistence) {
                             this.readingProgressManager.startRecording();
                         }
-                        
+
                         // 阶段1：尝试恢复阅读位置
                         if (this.settings.readingHistory?.autoRestore) {
                             setTimeout(() => {
@@ -4990,26 +4990,26 @@
                                 });
                             }, 1000);
                         }
-                        
+
                         // 阶段1：清理过期历史
                         this.readingProgressManager.cleanup();
-                        
+
                         // 初始化宽度样式管理器
                         if (!this.widthStyleManager) {
                             this.widthStyleManager = new WidthStyleManager(this.adapter, this.settings.pageWidth);
                             this.widthStyleManager.apply();
                         }
-                        
+
                         // 阶段3：初始化复制功能
                         if (this.settings.formulaCopy?.enabled !== false || this.settings.tableCopy?.enabled !== false) {
                             this.copyManager.init();
                         }
-                        
+
                         // 阶段4：启动标签页管理器
                         if (this.settings.tabSettings?.enabled !== false) {
                             this.tabRenameManager.start();
                         }
-                        
+
                         // 监听大纲自动刷新事件（与 Gemini 助手行为对齐）
                         window.addEventListener('chatgpt-helper-outline-auto-refresh', () => {
                             if (this.currentTab === 'outline') {
@@ -6678,14 +6678,14 @@
                 this.initResizeHandle();
                 return;
             }
-            
+
             // 直接创建右栏面板，使用固定定位
             // 通过 CSS 调整 ChatGPT 原有布局，实现三栏效果
-            const rightBar = createElement('div', { 
+            const rightBar = createElement('div', {
                 id: 'chatgpt-helper-right',
                 className: this.isCollapsed ? 'collapsed' : ''
             });
-            
+
             // 确保添加到 body 的末尾，避免干扰现有元素
             if (document.body) {
                 document.body.appendChild(rightBar);
@@ -6701,7 +6701,7 @@
                         clearInterval(checkBody);
                     }
                 }, 100);
-                
+
                 // 超时保护
                 setTimeout(() => {
                     clearInterval(checkBody);
@@ -6712,7 +6712,7 @@
                     }
                 }, 5000);
             }
-            
+
             // 延迟调整布局，确保 ChatGPT 的 DOM 已经渲染
             setTimeout(() => {
                 this.adjustChatGPTLayout();
@@ -6725,26 +6725,26 @@
                 const layoutStyle = document.getElementById('chatgpt-helper-layout-style');
                 // 修复：折叠时margin为0，展开时为面板宽度
                 const marginValue = this.isCollapsed ? 0 : this.settings.panelWidth;
-                
+
                 if (layoutStyle) {
                     layoutStyle.remove();
                 }
-                
+
                 // 查找 ChatGPT 的主容器
-                const mainContainer = document.querySelector('main') || 
-                                     document.querySelector('[role="main"]') ||
-                                     document.querySelector('div[class*="flex"][class*="flex-col"]') ||
-                                     document.querySelector('div[class*="h-screen"] > div[class*="flex"]');
-                
+                const mainContainer = document.querySelector('main') ||
+                    document.querySelector('[role="main"]') ||
+                    document.querySelector('div[class*="flex"][class*="flex-col"]') ||
+                    document.querySelector('div[class*="h-screen"] > div[class*="flex"]');
+
                 const newStyle = document.createElement('style');
                 newStyle.id = 'chatgpt-helper-layout-style';
-                
+
                 // 如果找到了主容器，直接设置样式
                 if (mainContainer) {
                     mainContainer.style.marginRight = `${marginValue}px`;
                     mainContainer.style.transition = 'margin-right 0.3s ease';
                 }
-                
+
                 // 通用样式：为可能的容器设置样式
                 newStyle.textContent = `
                     /* 只调整主容器的右边距，为右侧面板留出空间 */
@@ -6761,15 +6761,15 @@
                 `;
                 document.head.appendChild(newStyle);
             };
-            
+
             // 立即执行一次
             updateLayout();
-            
+
             // 延迟执行，等待页面完全加载
             setTimeout(updateLayout, 500);
             setTimeout(updateLayout, 1500);
             setTimeout(updateLayout, 3000);
-            
+
             // 保存更新函数供 toggleCollapse 使用
             this.updateLayout = updateLayout;
         }
@@ -6836,9 +6836,9 @@
             const title = createElement('div', { id: 'chatgpt-helper-title' });
             title.appendChild(createElement('span', {}, '✨'));
             title.appendChild(createElement('span', {}, this.t('panelTitle')));
-            
+
             const controls = createElement('div', { id: 'chatgpt-helper-controls' });
-            
+
             // 主题切换按钮（参考 Gemini 助手）
             const themeBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
@@ -6846,15 +6846,15 @@
                 id: 'chatgpt-helper-header-theme-btn'
             });
             // 初始图标根据当前主题设置
-            const isDark = document.body.dataset.ghMode === 'dark' || 
-                          /\bdark\b/i.test(document.body.className);
+            const isDark = document.body.dataset.ghMode === 'dark' ||
+                /\bdark\b/i.test(document.body.className);
             themeBtn.textContent = isDark ? '☀' : '🌙';
             themeBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 this.toggleTheme(e);
             });
-            
+
             // 新标签页开启对话按钮
             const newChatBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
@@ -6864,7 +6864,7 @@
             newChatBtn.addEventListener('click', () => {
                 window.open('https://chatgpt.com', '_blank');
             });
-            
+
             // 刷新按钮
             const refreshBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
@@ -6877,7 +6877,7 @@
                     this.refreshOutline();
                 }
             });
-            
+
             // 折叠按钮（头部）
             const collapseBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
@@ -6885,7 +6885,7 @@
                 id: 'chatgpt-helper-collapse-btn'
             }, this.isCollapsed ? '+' : '−');
             collapseBtn.addEventListener('click', () => this.toggleCollapse());
-            
+
             // 设置按钮
             const settingsBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
@@ -6900,13 +6900,13 @@
                     this.switchTab('settings');
                 }
             });
-            
+
             controls.appendChild(themeBtn);
             controls.appendChild(newChatBtn);
             controls.appendChild(refreshBtn);
             controls.appendChild(settingsBtn);
             controls.appendChild(collapseBtn);
-            
+
             header.appendChild(title);
             header.appendChild(controls);
             this.panel.appendChild(header);
@@ -6914,12 +6914,12 @@
             // Tab 导航
             const tabs = createElement('div', { id: 'chatgpt-helper-tabs' });
             const tabOrder = this.settings.tabOrder || ['prompts', 'outline', 'conversations', 'export'];
-            
+
             tabOrder.forEach(tabId => {
                 if (tabId === 'settings') return; // 设置按钮在头部
                 const def = TAB_DEFINITIONS[tabId];
                 if (!def) return;
-                
+
                 const tab = createElement('button', {
                     className: `chatgpt-helper-tab ${this.currentTab === tabId ? 'active' : ''}`,
                     'data-tab': tabId,
@@ -6928,20 +6928,20 @@
                 tab.appendChild(createElement('span', {}, def.icon));
                 // 使用国际化文本
                 const tabLabel = tabId === 'prompts' ? this.t('tabPrompts') :
-                               tabId === 'outline' ? this.t('tabOutline') :
-                               tabId === 'conversations' ? this.t('tabConversations') :
-                               tabId === 'export' ? this.t('tabExport') :
-                               tabId === 'settings' ? this.t('tabSettings') : def.label;
+                    tabId === 'outline' ? this.t('tabOutline') :
+                        tabId === 'conversations' ? this.t('tabConversations') :
+                            tabId === 'export' ? this.t('tabExport') :
+                                tabId === 'settings' ? this.t('tabSettings') : def.label;
                 tab.appendChild(createElement('span', {}, tabLabel));
                 tab.addEventListener('click', () => this.switchTab(tabId));
                 tabs.appendChild(tab);
             });
-            
+
             this.panel.appendChild(tabs);
 
             // 内容区域
             const content = createElement('div', { id: 'chatgpt-helper-content' });
-            
+
             // 为每个Tab创建内容面板
             ['prompts', 'outline', 'conversations', 'export', 'settings'].forEach(tabId => {
                 const panel = createElement('div', {
@@ -6950,18 +6950,18 @@
                 });
                 content.appendChild(panel);
             });
-            
+
             this.panel.appendChild(content);
 
             // 确保每次重建 UI 之后都挂载拖拽手柄
             this.initResizeHandle();
-            
+
             // 底部导航按钮组（参考 Gemini 助手）
             const scrollNavContainer = createElement('div', {
                 className: 'scroll-nav-container',
                 id: 'scroll-nav-container',
             });
-            
+
             const navScrollTopBtn = createElement('button', {
                 className: 'scroll-nav-btn',
                 id: 'scroll-top-btn',
@@ -6970,7 +6970,7 @@
             navScrollTopBtn.appendChild(createElement('span', {}, '⬆'));
             navScrollTopBtn.appendChild(createElement('span', {}, '顶部'));
             navScrollTopBtn.addEventListener('click', () => this.scrollToTop());
-            
+
             const navAnchorBtn = createElement('button', {
                 className: 'scroll-nav-btn',
                 id: 'scroll-anchor-btn',
@@ -6980,7 +6980,7 @@
             navAnchorBtn.appendChild(createElement('span', {}, '⚓'));
             navAnchorBtn.appendChild(createElement('span', {}, '返回'));
             navAnchorBtn.addEventListener('click', () => this.handleAnchorClick());
-            
+
             const navScrollBottomBtn = createElement('button', {
                 className: 'scroll-nav-btn',
                 id: 'scroll-bottom-btn',
@@ -6989,7 +6989,7 @@
             navScrollBottomBtn.appendChild(createElement('span', {}, '⬇'));
             navScrollBottomBtn.appendChild(createElement('span', {}, '底部'));
             navScrollBottomBtn.addEventListener('click', () => this.scrollToBottom());
-            
+
             scrollNavContainer.appendChild(navScrollTopBtn);
             scrollNavContainer.appendChild(navAnchorBtn);
             scrollNavContainer.appendChild(navScrollBottomBtn);
@@ -7001,7 +7001,7 @@
 
         switchTab(tabName) {
             this.currentTab = tabName;
-            
+
             // 更新 Tab 状态
             const tabs = this.panel.querySelectorAll('.chatgpt-helper-tab');
             tabs.forEach(tab => {
@@ -7018,7 +7018,7 @@
             const panel = this.panel.querySelector(`#${tabName}-content`);
             if (panel) {
                 clearElement(panel);
-                
+
                 if (tabName === 'prompts') {
                     this.renderPrompts(panel);
                 } else if (tabName === 'outline') {
@@ -7081,7 +7081,7 @@
                 this.refreshPromptList();
             });
             categoryBar.appendChild(allTag);
-            
+
             categories.forEach(cat => {
                 const tag = createElement('div', {
                     className: `chatgpt-helper-category-tag ${this.selectedCategory === cat ? 'active' : ''}`
@@ -7097,14 +7097,14 @@
             // 提示词列表容器
             const listContainer = createElement('div', { className: 'chatgpt-helper-prompt-list', id: 'prompt-list' });
             container.appendChild(listContainer);
-            
+
             this.refreshPromptList();
         }
 
         refreshPromptList() {
             const listContainer = this.panel.querySelector('#prompt-list');
             if (!listContainer) return;
-            
+
             clearElement(listContainer);
 
             // 添加提示词按钮
@@ -7123,26 +7123,26 @@
             }
             if (this.searchQuery) {
                 const query = this.searchQuery.toLowerCase();
-                filteredPrompts = filteredPrompts.filter(p => 
-                    p.title.toLowerCase().includes(query) || 
+                filteredPrompts = filteredPrompts.filter(p =>
+                    p.title.toLowerCase().includes(query) ||
                     p.content.toLowerCase().includes(query)
                 );
             }
 
             if (filteredPrompts.length === 0) {
-                listContainer.appendChild(createElement('div', { 
+                listContainer.appendChild(createElement('div', {
                     style: { textAlign: 'center', color: 'var(--gh-text-secondary)', padding: '20px', fontSize: '14px' }
                 }, '暂无提示词'));
                 return;
             }
 
             filteredPrompts.forEach(prompt => {
-                const item = createElement('div', { 
+                const item = createElement('div', {
                     className: `chatgpt-helper-prompt-item ${this.selectedPrompt?.id === prompt.id ? 'selected' : ''}`
                 });
                 const title = createElement('div', { className: 'chatgpt-helper-prompt-title' }, prompt.title);
                 const content = createElement('div', { className: 'chatgpt-helper-prompt-content' }, prompt.content);
-                
+
                 // 操作按钮
                 const actions = createElement('div', {
                     className: 'chatgpt-helper-prompt-actions',
@@ -7188,7 +7188,7 @@
                 });
                 actions.appendChild(editBtn);
                 actions.appendChild(deleteBtn);
-                
+
                 item.appendChild(title);
                 item.appendChild(content);
                 item.appendChild(actions);
@@ -7241,7 +7241,7 @@
             });
             titleBar.appendChild(createElement('span', { style: { fontSize: '18px', lineHeight: '1' } }, '📤'));
             titleBar.appendChild(createElement('span', { style: { lineHeight: '1' } }, this.t('tabExport') || '导出'));
-            
+
             // 先添加标题栏到容器
             container.appendChild(titleBar);
 
@@ -7489,7 +7489,7 @@
         // 创建可折叠区域辅助方法（参考 Gemini 助手）
         createCollapsibleSection(title, content, options = {}) {
             const { defaultExpanded = false } = options;
-            const section = createElement('div', { 
+            const section = createElement('div', {
                 className: 'chatgpt-helper-setting-section',
                 style: {
                     marginBottom: '16px',
@@ -7517,8 +7517,8 @@
                 }
             });
 
-            const headerLeft = createElement('div', { 
-                style: 'display: flex; align-items: center; gap: 8px;' 
+            const headerLeft = createElement('div', {
+                style: 'display: flex; align-items: center; gap: 8px;'
             });
             // 箭头
             const arrow = createElement('span', {
@@ -7574,7 +7574,7 @@
 
         createSettingSection(title, items, options = {}) {
             const { collapsible = true, defaultExpanded = false } = options;
-            
+
             // 创建内容容器
             const content = createElement('div', {
                 style: {
@@ -7922,8 +7922,8 @@
                     className: 'setting-item-label',
                     style: 'display: flex; align-items: center;'
                 });
-                const iconSpan = createElement('span', { 
-                    style: 'display: inline-block; width: 24px; text-align: center; margin-right: 4px;' 
+                const iconSpan = createElement('span', {
+                    style: 'display: inline-block; width: 24px; text-align: center; margin-right: 4px;'
                 }, def.icon);
                 const textSpan = createElement('span', {}, def.label);
                 label.appendChild(iconSpan);
@@ -8408,7 +8408,7 @@
                     },
                     ...this.adapter
                 };
-                
+
                 this.outlineManager = new OutlineManager({
                     container: container,
                     settings: this.settings,
@@ -8577,7 +8577,7 @@
         toggleCollapse() {
             this.isCollapsed = !this.isCollapsed;
             this.panel.classList.toggle('collapsed', this.isCollapsed);
-            
+
             // 折叠按钮已移除，只保留侧边栏按钮
 
             // 更新侧边按钮组显示和位置
@@ -8619,7 +8619,7 @@
                 id: 'chatgpt-helper-quick-buttons',
                 className: 'chatgpt-helper-quick-buttons' + (this.isCollapsed ? ' collapsed' : ' hidden')
             });
-            
+
             // 设置初始位置和显示状态
             if (this.isCollapsed) {
                 btnGroup.style.right = '70px';
@@ -8670,7 +8670,7 @@
                     setBtn.addEventListener('click', handleSetClick, { capture: true, passive: false });
                     setBtn.addEventListener('click', handleSetClick, { capture: false, passive: false });
                     setBtn.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); }, { capture: true });
-                    
+
                     const backBtn = createElement('button', {
                         className: 'chatgpt-helper-quick-btn' + (this.savedAnchorTop === null ? ' disabled' : ''),
                         title: this.savedAnchorTop === null ? '暂无锚点' : '返回锚点',
@@ -8690,7 +8690,7 @@
                     backBtn.addEventListener('click', handleBackClick, { capture: true, passive: false });
                     backBtn.addEventListener('click', handleBackClick, { capture: false, passive: false });
                     backBtn.addEventListener('mousedown', (e) => { e.preventDefault(); e.stopPropagation(); }, { capture: true });
-                    
+
                     const clearBtn = createElement('button', {
                         className: 'chatgpt-helper-quick-btn' + (this.savedAnchorTop === null ? ' disabled' : ''),
                         title: '清除锚点',
@@ -8724,14 +8724,14 @@
                     // 绑定事件 - 使用直接绑定方式，确保this正确
                     const self = this;
                     const btnId = btnConfig.id;
-                    
+
                     // 创建事件处理函数
-                    const handleClick = function(e) {
+                    const handleClick = function (e) {
                         console.log('[ChatGPT Helper] 按钮点击:', btnId, '按钮元素:', btn, '事件:', e);
                         e.preventDefault();
                         e.stopPropagation();
                         e.stopImmediatePropagation();
-                        
+
                         // 执行对应的操作
                         try {
                             if (btnId === 'scrollTop') {
@@ -8751,8 +8751,8 @@
                                 self.toggleTheme(e);
                                 // 更新图标
                                 setTimeout(() => {
-                                    const isDark = document.body.dataset.ghMode === 'dark' || 
-                                                  document.documentElement.getAttribute('data-gh-mode') === 'dark';
+                                    const isDark = document.body.dataset.ghMode === 'dark' ||
+                                        document.documentElement.getAttribute('data-gh-mode') === 'dark';
                                     btn.textContent = isDark ? '🌙' : '☀';
                                 }, 200);
                             }
@@ -8761,46 +8761,48 @@
                             self.showToast('操作失败: ' + error.message);
                         }
                     };
-                    
+
                     // 添加鼠标事件监听（用于调试）
                     btn.addEventListener('mouseenter', () => {
                         console.log('[ChatGPT Helper] 鼠标悬停在按钮上:', btnId);
                     });
-                    
+
                     btn.addEventListener('mousedown', (e) => {
                         console.log('[ChatGPT Helper] 按钮 mousedown:', btnId);
                         e.preventDefault();
                         e.stopPropagation();
                     }, true);
-                    
+
                     // 使用多种方式绑定，确保事件能被捕获
                     // 方法1: 直接 onclick（最可靠）
                     btn.onclick = handleClick;
-                    
+
                     // 方法2: addEventListener capture 模式
                     btn.addEventListener('click', handleClick, true);
-                    
+
                     // 方法3: addEventListener 普通模式
                     btn.addEventListener('click', handleClick, false);
-                    
+
                     // 方法4: mousedown 作为备选
-                    btn.addEventListener('mousedown', function(e) {
+                    btn.addEventListener('mousedown', function (e) {
                         e.preventDefault();
                         e.stopPropagation();
                     }, true);
-                    
+
                     // 初始化状态
                     if (btnConfig.id === 'anchor') {
                         if (!self.hasAnchor) {
                             btn.style.opacity = '0.4';
                             btn.style.cursor = 'default';
                             btn.title = '暂无锚点';
+                        } else {
+                            btn.title = '返回跳转前位置';
                         }
                     } else if (btnConfig.id === 'theme') {
                         // 根据当前主题设置图标（参考 Gemini 助手）
-                        const isDark = document.body.dataset.ghMode === 'dark' || 
-                                      document.documentElement.getAttribute('data-gh-mode') === 'dark' ||
-                                      /\bdark\b/i.test(document.body.className);
+                        const isDark = document.body.dataset.ghMode === 'dark' ||
+                            document.documentElement.getAttribute('data-gh-mode') === 'dark' ||
+                            /\bdark\b/i.test(document.body.className);
                         btn.textContent = isDark ? '🌙' : '☀';
                     }
 
@@ -8815,7 +8817,7 @@
 
         scrollToTop() {
             console.log('[ChatGPT Helper] scrollToTop 被调用');
-            
+
             // 点击去顶部时，自动记录当前位置为锚点
             const currentScrollTop = this.scrollManager.scrollTop;
             if (currentScrollTop > 100 && this.anchorManager) {
@@ -8825,14 +8827,14 @@
             // 重新查找滚动容器（可能已变化）
             const container = this.scrollManager.container;
             console.log('[ChatGPT Helper] 滚动容器:', container, 'scrollTop:', container?.scrollTop, 'scrollHeight:', container?.scrollHeight, 'clientHeight:', container?.clientHeight);
-            
+
             // 检查是否在底部（需要在获取容器之前检查，因为可能使用 window 滚动）
             const isAtBottomWindow = window.innerHeight + window.scrollY >= document.body.scrollHeight - 50;
             console.log('[ChatGPT Helper] 是否在底部（window）:', isAtBottomWindow, 'window.scrollY:', window.scrollY, 'document.body.scrollHeight:', document.body.scrollHeight);
-            
+
             if (!container || container === document.body) {
                 console.log('[ChatGPT Helper] 使用 window 滚动');
-                
+
                 // 如果在底部，需要强制滚动
                 if (isAtBottomWindow) {
                     console.log('[ChatGPT Helper] 在底部，使用直接设置 scrollTop 强制滚动');
@@ -8841,17 +8843,17 @@
                     if (wasLockEnabled) {
                         this.scrollLockManager.setEnabled(false);
                     }
-                    
+
                     // 获取滚动元素
                     const scrollElement = document.scrollingElement || document.documentElement || document.body;
                     console.log('[ChatGPT Helper] 滚动元素:', scrollElement);
-                    
+
                     // 获取原生 scrollTop setter
                     let originalScrollTopSetter = null;
                     if (this.scrollLockManager && this.scrollLockManager.originalApis && this.scrollLockManager.originalApis.scrollTopDescriptor) {
                         originalScrollTopSetter = this.scrollLockManager.originalApis.scrollTopDescriptor.set;
                     }
-                    
+
                     // 强制滚动函数：直接设置 scrollTop
                     const forceScrollToZero = () => {
                         try {
@@ -8873,30 +8875,30 @@
                             console.error('[ChatGPT Helper] 设置 scrollTop 失败:', e);
                         }
                     };
-                    
+
                     // 立即执行多次
                     forceScrollToZero();
                     setTimeout(() => forceScrollToZero(), 0);
                     setTimeout(() => forceScrollToZero(), 10);
-                    
+
                     // 使用 setInterval 强制滚动
                     let attempts = 0;
                     const maxAttempts = 200;
                     const scrollInterval = setInterval(() => {
                         attempts++;
                         const before = window.scrollY || scrollElement.scrollTop;
-                        
+
                         // 确保 ScrollLockManager 被禁用
                         if (wasLockEnabled && this.scrollLockManager) {
                             this.scrollLockManager.setEnabled(false);
                         }
-                        
+
                         // 强制设置 scrollTop
                         forceScrollToZero();
-                        
+
                         const current = window.scrollY || scrollElement.scrollTop;
                         console.log('[ChatGPT Helper] window 强制滚动尝试', attempts, '当前位置:', current, '之前:', before, 'scrollElement.scrollTop:', scrollElement.scrollTop);
-                        
+
                         if (current <= 5 || attempts >= maxAttempts) {
                             clearInterval(scrollInterval);
                             if (wasLockEnabled && this.scrollLockManager) {
@@ -8938,7 +8940,7 @@
             // 检查容器是否真正可滚动
             if (container.scrollHeight <= container.clientHeight || container.clientHeight === 0) {
                 console.log('[ChatGPT Helper] 容器不可滚动，尝试 window 滚动');
-                
+
                 // 如果在底部，需要强制滚动
                 if (isAtBottomWindow) {
                     console.log('[ChatGPT Helper] 在底部（容器不可滚动），使用直接设置 scrollTop 强制滚动');
@@ -8947,16 +8949,16 @@
                     if (wasLockEnabled) {
                         this.scrollLockManager.setEnabled(false);
                     }
-                    
+
                     // 获取滚动元素
                     const scrollElement = document.scrollingElement || document.documentElement || document.body;
-                    
+
                     // 获取原生 scrollTop setter
                     let originalScrollTopSetter = null;
                     if (this.scrollLockManager && this.scrollLockManager.originalApis && this.scrollLockManager.originalApis.scrollTopDescriptor) {
                         originalScrollTopSetter = this.scrollLockManager.originalApis.scrollTopDescriptor.set;
                     }
-                    
+
                     // 强制滚动函数：直接设置 scrollTop
                     const forceScrollToZero = () => {
                         try {
@@ -8975,25 +8977,25 @@
                             console.error('[ChatGPT Helper] 设置 scrollTop 失败:', e);
                         }
                     };
-                    
+
                     // 立即执行多次
                     forceScrollToZero();
                     setTimeout(() => forceScrollToZero(), 0);
                     setTimeout(() => forceScrollToZero(), 10);
-                    
+
                     // 使用 setInterval 强制滚动
                     let attempts = 0;
                     const maxAttempts = 200;
                     const scrollInterval = setInterval(() => {
                         attempts++;
                         const before = window.scrollY || scrollElement.scrollTop;
-                        
+
                         if (wasLockEnabled && this.scrollLockManager) {
                             this.scrollLockManager.setEnabled(false);
                         }
-                        
+
                         forceScrollToZero();
-                        
+
                         const current = window.scrollY || scrollElement.scrollTop;
                         if (current <= 5 || attempts >= maxAttempts) {
                             clearInterval(scrollInterval);
@@ -9033,20 +9035,20 @@
             // 关键修复：检查是否在底部（容器可滚动时）
             const isAtBottomContainer = this.scrollManager.isAtBottom(50);
             console.log('[ChatGPT Helper] 是否在底部（容器）:', isAtBottomContainer, '当前scrollTop:', container.scrollTop, 'scrollHeight:', container.scrollHeight, 'clientHeight:', container.clientHeight);
-            
+
             // 关键修复：完全禁用 ScrollLockManager，并临时恢复原始 scrollTop setter
             const wasLockEnabled = this.scrollLockManager && this.scrollLockManager.enabled;
             let originalScrollTopDescriptor = null;
             let scrollTopRestored = false;
-            
+
             // 修复：无论是否在底部，都先禁用锁定，允许滚动
             if (wasLockEnabled) {
                 console.log('[ChatGPT Helper] 完全禁用 ScrollLockManager');
                 this.scrollLockManager.setEnabled(false);
-                
+
                 if (this.scrollLockManager.originalApis && this.scrollLockManager.originalApis.scrollTopDescriptor) {
                     originalScrollTopDescriptor = this.scrollLockManager.originalApis.scrollTopDescriptor;
-                    
+
                     // 关键修复：如果在底部，临时恢复原始的 scrollTop setter（绕过劫持）
                     if (originalScrollTopDescriptor && isAtBottomContainer) {
                         try {
@@ -9062,25 +9064,25 @@
 
             // 设置 bypassLock 标志
             container.__ghBypassLock = true;
-            
+
             // 获取原生 scrollTop setter（绕过所有拦截）
             const getNativeSetter = () => {
                 // 方法1: 从 ScrollLockManager 的原始API获取
                 if (originalScrollTopDescriptor && originalScrollTopDescriptor.set) {
                     return originalScrollTopDescriptor.set;
                 }
-                
+
                 // 方法2: 从原型链获取（如果已经恢复）
                 const proto = Object.getPrototypeOf(container);
                 const descriptor = Object.getOwnPropertyDescriptor(proto, 'scrollTop') ||
-                                  Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
-                                  Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
-                
+                    Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
+                    Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
+
                 return descriptor?.set;
             };
 
             const nativeSetter = getNativeSetter();
-            
+
             // 强制滚动函数（使用原生setter）
             const forceScrollToZero = () => {
                 try {
@@ -9102,7 +9104,7 @@
                     }
                 }
             };
-            
+
             // 清理函数：恢复 scrollTop setter 的劫持
             const cleanup = () => {
                 delete container.__ghBypassLock;
@@ -9156,20 +9158,20 @@
                 const scrollInterval = setInterval(() => {
                     attempts++;
                     const before = container.scrollTop;
-                    
+
                     // 确保标志和禁用状态存在
                     container.__ghBypassLock = true;
                     if (wasLockEnabled && this.scrollLockManager) {
                         this.scrollLockManager.setEnabled(false);
                     }
-                    
+
                     // 强制设置 scrollTop
                     forceScrollToZero();
-                    
+
                     // 检查是否到达顶部
                     const current = container.scrollTop;
                     console.log('[ChatGPT Helper] 强制滚动尝试', attempts, '当前位置:', current, '之前:', before);
-                    
+
                     if (current <= 5 || attempts >= maxAttempts) {
                         clearInterval(scrollInterval);
                         cleanup();
@@ -9198,14 +9200,14 @@
                 const scrollStep = () => {
                     attempts++;
                     const before = container.scrollTop;
-                    
+
                     container.__ghBypassLock = true;
                     if (wasLockEnabled && this.scrollLockManager) {
                         this.scrollLockManager.setEnabled(false);
                     }
-                    
+
                     forceScrollToZero();
-                    
+
                     const current = container.scrollTop;
                     if (current <= 5 || attempts >= maxAttempts) {
                         cleanup();
@@ -9218,7 +9220,7 @@
                         this.showToast('已滚动到顶部');
                     }
                 };
-                
+
                 requestAnimationFrame(() => {
                     requestAnimationFrame(scrollStep);
                 });
@@ -9227,7 +9229,7 @@
 
         scrollToBottom() {
             console.log('[ChatGPT Helper] scrollToBottom 被调用');
-            
+
             // 点击去底部时，自动记录当前位置为锚点
             const currentScrollTop = this.scrollManager.scrollTop;
             if (currentScrollTop > 100 && this.anchorManager) {
@@ -9237,7 +9239,7 @@
             // 重新查找滚动容器（可能已变化）
             const container = this.scrollManager.container;
             console.log('[ChatGPT Helper] 滚动容器:', container, 'scrollTop:', container?.scrollTop, 'scrollHeight:', container?.scrollHeight, 'clientHeight:', container?.clientHeight);
-            
+
             if (!container || container === document.body) {
                 console.log('[ChatGPT Helper] 使用 window 滚动到底部');
                 window.__ghBypassLock = true;
@@ -9250,7 +9252,7 @@
             // 检查容器是否真正可滚动
             const targetTop = Math.max(0, container.scrollHeight - container.clientHeight);
             console.log('[ChatGPT Helper] 目标滚动位置:', targetTop);
-            
+
             if (container.scrollHeight <= container.clientHeight || container.clientHeight === 0) {
                 console.log('[ChatGPT Helper] 容器不可滚动，尝试 window 滚动');
                 window.__ghBypassLock = true;
@@ -9276,9 +9278,9 @@
                     // 获取原生描述符（从原始原型链）
                     const proto = Object.getPrototypeOf(container);
                     const descriptor = Object.getOwnPropertyDescriptor(proto, 'scrollTop') ||
-                                      Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
-                                      Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
-                    
+                        Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
+                        Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
+
                     if (descriptor && descriptor.set) {
                         console.log('[ChatGPT Helper] 使用原生 scrollTop setter');
                         descriptor.set.call(container, targetTop);
@@ -9318,16 +9320,16 @@
                 attempts++;
                 const before = container.scrollTop;
                 const target = Math.max(0, container.scrollHeight - container.clientHeight);
-                
+
                 // 确保标志和禁用状态存在
                 container.__ghBypassLock = true;
                 if (wasLockEnabled && this.scrollLockManager) {
                     this.scrollLockManager.setEnabled(false);
                 }
-                
+
                 // 强制设置 scrollTop
                 scrollToTarget();
-                
+
                 // 检查是否到达底部
                 const currentTop = container.scrollTop;
                 const distanceToBottom = container.scrollHeight - currentTop - container.clientHeight;
@@ -9365,7 +9367,7 @@
                     this.showToast('已滚动到底部');
                 }
             };
-            
+
             // 延迟执行，确保 DOM 已更新
             requestAnimationFrame(() => {
                 requestAnimationFrame(scrollStep);
@@ -9395,12 +9397,12 @@
                 this.showToast('暂无锚点');
                 return;
             }
-            
+
             try {
                 const container = this.scrollManager.container;
                 // 检查是否在底部（需要在获取容器之前检查）
                 const isAtBottomWindow = window.innerHeight + window.scrollY >= document.body.scrollHeight - 50;
-                
+
                 if (!container || container === document.body) {
                     // 如果在底部，需要强制滚动
                     if (isAtBottomWindow) {
@@ -9409,13 +9411,13 @@
                         if (wasLockEnabled) {
                             this.scrollLockManager.setEnabled(false);
                         }
-                        
+
                         const scrollElement = document.scrollingElement || document.documentElement || document.body;
                         let originalScrollTopSetter = null;
                         if (this.scrollLockManager && this.scrollLockManager.originalApis && this.scrollLockManager.originalApis.scrollTopDescriptor) {
                             originalScrollTopSetter = this.scrollLockManager.originalApis.scrollTopDescriptor.set;
                         }
-                        
+
                         const forceScrollToTarget = () => {
                             try {
                                 if (originalScrollTopSetter) {
@@ -9433,27 +9435,27 @@
                                 console.error('[ChatGPT Helper] 设置 scrollTop 失败:', e);
                             }
                         };
-                        
+
                         forceScrollToTarget();
                         setTimeout(() => forceScrollToTarget(), 0);
                         setTimeout(() => forceScrollToTarget(), 10);
-                        
+
                         let attempts = 0;
                         const maxAttempts = 200;
                         const scrollInterval = setInterval(() => {
                             attempts++;
                             const before = window.scrollY || scrollElement.scrollTop;
-                            
+
                             if (wasLockEnabled && this.scrollLockManager) {
                                 this.scrollLockManager.setEnabled(false);
                             }
-                            
+
                             forceScrollToTarget();
-                            
+
                             const current = window.scrollY || scrollElement.scrollTop;
                             const diff = Math.abs(current - this.savedAnchorTop);
                             console.log('[ChatGPT Helper] window 强制滚动到锚点尝试', attempts, '当前位置:', current, '目标:', this.savedAnchorTop, '差值:', diff);
-                            
+
                             if (diff <= 5) {
                                 // 真正到达目标位置
                                 clearInterval(scrollInterval);
@@ -9500,11 +9502,11 @@
                 const wasLockEnabled = this.scrollLockManager && this.scrollLockManager.enabled;
                 let originalScrollTopDescriptor = null;
                 let scrollTopRestored = false;
-                
+
                 if (wasLockEnabled && this.scrollLockManager.originalApis && this.scrollLockManager.originalApis.scrollTopDescriptor) {
                     this.scrollLockManager.setEnabled(false);
                     originalScrollTopDescriptor = this.scrollLockManager.originalApis.scrollTopDescriptor;
-                    
+
                     // 关键修复：临时恢复原始的 scrollTop setter（绕过劫持）
                     if (originalScrollTopDescriptor && isAtBottomContainer) {
                         try {
@@ -9529,8 +9531,8 @@
                     }
                     const proto = Object.getPrototypeOf(container);
                     const descriptor = Object.getOwnPropertyDescriptor(proto, 'scrollTop') ||
-                                      Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
-                                      Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
+                        Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
+                        Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
                     return descriptor?.set;
                 };
 
@@ -9552,7 +9554,7 @@
                         container.scrollTop = this.savedAnchorTop;
                     }
                 };
-                
+
                 // 清理函数：恢复 scrollTop setter 的劫持
                 const cleanup = () => {
                     delete container.__ghBypassLock;
@@ -9604,18 +9606,18 @@
                     const scrollInterval = setInterval(() => {
                         attempts++;
                         const before = container.scrollTop;
-                        
+
                         container.__ghBypassLock = true;
                         if (wasLockEnabled && this.scrollLockManager) {
                             this.scrollLockManager.setEnabled(false);
                         }
-                        
+
                         forceScrollToTarget();
-                        
+
                         const current = container.scrollTop;
                         const diff = Math.abs(current - this.savedAnchorTop);
                         console.log('[ChatGPT Helper] 强制滚动到锚点尝试', attempts, '当前位置:', current, '目标:', this.savedAnchorTop, '差值:', diff);
-                        
+
                         if (diff <= 5) {
                             // 真正到达目标位置
                             clearInterval(scrollInterval);
@@ -9713,7 +9715,7 @@
             const backBtn = document.getElementById('manual-anchor-back-btn');
             const clearBtn = document.getElementById('manual-anchor-clear-btn');
             const hasAnchor = this.savedAnchorTop !== null;
-            
+
             if (backBtn) {
                 backBtn.classList.toggle('disabled', !hasAnchor);
                 backBtn.title = hasAnchor ? '返回锚点' : '暂无锚点';
@@ -9728,13 +9730,13 @@
                 this.showToast('暂无锚点（点击顶部/底部按钮可自动生成）');
                 return;
             }
-            
+
             // 返回锚点（支持来回跳转）
             try {
                 const container = this.scrollManager.container;
                 // 检查是否在底部（需要在获取容器之前检查）
                 const isAtBottomWindow = window.innerHeight + window.scrollY >= document.body.scrollHeight - 50;
-                
+
                 if (!container || container === document.body) {
                     // 获取锚点位置
                     const anchorTop = this.anchorManager.previousAnchor?.top;
@@ -9742,7 +9744,7 @@
                         this.showToast('返回锚点失败');
                         return;
                     }
-                    
+
                     // 如果在底部，需要强制滚动
                     if (isAtBottomWindow) {
                         console.log('[ChatGPT Helper] 在底部（自动锚点），使用直接设置 scrollTop 强制滚动');
@@ -9750,13 +9752,13 @@
                         if (wasLockEnabled) {
                             this.scrollLockManager.setEnabled(false);
                         }
-                        
+
                         const scrollElement = document.scrollingElement || document.documentElement || document.body;
                         let originalScrollTopSetter = null;
                         if (this.scrollLockManager && this.scrollLockManager.originalApis && this.scrollLockManager.originalApis.scrollTopDescriptor) {
                             originalScrollTopSetter = this.scrollLockManager.originalApis.scrollTopDescriptor.set;
                         }
-                        
+
                         const forceScrollToTarget = () => {
                             try {
                                 if (originalScrollTopSetter) {
@@ -9774,27 +9776,27 @@
                                 console.error('[ChatGPT Helper] 设置 scrollTop 失败:', e);
                             }
                         };
-                        
+
                         forceScrollToTarget();
                         setTimeout(() => forceScrollToTarget(), 0);
                         setTimeout(() => forceScrollToTarget(), 10);
-                        
+
                         let attempts = 0;
                         const maxAttempts = 200;
                         const scrollInterval = setInterval(() => {
                             attempts++;
                             const before = window.scrollY || scrollElement.scrollTop;
-                            
+
                             if (wasLockEnabled && this.scrollLockManager) {
                                 this.scrollLockManager.setEnabled(false);
                             }
-                            
+
                             forceScrollToTarget();
-                            
+
                             const current = window.scrollY || scrollElement.scrollTop;
                             const diff = Math.abs(current - anchorTop);
                             console.log('[ChatGPT Helper] window 强制滚动到锚点尝试', attempts, '当前位置:', current, '目标:', anchorTop, '差值:', diff);
-                            
+
                             if (diff <= 5) {
                                 // 真正到达目标位置
                                 clearInterval(scrollInterval);
@@ -9807,7 +9809,7 @@
                                 const currentPos = this.anchorManager._captureCurrentPosition();
                                 this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                                 this.anchorManager.previousAnchor = currentPos;
-                                this.showToast('已返回锚点');
+                                this.showToast('已返回跳转前位置');
                             } else if (attempts >= maxAttempts) {
                                 // 达到最大尝试次数，但未到达目标位置
                                 clearInterval(scrollInterval);
@@ -9831,7 +9833,7 @@
                     } else {
                         const success = this.anchorManager.backToAnchor();
                         if (success) {
-                            this.showToast('已返回锚点');
+                            this.showToast('已返回跳转前位置');
                         } else {
                             this.showToast('返回锚点失败');
                         }
@@ -9854,11 +9856,11 @@
                 const wasLockEnabled = this.scrollLockManager && this.scrollLockManager.enabled;
                 let originalScrollTopDescriptor = null;
                 let scrollTopRestored = false;
-                
+
                 if (wasLockEnabled && this.scrollLockManager.originalApis && this.scrollLockManager.originalApis.scrollTopDescriptor) {
                     this.scrollLockManager.setEnabled(false);
                     originalScrollTopDescriptor = this.scrollLockManager.originalApis.scrollTopDescriptor;
-                    
+
                     // 关键修复：临时恢复原始的 scrollTop setter（绕过劫持）
                     if (originalScrollTopDescriptor && isAtBottomContainer) {
                         try {
@@ -9883,8 +9885,8 @@
                     }
                     const proto = Object.getPrototypeOf(container);
                     const descriptor = Object.getOwnPropertyDescriptor(proto, 'scrollTop') ||
-                                      Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
-                                      Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
+                        Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
+                        Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
                     return descriptor?.set;
                 };
 
@@ -9906,7 +9908,7 @@
                         container.scrollTop = anchorTop;
                     }
                 };
-                
+
                 // 清理函数：恢复 scrollTop setter 的劫持
                 const cleanup = () => {
                     delete container.__ghBypassLock;
@@ -9958,18 +9960,18 @@
                     const scrollInterval = setInterval(() => {
                         attempts++;
                         const before = container.scrollTop;
-                        
+
                         container.__ghBypassLock = true;
                         if (wasLockEnabled && this.scrollLockManager) {
                             this.scrollLockManager.setEnabled(false);
                         }
-                        
+
                         forceScrollToTarget();
-                        
+
                         const current = container.scrollTop;
                         const diff = Math.abs(current - anchorTop);
                         console.log('[ChatGPT Helper] 强制滚动到锚点尝试', attempts, '当前位置:', current, '目标:', anchorTop, '差值:', diff);
-                        
+
                         if (diff <= 5) {
                             // 真正到达目标位置
                             clearInterval(scrollInterval);
@@ -9978,7 +9980,7 @@
                             const currentPos = this.anchorManager._captureCurrentPosition();
                             this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                             this.anchorManager.previousAnchor = currentPos;
-                            this.showToast('已返回锚点');
+                            this.showToast('已返回跳转前位置');
                         } else if (attempts >= maxAttempts) {
                             // 达到最大尝试次数，但未到达目标位置
                             clearInterval(scrollInterval);
@@ -10006,7 +10008,7 @@
                                         const currentPos = this.anchorManager._captureCurrentPosition();
                                         this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                                         this.anchorManager.previousAnchor = currentPos;
-                                        this.showToast('已返回锚点');
+                                        this.showToast('已返回跳转前位置');
                                     } else {
                                         this.showToast('返回锚点失败');
                                     }
@@ -10030,7 +10032,7 @@
                         const currentPos = this.anchorManager._captureCurrentPosition();
                         this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                         this.anchorManager.previousAnchor = currentPos;
-                        this.showToast('已返回锚点');
+                        this.showToast('已返回跳转前位置');
                     } else {
                         this.showToast('返回锚点失败');
                     }
@@ -10043,15 +10045,15 @@
 
         updateAnchorButton() {
             const hasAnchor = this.anchorManager ? this.anchorManager.hasAnchor() : this.hasAnchor;
-            
+
             // 更新侧边栏按钮
             const anchorBtn = document.getElementById('quick-btn-anchor');
             if (anchorBtn) {
                 anchorBtn.style.opacity = hasAnchor ? '1' : '0.4';
                 anchorBtn.style.cursor = hasAnchor ? 'pointer' : 'default';
-                anchorBtn.title = hasAnchor ? '返回锚点' : '暂无锚点';
+                anchorBtn.title = hasAnchor ? '返回跳转前位置' : '暂无锚点';
             }
-            
+
             // 更新底部导航按钮（参考 Gemini 助手）
             const navAnchorBtn = document.getElementById('scroll-anchor-btn');
             if (navAnchorBtn) {
@@ -10070,22 +10072,22 @@
         toggleTheme(event) {
             try {
                 console.log('[ChatGPT Helper] toggleTheme 被调用');
-                
+
                 // 参考 Gemini 助手的实现：检测当前主题（更全面的检测）
                 const bodyClass = document.body.className;
                 const htmlClass = document.documentElement.className;
                 const bodyStyle = window.getComputedStyle(document.body);
-                
+
                 // 多种方式检测当前主题
-                const isDark = /\bdark\b/i.test(bodyClass) || 
-                              /\bdark\b/i.test(htmlClass) ||
-                              /\bdark-theme\b/i.test(bodyClass) || 
-                              bodyStyle.colorScheme === 'dark' ||
-                              document.body.style.colorScheme === 'dark' ||
-                              document.body.dataset.theme === 'dark' ||
-                              document.documentElement.dataset.theme === 'dark' ||
-                              document.documentElement.getAttribute('data-theme') === 'dark';
-                
+                const isDark = /\bdark\b/i.test(bodyClass) ||
+                    /\bdark\b/i.test(htmlClass) ||
+                    /\bdark-theme\b/i.test(bodyClass) ||
+                    bodyStyle.colorScheme === 'dark' ||
+                    document.body.style.colorScheme === 'dark' ||
+                    document.body.dataset.theme === 'dark' ||
+                    document.documentElement.dataset.theme === 'dark' ||
+                    document.documentElement.getAttribute('data-theme') === 'dark';
+
                 const nextMode = isDark ? 'light' : 'dark';
                 console.log('[ChatGPT Helper] 当前主题:', isDark ? 'dark' : 'light', '切换到:', nextMode);
 
@@ -10102,17 +10104,17 @@
                         'nav button',
                         'header button',
                     ];
-                    
+
                     for (const selector of selectors) {
                         try {
                             const elements = document.querySelectorAll(selector);
                             for (const el of elements) {
                                 const btn = el.closest('button') || el;
                                 if (!btn || btn.tagName !== 'BUTTON') continue;
-                                
+
                                 const rect = btn.getBoundingClientRect();
                                 if (rect.width === 0 || rect.height === 0) continue;
-                                
+
                                 // 检查是否有 SVG 图标（主题切换按钮通常有图标）
                                 const svg = btn.querySelector('svg');
                                 if (svg) {
@@ -10120,7 +10122,7 @@
                                     const viewBox = svg.getAttribute('viewBox') || '';
                                     const paths = Array.from(svg.querySelectorAll('path'));
                                     const pathD = paths.map(p => p.getAttribute('d') || '').join('');
-                                    
+
                                     // Material Icons 主题图标特征
                                     if (viewBox.includes('24') || pathD.includes('M480') || pathD.includes('M12')) {
                                         console.log('[ChatGPT Helper] 找到可能的主题按钮:', btn);
@@ -10134,13 +10136,13 @@
                     }
                     return null;
                 };
-                
+
                 let themeToggleBtn = findThemeButton();
-                
+
                 // 方法2: 如果找不到，尝试直接操作 ChatGPT 的主题
                 if (!themeToggleBtn) {
                     console.log('[ChatGPT Helper] 未找到主题按钮，直接切换主题');
-                    
+
                     // 直接切换 ChatGPT 的主题
                     if (nextMode === 'dark') {
                         document.body.classList.add('dark', 'dark-theme');
@@ -10166,7 +10168,7 @@
                         document.body.setAttribute('data-mode', 'light');
                         document.documentElement.setAttribute('data-mode', 'light');
                     }
-                    
+
                     // 同步到助手面板
                     if (nextMode === 'dark') {
                         document.body.dataset.ghMode = 'dark';
@@ -10175,10 +10177,10 @@
                         delete document.body.dataset.ghMode;
                         document.documentElement.removeAttribute('data-gh-mode');
                     }
-                    
+
                     this.settings.themeMode = nextMode;
                     this.saveSettings();
-                    
+
                     // 更新所有主题按钮图标
                     const themeBtn = document.getElementById('quick-btn-theme');
                     if (themeBtn) {
@@ -10188,20 +10190,20 @@
                     if (headerThemeBtn) {
                         headerThemeBtn.textContent = nextMode === 'dark' ? '☀' : '🌙';
                     }
-                    
+
                     // 触发主题变化事件
                     window.dispatchEvent(new CustomEvent('themechange', { detail: { mode: nextMode } }));
                     document.dispatchEvent(new CustomEvent('themechange', { detail: { mode: nextMode } }));
-                    
+
                     // 触发 storage 事件（ChatGPT 可能监听这个）
                     window.dispatchEvent(new StorageEvent('storage', {
                         key: 'theme',
                         newValue: nextMode
                     }));
-                    
+
                     this.showToast(nextMode === 'dark' ? '已切换到暗色模式' : '已切换到亮色模式');
                     console.log('[ChatGPT Helper] 直接主题切换完成:', nextMode);
-                    
+
                     // 延迟检查并更新
                     setTimeout(() => {
                         this.monitorTheme();
@@ -10209,7 +10211,7 @@
                 } else {
                     // 找到按钮，触发点击
                     console.log('[ChatGPT Helper] 找到主题按钮，触发点击');
-                    
+
                     // 使用多种方式触发点击
                     const triggerClick = () => {
                         try {
@@ -10229,14 +10231,14 @@
                             }
                         }
                     };
-                    
+
                     triggerClick();
-                    
+
                     // 延迟检查并更新
                     setTimeout(() => {
                         this.monitorTheme();
-                        const newIsDark = document.body.dataset.ghMode === 'dark' || 
-                                        /\bdark\b/i.test(document.body.className);
+                        const newIsDark = document.body.dataset.ghMode === 'dark' ||
+                            /\bdark\b/i.test(document.body.className);
                         const themeBtn = document.getElementById('quick-btn-theme');
                         if (themeBtn) {
                             themeBtn.textContent = newIsDark ? '🌙' : '☀';
@@ -10259,15 +10261,15 @@
                 const bodyClass = document.body.className;
                 const htmlClass = document.documentElement.className;
                 const bodyStyle = window.getComputedStyle(document.body);
-                
-                const hasDarkClass = /\bdark\b/i.test(bodyClass) || 
-                                    /\bdark-theme\b/i.test(bodyClass) ||
-                                    /\bdark\b/i.test(htmlClass) ||
-                                    /\bdark-theme\b/i.test(htmlClass);
-                const hasLightClass = /\blight\b/i.test(bodyClass) || 
-                                     /\blight-theme\b/i.test(bodyClass) ||
-                                     /\blight\b/i.test(htmlClass) ||
-                                     /\blight-theme\b/i.test(htmlClass);
+
+                const hasDarkClass = /\bdark\b/i.test(bodyClass) ||
+                    /\bdark-theme\b/i.test(bodyClass) ||
+                    /\bdark\b/i.test(htmlClass) ||
+                    /\bdark-theme\b/i.test(htmlClass);
+                const hasLightClass = /\blight\b/i.test(bodyClass) ||
+                    /\blight-theme\b/i.test(bodyClass) ||
+                    /\blight\b/i.test(htmlClass) ||
+                    /\blight-theme\b/i.test(htmlClass);
 
                 // 1. 显式 Class（优先）
                 let isDark = false;
@@ -10277,9 +10279,9 @@
                     isDark = false;
                 } else {
                     // 2. Data Attribute
-                    const dataTheme = document.body.dataset.theme || 
-                                     document.documentElement.dataset.theme ||
-                                     document.documentElement.getAttribute('data-theme');
+                    const dataTheme = document.body.dataset.theme ||
+                        document.documentElement.dataset.theme ||
+                        document.documentElement.getAttribute('data-theme');
                     if (dataTheme === 'dark') {
                         isDark = true;
                     } else if (dataTheme === 'light') {
@@ -10289,7 +10291,7 @@
                         const inlineColorScheme = document.body.style.colorScheme;
                         const computedColorScheme = bodyStyle.colorScheme;
                         const colorScheme = inlineColorScheme || computedColorScheme;
-                        
+
                         if (colorScheme === 'dark') {
                             isDark = true;
                         } else if (colorScheme === 'light') {
@@ -10373,7 +10375,7 @@
                     attributes: true,
                     attributeFilter: ['class', 'data-theme', 'style'],
                 });
-                
+
                 // 也监听主题变化事件
                 window.addEventListener('themechange', checkTheme);
                 document.addEventListener('themechange', checkTheme);
@@ -10522,7 +10524,7 @@
             document.addEventListener('DOMContentLoaded', initHelper);
             return;
         }
-        
+
         // 延迟初始化，等待 ChatGPT 的 React 应用完全渲染
         setTimeout(() => {
             try {
@@ -10540,6 +10542,6 @@
             }
         }, 1000);
     }
-    
+
     initHelper();
 })();
