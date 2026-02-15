@@ -457,6 +457,10 @@ if (!window.__MY_EXT__) {
             this.expandedFolderId = null;
             this.selectedIds = new Set();
             this.batchMode = false;
+            this.autoSyncInterval = null;
+            this.lastSyncTime = 0; // 记录上次同步时间
+            // 启动自动同步（每5分钟同步一次）
+            this.startAutoSync();
         }
 
         loadData() {
@@ -540,6 +544,24 @@ if (!window.__MY_EXT__) {
             window.GM_setValue('chatgpt_conversations', this.data);
         }
 
+        startAutoSync() {
+            // 清除旧的定时器
+            if (this.autoSyncInterval) {
+                clearInterval(this.autoSyncInterval);
+            }
+            // 每5分钟自动同步一次
+            this.autoSyncInterval = setInterval(() => {
+                this.syncConversations();
+            }, 5 * 60 * 1000); // 5分钟
+        }
+
+        stopAutoSync() {
+            if (this.autoSyncInterval) {
+                clearInterval(this.autoSyncInterval);
+                this.autoSyncInterval = null;
+            }
+        }
+
         createUI() {
             // 在创建 UI 前，如果缓存已初始化，重新加载数据
             if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized) {
@@ -569,6 +591,15 @@ if (!window.__MY_EXT__) {
             }
             
             clearElement(this.container);
+            
+            // 如果距离上次同步已经超过1分钟，自动同步一次
+            const now = Date.now();
+            if (now - this.lastSyncTime > 60 * 1000) {
+                // 延迟执行，避免阻塞UI渲染
+                setTimeout(() => {
+                    this.syncConversations();
+                }, 500);
+            }
 
             // 工具栏
             const toolbar = createElement('div', {
@@ -1208,6 +1239,9 @@ if (!window.__MY_EXT__) {
                 this.showToast(this.t('noConversations') || '未找到会话，请先打开侧边栏');
                 return;
             }
+            
+            // 更新同步时间
+            this.lastSyncTime = Date.now();
 
             let newCount = 0;
             let updatedCount = 0;
@@ -1218,9 +1252,13 @@ if (!window.__MY_EXT__) {
                 const title = item.title;
                 const url = item.url;
                 const isPinned = item.isPinned || false;
-                const remoteUpdatedAt = item.updatedAt || Date.now();
+                // 使用会话的实际更新时间，而不是当前时间
+                // 如果从DOM中提取到了更新时间，使用它；否则保留本地已有的更新时间，避免使用同步时间
+                const remoteUpdatedAt = item.updatedAt || item.createdAt;
+                const localConversation = this.data.conversations[id];
+                const actualUpdatedAt = remoteUpdatedAt || (localConversation?.updatedAt) || (localConversation?.createdAt) || Date.now();
 
-                if (!this.data.conversations[id]) {
+                if (!localConversation) {
                     // 新会话：添加到指定文件夹（默认收件箱）
                     this.data.conversations[id] = {
                         id,
@@ -1228,35 +1266,49 @@ if (!window.__MY_EXT__) {
                         url,
                         folderId: folderId, // 确保添加到收件箱
                         pinned: isPinned,
-                        createdAt: remoteUpdatedAt,
-                        updatedAt: remoteUpdatedAt
+                        createdAt: actualUpdatedAt,
+                        updatedAt: actualUpdatedAt
                     };
                     newCount++;
                 } else {
                     // 更新已有会话
-                    if (this.data.conversations[id].title !== title) {
-                        this.data.conversations[id].title = title;
+                    if (localConversation.title !== title) {
+                        localConversation.title = title;
                         updatedCount++;
                     }
-                    if (this.data.conversations[id].url !== url) {
-                        this.data.conversations[id].url = url;
+                    if (localConversation.url !== url) {
+                        localConversation.url = url;
                     }
                     // 同步置顶状态
-                    if (this.data.conversations[id].pinned !== isPinned) {
-                        this.data.conversations[id].pinned = isPinned;
+                    if (localConversation.pinned !== isPinned) {
+                        localConversation.pinned = isPinned;
                         updatedCount++;
                     }
 
-                    // 仅当远端时间更晚时才更新本地更新时间，避免每次同步都“重置”为当前时间
-                    const currentUpdated = this.data.conversations[id].updatedAt || 0;
-                    if (remoteUpdatedAt > currentUpdated) {
-                        this.data.conversations[id].updatedAt = remoteUpdatedAt;
+                    // 仅当远端时间更晚时才更新本地更新时间，避免每次同步都"重置"为当前时间
+                    // 使用会话的实际更新时间，而不是同步时间
+                    const currentUpdated = localConversation.updatedAt || 0;
+                    if (actualUpdatedAt > currentUpdated) {
+                        localConversation.updatedAt = actualUpdatedAt;
+                    } else if (!remoteUpdatedAt && localConversation.updatedAt) {
+                        // 如果远端没有提供更新时间，保持本地已有的更新时间不变
+                        // 这样就不会用同步时间覆盖会话的实际更新时间
                     }
                 }
             });
 
             this.saveData();
+            // 确保会话按照时间排序
             this.renderConversationList();
+            
+            // 修复：如果有新会话或更新，且当前有展开的文件夹，需要重新渲染该文件夹的会话列表
+            if ((newCount > 0 || updatedCount > 0) && this.expandedFolderId) {
+                const expandedFolderList = this.listContainer?.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${this.expandedFolderId}"]`);
+                if (expandedFolderList) {
+                    this.renderConversationsInFolder(this.expandedFolderId, expandedFolderList);
+                }
+            }
+            
             const msg = newCount > 0
                 ? `${this.t('synced') || '已同步'} ${newCount} ${this.t('newSessions') || '个新会话'}`
                 : (updatedCount > 0
@@ -1780,11 +1832,192 @@ if (!window.__MY_EXT__) {
             const container = this.container;
             if (!container) {
                 // 如果没有容器，使用window滚动
-                if (options && typeof options === 'object') {
-                    window.scrollTo({ top: options.top || 0, behavior: options.behavior || 'auto' });
+                // 检查是否在底部
+                const isAtBottomWindow = window.innerHeight + window.scrollY >= document.body.scrollHeight - 50;
+                const targetTop = options && typeof options === 'object' ? (options.top !== undefined ? options.top : window.scrollY) : (typeof options === 'number' ? options : window.scrollY);
+                const currentTop = window.scrollY;
+                const needsScroll = Math.abs(targetTop - currentTop) > 1;
+                
+                if (isAtBottomWindow && needsScroll) {
+                    // 在底部且需要滚动，使用强制滚动
+                    console.log('[ChatGPT Helper] scrollTo (window): 在底部，使用强制滚动方法，目标位置:', targetTop, '当前位置:', currentTop);
+                    const scrollElement = document.scrollingElement || document.documentElement || document.body;
+                    window.__ghBypassLock = true;
+                    
+                    const forceScroll = () => {
+                        try {
+                            // 直接设置 scrollTop
+                            scrollElement.scrollTop = targetTop;
+                            if (document.documentElement) {
+                                document.documentElement.scrollTop = targetTop;
+                            }
+                            if (document.body) {
+                                document.body.scrollTop = targetTop;
+                            }
+                            // 也使用 scrollTo 作为备用
+                            window.scrollTo({ top: targetTop, behavior: options?.behavior || 'instant' });
+                        } catch (e) {
+                            console.error('[ChatGPT Helper] window 强制滚动失败:', e);
+                        }
+                    };
+                    
+                    // 立即执行多次
+                    forceScroll();
+                    setTimeout(() => forceScroll(), 0);
+                    setTimeout(() => forceScroll(), 10);
+                    setTimeout(() => forceScroll(), 20);
+                    
+                    // 使用 setInterval 确保滚动成功
+                    let attempts = 0;
+                    const maxAttempts = 100;
+                    const scrollInterval = setInterval(() => {
+                        attempts++;
+                        const before = window.scrollY;
+                        window.__ghBypassLock = true;
+                        forceScroll();
+                        const current = window.scrollY;
+                        
+                        if (Math.abs(current - targetTop) <= 5 || attempts >= maxAttempts) {
+                            clearInterval(scrollInterval);
+                            setTimeout(() => delete window.__ghBypassLock, 100);
+                            console.log('[ChatGPT Helper] window 强制滚动完成，最终位置:', current, '目标位置:', targetTop);
+                        } else if (Math.abs(current - before) > 1) {
+                            // 位置有变化，继续尝试
+                        } else if (attempts > 20) {
+                            // 20次尝试后仍然没有变化，尝试 scrollIntoView
+                            try {
+                                if (targetTop < currentTop) {
+                                    const firstElement = document.body.firstElementChild || document.body.firstChild;
+                                    if (firstElement && firstElement.nodeType === 1) {
+                                        firstElement.scrollIntoView({ behavior: 'instant', block: 'start', __bypassLock: true });
+                                    }
+                                } else {
+                                    const lastElement = document.body.lastElementChild || document.body.lastChild;
+                                    if (lastElement && lastElement.nodeType === 1) {
+                                        lastElement.scrollIntoView({ behavior: 'instant', block: 'end', __bypassLock: true });
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] window scrollIntoView 失败:', e);
+                            }
+                            clearInterval(scrollInterval);
+                            setTimeout(() => delete window.__ghBypassLock, 100);
+                        }
+                    }, 10);
                 } else {
-                    window.scrollTo(0, options || 0);
+                    if (options && typeof options === 'object') {
+                        window.scrollTo({ top: options.top || 0, behavior: options.behavior || 'auto' });
+                    } else {
+                        window.scrollTo(0, options || 0);
+                    }
                 }
+                return;
+            }
+
+            // 检查是否在底部
+            const isAtBottomContainer = this.isAtBottom(50);
+            let targetTop;
+            if (options && typeof options === 'object') {
+                targetTop = options.top !== undefined ? options.top : container.scrollTop;
+            } else if (typeof options === 'number') {
+                targetTop = options;
+            } else {
+                targetTop = container.scrollTop;
+            }
+            const currentTop = container.scrollTop;
+            const needsScroll = Math.abs(targetTop - currentTop) > 1; // 只要位置不同就需要滚动
+
+            // 如果在底部且需要滚动到不同位置，使用强制滚动方法
+            if (isAtBottomContainer && needsScroll) {
+                console.log('[ChatGPT Helper] scrollTo: 在底部，使用强制滚动方法，目标位置:', targetTop, '当前位置:', currentTop);
+                
+                // 设置 bypassLock 标志，绕过所有滚动锁定
+                container.__ghBypassLock = true;
+                
+                // 获取原生 scrollTop setter（从原型链获取，绕过可能的拦截）
+                const proto = Object.getPrototypeOf(container);
+                const descriptor = Object.getOwnPropertyDescriptor(proto, 'scrollTop') ||
+                    Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
+                    Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
+
+                const forceScroll = () => {
+                    try {
+                        // 方法1: 使用原生 setter（如果可用）
+                        if (descriptor && descriptor.set) {
+                            descriptor.set.call(container, targetTop);
+                        } else {
+                            // 方法2: 直接操作属性，绕过所有拦截
+                            Object.defineProperty(container, 'scrollTop', {
+                                value: targetTop,
+                                writable: true,
+                                configurable: true
+                            });
+                        }
+                    } catch (e) {
+                        // 方法3: 直接赋值（最后的备用方案）
+                        try {
+                            container.scrollTop = targetTop;
+                        } catch (e2) {
+                            console.error('[ChatGPT Helper] 强制设置 scrollTop 失败:', e2);
+                        }
+                    }
+                };
+
+                // 立即执行多次，确保生效
+                forceScroll();
+                setTimeout(() => forceScroll(), 0);
+                setTimeout(() => forceScroll(), 10);
+                setTimeout(() => forceScroll(), 20);
+
+                // 也使用 scrollTo 作为备用
+                try {
+                    container.scrollTo({ top: targetTop, behavior: options?.behavior || 'instant', __bypassLock: true });
+                } catch (e) {
+                    console.log('[ChatGPT Helper] scrollTo 失败:', e);
+                }
+
+                // 使用 setInterval 持续尝试，确保滚动成功
+                let attempts = 0;
+                const maxAttempts = 100;
+                const scrollInterval = setInterval(() => {
+                    attempts++;
+                    const before = container.scrollTop;
+                    container.__ghBypassLock = true; // 确保标志始终存在
+                    forceScroll();
+                    const current = container.scrollTop;
+                    
+                    // 检查是否到达目标位置
+                    if (Math.abs(current - targetTop) <= 5 || attempts >= maxAttempts) {
+                        clearInterval(scrollInterval);
+                        setTimeout(() => delete container.__ghBypassLock, 100);
+                        console.log('[ChatGPT Helper] 强制滚动完成，最终位置:', current, '目标位置:', targetTop, '尝试次数:', attempts);
+                    } else if (Math.abs(current - before) > 1) {
+                        // 位置有变化，继续尝试
+                    } else if (attempts > 20) {
+                        // 20次尝试后仍然没有变化，尝试 scrollIntoView
+                        console.log('[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView');
+                        try {
+                            // 根据滚动方向选择不同的元素
+                            if (targetTop < currentTop) {
+                                // 向上滚动，使用第一个子元素
+                                const firstChild = container.firstElementChild || container.firstChild;
+                                if (firstChild && firstChild.nodeType === 1) {
+                                    firstChild.scrollIntoView({ behavior: 'instant', block: 'start', __bypassLock: true });
+                                }
+                            } else {
+                                // 向下滚动，使用最后一个子元素
+                                const lastChild = container.lastElementChild || container.lastChild;
+                                if (lastChild && lastChild.nodeType === 1) {
+                                    lastChild.scrollIntoView({ behavior: 'instant', block: 'end', __bypassLock: true });
+                                }
+                            }
+                        } catch (e) {
+                            console.error('[ChatGPT Helper] scrollIntoView 失败:', e);
+                        }
+                        clearInterval(scrollInterval);
+                        setTimeout(() => delete container.__ghBypassLock, 100);
+                    }
+                }, 10);
                 return;
             }
 
@@ -5168,19 +5401,19 @@ if (!window.__MY_EXT__) {
                 }
 
                 body[data-gh-mode="dark"] {
-                    --gh-bg: #1a1a1a;
-                    --gh-bg-secondary: #0f1419;
-                    --gh-text: #e5e5e5;
-                    --gh-text-secondary: #9ca3af;
-                    --gh-border: #374151;
-                    --gh-hover: #1f2937;
-                    --gh-shadow: 0 10px 40px rgba(0,0,0,0.5);
-                    --gh-input-bg: #1f2937;
-                    --gh-input-border: #4b5563;
-                    --gh-active-bg: #1e3a2e;
-                    --gh-header-bg: linear-gradient(135deg, #0d8f6e 0%, #10a37f 100%);
-                    --gh-tag-active-bg: rgba(16, 163, 127, 0.7);
-                    --gh-primary-hover: #0d8f6e;
+                    --gh-bg: #1e293b;
+                    --gh-bg-secondary: #0f172a;
+                    --gh-text: #f1f5f9;
+                    --gh-text-secondary: #cbd5e1;
+                    --gh-border: #475569;
+                    --gh-hover: #334155;
+                    --gh-shadow: 0 10px 40px rgba(0,0,0,0.4);
+                    --gh-input-bg: #334155;
+                    --gh-input-border: #64748b;
+                    --gh-active-bg: #3b82f6;
+                    --gh-header-bg: #000000;
+                    --gh-tag-active-bg: rgba(59, 130, 246, 0.3);
+                    --gh-primary-hover: #2563eb;
                 }
 
                 /* 移除 @media (prefers-color-scheme: dark) 自动应用，只通过 body[data-gh-mode="dark"] 控制 */
@@ -5270,45 +5503,46 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] #chatgpt-helper-right {
-                    background: var(--gh-bg, #0f1419);
-                    border-left-color: var(--gh-border, #2d3748);
-                    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.5), -2px 0 8px rgba(0, 0, 0, 0.3);
+                    background: var(--gh-bg, #1e293b);
+                    border-left-color: var(--gh-border, #475569);
+                    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4), -2px 0 8px rgba(0, 0, 0, 0.2);
                 }
                 
                 body[data-gh-mode="dark"] #chatgpt-helper-header {
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+                    background: #000000 !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                 }
                 
                 body[data-gh-mode="dark"] #chatgpt-helper-tabs {
-                    background: var(--gh-bg, #0f1419);
-                    border-bottom-color: var(--gh-border, #2d3748);
+                    background: var(--gh-bg, #1e293b);
+                    border-bottom-color: var(--gh-border, #475569);
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-tab {
-                    color: var(--gh-text-secondary, #9ca3af);
+                    color: var(--gh-text-secondary, #cbd5e1);
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-tab:hover {
-                    background: var(--gh-hover, #1f2937);
-                    color: var(--gh-text, #e5e5e5);
+                    background: var(--gh-hover, #334155);
+                    color: var(--gh-text, #f1f5f9);
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-tab.active {
-                    color: var(--gh-text, #e5e5e5);
+                    color: var(--gh-text, #f1f5f9);
                 }
                 
                 body[data-gh-mode="dark"] #chatgpt-helper-content {
-                    background: var(--gh-bg, #0f1419);
+                    background: var(--gh-bg, #1e293b);
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-search-bar {
-                    background: var(--gh-bg-secondary, #1a1a1a);
-                    border-bottom-color: var(--gh-border, #2d3748);
+                    background: var(--gh-bg-secondary, #0f172a);
+                    border-bottom-color: var(--gh-border, #475569);
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-categories {
-                    background: var(--gh-bg, #0f1419);
-                    border-bottom-color: var(--gh-border, #2d3748);
+                    background: var(--gh-bg, #1e293b);
+                    border-bottom-color: var(--gh-border, #475569);
                 }
 
                 #chatgpt-helper-right.collapsed {
@@ -5484,16 +5718,34 @@ if (!window.__MY_EXT__) {
                     cursor: pointer;
                     transition: all 0.2s;
                     border: 1px solid transparent;
+                    position: relative;
+                    z-index: 1;
+                    pointer-events: auto;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-category-tag {
+                    color: var(--gh-text-secondary, #9ca3af);
                 }
 
                 .chatgpt-helper-category-tag:hover {
                     background: var(--gh-border);
                 }
 
+                body[data-gh-mode="dark"] .chatgpt-helper-category-tag:hover {
+                    background: var(--gh-hover, #1f2937);
+                    color: var(--gh-text, #e5e5e5);
+                }
+
                 .chatgpt-helper-category-tag.active {
                     background: var(--gh-tag-active-bg);
                     color: white;
                     border-color: var(--gh-tag-active-bg);
+                    z-index: 2;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-category-tag.active {
+                    background: var(--gh-tag-active-bg);
+                    color: white;
                 }
 
                 /* 提示词列表 */
@@ -5999,9 +6251,9 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .outline-item-copy-btn {
-                    background: var(--gh-bg, #0f1419);
-                    border-color: var(--gh-border, #2d3748);
-                    color: var(--gh-text-secondary, #9ca3af);
+                    background: var(--gh-bg, #1e293b);
+                    border-color: var(--gh-border, #475569);
+                    color: var(--gh-text-secondary, #cbd5e1);
                 }
                 
                 .outline-item.user-query-node:hover .outline-item-copy-btn {
@@ -6015,8 +6267,8 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .outline-item-copy-btn:hover {
-                    background: var(--gh-hover, #1f2937);
-                    border-color: var(--gh-primary, #10a37f);
+                    background: var(--gh-hover, #334155);
+                    border-color: var(--gh-primary, #3b82f6);
                 }
 
                 .outline-item.collapsed {
@@ -6154,10 +6406,131 @@ if (!window.__MY_EXT__) {
                     border-color: var(--gh-primary, #3b82f6) !important;
                 }
 
-                /* 提示词操作按钮样式 */
-                .chatgpt-helper-prompt-actions button:hover {
-                    opacity: 0.9;
+                /* 提示词操作按钮样式 - 右侧偏上 */
+                .chatgpt-helper-prompt-content-wrapper {
+                    position: relative;
+                }
+
+                .chatgpt-helper-prompt-actions {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    display: flex;
+                    gap: 4px;
+                    align-items: center;
+                }
+
+                .chatgpt-helper-prompt-actions button {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 4px 6px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                    border: none;
+                    width: 24px;
+                    height: 24px;
+                    line-height: 1;
+                }
+
+                .chatgpt-helper-prompt-actions .category-btn {
+                    background: var(--gh-bg-secondary);
+                    color: var(--gh-text);
+                    border: 1px solid var(--gh-border);
+                }
+
+                .chatgpt-helper-prompt-actions .category-btn:hover {
+                    background: var(--gh-hover);
+                    border-color: var(--gh-primary);
+                    color: var(--gh-primary);
                     transform: translateY(-1px);
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+
+                .chatgpt-helper-prompt-actions .edit-btn {
+                    background: var(--gh-bg-secondary);
+                    color: var(--gh-text);
+                    border: 1px solid var(--gh-border);
+                }
+
+                .chatgpt-helper-prompt-actions .edit-btn:hover {
+                    background: var(--gh-hover);
+                    border-color: var(--gh-primary);
+                    color: var(--gh-primary);
+                    transform: translateY(-1px);
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+
+                .chatgpt-helper-prompt-actions .delete-btn {
+                    background: transparent;
+                    color: var(--gh-text-secondary, #6b7280);
+                    border: 1px solid var(--gh-border, #e5e7eb);
+                }
+
+                .chatgpt-helper-prompt-actions .delete-btn:hover {
+                    background: var(--gh-hover, #f3f4f6);
+                    color: var(--gh-danger, #ef4444);
+                    border-color: var(--gh-danger, #ef4444);
+                    transform: translateY(-1px);
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+
+                .chatgpt-helper-prompt-actions .delete-btn svg {
+                    width: 14px;
+                    height: 14px;
+                    display: block;
+                }
+
+                .chatgpt-helper-prompt-actions button:active {
+                    transform: translateY(0);
+                }
+
+                /* 拖动排序相关样式 */
+                .chatgpt-helper-prompt-item {
+                    user-select: none;
+                }
+
+                .chatgpt-helper-prompt-item.dragging {
+                    opacity: 0.5;
+                    cursor: grabbing;
+                }
+
+                .chatgpt-helper-prompt-item.drag-over {
+                    border-top: 3px solid var(--gh-primary);
+                    margin-top: 8px;
+                }
+
+                .chatgpt-helper-prompt-drag-handle {
+                    position: absolute;
+                    left: 8px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 20px;
+                    height: 20px;
+                    cursor: grab;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--gh-text-secondary);
+                    opacity: 0;
+                    transition: opacity 0.2s;
+                }
+
+                .chatgpt-helper-prompt-item:hover .chatgpt-helper-prompt-drag-handle {
+                    opacity: 1;
+                }
+
+                .chatgpt-helper-prompt-drag-handle:active {
+                    cursor: grabbing;
+                }
+
+                .chatgpt-helper-prompt-drag-handle::before {
+                    content: '⋮⋮';
+                    font-size: 14px;
+                    line-height: 1;
+                    letter-spacing: -2px;
                 }
 
                 /* 移除自动暗色模式支持，只通过 body[data-gh-mode="dark"] 控制 */
@@ -6203,11 +6576,11 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-quick-buttons {
-                    background: rgba(0, 0, 0, 0.2);
+                    background: rgba(30, 41, 59, 0.3);
                 }
 
                 .chatgpt-helper-quick-buttons.collapsed {
-                    right: 70px !important;
+                    right: 8px !important;
                     display: flex !important;
                     visibility: visible !important;
                     opacity: 1 !important;
@@ -6261,13 +6634,13 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-quick-btn {
-                    background: rgba(31, 41, 55, 0.9) !important;
-                    border-color: rgba(75, 85, 99, 0.5);
+                    background: rgba(30, 41, 59, 0.9) !important;
+                    border-color: rgba(71, 85, 105, 0.5);
                     box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-quick-btn:hover {
-                    background: rgba(55, 65, 81, 0.95) !important;
+                    background: rgba(51, 65, 85, 0.95) !important;
                     box-shadow: 0 8px 16px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
                 }
 
@@ -6325,8 +6698,8 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .scroll-nav-container {
-                    background: var(--gh-bg-secondary, #0f1419);
-                    border-top-color: var(--gh-border, #374151);
+                    background: var(--gh-bg-secondary, #0f172a);
+                    border-top-color: var(--gh-border, #475569);
                 }
                 
                 .scroll-nav-btn {
@@ -6349,9 +6722,9 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .scroll-nav-btn {
-                    background: var(--gh-bg, #1a1a1a);
-                    border-color: var(--gh-input-border, #4b5563);
-                    color: var(--gh-text, #e5e5e5);
+                    background: var(--gh-bg, #1e293b);
+                    border-color: var(--gh-input-border, #64748b);
+                    color: var(--gh-text, #f1f5f9);
                 }
                 
                 .scroll-nav-btn:hover {
@@ -6362,8 +6735,8 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .scroll-nav-btn:hover {
-                    background: var(--gh-hover, #1f2937);
-                    box-shadow: 0 2px 8px rgba(16, 163, 127, 0.3);
+                    background: var(--gh-hover, #334155);
+                    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
                 }
                 
                 .scroll-nav-btn:active {
@@ -6406,7 +6779,7 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-folder-item {
-                    background: var(--gh-bg-secondary, #1a1a1a);
+                    background: var(--gh-bg-secondary, #0f172a);
                 }
                 
                 .chatgpt-helper-folder-item:hover {
@@ -6414,7 +6787,7 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-folder-item:hover {
-                    background: var(--gh-hover, #1f2937);
+                    background: var(--gh-hover, #334155);
                 }
                 
                 .chatgpt-helper-folder-item.default {
@@ -6526,7 +6899,7 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-conversation-item {
-                    background: var(--gh-bg, #0f1419);
+                    background: var(--gh-bg, #1e293b);
                 }
                 
                 .chatgpt-helper-conversation-item:hover {
@@ -6534,7 +6907,7 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-conversation-item:hover {
-                    background: var(--gh-hover, #1f2937);
+                    background: var(--gh-hover, #334155);
                 }
                 
                 .chatgpt-helper-conversations-empty {
@@ -6555,8 +6928,8 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-conversations-toolbar {
-                    background: var(--gh-bg-secondary, #1a1a1a);
-                    border-bottom-color: var(--gh-border, #2d3748);
+                    background: var(--gh-bg-secondary, #0f172a);
+                    border-bottom-color: var(--gh-border, #475569);
                 }
                 
                 .chatgpt-helper-conversations-toolbar-btn {
@@ -6864,25 +7237,38 @@ if (!window.__MY_EXT__) {
 
             let startX = 0;
             let startWidth = 0;
+            let rafId = null;
 
             const onMouseMove = (e) => {
                 if (!this.panel) return;
-                const delta = startX - e.clientX;
-                let newWidth = startWidth + delta;
-                const minWidth = 220;
-                const maxWidth = 640;
-                if (newWidth < minWidth) newWidth = minWidth;
-                if (newWidth > maxWidth) newWidth = maxWidth;
-
-                this.settings.panelWidth = newWidth;
-                this.panel.style.width = `${newWidth}px`;
-
-                if (this.updateLayout) {
-                    this.updateLayout();
+                
+                // 使用 requestAnimationFrame 优化性能，使拖动更流畅
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
                 }
+                
+                rafId = requestAnimationFrame(() => {
+                    const delta = startX - e.clientX;
+                    let newWidth = startWidth + delta;
+                    const minWidth = 220;
+                    const maxWidth = 640;
+                    if (newWidth < minWidth) newWidth = minWidth;
+                    if (newWidth > maxWidth) newWidth = maxWidth;
+
+                    this.settings.panelWidth = newWidth;
+                    this.panel.style.width = `${newWidth}px`;
+
+                    if (this.updateLayout) {
+                        this.updateLayout();
+                    }
+                });
             };
 
             const onMouseUp = () => {
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
                 document.body.style.userSelect = '';
@@ -6919,7 +7305,8 @@ if (!window.__MY_EXT__) {
             const themeBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
                 title: '切换主题',
-                id: 'chatgpt-helper-header-theme-btn'
+                id: 'chatgpt-helper-header-theme-btn',
+                type: 'button' // 明确指定按钮类型，避免表单提交等意外行为
             });
             // 初始图标根据当前主题设置
             const isDark = document.body.dataset.ghMode === 'dark' ||
@@ -6928,7 +7315,9 @@ if (!window.__MY_EXT__) {
             themeBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                e.stopImmediatePropagation(); // 阻止同一元素上的其他事件监听器
                 this.toggleTheme(e);
+                return false; // 额外确保阻止默认行为
             });
 
             // 新标签页开启对话按钮
@@ -7022,7 +7411,8 @@ if (!window.__MY_EXT__) {
             ['prompts', 'outline', 'conversations', 'export', 'settings'].forEach(tabId => {
                 const panel = createElement('div', {
                     className: `chatgpt-helper-content-panel ${this.currentTab === tabId ? 'active' : ''}`,
-                    id: `${tabId}-content`
+                    id: `${tabId}-content`,
+                    'data-tab': tabId  // 添加 data-tab 属性，供 updateCategoryBar 等函数使用
                 });
                 content.appendChild(panel);
             });
@@ -7154,7 +7544,12 @@ if (!window.__MY_EXT__) {
             }, allCategoryText);
             allTag.addEventListener('click', () => {
                 this.selectedCategory = allCategoryText;
-                this.refreshPromptList();
+                // 先更新分类栏高亮状态，再刷新列表
+                this.updateCategoryBar();
+                // 使用 setTimeout 确保分类栏更新完成后再刷新列表
+                setTimeout(() => {
+                    this.refreshPromptList();
+                }, 0);
             });
             categoryBar.appendChild(allTag);
 
@@ -7164,7 +7559,12 @@ if (!window.__MY_EXT__) {
                 }, cat);
                 tag.addEventListener('click', () => {
                     this.selectedCategory = cat;
-                    this.refreshPromptList();
+                    // 先更新分类栏高亮状态，再刷新列表
+                    this.updateCategoryBar();
+                    // 使用 setTimeout 确保分类栏更新完成后再刷新列表
+                    setTimeout(() => {
+                        this.refreshPromptList();
+                    }, 0);
                 });
                 categoryBar.appendChild(tag);
             });
@@ -7212,71 +7612,240 @@ if (!window.__MY_EXT__) {
                 return;
             }
 
-            filteredPrompts.forEach(prompt => {
+            // 注意：updateCategoryBar() 会在需要时被调用，这里不重复调用
+            // 避免在刷新列表时重置分类栏的高亮状态
+            
+            filteredPrompts.forEach((prompt, filteredIndex) => {
+                // 找到在完整列表中的索引
+                const fullIndex = this.prompts.findIndex(p => p.id === prompt.id);
                 const item = createElement('div', {
-                    className: `chatgpt-helper-prompt-item ${this.selectedPrompt?.id === prompt.id ? 'selected' : ''}`
+                    className: `chatgpt-helper-prompt-item ${this.selectedPrompt?.id === prompt.id ? 'selected' : ''}`,
+                    'data-prompt-id': prompt.id,
+                    'data-prompt-index': fullIndex !== -1 ? fullIndex : filteredIndex
                 });
+                
+                // 拖动手柄
+                const dragHandle = createElement('div', {
+                    className: 'chatgpt-helper-prompt-drag-handle'
+                });
+                item.appendChild(dragHandle);
+
+                // 设置内容区域左边距，为拖动手柄留出空间
+                const contentWrapper = createElement('div', {
+                    className: 'chatgpt-helper-prompt-content-wrapper',
+                    style: {
+                        marginLeft: '28px',
+                        position: 'relative',
+                        paddingRight: '60px' // 为按钮留出空间
+                    }
+                });
+
                 const title = createElement('div', { className: 'chatgpt-helper-prompt-title' }, prompt.title);
                 const content = createElement('div', { className: 'chatgpt-helper-prompt-content' }, prompt.content);
+                
+                contentWrapper.appendChild(title);
+                contentWrapper.appendChild(content);
 
-                // 操作按钮
+                // 操作按钮 - 放到右侧偏上
                 const actions = createElement('div', {
-                    className: 'chatgpt-helper-prompt-actions',
-                    style: {
-                        display: 'flex',
-                        gap: '8px',
-                        marginTop: '8px'
-                    }
+                    className: 'chatgpt-helper-prompt-actions'
                 });
+                
+                // 如果有分类，添加分类按钮
+                if (prompt.category) {
+                    const categoryBtn = createElement('button', {
+                        className: 'category-btn',
+                        title: `切换到分类: ${prompt.category}`,
+                        type: 'button' // 明确指定按钮类型
+                    });
+                    categoryBtn.innerHTML = '🏷️';
+                    categoryBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation(); // 阻止同一元素上的其他事件监听器
+                        this.selectedCategory = prompt.category;
+                        // 先更新分类栏高亮状态，再刷新列表
+                        this.updateCategoryBar();
+                        // 使用 setTimeout 确保分类栏更新完成后再刷新列表
+                        setTimeout(() => {
+                            this.refreshPromptList();
+                        }, 0);
+                        return false; // 额外确保阻止默认行为
+                    });
+                    actions.appendChild(categoryBtn);
+                }
+                
                 const editBtn = createElement('button', {
-                    style: {
-                        flex: 1,
-                        padding: '6px',
-                        background: 'var(--gh-bg-secondary)',
-                        border: '1px solid var(--gh-border)',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        color: 'var(--gh-text)'
-                    }
-                }, '编辑');
+                    className: 'edit-btn',
+                    title: '编辑'
+                });
+                editBtn.innerHTML = '✏️';
                 editBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     this.showEditPromptDialog(prompt);
                 });
+                
                 const deleteBtn = createElement('button', {
-                    style: {
-                        flex: 1,
-                        padding: '6px',
-                        background: 'var(--gh-danger)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                    }
-                }, this.t('delete'));
+                    className: 'delete-btn',
+                    title: this.t('delete')
+                });
+                // 使用SVG图标替代emoji
+                deleteBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                `;
                 deleteBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if (confirm(this.t('confirmDelete'))) {
                         this.deletePrompt(prompt.id);
                     }
                 });
+                
                 actions.appendChild(editBtn);
                 actions.appendChild(deleteBtn);
+                
+                contentWrapper.appendChild(actions);
+                item.appendChild(contentWrapper);
+                
+                // 拖动功能
+                this.initPromptDrag(item, prompt, fullIndex !== -1 ? fullIndex : filteredIndex);
 
-                item.appendChild(title);
-                item.appendChild(content);
-                item.appendChild(actions);
                 item.addEventListener('click', (e) => {
-                    if (!e.target.closest('button')) {
+                    if (!e.target.closest('button') && !e.target.closest('.chatgpt-helper-prompt-drag-handle')) {
                         this.selectedPrompt = prompt;
                         this.adapter.insertPrompt(prompt.content);
                         this.refreshPromptList(); // 刷新以显示选中状态
                     }
                 });
+                
                 listContainer.appendChild(item);
             });
+        }
+
+        initPromptDrag(item, prompt, index) {
+            const dragHandle = item.querySelector('.chatgpt-helper-prompt-drag-handle');
+            if (!dragHandle) return;
+
+            let isDragging = false;
+            // 使用完整列表中的索引，而不是过滤后的索引
+            const draggedIndex = this.prompts.findIndex(p => p.id === prompt.id);
+            if (draggedIndex === -1) return; // 如果找不到，不初始化拖拽
+
+            // 鼠标按下
+            dragHandle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                isDragging = true;
+                item.classList.add('dragging');
+                item.style.opacity = '0.5';
+                document.body.style.cursor = 'grabbing';
+            });
+
+            // 鼠标移动
+            const handleMouseMove = (e) => {
+                if (!isDragging) return;
+
+                const listContainer = this.panel.querySelector('#prompt-list');
+                if (!listContainer) return;
+
+                const items = Array.from(listContainer.querySelectorAll('.chatgpt-helper-prompt-item:not(.dragging)'));
+                const mouseY = e.clientY;
+                
+                // 移除所有drag-over类
+                items.forEach(el => el.classList.remove('drag-over'));
+
+                // 找到鼠标位置下的元素
+                for (let i = 0; i < items.length; i++) {
+                    const rect = items[i].getBoundingClientRect();
+                    const elementCenterY = rect.top + rect.height / 2;
+                    
+                    if (mouseY < elementCenterY) {
+                        items[i].classList.add('drag-over');
+                        break;
+                    }
+                }
+
+                // 如果鼠标在最后一个元素下方
+                if (items.length > 0) {
+                    const lastRect = items[items.length - 1].getBoundingClientRect();
+                    if (mouseY > lastRect.bottom) {
+                        items[items.length - 1].classList.add('drag-over');
+                    }
+                }
+            };
+
+            // 鼠标释放
+            const handleMouseUp = (e) => {
+                if (!isDragging) return;
+
+                isDragging = false;
+                item.classList.remove('dragging');
+                item.style.opacity = '';
+                document.body.style.cursor = '';
+
+                const listContainer = this.panel.querySelector('#prompt-list');
+                if (listContainer) {
+                    const items = Array.from(listContainer.querySelectorAll('.chatgpt-helper-prompt-item'));
+                    
+                    // 先找到目标位置（在移除drag-over类之前）
+                    const draggedPromptId = prompt.id;
+                    let targetIndex = draggedIndex;
+
+                    for (let i = 0; i < items.length; i++) {
+                        if (items[i] === item) continue;
+                        if (items[i].classList.contains('drag-over')) {
+                            const targetPromptId = items[i].dataset.promptId;
+                            // 找到在完整列表中的索引
+                            targetIndex = this.prompts.findIndex(p => p.id === targetPromptId);
+                            if (targetIndex === -1) {
+                                // 如果找不到，保持原位置
+                                targetIndex = draggedIndex;
+                            }
+                            break;
+                        }
+                    }
+
+                    // 移除所有drag-over类
+                    items.forEach(el => el.classList.remove('drag-over'));
+
+                    // 如果位置发生了变化，重新排序
+                    if (targetIndex !== draggedIndex && targetIndex !== -1) {
+                        this.reorderPrompts(draggedPromptId, targetIndex);
+                    }
+                }
+
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+
+        reorderPrompts(draggedPromptId, targetIndex) {
+            // 找到被拖动的提示词在完整列表中的索引
+            const fromIndex = this.prompts.findIndex(p => p.id === draggedPromptId);
+            if (fromIndex === -1) return;
+
+            // 从原位置移除
+            const [movedPrompt] = this.prompts.splice(fromIndex, 1);
+            
+            // 计算新位置（考虑从原位置移除后的索引变化）
+            let newIndex = targetIndex;
+            if (targetIndex > fromIndex) {
+                newIndex = targetIndex - 1;
+            }
+            
+            // 插入到新位置
+            this.prompts.splice(newIndex, 0, movedPrompt);
+
+            this.savePrompts();
+            this.refreshPromptList();
         }
 
         getCategories() {
@@ -7285,6 +7854,59 @@ if (!window.__MY_EXT__) {
                 if (p.category) categories.add(p.category);
             });
             return Array.from(categories).sort();
+        }
+
+        updateCategoryBar() {
+            // 更新分类标签栏，而不是重新渲染整个面板
+            // 优先使用 data-tab 属性查找，如果没有则使用 id 作为后备
+            const promptsPanel = this.panel?.querySelector('.chatgpt-helper-content-panel[data-tab="prompts"]') ||
+                                 this.panel?.querySelector('#prompts-content');
+            if (!promptsPanel) return;
+
+            const categoryBar = promptsPanel.querySelector('.chatgpt-helper-categories');
+            if (!categoryBar) return;
+
+            // 保存当前选中的分类
+            const currentCategory = this.selectedCategory;
+            
+            // 获取最新的分类列表
+            const categories = this.getCategories();
+            
+            // 清空分类标签栏
+            const allCategoryText = this.t('allCategory');
+            clearElement(categoryBar);
+            
+            // 重新添加"全部"标签
+            const newAllTag = createElement('div', {
+                className: `chatgpt-helper-category-tag ${currentCategory === allCategoryText ? 'active' : ''}`
+            }, allCategoryText);
+            newAllTag.addEventListener('click', () => {
+                this.selectedCategory = allCategoryText;
+                // 先更新分类栏高亮状态，再刷新列表
+                this.updateCategoryBar();
+                // 使用 setTimeout 确保分类栏更新完成后再刷新列表
+                setTimeout(() => {
+                    this.refreshPromptList();
+                }, 0);
+            });
+            categoryBar.appendChild(newAllTag);
+            
+            // 添加所有分类标签
+            categories.forEach(cat => {
+                const tag = createElement('div', {
+                    className: `chatgpt-helper-category-tag ${currentCategory === cat ? 'active' : ''}`
+                }, cat);
+                tag.addEventListener('click', () => {
+                    this.selectedCategory = cat;
+                    // 先更新分类栏高亮状态，再刷新列表
+                    this.updateCategoryBar();
+                    // 使用 setTimeout 确保分类栏更新完成后再刷新列表
+                    setTimeout(() => {
+                        this.refreshPromptList();
+                    }, 0);
+                });
+                categoryBar.appendChild(tag);
+            });
         }
 
         /**
@@ -7433,7 +8055,9 @@ if (!window.__MY_EXT__) {
                     border: '1px solid var(--gh-border, #e5e7eb)',
                     borderRadius: '8px',
                     fontSize: '14px',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    background: 'var(--gh-input-bg, #ffffff)',
+                    color: 'var(--gh-text, #1f2937)'
                 }
             });
 
@@ -7450,7 +8074,9 @@ if (!window.__MY_EXT__) {
                     minHeight: '120px',
                     resize: 'vertical',
                     boxSizing: 'border-box',
-                    fontFamily: 'inherit'
+                    fontFamily: 'inherit',
+                    background: 'var(--gh-input-bg, #ffffff)',
+                    color: 'var(--gh-text, #1f2937)'
                 }
             });
 
@@ -7465,7 +8091,9 @@ if (!window.__MY_EXT__) {
                     border: '1px solid var(--gh-border, #e5e7eb)',
                     borderRadius: '8px',
                     fontSize: '14px',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    background: 'var(--gh-input-bg, #ffffff)',
+                    color: 'var(--gh-text, #1f2937)'
                 }
             });
 
@@ -7511,13 +8139,30 @@ if (!window.__MY_EXT__) {
                     return;
                 }
 
+                // 检查是否添加了新分类
+                const categoriesBefore = new Set(this.getCategories());
+                const isNewCategory = category && !categoriesBefore.has(category);
+                
                 if (prompt) {
                     this.updatePrompt(prompt.id, { title, content, category });
                 } else {
                     this.addPrompt({ title, content, category });
                 }
+                
                 overlay.remove();
-                this.refreshPromptList();
+                
+                // 如果添加了新分类，且当前没有选中分类或选中了"全部"，则选中新添加的分类
+                if (isNewCategory && (!this.selectedCategory || this.selectedCategory === this.t('allCategory'))) {
+                    this.selectedCategory = category;
+                }
+                
+                // 先更新分类标签栏（同步显示新分类并更新高亮状态）
+                // 使用 setTimeout 确保数据已保存后再更新UI
+                setTimeout(() => {
+                    this.updateCategoryBar();
+                    // 然后刷新提示词列表
+                    this.refreshPromptList();
+                }, 0);
             });
 
             buttons.appendChild(cancelBtn);
@@ -7553,6 +8198,8 @@ if (!window.__MY_EXT__) {
         deletePrompt(id) {
             this.prompts = this.prompts.filter(p => p.id !== id);
             this.savePrompts();
+            // 更新分类标签栏（如果删除的提示词是某个分类的最后一个，该分类会从标签栏中消失）
+            this.updateCategoryBar();
             this.refreshPromptList();
         }
 
@@ -8564,11 +9211,36 @@ if (!window.__MY_EXT__) {
             const outline = [];
 
             try {
-                // 只从 ChatGPT 的“助手回复”消息中提取标题，避免干扰元素
+                // 首先检查是否在对话页面（URL包含 /c/ 表示在对话页面）
+                const isInConversationPage = window.location.pathname.includes('/c/');
+                if (!isInConversationPage) {
+                    // 不在对话页面，返回空数组
+                    return [];
+                }
+                
+                // 只从 ChatGPT 的"助手回复"消息中提取标题，避免干扰元素
                 const messages = this.adapter.getChatMessages();
                 if (!messages || messages.length === 0) {
-                    console.warn('[ChatGPT Helper] 未找到聊天消息');
-                    return outline;
+                    // 如果没有消息，返回空数组，不显示任何内容
+                    return [];
+                }
+                
+                // 检查是否真的在对话页面中（有实际的消息内容）
+                // 避免在没有选择对话时显示会话标题
+                const responseContainer = this.adapter.getResponseContainer();
+                if (!responseContainer || responseContainer.children.length === 0) {
+                    return [];
+                }
+                
+                // 进一步验证：确保消息真的在对话容器中，而不是在侧边栏中
+                // 检查消息是否在 responseContainer 内部
+                const validMessages = Array.from(messages).filter(msg => {
+                    return responseContainer.contains(msg) || msg.closest('main');
+                });
+                
+                if (validMessages.length === 0) {
+                    // 没有有效的消息在对话容器中，返回空数组
+                    return [];
                 }
 
                 const headingSelectors = [
@@ -8576,7 +9248,8 @@ if (!window.__MY_EXT__) {
                     '[role="heading"]'
                 ];
 
-                messages.forEach((msg, msgIndex) => {
+                // 使用验证过的消息列表
+                validMessages.forEach((msg, msgIndex) => {
                     const role = msg.getAttribute('data-message-author-role');
                     const isAssistant = role === 'assistant' || role === 'system' || !role;
                     const isUser = role === 'user';
@@ -8686,7 +9359,7 @@ if (!window.__MY_EXT__) {
                 if (this.isCollapsed) {
                     quickButtons.classList.remove('hidden');
                     quickButtons.classList.add('collapsed');
-                    quickButtons.style.right = '70px';
+                    quickButtons.style.right = '8px';
                     quickButtons.style.display = 'flex';
                 } else {
                     quickButtons.classList.add('hidden');
@@ -8722,7 +9395,7 @@ if (!window.__MY_EXT__) {
 
             // 设置初始位置和显示状态
             if (this.isCollapsed) {
-                btnGroup.style.right = '70px';
+                btnGroup.style.right = '8px';
                 btnGroup.style.display = 'flex';
                 btnGroup.classList.remove('hidden');
                 btnGroup.classList.add('collapsed');
@@ -10193,13 +10866,38 @@ if (!window.__MY_EXT__) {
 
                 // 方法1: 尝试查找并触发 ChatGPT 的原生主题切换按钮
                 const findThemeButton = () => {
+                    // 排除助手面板内的所有按钮，避免误触发删除等操作
+                    const helperPanel = document.getElementById('chatgpt-helper-panel');
+                    
+                    // 检查按钮是否在助手面板内的辅助函数
+                    const isInHelperPanel = (btn) => {
+                        if (!helperPanel) return false;
+                        // 检查按钮本身或其任何父元素是否在助手面板内
+                        let element = btn;
+                        while (element && element !== document.body) {
+                            if (helperPanel.contains(element)) {
+                                return true;
+                            }
+                            // 检查是否有助手面板相关的类名或ID
+                            if (element.id && element.id.includes('chatgpt-helper')) {
+                                return true;
+                            }
+                            if (element.className && typeof element.className === 'string' && 
+                                element.className.includes('chatgpt-helper')) {
+                                return true;
+                            }
+                            element = element.parentElement;
+                        }
+                        return false;
+                    };
+                    
                     // ChatGPT 可能使用的选择器
                     const selectors = [
                         'button[aria-label*="theme" i]',
                         'button[aria-label*="Theme" i]',
                         'button[data-testid*="theme" i]',
                         '[role="button"][aria-label*="theme" i]',
-                        // 查找所有按钮，检查其 SVG 图标
+                        // 查找所有按钮，检查其 SVG 图标（但排除助手面板内的）
                         'button svg',
                         'nav button',
                         'header button',
@@ -10212,6 +10910,11 @@ if (!window.__MY_EXT__) {
                                 const btn = el.closest('button') || el;
                                 if (!btn || btn.tagName !== 'BUTTON') continue;
 
+                                // 严格排除助手面板内的按钮（包括提示词列表中的按钮）
+                                if (isInHelperPanel(btn)) {
+                                    continue;
+                                }
+
                                 const rect = btn.getBoundingClientRect();
                                 if (rect.width === 0 || rect.height === 0) continue;
 
@@ -10223,8 +10926,20 @@ if (!window.__MY_EXT__) {
                                     const paths = Array.from(svg.querySelectorAll('path'));
                                     const pathD = paths.map(p => p.getAttribute('d') || '').join('');
 
-                                    // Material Icons 主题图标特征
-                                    if (viewBox.includes('24') || pathD.includes('M480') || pathD.includes('M12')) {
+                                    // Material Icons 主题图标特征 - 更精确的检查
+                                    // 删除按钮的viewBox也是"0 0 24 24"，但路径不同，需要更精确的匹配
+                                    const isThemeIcon = pathD.includes('M480') || 
+                                                       pathD.includes('M12 2.69') || 
+                                                       pathD.includes('M12 18') ||
+                                                       (viewBox.includes('24') && (pathD.includes('M20') || pathD.includes('M4 6')));
+                                    
+                                    // 排除明显不是主题图标的特征（如删除图标）
+                                    const isDeleteIcon = pathD.includes('M3 6h18') || pathD.includes('M19 6v14');
+                                    if (isDeleteIcon) {
+                                        continue;
+                                    }
+
+                                    if (isThemeIcon) {
                                         console.log('[ChatGPT Helper] 找到可能的主题按钮:', btn);
                                         return btn;
                                     }
@@ -10564,10 +11279,21 @@ if (!window.__MY_EXT__) {
 
             // 监听 URL 变化（SPA 导航）
             let lastUrl = location.href;
+            let lastPathname = location.pathname;
             const urlObserver = new MutationObserver(() => {
                 const currentUrl = location.href;
+                const currentPathname = location.pathname;
                 if (currentUrl !== lastUrl) {
+                    const wasInConversation = lastPathname.includes('/c/');
+                    const isInConversation = currentPathname.includes('/c/');
+                    
+                    // 检测是否进入新会话页面（从非对话页面进入对话页面，或从一个对话进入另一个对话）
+                    const enteredNewConversation = (!wasInConversation && isInConversation) || 
+                                                   (wasInConversation && isInConversation && currentPathname !== lastPathname);
+                    
                     lastUrl = currentUrl;
+                    lastPathname = currentPathname;
+                    
                     // URL 变化时，延迟更新布局和元素
                     setTimeout(() => {
                         this.adapter.findTextarea();
@@ -10584,6 +11310,14 @@ if (!window.__MY_EXT__) {
                             if (content) {
                                 this.renderOutline(content);
                             }
+                        }
+                        
+                        // 如果进入新会话页面，自动同步并更新已展开的文件夹
+                        if (enteredNewConversation && this.conversationManager) {
+                            // 延迟一点时间，确保DOM已更新
+                            setTimeout(() => {
+                                this.conversationManager.syncConversations();
+                            }, 1500);
                         }
                     }, 1000);
                 }
@@ -10611,6 +11345,13 @@ if (!window.__MY_EXT__) {
                         if (content) {
                             this.renderOutline(content);
                         }
+                    }
+                    
+                    // 如果进入新会话页面，自动同步并更新已展开的文件夹
+                    if (location.pathname.includes('/c/') && this.conversationManager) {
+                        setTimeout(() => {
+                            this.conversationManager.syncConversations();
+                        }, 1500);
                     }
                 }, 1000);
             });

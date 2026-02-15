@@ -265,15 +265,15 @@ html {
     height: 35px;
 }
 .Button.green {
-    background-color: #ddf3e4;
-    color: #18794e;
+    background-color: #e8f5ed;
+    color:rgb(107, 188, 152);
 }
 .Button.red {
     background-color: #f9d9d9;
     color: #a71d2a;
 }
 .Button.green:hover {
-    background-color: #ccebd7;
+    background-color: #d9f0e3;
 }
 .Button:disabled {
     opacity: 0.5;
@@ -21198,7 +21198,8 @@ ${content2.text}
     const fileName = getFileNameWithFormat(fileNameFormat, "png", { chatId });
     downloadUrl(fileName, dataUrl);
     window.URL.revokeObjectURL(dataUrl);
-    return true;
+    // 返回false以防止对话框关闭
+    return false;
   }
   function convertMessageToTavern(node2) {
     if (!node2.message || node2.message.content.content_type !== "text") {
@@ -23213,18 +23214,9 @@ ${content2}`;
                       /* @__PURE__ */ o$8(
                       MenuItem,
                       {
-                        text: t2("Screenshot"),
-                        icon: IconCamera,
-                        className: "row-half",
-                        onClick: onClickPng
-                      }
-                    ),
-                      /* @__PURE__ */ o$8(
-                      MenuItem,
-                      {
                         text: t2("Markdown"),
                         icon: IconMarkdown,
-                        className: "row-half",
+                        className: "row-full",
                         onClick: onClickMarkdown
                       }
                     ),
@@ -23408,18 +23400,9 @@ ${content2}`;
       /* @__PURE__ */ o$8(
         MenuItem,
         {
-          text: t2("Screenshot"),
-          icon: IconCamera,
-          className: "row-half",
-          onClick: onClickPng
-        }
-      ),
-      /* @__PURE__ */ o$8(
-        MenuItem,
-        {
           text: t2("Markdown"),
           icon: IconMarkdown,
-          className: "row-half",
+          className: "row-full",
           onClick: onClickMarkdown
         }
       ),
@@ -23522,14 +23505,68 @@ ${content2}`;
       container.style.height = "100%";
       container.style.position = "relative";
       container.style.overflow = "auto";
-      // 添加样式，使按钮直接显示，不需要下拉菜单
-      container.style.padding = "8px";
+      // 添加样式，使按钮直接显示为卡片式布局
+      container.style.padding = "16px";
       container.style.display = "grid";
       container.style.gridTemplateColumns = "repeat(2, 1fr)";
-      container.style.gap = "4px";
+      container.style.gap = "12px";
       container.style.alignContent = "start";
       container.style.overflowY = "auto";
+      container.className = "chatgpt-helper-export-grid";
       targetElement.appendChild(container);
+      
+      // 添加卡片式按钮样式
+      const style = doc.createElement("style");
+      style.textContent = `
+        .chatgpt-helper-export-grid .menu-item {
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          padding: 20px 12px !important;
+          min-height: 90px !important;
+          border-radius: 12px !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+          transition: all 0.2s ease !important;
+          background: var(--gh-bg, #ffffff) !important;
+          border: 1px solid var(--gh-border, #e5e7eb) !important;
+          text-align: center !important;
+        }
+        .chatgpt-helper-export-grid .menu-item:hover {
+          transform: translateY(-2px) !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+          border-color: var(--gh-primary, #10a37f) !important;
+        }
+        .chatgpt-helper-export-grid .menu-item > div {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 8px !important;
+          width: 100% !important;
+        }
+        .chatgpt-helper-export-grid .menu-item svg {
+          width: 24px !important;
+          height: 24px !important;
+          flex-shrink: 0 !important;
+        }
+        .chatgpt-helper-export-grid .menu-item [class*="icon"] {
+          font-size: 24px !important;
+          width: 24px !important;
+          height: 24px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+        body[data-gh-mode="dark"] .chatgpt-helper-export-grid .menu-item {
+          background: var(--gh-bg, #1f2937) !important;
+          border-color: var(--gh-border, #374151) !important;
+        }
+        .chatgpt-helper-export-grid .menu-item[disabled] {
+          opacity: 0.5 !important;
+          cursor: not-allowed !important;
+        }
+      `;
+      doc.head.appendChild(style);
       // 使用 DirectMenu 而不是 Menu，直接显示功能按钮
       try {
         if (typeof D$4 !== 'undefined' && typeof DirectMenu !== 'undefined') {
