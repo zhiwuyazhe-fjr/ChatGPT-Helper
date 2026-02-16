@@ -54,6 +54,9 @@ if (!window.__MY_EXT__) {
             noConversations: '暂无会话',
             syncConversations: '同步会话',
             newFolder: '新建文件夹',
+            deleteFolder: '删除文件夹',
+            deleteFolderConfirm: '确定要删除文件夹 "{name}" 吗？\n文件夹内的会话将移动到收件箱。',
+            folderDeleted: '文件夹已删除',
             batchMode: '批量操作',
             batchComplete: '完成',
             selected: '已选择',
@@ -122,6 +125,19 @@ if (!window.__MY_EXT__) {
             enableFormulaCopyLabel: '启用公式复制',
             formulaDelimiterLabel: '公式使用 LaTeX 分隔符（$ / $$）',
             enableTableCopyLabel: '启用表格复制',
+            // 大纲相关文案
+            outlineEmpty: '暂无大纲',
+            outlineSearchResult: '条结果',
+            outlineExpandAll: '展开全部',
+            outlineCollapseAll: '折叠全部',
+            outlineShowUserQueriesTooltip: '显示用户提问',
+            outlineHideUserQueriesTooltip: '隐藏用户提问',
+            outlineLocateCurrent: '定位当前位置',
+            outlineSearch: '搜索大纲...',
+            outlineOnlyUserQueries: '只显示用户提问',
+            outlineScrollBottom: '滚动到底部',
+            outlineScrollTop: '滚动到顶部',
+            clear: '清除',
             // Button labels for collapsed buttons
             buttonScrollTop: '顶部',
             buttonAnchor: '锚点',
@@ -166,6 +182,9 @@ if (!window.__MY_EXT__) {
             noConversations: 'No conversations',
             syncConversations: 'Sync Conversations',
             newFolder: 'New Folder',
+            deleteFolder: 'Delete folder',
+            deleteFolderConfirm: 'Delete folder "{name}"?\nConversations in this folder will be moved to Inbox.',
+            folderDeleted: 'Folder deleted',
             batchMode: 'Batch Mode',
             batchComplete: 'Complete',
             selected: 'Selected',
@@ -236,6 +255,7 @@ if (!window.__MY_EXT__) {
             enableTableCopyLabel: 'Table Copy',
             languageChanged: 'Language changed',
             expand: 'Expand',
+            // Outline related
             outlineEmpty: 'No outline',
             outlineSearchResult: 'results',
             outlineExpandAll: 'Expand All',
@@ -244,6 +264,9 @@ if (!window.__MY_EXT__) {
             outlineHideUserQueriesTooltip: 'Hide user queries',
             outlineLocateCurrent: 'Locate Current Position',
             outlineSearch: 'Search outline...',
+            outlineOnlyUserQueries: 'Only show user queries',
+            outlineScrollBottom: 'Scroll to bottom',
+            outlineScrollTop: 'Scroll to top',
             clear: 'Clear',
             // Button labels for collapsed buttons
             buttonScrollTop: 'Top',
@@ -813,14 +836,12 @@ if (!window.__MY_EXT__) {
 
             // 使用文件夹展开/折叠模式（手风琴）
             const folders = this.data.folders || [];
-            let hasVisibleItems = false;
-
+            // 先计算“可见文件夹”，再渲染（便于在收件箱和其他文件夹之间插入分割线）
+            const visibleEntries = [];
             folders.forEach((folder, index) => {
-                // 获取文件夹中的会话
-                let conversations = Object.values(this.data.conversations)
+                let conversations = Object.values(this.data.conversations || {})
                     .filter(c => c.folderId === folder.id);
 
-                // 搜索过滤
                 if (this.searchQuery) {
                     const query = this.searchQuery.toLowerCase();
                     conversations = conversations.filter(c =>
@@ -828,17 +849,30 @@ if (!window.__MY_EXT__) {
                     );
                 }
 
-                // 置顶过滤
                 if (this.filterPinned) {
                     conversations = conversations.filter(c => c.pinned);
                 }
 
                 // 如果搜索模式下没有匹配的会话，跳过该文件夹
-                if (this.searchQuery && conversations.length === 0) {
-                    return;
-                }
+                if (this.searchQuery && conversations.length === 0) return;
 
-                hasVisibleItems = true;
+                visibleEntries.push({ folder, index, conversations });
+            });
+
+            if (visibleEntries.length === 0) {
+                this.listContainer.appendChild(createElement('div', {
+                    style: {
+                        textAlign: 'center',
+                        color: 'var(--gh-text-secondary)',
+                        padding: '40px 20px',
+                        fontSize: '14px'
+                    }
+                }, this.searchQuery ? '未找到匹配结果' : '暂无会话'));
+                return;
+            }
+
+            visibleEntries.forEach((entry, visibleIndex) => {
+                const { folder, index, conversations } = entry;
 
                 // 创建文件夹项
                 const folderItem = this.createFolderItem(folder, index, conversations.length);
@@ -897,18 +931,17 @@ if (!window.__MY_EXT__) {
                 }
 
                 this.listContainer.appendChild(conversationList);
-            });
 
-            if (!hasVisibleItems) {
-                this.listContainer.appendChild(createElement('div', {
-                    style: {
-                        textAlign: 'center',
-                        color: 'var(--gh-text-secondary)',
-                        padding: '40px 20px',
-                        fontSize: '14px'
+                // 在“收件箱”和“其他文件夹”之间画一条细线分割（仅当收件箱后面确实还有其他文件夹）
+                if (folder.id === 'inbox') {
+                    const hasNonInboxAfter = visibleEntries.slice(visibleIndex + 1).some(e => e.folder && e.folder.id !== 'inbox');
+                    if (hasNonInboxAfter) {
+                        this.listContainer.appendChild(createElement('div', {
+                            className: 'chatgpt-helper-folder-divider'
+                        }));
                     }
-                }, this.searchQuery ? '未找到匹配结果' : '暂无会话'));
-            }
+                }
+            });
         }
 
         createFolderItem(folder, index, count) {
@@ -980,6 +1013,45 @@ if (!window.__MY_EXT__) {
 
             item.appendChild(info);
 
+            // 右侧操作区（删除 + 展开箭头）
+            const actions = createElement('div', {
+                className: 'chatgpt-helper-folder-actions',
+                style: {
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    flexShrink: 0
+                }
+            });
+
+            // 删除文件夹按钮（默认文件夹不允许删除）
+            if (!folder.isDefault && folder.id !== 'inbox') {
+                const deleteBtn = createElement('button', {
+                    className: 'chatgpt-helper-folder-delete-btn',
+                    title: this.t('deleteFolder') || '删除文件夹',
+                    style: {
+                        width: '26px',
+                        height: '26px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '6px',
+                        border: '1px solid transparent',
+                        background: 'transparent',
+                        color: 'var(--gh-text-secondary, #6b7280)',
+                        cursor: 'pointer',
+                        padding: 0,
+                        lineHeight: 1,
+                        fontSize: '14px'
+                    }
+                }, '🗑');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.deleteFolder(folder.id);
+                });
+                actions.appendChild(deleteBtn);
+            }
+
             // 展开/折叠箭头
             const arrow = createElement('span', {
                 className: 'chatgpt-helper-folder-arrow',
@@ -990,7 +1062,9 @@ if (!window.__MY_EXT__) {
                     transform: this.expandedFolderId === folder.id ? 'rotate(90deg)' : 'rotate(0deg)'
                 }
             }, '▸');
-            item.appendChild(arrow);
+            actions.appendChild(arrow);
+
+            item.appendChild(actions);
 
             return item;
         }
@@ -1288,6 +1362,36 @@ if (!window.__MY_EXT__) {
             this.data.folders.push(folder);
             this.saveData();
             this.createUI();
+        }
+
+        deleteFolder(folderId) {
+            if (!folderId || folderId === 'inbox') return;
+            const folder = (this.data.folders || []).find(f => f.id === folderId);
+            if (!folder || folder.isDefault) return;
+
+            const folderName = (folder.name || '').trim() || folderId;
+            const confirmTpl = this.t('deleteFolderConfirm') || '确定要删除文件夹 "{name}" 吗？\n文件夹内的会话将移动到收件箱。';
+            const confirmMsg = confirmTpl.replace('{name}', folderName.replace(/"/g, ''));
+            if (!confirm(confirmMsg)) return;
+
+            // 将该文件夹内会话移动到收件箱（避免误删会话）
+            const conversations = this.data.conversations || {};
+            Object.values(conversations).forEach(conv => {
+                if (conv && conv.folderId === folderId) {
+                    conv.folderId = 'inbox';
+                }
+            });
+
+            // 删除文件夹
+            this.data.folders = (this.data.folders || []).filter(f => f.id !== folderId);
+
+            // 修正状态
+            if (this.data.lastUsedFolderId === folderId) this.data.lastUsedFolderId = 'inbox';
+            if (this.expandedFolderId === folderId) this.expandedFolderId = null;
+
+            this.saveData();
+            this.createUI();
+            this.showToast(this.t('folderDeleted') || '文件夹已删除');
         }
 
         formatTime(timestamp) {
@@ -4577,7 +4681,24 @@ if (!window.__MY_EXT__) {
                 const outlineList = document.getElementById('outline-list');
                 if (!outlineList) return;
 
-                const outlineItem = outlineList.querySelector(`.outline-item[data-index="${currentItem.index}"]`);
+                // 优先尝试当前节点对应的大纲项
+                let outlineItem = outlineList.querySelector(`.outline-item[data-index="${currentItem.index}"]`);
+
+                // 如果当前节点不可见或未渲染，沿着路径向上查找第一个可见的大纲项
+                if (!outlineItem || outlineItem.classList.contains('outline-hidden')) {
+                    const indicesToTry = (path && path.length > 0)
+                        ? [...path].reverse().map((node) => node.index)
+                        : [currentItem.index];
+
+                    for (const idx of indicesToTry) {
+                        const candidate = outlineList.querySelector(`.outline-item[data-index="${idx}"]`);
+                        if (candidate && !candidate.classList.contains('outline-hidden')) {
+                            outlineItem = candidate;
+                            break;
+                        }
+                    }
+                }
+
                 if (!outlineItem) return;
 
                 // 滚动大纲面板到该项
@@ -6209,6 +6330,19 @@ if (!window.__MY_EXT__) {
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
                     border-radius: 0;
                 }
+                
+                /* 拖拽改变宽度时：禁用 transition，避免“动画追赶鼠标”造成卡顿 */
+                #chatgpt-helper-right.gh-resizing {
+                    transition: none !important;
+                    will-change: width;
+                }
+                
+                /* 拖拽时同时禁用主区域 margin-right 的过渡，提升跟手性 */
+                body.gh-resizing main,
+                body.gh-resizing [role="main"],
+                body.gh-resizing #chatgpt-helper-center {
+                    transition: none !important;
+                }
 
                 /* 右栏宽度拖拽条（稍微偏内侧，方便拖拽） */
                 #chatgpt-helper-resize-handle {
@@ -6308,7 +6442,8 @@ if (!window.__MY_EXT__) {
 
                 /* 面板头部 - 渐变背景 */
                 #chatgpt-helper-header {
-                    padding: 12px 14px;
+                    /* 允许根据面板宽度动态调整（通过 JS 设置 CSS 变量） */
+                    padding: var(--gh-header-padding-v, 12px) var(--gh-header-padding-h, 14px);
                     background: var(--gh-header-bg);
                     color: white;
                     display: flex;
@@ -6318,6 +6453,7 @@ if (!window.__MY_EXT__) {
                     flex-shrink: 0;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
                     border-radius: 0;
+                    min-width: 0; /* 允许内部元素正确收缩，避免被挤出裁剪 */
                 }
 
                 #chatgpt-helper-title {
@@ -6327,31 +6463,52 @@ if (!window.__MY_EXT__) {
                     align-items: center;
                     gap: 6px;
                     white-space: nowrap;
-                    flex-shrink: 0;
+                    flex: 1 1 auto; /* 让标题在窄宽时让位给右侧按钮 */
+                    min-width: 0;
+                }
+                
+                #chatgpt-helper-title span:last-child {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
 
                 #chatgpt-helper-controls {
                     display: flex;
-                    gap: 4px;
+                    gap: var(--gh-header-controls-gap, 4px);
                     align-items: center;
+                    flex-shrink: 0; /* 按钮优先保留可见性 */
+                }
+                
+                /* 窄宽紧凑模式：隐藏标题文字 + 缩小按钮/间距，避免按钮被挤出右侧不可见 */
+                #chatgpt-helper-header.gh-compact {
+                    --gh-header-padding-v: 10px;
+                    --gh-header-padding-h: 10px;
+                    --gh-header-controls-gap: 2px;
+                    --gh-header-btn-size: 24px;
+                    --gh-header-btn-font-size: 13px;
+                    --gh-header-btn-radius: 6px;
+                }
+                
+                #chatgpt-helper-header.gh-compact #chatgpt-helper-title span:last-child {
+                    display: none;
                 }
 
                 .chatgpt-helper-header-btn {
                     background: rgba(255,255,255,0.2);
                     border: none;
                     color: white;
-                    width: 28px;
-                    height: 28px;
-                    border-radius: 6px;
+                    width: var(--gh-header-btn-size, 28px);
+                    height: var(--gh-header-btn-size, 28px);
+                    border-radius: var(--gh-header-btn-radius, 6px);
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     transition: all 0.2s ease;
-                    font-size: 14px;
+                    font-size: var(--gh-header-btn-font-size, 14px);
                     backdrop-filter: blur(10px);
                     -webkit-backdrop-filter: blur(10px);
-                    min-width: 28px;
+                    min-width: var(--gh-header-btn-size, 28px);
                     padding: 0;
                 }
 
@@ -7647,6 +7804,56 @@ if (!window.__MY_EXT__) {
                     transition: transform 0.2s;
                     flex-shrink: 0;
                 }
+
+                .chatgpt-helper-folder-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    flex-shrink: 0;
+                }
+
+                /* 默认隐藏删除按钮，hover 时显示（避免界面噪音） */
+                .chatgpt-helper-folder-delete-btn {
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+                }
+
+                .chatgpt-helper-folder-item:hover .chatgpt-helper-folder-delete-btn,
+                .chatgpt-helper-folder-delete-btn:focus-visible {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+
+                .chatgpt-helper-folder-delete-btn:hover {
+                    background: rgba(239, 68, 68, 0.12);
+                    border-color: rgba(239, 68, 68, 0.35);
+                    color: #ef4444;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-folder-delete-btn:hover {
+                    background: rgba(239, 68, 68, 0.18);
+                    border-color: rgba(239, 68, 68, 0.45);
+                }
+
+                .chatgpt-helper-folder-delete-btn:focus-visible {
+                    outline: 2px solid rgba(99, 102, 241, 0.55);
+                    outline-offset: 2px;
+                }
+
+                /* 会话模式：收件箱与其他文件夹分割线 */
+                .chatgpt-helper-folder-divider {
+                    height: 1px;
+                    background: var(--gh-border, #e5e7eb);
+                    opacity: 0.75;
+                    margin: 8px 6px;
+                    border-radius: 1px;
+                }
+                
+                body[data-gh-mode="dark"] .chatgpt-helper-folder-divider {
+                    background: var(--gh-border, #475569);
+                    opacity: 0.65;
+                }
                 
                 .chatgpt-helper-folder-item.expanded .chatgpt-helper-folder-arrow {
                     transform: rotate(90deg);
@@ -7658,11 +7865,13 @@ if (!window.__MY_EXT__) {
                     margin-right: 4px;
                     padding: 8px;
                     background: var(--gh-bg-secondary, #f9fafb);
-                    border: 2px solid var(--gh-border-active, #6366f1);
+                    /* 移除会话列表左/右/下方“蓝线”（原本来自激活色边框） */
+                    border: 2px solid transparent;
                     border-top: none;
                     border-radius: 0 0 8px 8px;
                     margin-top: -4px;
                     margin-bottom: 4px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
                     /* 让会话列表占满可用高度，由外层容器控制滚动 */
                     max-height: none;
                     height: auto;
@@ -7678,7 +7887,8 @@ if (!window.__MY_EXT__) {
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-conversations-list {
                     background: var(--gh-bg-secondary, #1a1a1a);
-                    border-color: rgba(99, 102, 241, 0.5);
+                    border-color: transparent;
+                    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
                 }
                 
                 .chatgpt-helper-conversation-item {
@@ -8035,44 +8245,34 @@ if (!window.__MY_EXT__) {
         adjustChatGPTLayout() {
             // 使用更温和的方式调整布局，只调整主容器的右边距
             const updateLayout = () => {
-                const layoutStyle = document.getElementById('chatgpt-helper-layout-style');
-                // 修复：折叠时margin为0，展开时为面板宽度
+                // 修复：折叠时 margin 为 0，展开时为面板宽度
                 const marginValue = this.isCollapsed ? 0 : this.settings.panelWidth;
 
-                if (layoutStyle) {
-                    layoutStyle.remove();
+                // 用 CSS 变量驱动，拖拽过程中只更新变量/单个 style 属性，避免频繁 remove/append <style>
+                try {
+                    document.documentElement.style.setProperty('--gh-panel-margin-right', `${marginValue}px`);
+                } catch (e) { /* ignore */ }
+
+                // 样式节点只创建一次，避免反复重建
+                let layoutStyle = document.getElementById('chatgpt-helper-layout-style');
+                if (!layoutStyle) {
+                    layoutStyle = document.createElement('style');
+                    layoutStyle.id = 'chatgpt-helper-layout-style';
+                    layoutStyle.textContent = `
+                        /* 只调整主容器的右边距，为右侧面板留出空间（由 CSS 变量驱动） */
+                        main,
+                        [role="main"] {
+                            margin-right: var(--gh-panel-margin-right, 0px) !important;
+                            transition: margin-right 0.3s ease !important;
+                        }
+                        
+                        /* 确保页面不横向滚动 */
+                        body {
+                            overflow-x: hidden !important;
+                        }
+                    `;
+                    document.head.appendChild(layoutStyle);
                 }
-
-                // 查找 ChatGPT 的主容器
-                const mainContainer = document.querySelector('main') ||
-                    document.querySelector('[role="main"]') ||
-                    document.querySelector('div[class*="flex"][class*="flex-col"]') ||
-                    document.querySelector('div[class*="h-screen"] > div[class*="flex"]');
-
-                const newStyle = document.createElement('style');
-                newStyle.id = 'chatgpt-helper-layout-style';
-
-                // 如果找到了主容器，直接设置样式
-                if (mainContainer) {
-                    mainContainer.style.marginRight = `${marginValue}px`;
-                    mainContainer.style.transition = 'margin-right 0.3s ease';
-                }
-
-                // 通用样式：为可能的容器设置样式
-                newStyle.textContent = `
-                    /* 只调整主容器的右边距，为右侧面板留出空间 */
-                    main,
-                    [role="main"] {
-                        margin-right: ${marginValue}px !important;
-                        transition: margin-right 0.3s ease !important;
-                    }
-                    
-                    /* 确保页面不横向滚动 */
-                    body {
-                        overflow-x: hidden !important;
-                    }
-                `;
-                document.head.appendChild(newStyle);
             };
 
             // 立即执行一次
@@ -8102,17 +8302,20 @@ if (!window.__MY_EXT__) {
             let startX = 0;
             let startWidth = 0;
             let rafId = null;
+            let latestClientX = 0;
+            let lastLayoutUpdateTs = 0;
+            const layoutUpdateIntervalMs = 50; // 降低拖拽期间的整页 reflow 频率（20fps）
 
             const onMouseMove = (e) => {
                 if (!this.panel) return;
                 
-                // 使用 requestAnimationFrame 优化性能，使拖动更流畅
-                if (rafId) {
-                    cancelAnimationFrame(rafId);
-                }
-                
+                // 记录最新坐标；每帧最多更新一次，避免 cancel/schedule 震荡
+                latestClientX = e.clientX;
+
+                if (rafId) return;
                 rafId = requestAnimationFrame(() => {
-                    const delta = startX - e.clientX;
+                    rafId = null;
+                    const delta = startX - latestClientX;
                     let newWidth = startWidth + delta;
                     const minWidth = 220;
                     const maxWidth = 640;
@@ -8122,8 +8325,13 @@ if (!window.__MY_EXT__) {
                     this.settings.panelWidth = newWidth;
                     this.panel.style.width = `${newWidth}px`;
 
+                    // 拖拽期间同步“主内容区让位”是最重的操作（会触发 reflow），因此降频执行
                     if (this.updateLayout) {
-                        this.updateLayout();
+                        const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+                        if (now - lastLayoutUpdateTs >= layoutUpdateIntervalMs) {
+                            lastLayoutUpdateTs = now;
+                            this.updateLayout();
+                        }
                     }
                 });
             };
@@ -8136,6 +8344,10 @@ if (!window.__MY_EXT__) {
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
                 document.body.style.userSelect = '';
+                document.body.classList.remove('gh-resizing');
+                if (this.panel) this.panel.classList.remove('gh-resizing');
+                // 松手后做一次最终布局同步，确保主内容区与最终宽度一致
+                if (this.updateLayout) this.updateLayout();
                 this.saveSettings();
             };
 
@@ -8143,8 +8355,12 @@ if (!window.__MY_EXT__) {
                 if (e.button !== 0) return;
                 e.preventDefault();
                 startX = e.clientX;
+                latestClientX = e.clientX;
                 startWidth = this.panel ? this.panel.getBoundingClientRect().width : this.settings.panelWidth;
                 document.body.style.userSelect = 'none';
+                document.body.classList.add('gh-resizing');
+                this.panel.classList.add('gh-resizing');
+                lastLayoutUpdateTs = 0; // 确保第一帧就能更新一次布局
                 document.addEventListener('mousemove', onMouseMove);
                 document.addEventListener('mouseup', onMouseUp);
             });
@@ -8157,6 +8373,10 @@ if (!window.__MY_EXT__) {
             if (this.tabSpacingObserver) {
                 this.tabSpacingObserver.disconnect();
                 this.tabSpacingObserver = null;
+            }
+            if (this.panelSpacingObserver) {
+                this.panelSpacingObserver.disconnect();
+                this.panelSpacingObserver = null;
             }
 
             // 更新间距的函数
@@ -8191,21 +8411,95 @@ if (!window.__MY_EXT__) {
             updateSpacing();
 
             // 使用ResizeObserver监听容器宽度变化
+            let spacingRafId = null;
+            const scheduleUpdateSpacing = () => {
+                if (spacingRafId) return;
+                spacingRafId = requestAnimationFrame(() => {
+                    spacingRafId = null;
+                    updateSpacing();
+                });
+            };
+
             this.tabSpacingObserver = new ResizeObserver(() => {
-                updateSpacing();
+                // 宽度变化可能非常频繁（尤其拖拽改变面板宽度时），用 rAF 合并回调
+                scheduleUpdateSpacing();
             });
 
             this.tabSpacingObserver.observe(tabsContainer);
 
             // 也监听面板宽度变化（当拖拽改变面板宽度时）
             if (this.panel) {
-                if (!this.panelSpacingObserver) {
-                    this.panelSpacingObserver = new ResizeObserver(() => {
-                        updateSpacing();
-                    });
-                    this.panelSpacingObserver.observe(this.panel);
-                }
+                this.panelSpacingObserver = new ResizeObserver(() => {
+                    scheduleUpdateSpacing();
+                });
+                this.panelSpacingObserver.observe(this.panel);
             }
+        }
+        
+        // 初始化头部按钮响应式间距（面板变窄时避免按钮被挤出右侧不可见）
+        initHeaderResponsiveSpacing(headerEl) {
+            if (!headerEl) return;
+            
+            // 如果已经初始化过，先清理旧的observer
+            if (this.headerSpacingObserver) {
+                this.headerSpacingObserver.disconnect();
+                this.headerSpacingObserver = null;
+            }
+            
+            const updateSpacing = () => {
+                try {
+                    const width = headerEl.getBoundingClientRect().width;
+                    
+                    // 220 是当前拖拽最小宽度；这里做一个更高一点的阈值，提前进入紧凑模式
+                    const compact = width < 290;
+                    headerEl.classList.toggle('gh-compact', compact);
+                    
+                    // 非常窄时进一步压缩（避免极限情况下仍溢出）
+                    if (width < 250) {
+                        headerEl.style.setProperty('--gh-header-btn-size', '22px');
+                        headerEl.style.setProperty('--gh-header-controls-gap', '2px');
+                        headerEl.style.setProperty('--gh-header-padding-h', '8px');
+                        headerEl.style.setProperty('--gh-header-padding-v', '9px');
+                        headerEl.style.setProperty('--gh-header-btn-font-size', '12px');
+                    } else if (width < 320) {
+                        headerEl.style.setProperty('--gh-header-btn-size', '24px');
+                        headerEl.style.setProperty('--gh-header-controls-gap', '2px');
+                        headerEl.style.setProperty('--gh-header-padding-h', '10px');
+                        headerEl.style.setProperty('--gh-header-padding-v', '10px');
+                        headerEl.style.setProperty('--gh-header-btn-font-size', '13px');
+                    } else if (width < 380) {
+                        headerEl.style.setProperty('--gh-header-btn-size', '26px');
+                        headerEl.style.setProperty('--gh-header-controls-gap', '3px');
+                        headerEl.style.setProperty('--gh-header-padding-h', '12px');
+                        headerEl.style.setProperty('--gh-header-padding-v', '11px');
+                        headerEl.style.setProperty('--gh-header-btn-font-size', '13px');
+                    } else {
+                        // 恢复默认（清理覆盖值）
+                        headerEl.style.removeProperty('--gh-header-btn-size');
+                        headerEl.style.removeProperty('--gh-header-controls-gap');
+                        headerEl.style.removeProperty('--gh-header-padding-h');
+                        headerEl.style.removeProperty('--gh-header-padding-v');
+                        headerEl.style.removeProperty('--gh-header-btn-font-size');
+                    }
+                } catch (e) {
+                    // 忽略异常，避免影响主流程
+                }
+            };
+            
+            // 初始更新
+            updateSpacing();
+            
+            // 监听 header 宽度变化（面板拖拽会触发）
+            let headerSpacingRafId = null;
+            const scheduleHeaderUpdateSpacing = () => {
+                if (headerSpacingRafId) return;
+                headerSpacingRafId = requestAnimationFrame(() => {
+                    headerSpacingRafId = null;
+                    updateSpacing();
+                });
+            };
+            this.headerSpacingObserver = new ResizeObserver(() => scheduleHeaderUpdateSpacing());
+            this.headerSpacingObserver.observe(headerEl);
         }
 
         createUI() {
@@ -8297,6 +8591,9 @@ if (!window.__MY_EXT__) {
             header.appendChild(title);
             header.appendChild(controls);
             this.panel.appendChild(header);
+            
+            // 头部按钮自适应（避免拖动变窄时按钮溢出到右侧不可见）
+            this.initHeaderResponsiveSpacing(header);
 
             // Tab 导航
             const tabs = createElement('div', { id: 'chatgpt-helper-tabs' });
@@ -10227,7 +10524,8 @@ if (!window.__MY_EXT__) {
                         Object.assign(this.settings.outline, newSettings);
                         this.saveSettings();
                     },
-                    i18n: (k) => k
+                    // 使用全局 i18n 函数，确保大纲工具栏在中英文模式下的提示文案一致生效
+                    i18n: t
                 });
             }
 
