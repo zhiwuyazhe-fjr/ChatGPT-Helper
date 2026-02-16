@@ -63,8 +63,8 @@
 ### 浅色模式 (Light Mode)
 <table width="100%">
   <tr>
-    <th width="80%">主界面展示</th>
-    <th width="20%">侧边栏收起状态</th>
+    <th width="90%">主界面展示</th>
+    <th width="10%">侧边栏收起状态</th>
   </tr>
   <tr>
     <td align="center">
