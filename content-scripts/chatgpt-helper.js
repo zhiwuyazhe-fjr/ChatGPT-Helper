@@ -78,7 +78,9 @@ if (!window.__MY_EXT__) {
             readingHistory: '阅读历史',
             anchorSettings: '锚点设置',
             copySettings: '复制功能',
-            tabSettings: '标签页设置',
+            tabSettings: 'tab栏功能',
+            tabOrderSettings: 'tab栏功能',
+            tabPageSettings: '标签页设置',
             languageSettings: '语言设置',
             language: '界面语言',
             autoDetect: '自动检测',
@@ -116,9 +118,22 @@ if (!window.__MY_EXT__) {
             tabNotifyWhenFocusedLabel: '前台时也通知',
             tabAutoFocusLabel: '自动聚焦窗口',
             tabPrivacyModeLabel: '隐私模式',
+            tabPrivacyTitleLabel: '隐私模式标题',
             enableFormulaCopyLabel: '启用公式复制',
             formulaDelimiterLabel: '公式使用 LaTeX 分隔符（$ / $$）',
             enableTableCopyLabel: '启用表格复制',
+            // Button labels for collapsed buttons
+            buttonScrollTop: '顶部',
+            buttonAnchor: '锚点',
+            buttonTheme: '主题',
+            buttonManualAnchor: '手动锚点',
+            buttonScrollBottom: '底部',
+            // Button actions
+            moveUp: '上移',
+            moveDown: '下移',
+            buttonOrderUpdated: '已更新按钮顺序',
+            enabled: '已启用',
+            disabled: '已禁用',
         },
         'en': {
             panelTitle: 'ChatGPT Helper',
@@ -176,6 +191,8 @@ if (!window.__MY_EXT__) {
             anchorSettings: 'Anchor Settings',
             copySettings: 'Copy Features',
             tabSettings: 'Tab Settings',
+            tabOrderSettings: 'Tab Functions',
+            tabPageSettings: 'Tab Settings',
             languageSettings: 'Language Settings',
             language: 'Interface Language',
             autoDetect: 'Auto Detect',
@@ -185,109 +202,38 @@ if (!window.__MY_EXT__) {
             outlineSettings: 'Outline Settings',
             searchConversations: 'Search conversations...',
             selectConversationsFirst: 'Please select conversations first',
-            panelWidthLabel: 'Panel width',
-            defaultPanelOpenLabel: 'Open panel by default',
-            enablePromptsLabel: 'Enable prompts',
-            enableOutlineLabel: 'Enable outline',
-            showUserMessagesLabel: 'Show user messages',
-            enableConversationsLabel: 'Enable conversation manager',
-            preventAutoScrollLabel: 'Prevent auto scroll',
-            limitPageWidthLabel: 'Limit page width',
-            pageWidthValueLabel: 'Page width value',
-            pageWidthUnitLabel: 'Width unit',
+            panelWidthLabel: 'Panel Width',
+            defaultPanelOpenLabel: 'Open Panel by Default',
+            enablePromptsLabel: 'Prompts',
+            enableOutlineLabel: 'Outline',
+            showUserMessagesLabel: 'Show User Messages',
+            enableConversationsLabel: 'Conversation Manager',
+            preventAutoScrollLabel: 'Prevent Auto Scroll',
+            limitPageWidthLabel: 'Limit Page Width',
+            pageWidthValueLabel: 'Page Width Value',
+            pageWidthUnitLabel: 'Width Unit',
             collapsedButtonsDesc: 'Adjust the order of collapsed panel buttons',
             collapsedButtonsTitle: 'Collapsed Buttons',
-            enableReadingHistoryLabel: 'Enable reading history',
-            autoRestoreLabel: 'Auto restore position',
-            historyDaysLabel: 'History retention days',
-            autoUpdateOutlineLabel: 'Auto update outline during conversation',
-            outlineIntervalLabel: 'Update interval (seconds)',
-            outlineSyncScrollLabel: 'Sync scroll',
-            outlineMaxLevelLabel: 'Max heading level',
-            tabAutoRenameLabel: 'Auto rename tab',
-            tabRenameIntervalLabel: 'Rename check interval (seconds)',
-            tabShowStatusLabel: 'Show generation status',
-            tabDesktopNotifyLabel: 'Desktop notification',
-            tabPlaySoundLabel: 'Play notification sound',
-            tabVolumeLabel: 'Notification volume (0.1–1.0)',
-            tabNotifyWhenFocusedLabel: 'Notify even when tab is focused',
-            tabAutoFocusLabel: 'Auto focus window',
-            tabPrivacyModeLabel: 'Privacy mode',
-            enableFormulaCopyLabel: 'Enable formula copy',
-            formulaDelimiterLabel: 'Use LaTeX delimiters ($ / $$)',
-            enableTableCopyLabel: 'Enable table copy',
-            languageChanged: '语言已更改',
-            expand: '展开',
-            outlineEmpty: '暂无大纲',
-            outlineSearchResult: '个结果',
-            outlineExpandAll: '展开全部',
-            outlineCollapseAll: '折叠全部',
-            outlineShowUserQueriesTooltip: '显示用户提问',
-            outlineHideUserQueriesTooltip: '隐藏用户提问',
-            outlineLocateCurrent: '定位当前位置',
-            outlineSearch: '搜索大纲...',
-            clear: '清除',
-        },
-        'en': {
-            panelTitle: 'ChatGPT Helper',
-            tabPrompts: 'Prompts',
-            tabOutline: 'Outline',
-            tabConversations: 'Conversations',
-            tabSettings: 'Settings',
-            searchPlaceholder: 'Search prompts...',
-            addPrompt: 'Add New Prompt',
-            allCategory: 'All',
-            refresh: 'Refresh',
-            collapse: 'Collapse',
-            edit: 'Edit',
-            delete: 'Delete',
-            save: 'Save',
-            cancel: 'Cancel',
-            add: 'Add',
-            title: 'Title',
-            category: 'Category',
-            content: 'Prompt Content',
-            promptUpdated: 'Prompt updated',
-            promptAdded: 'Prompt added',
-            deleted: 'Deleted',
-            copied: 'Copied to clipboard',
-            refreshed: 'Refreshed',
-            inserted: 'Prompt inserted',
-            confirmDelete: 'Delete this prompt?',
-            fillTitleContent: 'Please fill in title and content',
-            noConversations: 'No conversations',
-            syncConversations: 'Sync Conversations',
-            newFolder: 'New Folder',
-            batchMode: 'Batch Mode',
-            batchComplete: 'Complete',
-            selected: 'Selected',
-            items: 'items',
-            move: 'Move',
-            export: 'Export',
-            pinned: 'Pinned',
-            unpinned: 'Unpinned',
-            moved: 'Moved',
-            exported: 'Exported',
-            synced: 'Synced',
-            newSessions: 'new sessions',
-            updatedSessions: 'sessions',
-            exportFormat: 'Select export format:\n1. Markdown\n2. JSON\n3. TXT',
-            exportSuccess: 'Export successful',
-            exportFailed: 'Export failed',
-            noContent: 'No conversation content found',
-            openFirst: 'Please open the conversation first',
-            settingsTitle: 'Settings',
-            panelSettings: 'Panel Settings',
-            featureSettings: 'Feature Settings',
-            readingHistory: 'Reading History',
-            anchorSettings: 'Anchor Settings',
-            copySettings: 'Copy Features',
-            tabSettings: 'Tab Settings',
-            languageSettings: 'Language Settings',
-            language: 'Interface Language',
-            autoDetect: 'Auto Detect',
-            chinese: '简体中文',
-            english: 'English',
+            enableReadingHistoryLabel: 'Reading History',
+            autoRestoreLabel: 'Auto Restore Position',
+            historyDaysLabel: 'History Retention Days',
+            autoUpdateOutlineLabel: 'Auto Update Outline During Conversation',
+            outlineIntervalLabel: 'Update Interval (seconds)',
+            outlineSyncScrollLabel: 'Sync Scroll',
+            outlineMaxLevelLabel: 'Max Heading Level',
+            tabAutoRenameLabel: 'Auto Rename Tab',
+            tabRenameIntervalLabel: 'Rename Check Interval (seconds)',
+            tabShowStatusLabel: 'Show Generation Status',
+            tabDesktopNotifyLabel: 'Desktop Notification',
+            tabPlaySoundLabel: 'Play Notification Sound',
+            tabVolumeLabel: 'Notification Volume (0.1–1.0)',
+            tabNotifyWhenFocusedLabel: 'Notify Even When Tab is Focused',
+            tabAutoFocusLabel: 'Auto Focus Window',
+            tabPrivacyModeLabel: 'Privacy Mode',
+            tabPrivacyTitleLabel: 'Privacy Mode Title',
+            enableFormulaCopyLabel: 'Formula Copy',
+            formulaDelimiterLabel: 'Use LaTeX Delimiters ($ / $$)',
+            enableTableCopyLabel: 'Table Copy',
             languageChanged: 'Language changed',
             expand: 'Expand',
             outlineEmpty: 'No outline',
@@ -299,6 +245,18 @@ if (!window.__MY_EXT__) {
             outlineLocateCurrent: 'Locate Current Position',
             outlineSearch: 'Search outline...',
             clear: 'Clear',
+            // Button labels for collapsed buttons
+            buttonScrollTop: 'Top',
+            buttonAnchor: 'Anchor',
+            buttonTheme: 'Theme',
+            buttonManualAnchor: 'Manual Anchor',
+            buttonScrollBottom: 'Bottom',
+            // Button actions
+            moveUp: 'Move Up',
+            moveDown: 'Move Down',
+            buttonOrderUpdated: 'Button order updated',
+            enabled: 'Enabled',
+            disabled: 'Disabled',
         }
     };
 
@@ -332,12 +290,12 @@ if (!window.__MY_EXT__) {
 
     // 折叠面板按钮定义
     const COLLAPSED_BUTTON_DEFS = {
-        scrollTop: { icon: '⬆', label: '顶部', canToggle: false, isPanelOnly: false },
-        panel: { icon: '✨', label: 'ChatGPT Helper', canToggle: false, isPanelOnly: true },
-        anchor: { icon: '⚓', label: '锚点', canToggle: true, isPanelOnly: true },
-        theme: { icon: '☀', label: '主题', canToggle: true, isPanelOnly: true },
-        manualAnchor: { icon: '📍', label: '手动锚点', canToggle: true, isPanelOnly: false, isGroup: true },
-        scrollBottom: { icon: '⬇', label: '底部', canToggle: false, isPanelOnly: false },
+        scrollTop: { icon: '⬆', labelKey: 'buttonScrollTop', canToggle: false, isPanelOnly: false },
+        panel: { icon: '✨', labelKey: null, label: 'ChatGPT Helper', canToggle: false, isPanelOnly: true },
+        anchor: { icon: '⚓', labelKey: 'buttonAnchor', canToggle: true, isPanelOnly: true },
+        theme: { icon: '☀', labelKey: 'buttonTheme', canToggle: true, isPanelOnly: true },
+        manualAnchor: { icon: '📍', labelKey: 'buttonManualAnchor', canToggle: true, isPanelOnly: false, isGroup: true },
+        scrollBottom: { icon: '⬇', labelKey: 'buttonScrollBottom', canToggle: false, isPanelOnly: false },
     };
     const DEFAULT_COLLAPSED_BUTTONS_ORDER = [
         { id: 'scrollTop', enabled: true },
@@ -1928,11 +1886,14 @@ if (!window.__MY_EXT__) {
             const needsScroll = Math.abs(targetTop - currentTop) > 1; // 只要位置不同就需要滚动
 
             // 如果在底部且需要滚动到不同位置，使用强制滚动方法
-            if (isAtBottomContainer && needsScroll) {
-                console.log('[ChatGPT Helper] scrollTo: 在底部，使用强制滚动方法，目标位置:', targetTop, '当前位置:', currentTop);
+            // 注意：只有当目标位置不是底部时才需要强制滚动（向上滚动）
+            const isScrollingUp = targetTop < currentTop;
+            if (isAtBottomContainer && needsScroll && isScrollingUp) {
+                console.log('[ChatGPT Helper] scrollTo: 在底部且向上滚动，使用强制滚动方法，目标位置:', targetTop, '当前位置:', currentTop);
                 
                 // 设置 bypassLock 标志，绕过所有滚动锁定
                 container.__ghBypassLock = true;
+                window.__ghBypassLock = true;
                 
                 // 获取原生 scrollTop setter（从原型链获取，绕过可能的拦截）
                 const proto = Object.getPrototypeOf(container);
@@ -1965,9 +1926,21 @@ if (!window.__MY_EXT__) {
 
                 // 立即执行多次，确保生效
                 forceScroll();
-                setTimeout(() => forceScroll(), 0);
-                setTimeout(() => forceScroll(), 10);
-                setTimeout(() => forceScroll(), 20);
+                setTimeout(() => {
+                    container.__ghBypassLock = true;
+                    window.__ghBypassLock = true;
+                    forceScroll();
+                }, 0);
+                setTimeout(() => {
+                    container.__ghBypassLock = true;
+                    window.__ghBypassLock = true;
+                    forceScroll();
+                }, 10);
+                setTimeout(() => {
+                    container.__ghBypassLock = true;
+                    window.__ghBypassLock = true;
+                    forceScroll();
+                }, 20);
 
                 // 也使用 scrollTo 作为备用
                 try {
@@ -1978,44 +1951,42 @@ if (!window.__MY_EXT__) {
 
                 // 使用 setInterval 持续尝试，确保滚动成功
                 let attempts = 0;
-                const maxAttempts = 100;
+                const maxAttempts = 50;
                 const scrollInterval = setInterval(() => {
                     attempts++;
                     const before = container.scrollTop;
                     container.__ghBypassLock = true; // 确保标志始终存在
+                    window.__ghBypassLock = true;
                     forceScroll();
                     const current = container.scrollTop;
                     
                     // 检查是否到达目标位置
                     if (Math.abs(current - targetTop) <= 5 || attempts >= maxAttempts) {
                         clearInterval(scrollInterval);
-                        setTimeout(() => delete container.__ghBypassLock, 100);
+                        setTimeout(() => {
+                            delete container.__ghBypassLock;
+                            delete window.__ghBypassLock;
+                        }, 100);
                         console.log('[ChatGPT Helper] 强制滚动完成，最终位置:', current, '目标位置:', targetTop, '尝试次数:', attempts);
                     } else if (Math.abs(current - before) > 1) {
                         // 位置有变化，继续尝试
-                    } else if (attempts > 20) {
-                        // 20次尝试后仍然没有变化，尝试 scrollIntoView
+                    } else if (attempts > 10) {
+                        // 10次尝试后仍然没有变化，尝试 scrollIntoView
                         console.log('[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView');
                         try {
-                            // 根据滚动方向选择不同的元素
-                            if (targetTop < currentTop) {
-                                // 向上滚动，使用第一个子元素
-                                const firstChild = container.firstElementChild || container.firstChild;
-                                if (firstChild && firstChild.nodeType === 1) {
-                                    firstChild.scrollIntoView({ behavior: 'instant', block: 'start', __bypassLock: true });
-                                }
-                            } else {
-                                // 向下滚动，使用最后一个子元素
-                                const lastChild = container.lastElementChild || container.lastChild;
-                                if (lastChild && lastChild.nodeType === 1) {
-                                    lastChild.scrollIntoView({ behavior: 'instant', block: 'end', __bypassLock: true });
-                                }
+                            // 向上滚动，使用第一个子元素
+                            const firstChild = container.firstElementChild || container.firstChild;
+                            if (firstChild && firstChild.nodeType === 1) {
+                                firstChild.scrollIntoView({ behavior: 'instant', block: 'start', __bypassLock: true });
                             }
                         } catch (e) {
                             console.error('[ChatGPT Helper] scrollIntoView 失败:', e);
                         }
                         clearInterval(scrollInterval);
-                        setTimeout(() => delete container.__ghBypassLock, 100);
+                        setTimeout(() => {
+                            delete container.__ghBypassLock;
+                            delete window.__ghBypassLock;
+                        }, 100);
                     }
                 }, 10);
                 return;
@@ -2440,15 +2411,68 @@ if (!window.__MY_EXT__) {
             this.enabled = false;
             this.originalApis = null;
             this.observer = null;
+            this.autoScrollObserver = null; // 自动滚动观察器
             this.cleanupInterval = null;
             this.lastScrollTop = this.getCurrentScrollTop();
             this.listeningContainer = null;
+            
+            // 性能优化：缓存容器引用
+            this._cachedScrollContainer = null;
+            this._cachedResponseContainer = null;
+            this._cacheTimestamp = 0;
+            this._cacheTimeout = 2000; // 缓存2秒
+            
+            // 性能优化：防抖和节流
+            this._debounceTimer = null;
+            this._throttleTimer = null;
+            this._isUpdatingScroll = false; // 标志位：是否正在更新滚动位置
+            
+            // 性能优化：RAF 相关
+            this._rafId = null;
+            this._pendingScrollUpdate = false;
         }
 
         getScrollContainer() {
+            // 性能优化：使用缓存
+            const now = Date.now();
+            if (this._cachedScrollContainer && 
+                this._cachedScrollContainer.isConnected && 
+                (now - this._cacheTimestamp) < this._cacheTimeout) {
+                return this._cachedScrollContainer;
+            }
+            
             const container = this.siteAdapter?.getScrollContainer?.();
-            if (container && container.isConnected) return container;
-            return document.scrollingElement || document.documentElement || document.body;
+            const result = (container && container.isConnected) ? container : 
+                          (document.scrollingElement || document.documentElement || document.body);
+            
+            this._cachedScrollContainer = result;
+            this._cacheTimestamp = now;
+            return result;
+        }
+        
+        getResponseContainer() {
+            // 性能优化：使用缓存
+            const now = Date.now();
+            if (this._cachedResponseContainer && 
+                this._cachedResponseContainer.isConnected && 
+                (now - this._cacheTimestamp) < this._cacheTimeout) {
+                return this._cachedResponseContainer;
+            }
+            
+            const container = this.siteAdapter?.getResponseContainer?.() ||
+                            this.siteAdapter?.getScrollContainer?.();
+            
+            if (container && container.isConnected) {
+                this._cachedResponseContainer = container;
+                this._cacheTimestamp = now;
+            }
+            return container;
+        }
+        
+        clearCache() {
+            this._cachedScrollContainer = null;
+            this._cachedResponseContainer = null;
+            this._cacheTimestamp = 0;
         }
 
         getCurrentScrollTop() {
@@ -2458,7 +2482,8 @@ if (!window.__MY_EXT__) {
         }
 
         isMainScrollElement(element) {
-            const container = this.getScrollContainer();
+            // 性能优化：使用缓存的容器
+            const container = this._cachedScrollContainer || this.getScrollContainer();
             if (!container || !element) return false;
             if (element === container) return true;
             if (container === document.scrollingElement && (element === document.documentElement || element === document.body)) return true;
@@ -2476,17 +2501,33 @@ if (!window.__MY_EXT__) {
             const container = this.getScrollContainer();
             if (this.listeningContainer === container) return;
             if (this.listeningContainer) {
-                this.listeningContainer.removeEventListener('scroll', this.onScrollHandler);
+                try {
+                    this.listeningContainer.removeEventListener('scroll', this.onScrollHandler);
+                } catch (e) {
+                    // 忽略错误
+                }
             }
             if (container) {
-                container.addEventListener('scroll', this.onScrollHandler, { passive: true });
+                try {
+                    container.addEventListener('scroll', this.onScrollHandler, { passive: true });
+                } catch (e) {
+                    console.error('[ChatGPT Helper] 添加滚动监听器错误:', e);
+                }
             }
             this.listeningContainer = container;
             this.lastScrollTop = this.getCurrentScrollTop();
         }
 
         setEnabled(enabled) {
-            if (this.enabled === enabled) return;
+            console.log('[ChatGPT Helper] ScrollLockManager.setEnabled 调用:', {
+                当前状态: this.enabled,
+                新状态: enabled,
+                是否跳过: this.enabled === enabled
+            });
+            if (this.enabled === enabled) {
+                console.log('[ChatGPT Helper] 状态相同，跳过设置');
+                return;
+            }
             this.enabled = enabled;
 
             if (enabled) {
@@ -2494,116 +2535,249 @@ if (!window.__MY_EXT__) {
             } else {
                 this.disable();
             }
+            console.log('[ChatGPT Helper] ScrollLockManager.setEnabled 完成，当前状态:', this.enabled);
         }
 
         enable() {
             console.log('[ChatGPT Helper] Enabling Scroll Lock System');
+            this.clearCache(); // 清除缓存，重新获取容器
             this.lastScrollTop = this.getCurrentScrollTop();
             this.hijackApis();
             this.startObserver();
             this.startScrollListener();
+            // 停止自动滚动
+            this.stopAutoScroll();
         }
 
         disable() {
             console.log('[ChatGPT Helper] Disabling Scroll Lock System');
+            this.clearCache(); // 清除缓存
             this.restoreApis();
             this.stopObserver();
             this.stopScrollListener();
+            // 停止我们自己的自动滚动（如果正在运行）
+            this.stopAutoScroll();
+            // 注意：不需要启动我们自己的自动滚动，恢复 API 后 ChatGPT 原本的自动滚动会自动恢复工作
         }
 
         hijackApis() {
-            if (this.originalApis) return;
-
             const self = this;
-            this.originalApis = {
-                scrollIntoView: Element.prototype.scrollIntoView,
-                scrollTo: window.scrollTo,
-                scrollBy: window.scrollBy,
-                elementScrollTo: Element.prototype.scrollTo,
-                elementScrollBy: Element.prototype.scrollBy,
-                elementScroll: Element.prototype.scroll,
-                scrollTopDescriptor: Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop') || Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop'),
-            };
+            
+            // 如果 originalApis 存在，检查 API 是否已经被恢复
+            // 如果 API 已经被恢复（即 window.scrollTo === originalApis.scrollTo），则需要重新劫持
+            if (this.originalApis) {
+                // 检查 API 是否已经被恢复
+                const isRestored = window.scrollTo === this.originalApis.scrollTo;
+                if (!isRestored) {
+                    // API 仍然被劫持，不需要重新劫持
+                    console.log('[ChatGPT Helper] hijackApis: API 仍然被劫持，跳过重新劫持');
+                    return;
+                } else {
+                    // API 已经被恢复，需要重新劫持
+                    // 使用 originalApis 中保存的原始 API 来重新劫持
+                    console.log('[ChatGPT Helper] hijackApis: 检测到 API 已被恢复，使用原始 API 重新劫持');
+                    // 不需要重新保存 originalApis，直接使用现有的
+                }
+            } else {
+                // 第一次劫持，保存原始 API
+                this.originalApis = {
+                    scrollIntoView: Element.prototype.scrollIntoView,
+                    scrollTo: window.scrollTo,
+                    scrollBy: window.scrollBy,
+                    elementScrollTo: Element.prototype.scrollTo,
+                    elementScrollBy: Element.prototype.scrollBy,
+                    elementScroll: Element.prototype.scroll,
+                    scrollTopDescriptor: Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop') || Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop'),
+                };
+            }
 
             Element.prototype.scrollIntoView = function (options) {
-                const shouldBypass = self.shouldBypassLock(options, this);
-                if (self.enabled && self.shouldBlockScroll() && !shouldBypass) {
+                // 性能优化：快速检查
+                if (!self.enabled || self.shouldBypassLock(options, this)) {
+                    return self.originalApis.scrollIntoView.call(this, options);
+                }
+                if (self.shouldBlockScroll()) {
                     return;
                 }
                 return self.originalApis.scrollIntoView.call(this, options);
             };
 
             window.scrollTo = function (x, y) {
+                // 性能优化：快速检查
+                if (!self.enabled || self.shouldBypassLock(x, null)) {
+                    return self.originalApis.scrollTo.apply(this, arguments);
+                }
+                
                 let targetY = y;
-                let options = null;
                 if (typeof x === 'object' && x !== null) {
-                    options = x;
                     targetY = x.top;
                 }
-                const isWindowScroll = self.isMainScrollElement(document.scrollingElement);
-                if (self.enabled && self.shouldBlockScroll() && isWindowScroll && !self.shouldBypassLock(options, null) && typeof targetY === 'number' && targetY > window.scrollY + 50) {
-                    return;
+                
+                if (typeof targetY === 'number') {
+                    const isWindowScroll = self.isMainScrollElement(document.scrollingElement);
+                    if (isWindowScroll && self.shouldBlockScroll()) {
+                        const currentY = window.scrollY || 0;
+                        if (targetY > currentY + 50) {
+                            return;
+                        }
+                    }
                 }
+                
                 return self.originalApis.scrollTo.apply(this, arguments);
             };
 
             if (this.originalApis.scrollBy) {
                 window.scrollBy = function (x, y) {
+                    // 性能优化：快速检查
+                    if (!self.enabled || self.shouldBypassLock(x, null)) {
+                        return self.originalApis.scrollBy.apply(this, arguments);
+                    }
+                    
                     let deltaY = y;
-                    let options = null;
                     if (typeof x === 'object' && x !== null) {
-                        options = x;
                         deltaY = x.top;
                     }
-                    const isWindowScroll = self.isMainScrollElement(document.scrollingElement);
-                    if (self.enabled && self.shouldBlockScroll() && isWindowScroll && !self.shouldBypassLock(options, null) && typeof deltaY === 'number' && deltaY > 50) {
-                        return;
+                    
+                    if (typeof deltaY === 'number' && deltaY > 50) {
+                        const isWindowScroll = self.isMainScrollElement(document.scrollingElement);
+                        if (isWindowScroll && self.shouldBlockScroll()) {
+                            return;
+                        }
                     }
+                    
                     return self.originalApis.scrollBy.apply(this, arguments);
                 };
             }
 
             if (this.originalApis.elementScrollTo) {
                 Element.prototype.scrollTo = function (x, y) {
+                    // 性能优化：快速检查
+                    if (!self.enabled || self.shouldBypassLock(x, this)) {
+                        return self.originalApis.elementScrollTo.apply(this, arguments);
+                    }
+                    
+                    if (!self.isMainScrollElement(this) || !self.shouldBlockScroll()) {
+                        return self.originalApis.elementScrollTo.apply(this, arguments);
+                    }
+                    
                     let targetY = y;
-                    let options = null;
                     if (typeof x === 'object' && x !== null) {
-                        options = x;
                         targetY = x.top;
                     }
-                    if (self.enabled && self.shouldBlockScroll() && self.isMainScrollElement(this) && !self.shouldBypassLock(options, this) && typeof targetY === 'number' && targetY > this.scrollTop + 50) {
-                        return;
+                    
+                    if (typeof targetY === 'number') {
+                        const currentScrollTop = this.scrollTop || 0;
+                        
+                        // 检查是否在底部
+                        const isAtBottom = this.scrollHeight && this.clientHeight ?
+                            (this.scrollHeight - currentScrollTop - this.clientHeight <= 50) : false;
+                        
+                        // 如果页面在底部且用户尝试向上滚动，允许滚动
+                        if (isAtBottom && targetY < currentScrollTop) {
+                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
+                            self.lastScrollTop = targetY;
+                            return self.originalApis.elementScrollTo.apply(this, arguments);
+                        }
+                        
+                        // 只阻止向下滚动，允许向上滚动
+                        if (targetY > currentScrollTop + 50) {
+                            // 向下滚动超过50px，阻止
+                            return;
+                        }
+                        // 向上滚动或小幅向下滚动，允许并更新 lastScrollTop
+                        if (targetY < currentScrollTop) {
+                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
+                            self.lastScrollTop = targetY;
+                        }
                     }
+                    
                     return self.originalApis.elementScrollTo.apply(this, arguments);
                 };
             }
 
             if (this.originalApis.elementScroll) {
                 Element.prototype.scroll = function (x, y) {
+                    // 性能优化：快速检查
+                    if (!self.enabled || self.shouldBypassLock(x, this)) {
+                        return self.originalApis.elementScroll.apply(this, arguments);
+                    }
+                    
+                    if (!self.isMainScrollElement(this) || !self.shouldBlockScroll()) {
+                        return self.originalApis.elementScroll.apply(this, arguments);
+                    }
+                    
                     let targetY = y;
-                    let options = null;
                     if (typeof x === 'object' && x !== null) {
-                        options = x;
                         targetY = x.top;
                     }
-                    if (self.enabled && self.shouldBlockScroll() && self.isMainScrollElement(this) && !self.shouldBypassLock(options, this) && typeof targetY === 'number' && targetY > this.scrollTop + 50) {
-                        return;
+                    
+                    if (typeof targetY === 'number') {
+                        const currentScrollTop = this.scrollTop || 0;
+                        
+                        // 检查是否在底部
+                        const isAtBottom = this.scrollHeight && this.clientHeight ?
+                            (this.scrollHeight - currentScrollTop - this.clientHeight <= 50) : false;
+                        
+                        // 如果页面在底部且用户尝试向上滚动，允许滚动
+                        if (isAtBottom && targetY < currentScrollTop) {
+                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
+                            self.lastScrollTop = targetY;
+                            return self.originalApis.elementScroll.apply(this, arguments);
+                        }
+                        
+                        // 只阻止向下滚动，允许向上滚动
+                        if (targetY > currentScrollTop + 50) {
+                            // 向下滚动超过50px，阻止
+                            return;
+                        }
+                        // 向上滚动或小幅向下滚动，允许并更新 lastScrollTop
+                        if (targetY < currentScrollTop) {
+                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
+                            self.lastScrollTop = targetY;
+                        }
                     }
+                    
                     return self.originalApis.elementScroll.apply(this, arguments);
                 };
             }
 
             if (this.originalApis.elementScrollBy) {
                 Element.prototype.scrollBy = function (x, y) {
+                    // 性能优化：快速检查
+                    if (!self.enabled || self.shouldBypassLock(x, this)) {
+                        return self.originalApis.elementScrollBy.apply(this, arguments);
+                    }
+                    
+                    if (!self.isMainScrollElement(this) || !self.shouldBlockScroll()) {
+                        return self.originalApis.elementScrollBy.apply(this, arguments);
+                    }
+                    
                     let deltaY = y;
-                    let options = null;
                     if (typeof x === 'object' && x !== null) {
-                        options = x;
                         deltaY = x.top;
                     }
-                    if (self.enabled && self.shouldBlockScroll() && self.isMainScrollElement(this) && !self.shouldBypassLock(options, this) && typeof deltaY === 'number' && deltaY > 50) {
-                        return;
+                    
+                    if (typeof deltaY === 'number') {
+                        const currentScrollTop = this.scrollTop || 0;
+                        
+                        // 检查是否在底部
+                        const isAtBottom = this.scrollHeight && this.clientHeight ?
+                            (this.scrollHeight - currentScrollTop - this.clientHeight <= 50) : false;
+                        
+                        // 如果页面在底部且用户尝试向上滚动（deltaY < 0），允许滚动
+                        if (isAtBottom && deltaY < 0) {
+                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
+                            const targetY = currentScrollTop + deltaY;
+                            self.lastScrollTop = Math.max(0, targetY);
+                            return self.originalApis.elementScrollBy.apply(this, arguments);
+                        }
+                        
+                        // 只阻止向下滚动超过50px
+                        if (deltaY > 50) {
+                            return;
+                        }
                     }
+                    
                     return self.originalApis.elementScrollBy.apply(this, arguments);
                 };
             }
@@ -2614,9 +2788,60 @@ if (!window.__MY_EXT__) {
                         return self.originalApis.scrollTopDescriptor.get ? self.originalApis.scrollTopDescriptor.get.call(this) : 0;
                     },
                     set: function (value) {
-                        if (self.enabled && self.shouldBlockScroll() && self.isMainScrollElement(this) && !self.shouldBypassLock(null, this) && value > this.scrollTop + 50) {
+                        // 性能优化：如果正在更新滚动位置（由我们自己触发），则绕过检查
+                        if (self._isUpdatingScroll) {
+                            if (self.originalApis.scrollTopDescriptor.set) {
+                                self.originalApis.scrollTopDescriptor.set.call(this, value);
+                            }
                             return;
                         }
+                        
+                        // 性能优化：快速检查，避免不必要的计算
+                        if (!self.enabled || !self.shouldBlockScroll()) {
+                            if (self.originalApis.scrollTopDescriptor.set) {
+                                self.originalApis.scrollTopDescriptor.set.call(this, value);
+                            }
+                            return;
+                        }
+                        
+                        // 性能优化：使用缓存的容器引用
+                        if (!self.isMainScrollElement(this) || self.shouldBypassLock(null, this)) {
+                            if (self.originalApis.scrollTopDescriptor.set) {
+                                self.originalApis.scrollTopDescriptor.set.call(this, value);
+                            }
+                            return;
+                        }
+                        
+                        const currentScrollTop = self.originalApis.scrollTopDescriptor.get ? 
+                            self.originalApis.scrollTopDescriptor.get.call(this) : this.scrollTop;
+                        
+                        // 检查是否在底部
+                        const container = this;
+                        const isAtBottom = container && container.scrollHeight && container.clientHeight ?
+                            (container.scrollHeight - container.scrollTop - container.clientHeight <= 50) : false;
+                        
+                        // 如果页面在底部且用户尝试向上滚动，允许滚动
+                        if (isAtBottom && typeof value === 'number' && value < currentScrollTop) {
+                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
+                            self.lastScrollTop = value;
+                            if (self.originalApis.scrollTopDescriptor.set) {
+                                self.originalApis.scrollTopDescriptor.set.call(this, value);
+                            }
+                            return;
+                        }
+                        
+                        // 只阻止向下滚动，允许向上滚动
+                        // 如果用户向上滚动（value < currentScrollTop），允许
+                        if (typeof value === 'number' && value > currentScrollTop + 50) {
+                            // 向下滚动超过50px，阻止
+                            return;
+                        }
+                        // 向上滚动或小幅向下滚动，允许并更新 lastScrollTop
+                        if (typeof value === 'number' && value < currentScrollTop) {
+                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
+                            self.lastScrollTop = value;
+                        }
+                        
                         if (self.originalApis.scrollTopDescriptor.set) {
                             self.originalApis.scrollTopDescriptor.set.call(this, value);
                         }
@@ -2627,20 +2852,107 @@ if (!window.__MY_EXT__) {
         }
 
         restoreApis() {
-            if (!this.originalApis) return;
-
-            Element.prototype.scrollIntoView = this.originalApis.scrollIntoView;
-            window.scrollTo = this.originalApis.scrollTo;
-            if (this.originalApis.scrollBy) window.scrollBy = this.originalApis.scrollBy;
-            if (this.originalApis.elementScrollTo) Element.prototype.scrollTo = this.originalApis.elementScrollTo;
-            if (this.originalApis.elementScrollBy) Element.prototype.scrollBy = this.originalApis.elementScrollBy;
-            if (this.originalApis.elementScroll) Element.prototype.scroll = this.originalApis.elementScroll;
-
-            if (this.originalApis.scrollTopDescriptor) {
-                Object.defineProperty(Element.prototype, 'scrollTop', this.originalApis.scrollTopDescriptor);
+            if (!this.originalApis) {
+                console.log('[ChatGPT Helper] restoreApis: originalApis 不存在，跳过恢复');
+                return;
             }
 
-            this.originalApis = null;
+            console.log('[ChatGPT Helper] restoreApis: 开始恢复原始 API');
+
+            // 恢复所有被劫持的 API
+            try {
+                Element.prototype.scrollIntoView = this.originalApis.scrollIntoView;
+                console.log('[ChatGPT Helper] restoreApis: 已恢复 scrollIntoView');
+            } catch (e) {
+                console.error('[ChatGPT Helper] restoreApis: 恢复 scrollIntoView 失败', e);
+            }
+
+            try {
+                window.scrollTo = this.originalApis.scrollTo;
+                console.log('[ChatGPT Helper] restoreApis: 已恢复 window.scrollTo');
+            } catch (e) {
+                console.error('[ChatGPT Helper] restoreApis: 恢复 window.scrollTo 失败', e);
+            }
+
+            if (this.originalApis.scrollBy) {
+                try {
+                    window.scrollBy = this.originalApis.scrollBy;
+                    console.log('[ChatGPT Helper] restoreApis: 已恢复 window.scrollBy');
+                } catch (e) {
+                    console.error('[ChatGPT Helper] restoreApis: 恢复 window.scrollBy 失败', e);
+                }
+            }
+
+            if (this.originalApis.elementScrollTo) {
+                try {
+                    Element.prototype.scrollTo = this.originalApis.elementScrollTo;
+                    console.log('[ChatGPT Helper] restoreApis: 已恢复 Element.prototype.scrollTo');
+                } catch (e) {
+                    console.error('[ChatGPT Helper] restoreApis: 恢复 Element.prototype.scrollTo 失败', e);
+                }
+            }
+
+            if (this.originalApis.elementScrollBy) {
+                try {
+                    Element.prototype.scrollBy = this.originalApis.elementScrollBy;
+                    console.log('[ChatGPT Helper] restoreApis: 已恢复 Element.prototype.scrollBy');
+                } catch (e) {
+                    console.error('[ChatGPT Helper] restoreApis: 恢复 Element.prototype.scrollBy 失败', e);
+                }
+            }
+
+            if (this.originalApis.elementScroll) {
+                try {
+                    Element.prototype.scroll = this.originalApis.elementScroll;
+                    console.log('[ChatGPT Helper] restoreApis: 已恢复 Element.prototype.scroll');
+                } catch (e) {
+                    console.error('[ChatGPT Helper] restoreApis: 恢复 Element.prototype.scroll 失败', e);
+                }
+            }
+
+            // 恢复 scrollTop descriptor
+            if (this.originalApis.scrollTopDescriptor) {
+                try {
+                    Object.defineProperty(Element.prototype, 'scrollTop', this.originalApis.scrollTopDescriptor);
+                    console.log('[ChatGPT Helper] restoreApis: 已恢复 scrollTop descriptor');
+                } catch (e) {
+                    console.error('[ChatGPT Helper] restoreApis: 恢复 scrollTop descriptor 失败', e);
+                    // 如果恢复失败，尝试删除自定义的 descriptor
+                    try {
+                        delete Element.prototype.scrollTop;
+                        console.log('[ChatGPT Helper] restoreApis: 已删除自定义的 scrollTop descriptor');
+                    } catch (e2) {
+                        console.error('[ChatGPT Helper] restoreApis: 删除自定义 scrollTop descriptor 失败', e2);
+                    }
+                }
+            } else {
+                console.log('[ChatGPT Helper] restoreApis: scrollTopDescriptor 不存在，跳过恢复');
+            }
+
+            // 关键修复：不要将 originalApis 设置为 null，而是保留它
+            // 这样，如果之后再次启用滚动锁定，hijackApis() 可以重新劫持
+            // 但是，我们需要标记 API 已经被恢复，以便 hijackApis() 知道需要重新劫持
+            this._apisRestored = true;
+            
+            // 验证恢复是否成功
+            const verifyRestored = () => {
+                if (!this.originalApis) return;
+                const checks = {
+                    scrollIntoView: Element.prototype.scrollIntoView === this.originalApis.scrollIntoView,
+                    windowScrollTo: window.scrollTo === this.originalApis.scrollTo,
+                    elementScrollTo: Element.prototype.scrollTo === this.originalApis.elementScrollTo,
+                };
+                const allRestored = Object.values(checks).every(v => v);
+                console.log('[ChatGPT Helper] restoreApis: API 恢复验证', checks, {全部恢复: allRestored});
+                return allRestored;
+            };
+            
+            // 延迟验证，确保所有恢复操作都已完成
+            setTimeout(() => {
+                verifyRestored();
+            }, 0);
+            
+            console.log('[ChatGPT Helper] restoreApis: 所有 API 恢复完成（保留 originalApis 以便重新劫持）');
         }
 
         shouldBlockScroll() {
@@ -2650,7 +2962,13 @@ if (!window.__MY_EXT__) {
         startScrollListener() {
             const onScroll = () => {
                 if (this.enabled) {
-                    this.lastScrollTop = this.getCurrentScrollTop();
+                    const currentScrollTop = this.getCurrentScrollTop();
+                    // 如果用户向上滚动，立即更新 lastScrollTop 以允许滚动
+                    // 如果用户向下滚动，只有在滚动锁定生效时才更新（由 _checkAndFixScroll 处理）
+                    if (currentScrollTop < this.lastScrollTop) {
+                        // 用户向上滚动，立即更新以允许
+                        this.lastScrollTop = currentScrollTop;
+                    }
                 }
             };
             this.onScrollHandlerOptions = { passive: true, capture: true };
@@ -2672,58 +2990,137 @@ if (!window.__MY_EXT__) {
         }
 
         startObserver() {
-            this.observer = new MutationObserver((mutations) => {
+            // 性能优化：使用防抖，避免频繁触发
+            const handleMutations = (mutations) => {
                 if (!this.enabled) return;
 
-                let hasNewContent = false;
-                const responseContainer = this.siteAdapter?.getResponseContainer?.() ||
-                    this.siteAdapter?.getScrollContainer?.();
+                // 性能优化：快速检查是否有相关变化
+                let hasRelevantChange = false;
+                const responseContainer = this.getResponseContainer();
                 if (!responseContainer) return;
 
-                mutations.forEach((mutation) => {
+                // 性能优化：只检查前几个 mutation，避免遍历所有
+                for (let i = 0; i < Math.min(mutations.length, 10); i++) {
+                    const mutation = mutations[i];
                     if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                        for (const node of mutation.addedNodes) {
+                        for (let j = 0; j < Math.min(mutation.addedNodes.length, 5); j++) {
+                            const node = mutation.addedNodes[j];
                             if (node.nodeType === 1) {
-                                // 检查是否是消息节点
-                                if (responseContainer.contains(node) ||
-                                    node.querySelector && responseContainer.querySelector &&
-                                    responseContainer.querySelector('[data-message-id]')) {
-                                    hasNewContent = true;
-                                    break;
+                                // 性能优化：快速检查，避免复杂的 DOM 查询
+                                try {
+                                    if (responseContainer.contains(node)) {
+                                        hasRelevantChange = true;
+                                        break;
+                                    }
+                                } catch (e) {
+                                    // 忽略错误，继续处理
                                 }
                             }
                         }
-                    }
-                });
-
-                if (hasNewContent) {
-                    const container = this.getScrollContainer();
-                    if (!container) return;
-                    const currentScroll = container.scrollTop;
-                    if (currentScroll > this.lastScrollTop + 100) {
-                        container.scrollTop = this.lastScrollTop;
+                        if (hasRelevantChange) break;
                     }
                 }
-            });
 
-            this.observer.observe(document.body, {
+                if (hasRelevantChange) {
+                    // 性能优化：使用防抖，避免频繁更新
+                    if (this._debounceTimer) {
+                        clearTimeout(this._debounceTimer);
+                    }
+                    this._debounceTimer = setTimeout(() => {
+                        this._updateScrollPosition();
+                    }, 50); // 50ms 防抖
+                }
+            };
+
+            this.observer = new MutationObserver(handleMutations);
+
+            // 性能优化：缩小监听范围，只监听响应容器而不是整个 document.body
+            const responseContainer = this.getResponseContainer();
+            const observeTarget = responseContainer || document.body;
+            
+            // 性能优化：如果容器存在，只监听容器，否则监听 body
+            this.observer.observe(observeTarget, {
                 childList: true,
-                subtree: true,
+                subtree: responseContainer ? true : false, // 如果监听容器，使用 subtree；如果监听 body，不使用 subtree
             });
 
-            this.cleanupInterval = setInterval(() => {
-                if (this.enabled) {
-                    this.refreshContainerListener();
-                    const container = this.getScrollContainer();
-                    if (!container) return;
-                    const current = container.scrollTop;
-                    if (current > this.lastScrollTop + 200) {
-                        container.scrollTop = this.lastScrollTop;
-                    } else {
-                        this.lastScrollTop = current;
-                    }
+            // 性能优化：使用 requestAnimationFrame 替代 setInterval，并增加间隔
+            const cleanup = () => {
+                if (!this.enabled) {
+                    this._rafId = null;
+                    return;
                 }
-            }, 500);
+                
+                this._rafId = requestAnimationFrame(() => {
+                    if (this.enabled) {
+                        this.refreshContainerListener();
+                        this._checkAndFixScroll();
+                    }
+                    // 性能优化：每 2 秒执行一次清理（约 120 帧）
+                    setTimeout(cleanup, 2000);
+                });
+            };
+            
+            // 延迟启动，避免立即执行
+            setTimeout(cleanup, 2000);
+        }
+        
+        _updateScrollPosition() {
+            if (this._isUpdatingScroll) return;
+            
+            const container = this.getScrollContainer();
+            if (!container) return;
+            
+            try {
+                const currentScroll = container.scrollTop;
+                // 只阻止向下滚动，允许向上滚动
+                // 如果用户向上滚动（currentScroll < lastScrollTop），更新 lastScrollTop 而不是重置
+                if (currentScroll < this.lastScrollTop) {
+                    // 用户向上滚动，更新 lastScrollTop 以允许滚动
+                    this.lastScrollTop = currentScroll;
+                } else if (currentScroll > this.lastScrollTop + 100) {
+                    // 只阻止向下滚动超过100px
+                    // 性能优化：使用标志位绕过 setter 检查
+                    this._isUpdatingScroll = true;
+                    container.scrollTop = this.lastScrollTop;
+                    this._isUpdatingScroll = false;
+                } else {
+                    // 小幅向下滚动（<=100px），更新 lastScrollTop
+                    this.lastScrollTop = currentScroll;
+                }
+            } catch (e) {
+                this._isUpdatingScroll = false;
+                console.error('[ChatGPT Helper] 更新滚动位置错误:', e);
+            }
+        }
+        
+        _checkAndFixScroll() {
+            if (this._isUpdatingScroll) return;
+            
+            const container = this.getScrollContainer();
+            if (!container) return;
+            
+            try {
+                const current = container.scrollTop;
+                // 只阻止向下滚动，允许向上滚动
+                // 如果用户向上滚动（current < lastScrollTop），更新 lastScrollTop 而不是重置
+                if (current < this.lastScrollTop) {
+                    // 用户向上滚动，更新 lastScrollTop 以允许滚动
+                    this.lastScrollTop = current;
+                } else if (current > this.lastScrollTop + 200) {
+                    // 只阻止向下滚动超过200px
+                    // 性能优化：使用标志位绕过 setter 检查
+                    this._isUpdatingScroll = true;
+                    container.scrollTop = this.lastScrollTop;
+                    this._isUpdatingScroll = false;
+                } else {
+                    // 小幅向下滚动（<=200px），更新 lastScrollTop
+                    this.lastScrollTop = current;
+                }
+            } catch (e) {
+                this._isUpdatingScroll = false;
+                console.error('[ChatGPT Helper] 检查滚动位置错误:', e);
+            }
         }
 
         stopObserver() {
@@ -2734,6 +3131,130 @@ if (!window.__MY_EXT__) {
             if (this.cleanupInterval) {
                 clearInterval(this.cleanupInterval);
                 this.cleanupInterval = null;
+            }
+            if (this._rafId) {
+                cancelAnimationFrame(this._rafId);
+                this._rafId = null;
+            }
+            if (this._debounceTimer) {
+                clearTimeout(this._debounceTimer);
+                this._debounceTimer = null;
+            }
+            if (this._throttleTimer) {
+                clearTimeout(this._throttleTimer);
+                this._throttleTimer = null;
+            }
+            this._isUpdatingScroll = false;
+            this._pendingScrollUpdate = false;
+        }
+
+        startAutoScroll() {
+            // 如果已经启用，先停止
+            if (this.autoScrollObserver) {
+                this.stopAutoScroll();
+            }
+
+            // 如果启用了防止自动滚动，不启动自动滚动
+            if (this.enabled) {
+                console.log('[ChatGPT Helper] 防止自动滚动已启用，不启动自动滚动');
+                return;
+            }
+
+            // 性能优化：使用防抖和节流
+            let autoScrollDebounceTimer = null;
+            let lastAutoScrollTime = 0;
+            const AUTO_SCROLL_THROTTLE = 200; // 节流：200ms 内最多执行一次
+
+            // 监听内容变化，自动滚动到底部
+            this.autoScrollObserver = new MutationObserver((mutations) => {
+                // 如果启用了防止自动滚动，则不执行（双重检查，确保状态正确）
+                if (this.enabled) return;
+
+                // 性能优化：节流检查
+                const now = Date.now();
+                if (now - lastAutoScrollTime < AUTO_SCROLL_THROTTLE) {
+                    return;
+                }
+
+                // 性能优化：使用缓存的容器
+                const responseContainer = this.getResponseContainer();
+                if (!responseContainer) return;
+
+                // 性能优化：快速检查是否有相关变化
+                let hasNewContent = false;
+                for (let i = 0; i < Math.min(mutations.length, 10); i++) {
+                    const mutation = mutations[i];
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        for (let j = 0; j < Math.min(mutation.addedNodes.length, 5); j++) {
+                            const node = mutation.addedNodes[j];
+                            if (node.nodeType === 1) {
+                                try {
+                                    if (responseContainer.contains(node)) {
+                                        hasNewContent = true;
+                                        break;
+                                    }
+                                } catch (e) {
+                                    // 忽略错误
+                                }
+                            }
+                        }
+                        if (hasNewContent) break;
+                    }
+                }
+
+                if (hasNewContent) {
+                    // 性能优化：使用防抖
+                    if (autoScrollDebounceTimer) {
+                        clearTimeout(autoScrollDebounceTimer);
+                    }
+                    
+                    autoScrollDebounceTimer = setTimeout(() => {
+                        // 检查是否正在生成（ChatGPT正在回答）
+                        const isGenerating = this.siteAdapter?.isGenerating?.();
+                        if (isGenerating) {
+                            const container = this.getScrollContainer();
+                            if (!container) return;
+                            
+                            // 检查是否接近底部（在底部100px内），如果是则自动滚动到底部
+                            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight <= 100;
+                            if (isNearBottom) {
+                                const targetTop = Math.max(0, container.scrollHeight - container.clientHeight);
+                                // 性能优化：使用 bypass 标志，避免触发滚动锁定
+                                try {
+                                    container.scrollTo({ 
+                                        top: targetTop, 
+                                        behavior: 'smooth',
+                                        __bypassLock: true 
+                                    });
+                                } catch (e) {
+                                    // 如果 scrollTo 不支持 options，使用直接设置
+                                    if (container.scrollTop !== undefined) {
+                                        container.__ghBypassLock = true;
+                                        container.scrollTop = targetTop;
+                                        delete container.__ghBypassLock;
+                                    }
+                                }
+                                lastAutoScrollTime = Date.now();
+                            }
+                        }
+                    }, 100);
+                }
+            });
+
+            // 性能优化：缩小监听范围
+            const responseContainer = this.getResponseContainer();
+            const observeTarget = responseContainer || document.body;
+            
+            this.autoScrollObserver.observe(observeTarget, {
+                childList: true,
+                subtree: responseContainer ? true : false,
+            });
+        }
+
+        stopAutoScroll() {
+            if (this.autoScrollObserver) {
+                this.autoScrollObserver.disconnect();
+                this.autoScrollObserver = null;
             }
         }
     }
@@ -4597,6 +5118,15 @@ if (!window.__MY_EXT__) {
             }
         }
 
+        restartInterval() {
+            // 重启定时器以应用新的间隔设置
+            if (this.isRunning && this.intervalId) {
+                clearInterval(this.intervalId);
+                const intervalMs = (this.settings.tabSettings?.renameInterval || 3) * 1000;
+                this.intervalId = setInterval(() => this.updateTabName(), intervalMs);
+            }
+        }
+
         startGenerationObserver() {
             if (this.generationObserver) return;
 
@@ -4630,12 +5160,8 @@ if (!window.__MY_EXT__) {
             const wasGenerating = this.aiState === 'generating';
             this.aiState = 'completed';
 
-            // 检查是否应当发送通知
-            const tabSettings = this.settings.tabSettings || {};
-            const notifyWhenFocused = tabSettings.notifyWhenFocused;
-            const shouldNotify = wasGenerating && !this.userSawCompletion && (document.hidden || notifyWhenFocused);
-
-            if (shouldNotify) {
+            // 如果正在生成，则发送完成通知（声音和自动聚焦）
+            if (wasGenerating) {
                 this.sendCompletionNotification();
             }
 
@@ -4646,18 +5172,6 @@ if (!window.__MY_EXT__) {
         sendCompletionNotification() {
             const tabSettings = this.settings.tabSettings || {};
 
-            // 桌面通知
-            if (tabSettings.showNotification && typeof GM_notification !== 'undefined') {
-                window.GM_notification({
-                    title: 'ChatGPT 回复完成',
-                    text: this.lastSessionName || '新消息',
-                    timeout: 5000,
-                    highlight: true,
-                    silent: true,
-                    onclick: () => window.focus()
-                });
-            }
-
             // 通知声音
             if (tabSettings.notificationSound) {
                 this.playNotificationSound(tabSettings.notificationVolume || 0.5);
@@ -4665,7 +5179,33 @@ if (!window.__MY_EXT__) {
 
             // 自动聚焦
             if (tabSettings.autoFocus) {
-                window.focus();
+                // 使用多种方法尝试聚焦窗口，提高成功率
+                try {
+                    // 方法1: 直接聚焦
+                    if (window.focus) {
+                        window.focus();
+                    }
+                    // 方法2: 延迟聚焦（有时需要延迟才能生效）
+                    setTimeout(() => {
+                        try {
+                            if (window.focus) {
+                                window.focus();
+                            }
+                        } catch (e) {
+                            // 忽略错误
+                        }
+                    }, 100);
+                    // 方法3: 通过顶层窗口聚焦
+                    if (window.top && window.top !== window && window.top.focus) {
+                        try {
+                            window.top.focus();
+                        } catch (e) {
+                            // 忽略跨域错误
+                        }
+                    }
+                } catch (e) {
+                    // 忽略错误
+                }
             }
         }
 
@@ -5195,52 +5735,125 @@ if (!window.__MY_EXT__) {
     // ==================== ChatGPT 助手核心类 ====================
     class ChatGPTHelper {
         constructor() {
-            this.adapter = new ChatGPTAdapter();
-            this.prompts = this.loadPrompts();
-            this.settings = this.loadSettings();
-            this.isCollapsed = !this.settings.defaultPanelState;
-            this.currentTab = this.settings.tabOrder && this.settings.tabOrder.length > 0
-                ? this.settings.tabOrder[0]
-                : 'prompts';
-            this.selectedCategory = t('allCategory');
-            this.searchQuery = '';
-            this.selectedPrompt = null;
-            this.savedAnchorTop = null; // 手动锚点位置
-            this.hasAnchor = false; // 是否有阅读锚点
-            this.panel = null;
-            this.lang = detectLanguage();
-            this.t = t; // 翻译函数
+            try {
+                try {
+                    this.adapter = new ChatGPTAdapter();
+                } catch (e) {
+                    console.error('[ChatGPT Helper] ChatGPTAdapter 创建错误:', e);
+                    throw e; // 如果 adapter 创建失败，无法继续
+                }
+                
+                try {
+                    this.prompts = this.loadPrompts();
+                } catch (e) {
+                    console.error('[ChatGPT Helper] loadPrompts 错误:', e);
+                    this.prompts = DEFAULT_PROMPTS; // 使用默认值
+                }
+                
+                try {
+                    this.settings = this.loadSettings();
+                } catch (e) {
+                    console.error('[ChatGPT Helper] loadSettings 错误:', e);
+                    this.settings = DEFAULT_SETTINGS; // 使用默认值
+                }
+                
+                this.isCollapsed = !this.settings.defaultPanelState;
+                this.currentTab = this.settings.tabOrder && this.settings.tabOrder.length > 0
+                    ? this.settings.tabOrder[0]
+                    : 'prompts';
+                this.selectedCategory = t('allCategory');
+                this.searchQuery = '';
+                this.selectedPrompt = null;
+                this.savedAnchorTop = null; // 手动锚点位置
+                this.hasAnchor = false; // 是否有阅读锚点
+                this.panel = null;
+                this.lang = detectLanguage();
+                this.t = t; // 翻译函数
 
-            // 阶段1：初始化管理器
-            this.scrollManager = new ScrollManager(this.adapter);
-            this.historyLoader = new HistoryLoader(this.scrollManager, (msg) => this.showToast(msg));
-            this.anchorManager = new AnchorManager(this.scrollManager, (msg) => this.showToast(msg));
-            this.readingProgressManager = new ReadingProgressManager(
-                this.settings,
-                this.scrollManager,
-                this.adapter,
-                (msg) => this.showToast(msg)
-            );
+                // 阶段1：初始化管理器
+                try {
+                    this.scrollManager = new ScrollManager(this.adapter);
+                } catch (e) {
+                    console.error('[ChatGPT Helper] ScrollManager 创建错误:', e);
+                    throw e; // 关键组件，失败则无法继续
+                }
+                
+                try {
+                    this.historyLoader = new HistoryLoader(this.scrollManager, (msg) => this.showToast(msg));
+                } catch (e) {
+                    console.error('[ChatGPT Helper] HistoryLoader 创建错误:', e);
+                    this.historyLoader = null; // 非关键组件，允许为 null
+                }
+                
+                try {
+                    this.anchorManager = new AnchorManager(this.scrollManager, (msg) => this.showToast(msg));
+                } catch (e) {
+                    console.error('[ChatGPT Helper] AnchorManager 创建错误:', e);
+                    this.anchorManager = null; // 非关键组件，允许为 null
+                }
+                
+                try {
+                    this.readingProgressManager = new ReadingProgressManager(
+                        this.settings,
+                        this.scrollManager,
+                        this.adapter,
+                        (msg) => this.showToast(msg)
+                    );
+                } catch (e) {
+                    console.error('[ChatGPT Helper] ReadingProgressManager 创建错误:', e);
+                    this.readingProgressManager = null; // 非关键组件，允许为 null
+                }
 
-            // 绑定锚点UI更新回调
-            this.anchorManager.bindUI((hasAnchor) => {
-                this.hasAnchor = hasAnchor;
-                this.updateAnchorButton();
-            });
+                // 绑定锚点UI更新回调
+                try {
+                    if (this.anchorManager) {
+                        this.anchorManager.bindUI((hasAnchor) => {
+                            this.hasAnchor = hasAnchor;
+                            if (this.updateAnchorButton) {
+                                this.updateAnchorButton();
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('[ChatGPT Helper] 绑定锚点UI回调错误:', e);
+                }
 
-            // 阶段2：初始化大纲管理器
-            this.outlineManager = null; // 延迟初始化，在renderOutline时创建
+                // 阶段2：初始化大纲管理器
+                this.outlineManager = null; // 延迟初始化，在renderOutline时创建
 
-            // 阶段3：初始化复制管理器
-            this.copyManager = new CopyManager(this.settings, (msg) => this.showToast(msg));
+                // 阶段3：初始化复制管理器
+                try {
+                    this.copyManager = new CopyManager(this.settings, (msg) => this.showToast(msg));
+                } catch (e) {
+                    console.error('[ChatGPT Helper] CopyManager 创建错误:', e);
+                    this.copyManager = null; // 非关键组件，允许为 null
+                }
 
-            // 阶段4：初始化标签页管理器
-            this.tabRenameManager = new TabRenameManager(this.adapter, this.settings, (msg) => this.showToast(msg));
+                // 阶段4：初始化标签页管理器
+                try {
+                    this.tabRenameManager = new TabRenameManager(this.adapter, this.settings, (msg) => this.showToast(msg));
+                } catch (e) {
+                    console.error('[ChatGPT Helper] TabRenameManager 创建错误:', e);
+                    this.tabRenameManager = null; // 非关键组件，允许为 null
+                }
 
-            // 初始化主题监听器
-            this.themeObserver = null;
+                // 初始化主题监听器
+                this.themeObserver = null;
 
-            this.init();
+                try {
+                    this.init();
+                } catch (e) {
+                    console.error('[ChatGPT Helper] init 调用错误:', e);
+                    console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
+                }
+            } catch (e) {
+                console.error('[ChatGPT Helper] 构造函数严重错误:', e);
+                console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
+                // 即使出错，也尝试设置基本属性，避免后续代码报错
+                this.panel = null;
+                this.adapter = null;
+                throw e; // 重新抛出，让调用者知道初始化失败
+            }
         }
 
         loadPrompts() {
@@ -5268,98 +5881,236 @@ if (!window.__MY_EXT__) {
             window.GM_setValue(SETTING_KEYS.SETTINGS, this.settings);
         }
 
+        async requestNotificationPermission() {
+            // 如果使用 GM_notification，不需要权限
+            if (typeof window.GM_notification !== 'undefined') {
+                return true;
+            }
+            
+            // 使用浏览器原生 Notification API
+            if (typeof Notification === 'undefined') {
+                console.warn('[ChatGPT Helper] Notification API 不可用');
+                return false;
+            }
+
+            if (Notification.permission === 'granted') {
+                return true;
+            }
+
+            if (Notification.permission === 'denied') {
+                this.showToast('通知权限已被拒绝，请在浏览器设置中允许通知');
+                return false;
+            }
+
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    this.showToast('通知权限已授予');
+                    return true;
+                } else {
+                    this.showToast('通知权限被拒绝');
+                    return false;
+                }
+            } catch (err) {
+                console.error('[ChatGPT Helper] 请求通知权限失败:', err);
+                this.showToast('请求通知权限失败');
+                return false;
+            }
+        }
+
         init() {
             try {
                 console.log('[ChatGPT Helper] 开始初始化...');
-                this.createStyles();
-                this.createLayout();
+                try {
+                    this.createStyles();
+                } catch (e) {
+                    console.error('[ChatGPT Helper] createStyles 错误:', e);
+                }
+                
+                try {
+                    this.createLayout();
+                } catch (e) {
+                    console.error('[ChatGPT Helper] createLayout 错误:', e);
+                }
 
                 // 确保面板创建后再创建 UI
                 setTimeout(() => {
-                    if (this.panel) {
-                        this.createUI();
-                        this.createCollapsedButtons();
-                        this.bindEvents();
+                    try {
+                        if (this.panel) {
+                            try {
+                                this.createUI();
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] createUI 错误:', e);
+                            }
+                            
+                            try {
+                                this.createCollapsedButtons();
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] createCollapsedButtons 错误:', e);
+                            }
+                            
+                            try {
+                                this.bindEvents();
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] bindEvents 错误:', e);
+                            }
 
-                        // 启动主题监听
-                        this.monitorTheme();
+                            // 启动主题监听
+                            try {
+                                this.monitorTheme();
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] monitorTheme 错误:', e);
+                            }
 
-                        // 阶段1：启动阅读历史记录
-                        if (this.settings.readingHistory?.persistence) {
-                            this.readingProgressManager.startRecording();
-                        }
+                            // 阶段1：启动阅读历史记录
+                            try {
+                                if (this.settings.readingHistory?.persistence) {
+                                    this.readingProgressManager.startRecording();
+                                }
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] startRecording 错误:', e);
+                            }
 
-                        // 阶段1：尝试恢复阅读位置
-                        if (this.settings.readingHistory?.autoRestore) {
-                            setTimeout(() => {
-                                this.readingProgressManager.restoreProgress().then((success) => {
-                                    if (success && this.readingProgressManager.restoredTop !== null) {
-                                        this.anchorManager.setAnchor(this.readingProgressManager.restoredTop);
+                            // 阶段1：尝试恢复阅读位置
+                            try {
+                                if (this.settings.readingHistory?.autoRestore) {
+                                    setTimeout(() => {
+                                        try {
+                                            this.readingProgressManager.restoreProgress().then((success) => {
+                                                if (success && this.readingProgressManager.restoredTop !== null) {
+                                                    this.anchorManager.setAnchor(this.readingProgressManager.restoredTop);
+                                                }
+                                            }).catch((e) => {
+                                                console.error('[ChatGPT Helper] restoreProgress 错误:', e);
+                                            });
+                                        } catch (e) {
+                                            console.error('[ChatGPT Helper] restoreProgress 设置错误:', e);
+                                        }
+                                    }, 1000);
+                                }
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] 恢复阅读位置错误:', e);
+                            }
+
+                            // 阶段1：清理过期历史
+                            try {
+                                this.readingProgressManager.cleanup();
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] cleanup 错误:', e);
+                            }
+
+                            // 初始化宽度样式管理器
+                            try {
+                                if (!this.widthStyleManager) {
+                                    this.widthStyleManager = new WidthStyleManager(this.adapter, this.settings.pageWidth);
+                                    this.widthStyleManager.apply();
+                                }
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] WidthStyleManager 错误:', e);
+                            }
+
+                            // 阶段3：初始化复制功能
+                            try {
+                                if (this.settings.formulaCopy?.enabled !== false || this.settings.tableCopy?.enabled !== false) {
+                                    this.copyManager.init();
+                                }
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] copyManager.init 错误:', e);
+                            }
+
+                            // 阶段4：启动标签页管理器
+                            try {
+                                if (this.settings.tabSettings?.enabled !== false) {
+                                    this.tabRenameManager.start();
+                                }
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] tabRenameManager.start 错误:', e);
+                            }
+
+                            // 初始化滚动锁定管理器
+                            try {
+                                if (!this.scrollLockManager) {
+                                    this.scrollLockManager = new ScrollLockManager(this.adapter);
+                                    // 根据设置决定是否启用防止自动滚动
+                                    // 显式设置状态，确保状态同步
+                                    this.scrollLockManager.setEnabled(this.settings.preventAutoScroll || false);
+                                } else {
+                                    // 如果已经存在，也要同步状态
+                                    this.scrollLockManager.setEnabled(this.settings.preventAutoScroll || false);
+                                }
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] ScrollLockManager 错误:', e);
+                            }
+
+                            // 监听大纲自动刷新事件
+                            try {
+                                window.addEventListener('chatgpt-helper-outline-auto-refresh', () => {
+                                    try {
+                                        if (this.currentTab === 'outline') {
+                                            this.refreshOutline();
+                                        }
+                                    } catch (e) {
+                                        console.error('[ChatGPT Helper] refreshOutline 错误:', e);
                                     }
                                 });
-                            }, 1000);
-                        }
-
-                        // 阶段1：清理过期历史
-                        this.readingProgressManager.cleanup();
-
-                        // 初始化宽度样式管理器
-                        if (!this.widthStyleManager) {
-                            this.widthStyleManager = new WidthStyleManager(this.adapter, this.settings.pageWidth);
-                            this.widthStyleManager.apply();
-                        }
-
-                        // 阶段3：初始化复制功能
-                        if (this.settings.formulaCopy?.enabled !== false || this.settings.tableCopy?.enabled !== false) {
-                            this.copyManager.init();
-                        }
-
-                        // 阶段4：启动标签页管理器
-                        if (this.settings.tabSettings?.enabled !== false) {
-                            this.tabRenameManager.start();
-                        }
-
-                        // 监听大纲自动刷新事件
-                        window.addEventListener('chatgpt-helper-outline-auto-refresh', () => {
-                            if (this.currentTab === 'outline') {
-                                this.refreshOutline();
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] 添加大纲刷新监听器错误:', e);
                             }
-                        });
 
-                        console.log('[ChatGPT Helper] 初始化完成');
-                    } else {
-                        console.error('[ChatGPT Helper] 面板未创建，重试...');
-                        setTimeout(() => {
-                            this.createLayout();
-                            if (this.panel) {
-                                this.createUI();
-                                this.createCollapsedButtons();
-                                this.bindEvents();
-                            }
-                        }, 500);
+                            console.log('[ChatGPT Helper] 初始化完成');
+                        } else {
+                            console.error('[ChatGPT Helper] 面板未创建，重试...');
+                            setTimeout(() => {
+                                try {
+                                    this.createLayout();
+                                    if (this.panel) {
+                                        try {
+                                            this.createUI();
+                                            this.createCollapsedButtons();
+                                            this.bindEvents();
+                                        } catch (e) {
+                                            console.error('[ChatGPT Helper] 重试创建 UI 错误:', e);
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.error('[ChatGPT Helper] 重试 createLayout 错误:', e);
+                                }
+                            }, 500);
+                        }
+                    } catch (e) {
+                        console.error('[ChatGPT Helper] init setTimeout 错误:', e);
+                        console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
                     }
                 }, 100);
             } catch (e) {
                 console.error('[ChatGPT Helper] 初始化错误:', e);
+                console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
             }
         }
 
         createStyles() {
-            const existingStyle = document.getElementById('chatgpt-helper-styles');
-            if (existingStyle) existingStyle.remove();
+            try {
+                const existingStyle = document.getElementById('chatgpt-helper-styles');
+                if (existingStyle) {
+                    try {
+                        existingStyle.remove();
+                    } catch (e) {
+                        console.error('[ChatGPT Helper] 移除旧样式错误:', e);
+                    }
+                }
 
-            // ChatGPT 主题色 - 更美观的配色
-            const colors = {
-                primary: '#10a37f', // ChatGPT 绿色
-                secondary: '#19c37d',
-                accent: '#0d8f6e', // 深绿色
-                light: '#e6f7f3', // 浅绿色背景
-            };
-            const gradient = `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`;
+                // ChatGPT 主题色 - 更美观的配色
+                const colors = {
+                    primary: '#2dd4bf', // ChatGPT 绿色 - 亮色模式下变浅
+                    secondary: '#5eead4',
+                    accent: '#14b8a6', // 深绿色 - 亮色模式下变浅
+                    light: '#e6f7f3', // 浅绿色背景
+                };
+                const gradient = `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`;
 
-            const style = document.createElement('style');
-            style.id = 'chatgpt-helper-styles';
-            style.textContent = `
+                const style = document.createElement('style');
+                style.id = 'chatgpt-helper-styles';
+                style.textContent = `
                 /* CSS Variables */
                 :root {
                     --gh-bg: #ffffff;
@@ -5448,7 +6199,7 @@ if (!window.__MY_EXT__) {
                     width: ${this.settings.panelWidth}px;
                     height: 100vh;
                     background: var(--gh-bg, #ffffff);
-                    border-left: 1px solid var(--gh-border, #e5e7eb);
+                    border-left: none;
                     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.12), -2px 0 8px rgba(0, 0, 0, 0.06);
                     z-index: 9999;
                     display: flex;
@@ -5474,11 +6225,15 @@ if (!window.__MY_EXT__) {
                 #chatgpt-helper-resize-handle::after {
                     content: '';
                     position: absolute;
-                    left: 4px;
+                    left: 0;
                     top: 0;
-                    width: 2px;
+                    width: 1px;
                     height: 100%;
-                    border-left: 2px solid rgba(148, 163, 184, 0.6);
+                    background: var(--gh-border, #e5e7eb);
+                }
+                
+                body[data-gh-mode="dark"] #chatgpt-helper-resize-handle::after {
+                    background: var(--gh-border, #475569);
                 }
                 
                 /* 确保亮色模式下使用白色背景，不使用黑色 */
@@ -5504,7 +6259,6 @@ if (!window.__MY_EXT__) {
                 
                 body[data-gh-mode="dark"] #chatgpt-helper-right {
                     background: var(--gh-bg, #1e293b);
-                    border-left-color: var(--gh-border, #475569);
                     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4), -2px 0 8px rgba(0, 0, 0, 0.2);
                 }
                 
@@ -5618,11 +6372,15 @@ if (!window.__MY_EXT__) {
                     background: var(--gh-bg, #ffffff);
                     flex-shrink: 0;
                     padding: 0 4px;
+                    --tab-padding-h: 12px;
+                    --tab-padding-v: 10px;
+                    --tab-gap: 6px;
+                    --tab-margin: 2px;
                 }
 
                 .chatgpt-helper-tab {
                     flex: 1;
-                    padding: 10px 12px;
+                    padding: var(--tab-padding-v) var(--tab-padding-h);
                     text-align: center;
                     cursor: pointer;
                     border: none;
@@ -5634,9 +6392,10 @@ if (!window.__MY_EXT__) {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 6px;
+                    gap: var(--tab-gap);
                     border-radius: 6px 6px 0 0;
-                    margin: 0 2px;
+                    margin: 0 var(--tab-margin);
+                    min-width: 0; /* 允许flex项目收缩 */
                 }
 
                 .chatgpt-helper-tab:hover {
@@ -5649,6 +6408,43 @@ if (!window.__MY_EXT__) {
                     border-bottom-color: var(--gh-primary, #10a37f);
                     font-weight: 500;
                     background: var(--gh-bg, #ffffff);
+                }
+
+                .chatgpt-helper-tab-drag-handle {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: move;
+                    user-select: none;
+                    color: var(--gh-text-secondary, #6b7280);
+                    font-size: 12px;
+                    line-height: 1;
+                    padding: 2px 4px;
+                    margin-right: 4px;
+                    opacity: 0.5;
+                    transition: opacity 0.2s;
+                    letter-spacing: -2px;
+                }
+
+                .chatgpt-helper-tab:hover .chatgpt-helper-tab-drag-handle {
+                    opacity: 1;
+                }
+
+                .chatgpt-helper-tab-drag-handle:hover {
+                    opacity: 1;
+                    color: var(--gh-primary, #10a37f);
+                }
+
+                .chatgpt-helper-tab.dragging {
+                    opacity: 0.5;
+                }
+
+                .chatgpt-helper-tab.drag-before {
+                    border-left: 2px solid var(--gh-primary, #10a37f);
+                }
+
+                .chatgpt-helper-tab.drag-after {
+                    border-right: 2px solid var(--gh-primary, #10a37f);
                 }
 
                 /* 面板内容 */
@@ -7116,56 +7912,124 @@ if (!window.__MY_EXT__) {
 
                 /* 响应式调整中栏 - 通过 JS 动态更新 */
             `;
-            document.head.appendChild(style);
+                try {
+                    if (document.head) {
+                        document.head.appendChild(style);
+                    } else {
+                        // 如果 head 不存在，等待它出现
+                        const waitForHead = () => {
+                            if (document.head) {
+                                document.head.appendChild(style);
+                            } else {
+                                setTimeout(waitForHead, 100);
+                            }
+                        };
+                        waitForHead();
+                    }
+                } catch (e) {
+                    console.error('[ChatGPT Helper] 添加样式到 head 错误:', e);
+                }
+            } catch (e) {
+                console.error('[ChatGPT Helper] createStyles 错误:', e);
+                console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
+            }
         }
 
         createLayout() {
-            // 检查是否已经存在面板
-            const existingPanel = document.getElementById('chatgpt-helper-right');
-            if (existingPanel) {
-                this.panel = existingPanel;
-                this.initResizeHandle();
-                return;
-            }
+            try {
+                // 检查是否已经存在面板
+                const existingPanel = document.getElementById('chatgpt-helper-right');
+                if (existingPanel) {
+                    this.panel = existingPanel;
+                    try {
+                        this.initResizeHandle();
+                    } catch (e) {
+                        console.error('[ChatGPT Helper] initResizeHandle 错误:', e);
+                    }
+                    return;
+                }
 
-            // 直接创建右栏面板，使用固定定位
-            // 通过 CSS 调整 ChatGPT 原有布局，实现三栏效果
-            const rightBar = createElement('div', {
-                id: 'chatgpt-helper-right',
-                className: this.isCollapsed ? 'collapsed' : ''
-            });
+                // 直接创建右栏面板，使用固定定位
+                // 通过 CSS 调整 ChatGPT 原有布局，实现三栏效果
+                const rightBar = createElement('div', {
+                    id: 'chatgpt-helper-right',
+                    className: this.isCollapsed ? 'collapsed' : ''
+                });
 
-            // 确保添加到 body 的末尾，避免干扰现有元素
-            if (document.body) {
-                document.body.appendChild(rightBar);
-                this.panel = rightBar;
-                this.initResizeHandle();
-            } else {
-                // 如果 body 还没准备好，等待
-                const checkBody = setInterval(() => {
-                    if (document.body) {
+                // 确保添加到 body 的末尾，避免干扰现有元素
+                if (document.body) {
+                    try {
                         document.body.appendChild(rightBar);
                         this.panel = rightBar;
-                        this.initResizeHandle();
-                        clearInterval(checkBody);
+                        try {
+                            this.initResizeHandle();
+                        } catch (e) {
+                            console.error('[ChatGPT Helper] initResizeHandle 错误:', e);
+                        }
+                    } catch (e) {
+                        console.error('[ChatGPT Helper] 添加面板到 body 错误:', e);
                     }
-                }, 100);
+                } else {
+                    // 如果 body 还没准备好，等待
+                    let checkBodyInterval = null;
+                    const checkBody = () => {
+                        try {
+                            if (document.body) {
+                                document.body.appendChild(rightBar);
+                                this.panel = rightBar;
+                                try {
+                                    this.initResizeHandle();
+                                } catch (e) {
+                                    console.error('[ChatGPT Helper] initResizeHandle 错误:', e);
+                                }
+                                if (checkBodyInterval) {
+                                    clearInterval(checkBodyInterval);
+                                    checkBodyInterval = null;
+                                }
+                            }
+                        } catch (e) {
+                            console.error('[ChatGPT Helper] checkBody 错误:', e);
+                        }
+                    };
+                    
+                    checkBodyInterval = setInterval(checkBody, 100);
 
-                // 超时保护
+                    // 超时保护
+                    setTimeout(() => {
+                        if (checkBodyInterval) {
+                            clearInterval(checkBodyInterval);
+                            checkBodyInterval = null;
+                        }
+                        try {
+                            if (!this.panel && document.body) {
+                                document.body.appendChild(rightBar);
+                                this.panel = rightBar;
+                                try {
+                                    this.initResizeHandle();
+                                } catch (e) {
+                                    console.error('[ChatGPT Helper] initResizeHandle 错误:', e);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('[ChatGPT Helper] 超时后添加面板错误:', e);
+                        }
+                    }, 5000);
+                }
+
+                // 延迟调整布局，确保 ChatGPT 的 DOM 已经渲染
                 setTimeout(() => {
-                    clearInterval(checkBody);
-                    if (!this.panel && document.body) {
-                        document.body.appendChild(rightBar);
-                        this.panel = rightBar;
-                        this.initResizeHandle();
+                    try {
+                        if (this.adjustChatGPTLayout) {
+                            this.adjustChatGPTLayout();
+                        }
+                    } catch (e) {
+                        console.error('[ChatGPT Helper] adjustChatGPTLayout 错误:', e);
                     }
-                }, 5000);
+                }, 500);
+            } catch (e) {
+                console.error('[ChatGPT Helper] createLayout 错误:', e);
+                console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
             }
-
-            // 延迟调整布局，确保 ChatGPT 的 DOM 已经渲染
-            setTimeout(() => {
-                this.adjustChatGPTLayout();
-            }, 500);
         }
 
         adjustChatGPTLayout() {
@@ -7286,6 +8150,64 @@ if (!window.__MY_EXT__) {
             });
         }
 
+        initTabResponsiveSpacing(tabsContainer) {
+            if (!tabsContainer) return;
+
+            // 如果已经初始化过，先清理旧的observer
+            if (this.tabSpacingObserver) {
+                this.tabSpacingObserver.disconnect();
+                this.tabSpacingObserver = null;
+            }
+
+            // 更新间距的函数
+            const updateSpacing = () => {
+                const width = tabsContainer.getBoundingClientRect().width;
+                // 根据宽度动态调整间距
+                // 当宽度小于300px时，开始减小间距
+                if (width < 300) {
+                    // 非常窄时，使用最小间距
+                    const ratio = Math.max(0.3, (width - 200) / 100); // 200-300px之间线性变化
+                    tabsContainer.style.setProperty('--tab-padding-h', `${Math.max(4, 12 * ratio)}px`);
+                    tabsContainer.style.setProperty('--tab-padding-v', `${Math.max(6, 10 * ratio)}px`);
+                    tabsContainer.style.setProperty('--tab-gap', `${Math.max(2, 6 * ratio)}px`);
+                    tabsContainer.style.setProperty('--tab-margin', `${Math.max(1, 2 * ratio)}px`);
+                } else if (width < 400) {
+                    // 中等宽度时，适度减小间距
+                    const ratio = 0.5 + (width - 300) / 200; // 300-400px之间从0.5到1.0
+                    tabsContainer.style.setProperty('--tab-padding-h', `${8 * ratio}px`);
+                    tabsContainer.style.setProperty('--tab-padding-v', `${8 * ratio}px`);
+                    tabsContainer.style.setProperty('--tab-gap', `${4 * ratio}px`);
+                    tabsContainer.style.setProperty('--tab-margin', `${1.5 * ratio}px`);
+                } else {
+                    // 正常宽度时，使用默认间距
+                    tabsContainer.style.setProperty('--tab-padding-h', '12px');
+                    tabsContainer.style.setProperty('--tab-padding-v', '10px');
+                    tabsContainer.style.setProperty('--tab-gap', '6px');
+                    tabsContainer.style.setProperty('--tab-margin', '2px');
+                }
+            };
+
+            // 初始更新
+            updateSpacing();
+
+            // 使用ResizeObserver监听容器宽度变化
+            this.tabSpacingObserver = new ResizeObserver(() => {
+                updateSpacing();
+            });
+
+            this.tabSpacingObserver.observe(tabsContainer);
+
+            // 也监听面板宽度变化（当拖拽改变面板宽度时）
+            if (this.panel) {
+                if (!this.panelSpacingObserver) {
+                    this.panelSpacingObserver = new ResizeObserver(() => {
+                        updateSpacing();
+                    });
+                    this.panelSpacingObserver.observe(this.panel);
+                }
+            }
+        }
+
         createUI() {
             if (!this.panel) return;
 
@@ -7390,6 +8312,16 @@ if (!window.__MY_EXT__) {
                     'data-tab': tabId,
                     id: `${tabId}-tab`
                 });
+                
+                // 创建六个点的拖拽手柄
+                const dragHandle = createElement('span', {
+                    className: 'chatgpt-helper-tab-drag-handle',
+                    draggable: true
+                });
+                dragHandle.innerHTML = '⋮&nbsp;⋮';
+                dragHandle.setAttribute('title', '拖动改变顺序');
+                
+                tab.appendChild(dragHandle);
                 tab.appendChild(createElement('span', {}, def.icon));
                 // 使用国际化文本
                 const tabLabel = tabId === 'prompts' ? this.t('tabPrompts') :
@@ -7399,10 +8331,106 @@ if (!window.__MY_EXT__) {
                                 tabId === 'settings' ? this.t('tabSettings') : def.label;
                 tab.appendChild(createElement('span', {}, tabLabel));
                 tab.addEventListener('click', () => this.switchTab(tabId));
+                
+                // 拖拽事件 - 绑定到拖拽手柄
+                dragHandle.addEventListener('dragstart', (e) => {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/html', tabId);
+                    tab.classList.add('dragging');
+                    // 设置一个标记，表示正在拖拽
+                    tabs.setAttribute('data-dragging', 'true');
+                });
+                
+                dragHandle.addEventListener('dragend', (e) => {
+                    e.stopPropagation();
+                    tab.classList.remove('dragging');
+                    tabs.removeAttribute('data-dragging');
+                    // 移除所有拖拽相关的样式
+                    tabs.querySelectorAll('.chatgpt-helper-tab').forEach(t => {
+                        t.classList.remove('drag-over', 'drag-before', 'drag-after');
+                    });
+                });
+                
+                tab.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    const draggingTab = tabs.querySelector('.dragging');
+                    if (draggingTab && draggingTab !== tab) {
+                        const allTabs = Array.from(tabs.querySelectorAll('.chatgpt-helper-tab:not(.dragging)'));
+                        const currentIndex = allTabs.indexOf(tab);
+                        const rect = tab.getBoundingClientRect();
+                        const mouseX = e.clientX;
+                        const tabCenter = rect.left + rect.width / 2;
+                        
+                        // 清除之前的样式
+                        tabs.querySelectorAll('.chatgpt-helper-tab').forEach(t => {
+                            t.classList.remove('drag-before', 'drag-after');
+                        });
+                        
+                        if (mouseX < tabCenter) {
+                            tab.classList.add('drag-before');
+                        } else {
+                            tab.classList.add('drag-after');
+                        }
+                    }
+                });
+                
+                tab.addEventListener('dragleave', (e) => {
+                    // 只有当鼠标真正离开tab区域时才移除样式
+                    const rect = tab.getBoundingClientRect();
+                    if (e.clientX < rect.left || e.clientX > rect.right || 
+                        e.clientY < rect.top || e.clientY > rect.bottom) {
+                        tab.classList.remove('drag-over', 'drag-before', 'drag-after');
+                    }
+                });
+                
+                tab.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    tab.classList.remove('drag-over', 'drag-before', 'drag-after');
+                    const draggedTabId = e.dataTransfer.getData('text/html');
+                    const draggedTab = tabs.querySelector(`[data-tab="${draggedTabId}"]`);
+                    
+                    if (draggedTab && draggedTab !== tab) {
+                        const allTabs = Array.from(tabs.querySelectorAll('.chatgpt-helper-tab'));
+                        const draggedIndex = allTabs.indexOf(draggedTab);
+                        const targetIndex = allTabs.indexOf(tab);
+                        
+                        // 计算新的插入位置
+                        const rect = tab.getBoundingClientRect();
+                        const mouseX = e.clientX;
+                        const tabCenter = rect.left + rect.width / 2;
+                        const insertBefore = mouseX < tabCenter;
+                        
+                        // 移动DOM元素
+                        if (draggedIndex < targetIndex) {
+                            if (insertBefore) {
+                                tabs.insertBefore(draggedTab, tab);
+                            } else {
+                                tabs.insertBefore(draggedTab, tab.nextSibling);
+                            }
+                        } else {
+                            if (insertBefore) {
+                                tabs.insertBefore(draggedTab, tab);
+                            } else {
+                                tabs.insertBefore(draggedTab, tab.nextSibling);
+                            }
+                        }
+                        
+                        // 更新tabOrder
+                        const newOrder = Array.from(tabs.querySelectorAll('.chatgpt-helper-tab')).map(t => t.dataset.tab);
+                        this.settings.tabOrder = newOrder;
+                        this.saveSettings();
+                    }
+                });
+                
                 tabs.appendChild(tab);
             });
 
             this.panel.appendChild(tabs);
+
+            // 添加响应式间距调整
+            this.initTabResponsiveSpacing(tabs);
 
             // 内容区域
             const content = createElement('div', { id: 'chatgpt-helper-content' });
@@ -8357,6 +9385,7 @@ if (!window.__MY_EXT__) {
                 if (item.type === 'toggle') {
                     control = createElement('button', {
                         className: 'chatgpt-helper-toggle',
+                        type: 'button',
                         style: {
                             width: '44px',
                             height: '24px',
@@ -8366,7 +9395,8 @@ if (!window.__MY_EXT__) {
                             cursor: 'pointer',
                             position: 'relative',
                             transition: 'all 0.3s',
-                            padding: '2px'
+                            padding: '2px',
+                            outline: 'none'
                         }
                     });
                     const toggleCircle = createElement('div', {
@@ -8377,16 +9407,34 @@ if (!window.__MY_EXT__) {
                             background: 'white',
                             transition: 'transform 0.3s',
                             transform: item.value ? 'translateX(20px)' : 'translateX(0)',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                            pointerEvents: 'none'
                         }
                     });
                     control.appendChild(toggleCircle);
-                    control.addEventListener('click', () => {
+                    
+                    const handleToggle = (e) => {
+                        if (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
                         const newValue = !item.value;
                         item.value = newValue;
                         control.style.background = newValue ? 'var(--gh-primary)' : 'var(--gh-border)';
                         toggleCircle.style.transform = newValue ? 'translateX(20px)' : 'translateX(0)';
-                        if (item.onChange) item.onChange(newValue);
+                        if (item.onChange) {
+                            try {
+                                item.onChange(newValue);
+                            } catch (err) {
+                                console.error('[ChatGPT Helper] Toggle onChange error:', err);
+                            }
+                        }
+                    };
+                    
+                    control.addEventListener('click', handleToggle);
+                    control.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                     });
                 } else if (item.type === 'select') {
                     control = createElement('select', {
@@ -8408,10 +9456,17 @@ if (!window.__MY_EXT__) {
                             control.appendChild(option);
                         });
                     }
-                    control.addEventListener('change', () => {
+                    control.addEventListener('change', (e) => {
+                        e.stopPropagation();
                         const newValue = control.value;
                         item.value = newValue;
-                        if (item.onChange) item.onChange(newValue);
+                        if (item.onChange) {
+                            try {
+                                item.onChange(newValue);
+                            } catch (err) {
+                                console.error('[ChatGPT Helper] Select onChange error:', err);
+                            }
+                        }
                     });
                 } else if (item.type === 'number') {
                     control = createElement('input', {
@@ -8429,8 +9484,23 @@ if (!window.__MY_EXT__) {
                             fontSize: '14px'
                         }
                     });
-                    control.addEventListener('change', () => {
-                        if (item.onChange) item.onChange(control.value);
+                    const handleNumberChange = () => {
+                        if (item.onChange) {
+                            try {
+                                item.onChange(control.value);
+                            } catch (err) {
+                                console.error('[ChatGPT Helper] Number onChange error:', err);
+                            }
+                        }
+                    };
+                    control.addEventListener('change', handleNumberChange);
+                    control.addEventListener('blur', handleNumberChange);
+                    control.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            control.blur();
+                            handleNumberChange();
+                        }
                     });
                 } else if (item.type === 'text') {
                     control = createElement('input', {
@@ -8448,11 +9518,23 @@ if (!window.__MY_EXT__) {
                             fontSize: '14px'
                         }
                     });
-                    control.addEventListener('change', () => {
-                        if (item.onChange) item.onChange(control.value);
-                    });
-                    control.addEventListener('blur', () => {
-                        if (item.onChange) item.onChange(control.value);
+                    const handleTextChange = () => {
+                        if (item.onChange) {
+                            try {
+                                item.onChange(control.value);
+                            } catch (err) {
+                                console.error('[ChatGPT Helper] Text onChange error:', err);
+                            }
+                        }
+                    };
+                    control.addEventListener('change', handleTextChange);
+                    control.addEventListener('blur', handleTextChange);
+                    control.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            control.blur();
+                            handleTextChange();
+                        }
                     });
                 }
 
@@ -8540,28 +9622,6 @@ if (!window.__MY_EXT__) {
             // 功能设置（可折叠）
             const featureSection = this.createSettingSection(this.t('featureSettings') || '功能设置', [
                 {
-                    label: this.t('enablePromptsLabel') || '启用提示词',
-                    type: 'toggle',
-                    value: this.settings.prompts?.enabled !== false,
-                    onChange: (val) => {
-                        if (!this.settings.prompts) this.settings.prompts = {};
-                        this.settings.prompts.enabled = val;
-                        this.saveSettings();
-                        this.showToast(val ? '已启用提示词功能' : '已禁用提示词功能');
-                    }
-                },
-                {
-                    label: this.t('enableOutlineLabel') || '启用大纲',
-                    type: 'toggle',
-                    value: this.settings.outline?.enabled !== false,
-                    onChange: (val) => {
-                        if (!this.settings.outline) this.settings.outline = {};
-                        this.settings.outline.enabled = val;
-                        this.saveSettings();
-                        this.showToast(val ? '已启用大纲功能' : '已禁用大纲功能');
-                    }
-                },
-                {
                     label: this.t('showUserMessagesLabel') || '显示用户消息',
                     type: 'toggle',
                     value: this.settings.outline?.showUserQueries !== false,
@@ -8575,26 +9635,31 @@ if (!window.__MY_EXT__) {
                     }
                 },
                 {
-                    label: this.t('enableConversationsLabel') || '启用会话管理',
-                    type: 'toggle',
-                    value: this.settings.conversations?.enabled !== false,
-                    onChange: (val) => {
-                        if (!this.settings.conversations) this.settings.conversations = {};
-                        this.settings.conversations.enabled = val;
-                        this.saveSettings();
-                        this.showToast(val ? '已启用会话管理' : '已禁用会话管理');
-                    }
-                },
-                {
                     label: this.t('preventAutoScrollLabel') || '防止自动滚动',
                     type: 'toggle',
                     value: this.settings.preventAutoScroll || false,
                     onChange: (val) => {
+                        console.log('[ChatGPT Helper] 切换防止自动滚动:', val);
                         this.settings.preventAutoScroll = val;
                         this.saveSettings();
-                        if (this.scrollLockManager) {
-                            this.scrollLockManager.setEnabled(val);
+                        if (!this.scrollLockManager) {
+                            console.log('[ChatGPT Helper] 创建新的 ScrollLockManager');
+                            this.scrollLockManager = new ScrollLockManager(this.adapter);
                         }
+                        console.log('[ChatGPT Helper] 设置 ScrollLockManager.enabled =', val);
+                        this.scrollLockManager.setEnabled(val);
+                        // 验证状态是否正确设置
+                        setTimeout(() => {
+                            const actualEnabled = this.scrollLockManager?.enabled;
+                            console.log('[ChatGPT Helper] 防止自动滚动状态:', {
+                                期望: val,
+                                实际: actualEnabled,
+                                一致: val === actualEnabled
+                            });
+                            if (val !== actualEnabled) {
+                                console.warn('[ChatGPT Helper] 警告：状态不一致！');
+                            }
+                        }, 100);
                         this.showToast(val ? '已启用防止自动滚动' : '已禁用防止自动滚动');
                     }
                 }
@@ -8672,7 +9737,8 @@ if (!window.__MY_EXT__) {
                 const iconSpan = createElement('span', {
                     style: 'display: inline-block; width: 24px; text-align: center; margin-right: 4px;'
                 }, def.icon);
-                const textSpan = createElement('span', {}, def.label);
+                const buttonLabel = def.labelKey ? this.t(def.labelKey) : (def.label || '');
+                const textSpan = createElement('span', {}, buttonLabel);
                 label.appendChild(iconSpan);
                 label.appendChild(textSpan);
                 info.appendChild(label);
@@ -8692,7 +9758,7 @@ if (!window.__MY_EXT__) {
                         this.settings.collapsedButtonsOrder = currentBtnOrder;
                         this.saveSettings();
                         this.createCollapsedButtons();
-                        this.showToast(btnConfig.enabled ? '已启用' : '已禁用');
+                        this.showToast(btnConfig.enabled ? (this.t('enabled') || '已启用') : (this.t('disabled') || '已禁用'));
                     });
                     controls.appendChild(toggle);
                 }
@@ -8701,7 +9767,7 @@ if (!window.__MY_EXT__) {
                 const upBtn = createElement('button', {
                     className: 'prompt-panel-btn',
                     style: 'background: var(--gh-hover, #f3f4f6); color: #4b5563; width: 32px; height: 32px; font-size: 16px; margin-right: 4px; border: 1px solid var(--gh-border, #e5e7eb);',
-                    title: '上移'
+                    title: this.t('moveUp') || '上移'
                 });
                 upBtn.textContent = '⬆';
                 upBtn.disabled = index === 0;
@@ -8709,7 +9775,7 @@ if (!window.__MY_EXT__) {
                 const downBtn = createElement('button', {
                     className: 'prompt-panel-btn',
                     style: 'background: var(--gh-hover, #f3f4f6); color: #4b5563; width: 32px; height: 32px; font-size: 16px; border: 1px solid var(--gh-border, #e5e7eb);',
-                    title: '下移'
+                    title: this.t('moveDown') || '下移'
                 });
                 downBtn.textContent = '⬇';
                 downBtn.disabled = index === currentBtnOrder.length - 1;
@@ -8739,7 +9805,7 @@ if (!window.__MY_EXT__) {
                         this.settings.collapsedButtonsOrder = newOrder;
                         this.saveSettings();
                         this.createCollapsedButtons();
-                        this.showToast('已更新按钮顺序');
+                        this.showToast(this.t('buttonOrderUpdated') || '已更新按钮顺序');
                     }
                 });
 
@@ -8750,7 +9816,7 @@ if (!window.__MY_EXT__) {
                         this.settings.collapsedButtonsOrder = newOrder;
                         this.saveSettings();
                         this.createCollapsedButtons();
-                        this.showToast('已更新按钮顺序');
+                        this.showToast(this.t('buttonOrderUpdated') || '已更新按钮顺序');
                     }
                 });
 
@@ -8765,7 +9831,7 @@ if (!window.__MY_EXT__) {
             const collapsedSection = this.createCollapsibleSection(this.t('collapsedButtonsTitle') || '折叠按钮', collapsedContainer, { defaultExpanded: false });
 
             // Tab顺序设置（可折叠）
-            const tabOrderSection = this.createSettingSection(this.t('tabSettings') || 'Tab 顺序', [
+            const tabOrderSection = this.createSettingSection(this.t('tabOrderSettings') || 'tab栏功能', [
                 {
                     label: this.t('tabPrompts') || '提示词',
                     type: 'toggle',
@@ -8958,7 +10024,7 @@ if (!window.__MY_EXT__) {
             ]);
 
             // 标签页设置（可折叠）
-            const tabSettingsSection = this.createSettingSection(this.t('tabSettings') || '标签页设置', [
+            const tabSettingsSection = this.createSettingSection(this.t('tabPageSettings') || '标签页设置', [
                 {
                     label: this.t('tabAutoRenameLabel') || '自动重命名标签页',
                     type: 'toggle',
@@ -8986,6 +10052,9 @@ if (!window.__MY_EXT__) {
                         if (!this.settings.tabSettings) this.settings.tabSettings = {};
                         this.settings.tabSettings.renameInterval = Math.max(1, Math.min(60, parseInt(val) || 3));
                         this.saveSettings();
+                        if (this.tabRenameManager) {
+                            this.tabRenameManager.restartInterval();
+                        }
                     }
                 },
                 {
@@ -8996,16 +10065,9 @@ if (!window.__MY_EXT__) {
                         if (!this.settings.tabSettings) this.settings.tabSettings = {};
                         this.settings.tabSettings.showStatus = val;
                         this.saveSettings();
-                    }
-                },
-                {
-                    label: this.t('tabDesktopNotifyLabel') || '发送桌面通知',
-                    type: 'toggle',
-                    value: this.settings.tabSettings?.showNotification || false,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.showNotification = val;
-                        this.saveSettings();
+                        if (this.tabRenameManager) {
+                            this.tabRenameManager.updateTabName(true);
+                        }
                     }
                 },
                 {
@@ -9038,16 +10100,6 @@ if (!window.__MY_EXT__) {
                     }
                 },
                 {
-                    label: this.t('tabNotifyWhenFocusedLabel') || '前台时也通知',
-                    type: 'toggle',
-                    value: this.settings.tabSettings?.notifyWhenFocused || false,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.notifyWhenFocused = val;
-                        this.saveSettings();
-                    }
-                },
-                {
                     label: this.t('tabAutoFocusLabel') || '自动聚焦窗口',
                     type: 'toggle',
                     value: this.settings.tabSettings?.autoFocus || false,
@@ -9065,16 +10117,22 @@ if (!window.__MY_EXT__) {
                         if (!this.settings.tabSettings) this.settings.tabSettings = {};
                         this.settings.tabSettings.privacyMode = val;
                         this.saveSettings();
+                        if (this.tabRenameManager) {
+                            this.tabRenameManager.updateTabName(true);
+                        }
                     }
                 },
                 {
-                    label: '隐私模式标题',
+                    label: this.t('tabPrivacyTitleLabel') || '隐私模式标题',
                     type: 'text',
                     value: this.settings.tabSettings?.privacyTitle || 'ChatGPT',
                     onChange: (val) => {
                         if (!this.settings.tabSettings) this.settings.tabSettings = {};
                         this.settings.tabSettings.privacyTitle = val || 'ChatGPT';
                         this.saveSettings();
+                        if (this.tabRenameManager) {
+                            this.tabRenameManager.updateTabName(true);
+                        }
                     }
                 }
             ]);
@@ -9488,9 +10546,10 @@ if (!window.__MY_EXT__) {
                     btnGroup.appendChild(backBtn);
                     btnGroup.appendChild(clearBtn);
                 } else {
+                    const btnTitle = def.labelKey ? this.t(def.labelKey) : (def.label || '');
                     const btn = createElement('button', {
                         className: 'chatgpt-helper-quick-btn' + (def.isPanelOnly ? ' panel-only' : ''),
-                        title: def.label,
+                        title: btnTitle,
                         id: `quick-btn-${btnConfig.id}`
                     }, def.icon);
 
@@ -11360,67 +12419,126 @@ if (!window.__MY_EXT__) {
 
     // 初始化 - 等待页面完全加载和缓存初始化
     function initHelper() {
-        // 确保页面已经加载
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initHelper);
-            return;
-        }
+        try {
+            // 确保页面已经加载
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initHelper);
+                return;
+            }
 
-        // 等待 GM API 适配器的缓存初始化完成
-        const waitForCache = (retries = 40) => {
-            if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized) {
-                // 缓存已初始化，继续初始化 Helper
-                console.log('[ChatGPT Helper] 缓存已初始化，开始初始化 Helper');
-                // 再等待一小段时间，确保缓存数据完全加载
-                setTimeout(() => {
-                    try {
-                        const helper = new ChatGPTHelper();
-                        // 延迟检查会话数据（因为 conversationManager 是延迟创建的）
+            // 确保 body 存在
+            if (!document.body) {
+                // 如果 body 不存在，等待最多 5 秒
+                let bodyRetries = 50;
+                const waitForBody = () => {
+                    if (document.body) {
+                        initHelper();
+                    } else if (bodyRetries > 0) {
+                        bodyRetries--;
+                        setTimeout(waitForBody, 100);
+                    } else {
+                        console.error('[ChatGPT Helper] 等待 body 超时，无法初始化');
+                    }
+                };
+                waitForBody();
+                return;
+            }
+
+            // 等待 GM API 适配器的缓存初始化完成
+            const waitForCache = (retries = 40) => {
+                try {
+                    if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized) {
+                        // 缓存已初始化，继续初始化 Helper
+                        console.log('[ChatGPT Helper] 缓存已初始化，开始初始化 Helper');
+                        // 再等待一小段时间，确保缓存数据完全加载
                         setTimeout(() => {
-                            if (helper.conversationManager) {
-                                // 重新加载数据（确保从已初始化的缓存读取）
-                                helper.conversationManager.reloadData();
-                                const data = helper.conversationManager.data;
-                                console.log('[ChatGPT Helper] 会话数据加载完成:', {
-                                    folders: data.folders?.length || 0,
-                                    conversations: Object.keys(data.conversations || {}).length,
-                                    hasData: Object.keys(data.conversations || {}).length > 0
-                                });
-                                if (Object.keys(data.conversations || {}).length === 0) {
-                                    console.log('[ChatGPT Helper] 提示：当前没有保存的会话。使用 Helper 的功能后，会话数据会自动保存。');
-                                }
+                            try {
+                                const helper = new ChatGPTHelper();
+                                // 延迟检查会话数据（因为 conversationManager 是延迟创建的）
+                                setTimeout(() => {
+                                    try {
+                                        if (helper && helper.conversationManager) {
+                                            // 重新加载数据（确保从已初始化的缓存读取）
+                                            helper.conversationManager.reloadData();
+                                            const data = helper.conversationManager.data;
+                                            console.log('[ChatGPT Helper] 会话数据加载完成:', {
+                                                folders: data.folders?.length || 0,
+                                                conversations: Object.keys(data.conversations || {}).length,
+                                                hasData: Object.keys(data.conversations || {}).length > 0
+                                            });
+                                            if (Object.keys(data.conversations || {}).length === 0) {
+                                                console.log('[ChatGPT Helper] 提示：当前没有保存的会话。使用 Helper 的功能后，会话数据会自动保存。');
+                                            }
+                                        }
+                                    } catch (e) {
+                                        console.error('[ChatGPT Helper] 会话数据加载错误:', e);
+                                    }
+                                }, 1000);
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] 初始化失败:', e);
+                                console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
+                                // 重试一次
+                                setTimeout(() => {
+                                    try {
+                                        new ChatGPTHelper();
+                                    } catch (e2) {
+                                        console.error('[ChatGPT Helper] 重试初始化失败:', e2);
+                                        console.error('[ChatGPT Helper] 重试错误堆栈:', e2.stack);
+                                    }
+                                }, 2000);
                             }
-                        }, 1000);
-                    } catch (e) {
-                        console.error('[ChatGPT Helper] 初始化失败:', e);
-                        // 重试一次
+                        }, 300);
+                    } else if (retries > 0) {
+                        // 缓存还未初始化，等待 50ms 后重试
+                        setTimeout(() => waitForCache(retries - 1), 50);
+                    } else {
+                        // 超时，直接初始化（使用默认值）
+                        console.warn('[ChatGPT Helper] 缓存初始化超时，使用默认值初始化');
                         setTimeout(() => {
                             try {
                                 new ChatGPTHelper();
-                            } catch (e2) {
-                                console.error('[ChatGPT Helper] 重试初始化失败:', e2);
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] 初始化失败:', e);
+                                console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
                             }
-                        }, 2000);
+                        }, 300);
                     }
-                }, 300);
-            } else if (retries > 0) {
-                // 缓存还未初始化，等待 50ms 后重试
-                setTimeout(() => waitForCache(retries - 1), 50);
-            } else {
-                // 超时，直接初始化（使用默认值）
-                console.warn('[ChatGPT Helper] 缓存初始化超时，使用默认值初始化');
-                setTimeout(() => {
-                    try {
+                } catch (e) {
+                    console.error('[ChatGPT Helper] waitForCache 错误:', e);
+                    console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
+                    // 即使出错也尝试初始化
+                    setTimeout(() => {
+                        try {
+                            new ChatGPTHelper();
+                        } catch (e2) {
+                            console.error('[ChatGPT Helper] 降级初始化失败:', e2);
+                        }
+                    }, 500);
+                }
+            };
+            
+            waitForCache();
+        } catch (e) {
+            console.error('[ChatGPT Helper] initHelper 顶层错误:', e);
+            console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
+            // 即使出错也尝试初始化，确保页面不被阻塞
+            setTimeout(() => {
+                try {
+                    if (document.body) {
                         new ChatGPTHelper();
-                    } catch (e) {
-                        console.error('[ChatGPT Helper] 初始化失败:', e);
                     }
-                }, 300);
-            }
-        };
-        
-        waitForCache();
+                } catch (e2) {
+                    console.error('[ChatGPT Helper] 最终降级初始化失败:', e2);
+                }
+            }, 1000);
+        }
     }
 
-    initHelper();
+    // 使用 try-catch 包裹整个初始化调用
+    try {
+        initHelper();
+    } catch (e) {
+        console.error('[ChatGPT Helper] 初始化入口错误:', e);
+        console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
+    }
 })();
