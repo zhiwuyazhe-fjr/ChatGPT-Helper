@@ -97,6 +97,7 @@ if (!window.__MY_EXT__) {
             themeAppearanceLight: '浅色',
             themeAppearanceDark: '深色',
             themeColorPresets: '颜色',
+            themePresetOriginal: '原始主题',
             themeWallpaper: '壁纸',
             themeEnableWallpaper: '启用壁纸',
             themeDropImage: '将图片拖放到这里',
@@ -255,6 +256,7 @@ if (!window.__MY_EXT__) {
             themeAppearanceLight: 'Light',
             themeAppearanceDark: 'Dark',
             themeColorPresets: 'Colors',
+            themePresetOriginal: 'Original',
             themeWallpaper: 'Wallpaper',
             themeEnableWallpaper: 'Enable Wallpaper',
             themeDropImage: 'Drop image here',
@@ -390,6 +392,7 @@ if (!window.__MY_EXT__) {
     ];
 
     const THEME_PRESETS = [
+        { key: 'original', labelKey: 'themePresetOriginal', primary: '#64748b', secondary: '#94a3b8', accent: '#475569', light: '#f8fafc', isOriginal: true },
         { key: 'blue', primary: '#4285f4', secondary: '#60a5fa', accent: '#2563eb', light: '#eaf2ff' },
         { key: 'gray', primary: '#52525b', secondary: '#71717a', accent: '#3f3f46', light: '#f3f4f6' },
         { key: 'red', primary: '#dc2626', secondary: '#f87171', accent: '#b91c1c', light: '#ffecec' },
@@ -406,6 +409,33 @@ if (!window.__MY_EXT__) {
         acc[preset.key] = preset;
         return acc;
     }, {});
+    const THEME_PRESET_INLINE_VAR_KEYS = [
+        '--gh-theme-primary',
+        '--gh-theme-secondary',
+        '--gh-theme-accent',
+        '--gh-theme-accent-dark',
+        '--gh-theme-light',
+        '--gh-primary',
+        '--gh-primary-hover',
+        '--gh-tag-active-bg',
+        '--gh-gradient',
+        '--gh-header-bg',
+        '--gh-theme-surface-light-base',
+        '--gh-theme-surface-light-accent',
+        '--gh-theme-surface-dark-base',
+        '--gh-theme-surface-dark-accent',
+        '--gh-page-sidebar-bg-light',
+        '--gh-page-chat-bg-light',
+        '--gh-page-composer-bg-light',
+        '--gh-page-sidebar-bg-dark',
+        '--gh-page-chat-bg-dark',
+        '--gh-page-composer-bg-dark',
+        '--gh-page-accent-soft',
+        '--gh-page-accent-soft-dark',
+        '--gh-page-accent-strong',
+        '--gh-page-link',
+        '--gh-page-selection'
+    ];
 
     const THEME_BACKGROUND_DB_NAME = 'chatgpt_helper_theme';
     const THEME_BACKGROUND_DB_VERSION = 1;
@@ -586,74 +616,216 @@ if (!window.__MY_EXT__) {
     }
 
     function buildThemeSurfaceVars(presetInput, options = {}) {
-        if (!options.canRenderBackground) return null;
-
         const preset = presetInput && typeof presetInput === 'object'
             ? presetInput
             : getThemePresetByKey('blue');
         const isDark = Boolean(options.isDark);
+        const isOriginal = Boolean(preset && preset.isOriginal);
+        const hasWallpaper = Boolean(options.canRenderBackground);
         const panelUnit = clampNumber(options.panelIntensity, 0, 100) / 100;
         const messageUnit = clampNumber(options.messageIntensity, 0, 100) / 100;
         const composerUnit = Math.min(1, Math.max(panelUnit * 0.55, messageUnit * 0.85));
-        const panelBlur = `${8 + Math.round(panelUnit * 10)}px`;
-        const messageBlur = `${10 + Math.round(messageUnit * 12)}px`;
-        const composerBlur = `${9 + Math.round(composerUnit * 11)}px`;
+        const panelBlur = hasWallpaper
+            ? `${8 + Math.round(panelUnit * 10)}px`
+            : `${2 + Math.round(panelUnit * 4)}px`;
+        const messageBlur = hasWallpaper
+            ? `${10 + Math.round(messageUnit * 12)}px`
+            : `${4 + Math.round(messageUnit * 6)}px`;
+        const composerBlur = hasWallpaper
+            ? `${9 + Math.round(composerUnit * 11)}px`
+            : `${3 + Math.round(composerUnit * 5)}px`;
 
-        if (isDark) {
-            const sidebarTop = blendRgbColors('#020617', preset.primary, 0.12 + panelUnit * 0.18);
-            const sidebarBottom = blendRgbColors('#020617', preset.secondary, 0.08 + panelUnit * 0.16);
-            const panelTop = blendRgbColors('#07111f', preset.primary, 0.14 + panelUnit * 0.18);
-            const panelBottom = blendRgbColors('#07111f', preset.secondary, 0.10 + panelUnit * 0.16);
-            const cardTop = blendRgbColors('#091220', preset.primary, 0.16 + panelUnit * 0.14);
-            const cardBottom = blendRgbColors('#08111c', preset.secondary, 0.10 + panelUnit * 0.12);
-            const messageTop = blendRgbColors('#0b1324', preset.light, 0.14 + messageUnit * 0.16);
-            const messageAccent = blendRgbColors('#09111f', preset.primary, 0.18 + messageUnit * 0.18);
-            const userAccent = blendRgbColors('#08111d', preset.secondary, 0.14 + messageUnit * 0.16);
-            const panelBorder = blendRgbColors('#dbeafe', preset.primary, 0.16);
-            const messageBorder = blendRgbColors('#f8fafc', preset.primary, 0.18);
-            const activeTint = blendRgbColors('#0b1324', preset.primary, 0.74);
-            const shadowTint = blendRgbColors('#020617', preset.primary, 0.28);
-            const composerTop = blendRgbColors('#09111f', preset.light, 0.12 + composerUnit * 0.14);
-            const composerBottom = blendRgbColors('#08111d', preset.primary, 0.16 + composerUnit * 0.16);
+        if (isOriginal) {
+            if (isDark) {
+                return {
+                    '--gh-bg': '#1e293b',
+                    '--gh-bg-secondary': '#0f172a',
+                    '--gh-text': '#f1f5f9',
+                    '--gh-text-secondary': '#cbd5e1',
+                    '--gh-border': '#475569',
+                    '--gh-hover': '#334155',
+                    '--gh-shadow': '0 10px 40px rgba(0,0,0,0.4)',
+                    '--gh-input-bg': hasWallpaper
+                        ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.620) 0%, rgba(15, 23, 42, 0.440) 100%)'
+                        : '#334155',
+                    '--gh-input-border': hasWallpaper ? 'rgba(100, 116, 139, 0.480)' : '#64748b',
+                    '--gh-active-bg': 'rgba(59, 130, 246, 0.300)',
+                    '--gh-right-overlay': hasWallpaper
+                        ? 'linear-gradient(180deg, rgba(15, 23, 42, 0.700) 0%, rgba(15, 23, 42, 0.520) 100%)'
+                        : '#1e293b',
+                    '--gh-panel-card-bg': hasWallpaper ? 'rgba(15, 23, 42, 0.240)' : '#0f172a',
+                    '--gh-panel-card-border': hasWallpaper ? 'rgba(255, 255, 255, 0.120)' : '#475569',
+                    '--gh-sidebar-button-bg': hasWallpaper ? 'rgba(15, 23, 42, 0.380)' : '#334155',
+                    '--gh-msg-user-bg': hasWallpaper
+                        ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.360) 0%, rgba(30, 41, 59, 0.240) 100%)'
+                        : 'rgba(51, 65, 85, 0.940)',
+                    '--gh-msg-assistant-bg': hasWallpaper
+                        ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.280) 0%, rgba(15, 23, 42, 0.180) 100%)'
+                        : 'transparent',
+                    '--gh-msg-border': hasWallpaper ? 'rgba(255, 255, 255, 0.240)' : 'rgba(100, 116, 139, 0.360)',
+                    '--gh-msg-shadow': hasWallpaper ? '0 14px 32px rgba(2, 6, 23, 0.180)' : 'none',
+                    '--gh-msg-blur': messageBlur,
+                    '--gh-panel-blur': panelBlur,
+                    '--gh-composer-blur': composerBlur,
+                    '--gh-composer-shadow': hasWallpaper ? '0 10px 24px rgba(2, 6, 23, 0.180)' : 'none',
+                    '--gh-page-sidebar-bg-light': 'color-mix(in srgb, #ffffff, transparent 84%)',
+                    '--gh-page-chat-bg-light': 'transparent',
+                    '--gh-page-composer-bg-light': 'color-mix(in srgb, #ffffff, transparent 78%)',
+                    '--gh-page-sidebar-bg-dark': hasWallpaper
+                        ? 'linear-gradient(180deg, rgba(2, 6, 23, 0.780) 0%, rgba(2, 6, 23, 0.560) 100%)'
+                        : 'transparent',
+                    '--gh-page-chat-bg-dark': 'transparent',
+                    '--gh-page-composer-bg-dark': hasWallpaper
+                        ? 'linear-gradient(135deg, rgba(8, 17, 29, 0.520) 0%, rgba(15, 23, 42, 0.360) 100%)'
+                        : 'transparent',
+                    '--gh-page-accent-soft': 'rgba(59, 130, 246, 0.120)',
+                    '--gh-page-accent-soft-dark': 'rgba(59, 130, 246, 0.260)',
+                    '--gh-page-accent-strong': '#2563eb',
+                    '--gh-page-link': '#2563eb',
+                    '--gh-page-selection': 'rgba(59, 130, 246, 0.180)'
+                };
+            }
 
             return {
-                '--gh-bg': rgbaFromColor(cardTop, 0.18 + panelUnit * 0.14),
-                '--gh-bg-secondary': rgbaFromColor(cardBottom, 0.14 + panelUnit * 0.10),
-                '--gh-text': 'rgba(248, 250, 252, 0.96)',
-                '--gh-text-secondary': 'rgba(203, 213, 225, 0.78)',
-                '--gh-border': rgbaFromColor(panelBorder, 0.08 + panelUnit * 0.12),
-                '--gh-hover': rgbaFromColor(panelBottom, 0.10 + panelUnit * 0.10),
-                '--gh-shadow': `-14px 0 34px ${rgbaFromColor(shadowTint, 0.18 + panelUnit * 0.10)}`,
-                '--gh-input-bg': buildLinearGradient('135deg', [
-                    `${rgbaFromColor(composerTop, 0.18 + composerUnit * 0.16)} 0%`,
-                    `${rgbaFromColor(composerBottom, 0.12 + composerUnit * 0.12)} 100%`
-                ]),
-                '--gh-input-border': rgbaFromColor(messageBorder, 0.12 + composerUnit * 0.12),
-                '--gh-active-bg': rgbaFromColor(activeTint, 0.28 + panelUnit * 0.10),
-                '--gh-right-overlay': buildLinearGradient('180deg', [
-                    `${rgbaFromColor(panelTop, 0.22 + panelUnit * 0.16)} 0%`,
-                    `${rgbaFromColor(panelBottom, 0.14 + panelUnit * 0.12)} 100%`
-                ]),
-                '--gh-panel-card-bg': buildLinearGradient('135deg', [
-                    `${rgbaFromColor(cardTop, 0.18 + panelUnit * 0.14)} 0%`,
-                    `${rgbaFromColor(cardBottom, 0.12 + panelUnit * 0.10)} 100%`
-                ]),
-                '--gh-panel-card-border': rgbaFromColor(panelBorder, 0.10 + panelUnit * 0.12),
-                '--gh-sidebar-button-bg': rgbaFromColor(activeTint, 0.18 + panelUnit * 0.10),
-                '--gh-msg-user-bg': buildLinearGradient('135deg', [
-                    `${rgbaFromColor(messageTop, 0.24 + messageUnit * 0.18)} 0%`,
-                    `${rgbaFromColor(userAccent, 0.12 + messageUnit * 0.12)} 100%`
-                ]),
-                '--gh-msg-assistant-bg': buildLinearGradient('135deg', [
-                    `${rgbaFromColor(messageTop, 0.22 + messageUnit * 0.16)} 0%`,
-                    `${rgbaFromColor(messageAccent, 0.14 + messageUnit * 0.14)} 100%`
-                ]),
-                '--gh-msg-border': rgbaFromColor(messageBorder, 0.10 + messageUnit * 0.12),
-                '--gh-msg-shadow': `0 16px 34px ${rgbaFromColor(shadowTint, 0.16 + messageUnit * 0.10)}`,
+                '--gh-bg': '#ffffff',
+                '--gh-bg-secondary': '#f9fafb',
+                '--gh-text': '#1f2937',
+                '--gh-text-secondary': '#6b7280',
+                '--gh-border': '#e5e7eb',
+                '--gh-hover': '#f3f4f6',
+                '--gh-shadow': '0 10px 40px rgba(0,0,0,0.15)',
+                '--gh-input-bg': hasWallpaper
+                    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.780) 0%, rgba(248, 250, 252, 0.600) 100%)'
+                    : '#ffffff',
+                '--gh-input-border': hasWallpaper ? 'rgba(209, 213, 219, 0.780)' : '#d1d5db',
+                '--gh-active-bg': '#e5e7eb',
+                '--gh-right-overlay': hasWallpaper
+                    ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.160) 0%, rgba(255, 255, 255, 0.060) 100%)'
+                    : '#ffffff',
+                '--gh-panel-card-bg': hasWallpaper ? 'rgba(255, 255, 255, 0.140)' : '#f9fafb',
+                '--gh-panel-card-border': hasWallpaper ? 'rgba(255, 255, 255, 0.280)' : '#e5e7eb',
+                '--gh-sidebar-button-bg': hasWallpaper ? 'rgba(255, 255, 255, 0.140)' : '#f3f4f6',
+                '--gh-msg-user-bg': hasWallpaper
+                    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.340) 0%, rgba(248, 250, 252, 0.240) 100%)'
+                    : 'rgba(255, 255, 255, 0.920)',
+                '--gh-msg-assistant-bg': hasWallpaper
+                    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.280) 0%, rgba(248, 250, 252, 0.180) 100%)'
+                    : 'transparent',
+                '--gh-msg-border': hasWallpaper ? 'rgba(255, 255, 255, 0.420)' : 'rgba(209, 213, 219, 0.580)',
+                '--gh-msg-shadow': hasWallpaper ? '0 14px 32px rgba(15, 23, 42, 0.100)' : 'none',
                 '--gh-msg-blur': messageBlur,
                 '--gh-panel-blur': panelBlur,
                 '--gh-composer-blur': composerBlur,
-                '--gh-composer-shadow': `0 12px 28px ${rgbaFromColor(shadowTint, 0.14 + composerUnit * 0.10)}`,
+                '--gh-composer-shadow': hasWallpaper ? '0 10px 24px rgba(15, 23, 42, 0.100)' : 'none',
+                '--gh-page-sidebar-bg-light': hasWallpaper
+                    ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.180) 0%, rgba(248, 250, 252, 0.080) 100%)'
+                    : 'transparent',
+                '--gh-page-chat-bg-light': 'transparent',
+                '--gh-page-composer-bg-light': hasWallpaper
+                    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.220) 0%, rgba(248, 250, 252, 0.120) 100%)'
+                    : 'transparent',
+                '--gh-page-sidebar-bg-dark': 'linear-gradient(180deg, rgba(2, 6, 23, 0.260) 0%, rgba(2, 6, 23, 0.160) 100%)',
+                '--gh-page-chat-bg-dark': 'transparent',
+                '--gh-page-composer-bg-dark': 'linear-gradient(135deg, rgba(8, 17, 29, 0.240) 0%, rgba(8, 17, 29, 0.160) 100%)',
+                '--gh-page-accent-soft': 'rgba(59, 130, 246, 0.120)',
+                '--gh-page-accent-soft-dark': 'rgba(59, 130, 246, 0.260)',
+                '--gh-page-accent-strong': '#2563eb',
+                '--gh-page-link': '#2563eb',
+                '--gh-page-selection': 'rgba(59, 130, 246, 0.180)'
+            };
+        }
+
+        if (isDark) {
+            const sidebarTop = hasWallpaper
+                ? blendRgbColors('#020617', preset.primary, 0.12 + panelUnit * 0.18)
+                : blendRgbColors('#070711', preset.primary, 0.40 + panelUnit * 0.18);
+            const sidebarBottom = hasWallpaper
+                ? blendRgbColors('#020617', preset.secondary, 0.08 + panelUnit * 0.16)
+                : blendRgbColors('#06070f', preset.secondary, 0.28 + panelUnit * 0.14);
+            const panelTop = hasWallpaper
+                ? blendRgbColors('#07111f', preset.primary, 0.14 + panelUnit * 0.18)
+                : blendRgbColors('#111324', preset.primary, 0.32 + panelUnit * 0.16);
+            const panelBottom = hasWallpaper
+                ? blendRgbColors('#07111f', preset.secondary, 0.10 + panelUnit * 0.16)
+                : blendRgbColors('#0d1323', preset.secondary, 0.24 + panelUnit * 0.14);
+            const cardTop = hasWallpaper
+                ? blendRgbColors('#091220', preset.primary, 0.16 + panelUnit * 0.14)
+                : blendRgbColors('#171932', preset.primary, 0.28 + panelUnit * 0.16);
+            const cardBottom = hasWallpaper
+                ? blendRgbColors('#08111c', preset.secondary, 0.10 + panelUnit * 0.12)
+                : blendRgbColors('#111729', preset.secondary, 0.20 + panelUnit * 0.12);
+            const messageTop = hasWallpaper
+                ? blendRgbColors('#0b1324', preset.light, 0.14 + messageUnit * 0.16)
+                : blendRgbColors('#17192c', preset.light, 0.08 + messageUnit * 0.08);
+            const messageAccent = hasWallpaper
+                ? blendRgbColors('#09111f', preset.primary, 0.18 + messageUnit * 0.18)
+                : blendRgbColors('#17192c', preset.primary, 0.38 + messageUnit * 0.16);
+            const userAccent = hasWallpaper
+                ? blendRgbColors('#08111d', preset.secondary, 0.14 + messageUnit * 0.16)
+                : blendRgbColors('#121a2f', preset.secondary, 0.30 + messageUnit * 0.14);
+            const panelBorder = hasWallpaper
+                ? blendRgbColors('#dbeafe', preset.primary, 0.16)
+                : blendRgbColors('#64748b', preset.primary, 0.20);
+            const messageBorder = hasWallpaper
+                ? blendRgbColors('#f8fafc', preset.primary, 0.18)
+                : blendRgbColors('#94a3b8', preset.primary, 0.16);
+            const activeTint = blendRgbColors('#0b1324', preset.primary, hasWallpaper ? 0.74 : 0.78);
+            const shadowTint = hasWallpaper
+                ? blendRgbColors('#020617', preset.primary, 0.28)
+                : blendRgbColors('#030712', preset.primary, 0.18);
+            const composerTop = hasWallpaper
+                ? blendRgbColors('#09111f', preset.light, 0.12 + composerUnit * 0.14)
+                : blendRgbColors('#14172a', preset.light, 0.08 + composerUnit * 0.08);
+            const composerBottom = hasWallpaper
+                ? blendRgbColors('#08111d', preset.primary, 0.16 + composerUnit * 0.16)
+                : blendRgbColors('#101628', preset.primary, 0.34 + composerUnit * 0.16);
+            const chatTop = hasWallpaper
+                ? blendRgbColors('#060b18', preset.primary, 0.08 + panelUnit * 0.10)
+                : blendRgbColors('#090814', preset.primary, 0.30 + panelUnit * 0.14);
+            const chatBottom = hasWallpaper
+                ? blendRgbColors('#050913', preset.secondary, 0.06 + panelUnit * 0.08)
+                : blendRgbColors('#06070f', preset.secondary, 0.18 + panelUnit * 0.10);
+
+            return {
+                '--gh-bg': rgbaFromColor(cardTop, hasWallpaper ? (0.18 + panelUnit * 0.14) : 0.98),
+                '--gh-bg-secondary': rgbaFromColor(cardBottom, hasWallpaper ? (0.14 + panelUnit * 0.10) : 0.96),
+                '--gh-text': 'rgba(248, 250, 252, 0.96)',
+                '--gh-text-secondary': 'rgba(203, 213, 225, 0.78)',
+                '--gh-border': rgbaFromColor(panelBorder, hasWallpaper ? (0.08 + panelUnit * 0.12) : (0.22 + panelUnit * 0.08)),
+                '--gh-hover': rgbaFromColor(panelBottom, hasWallpaper ? (0.10 + panelUnit * 0.10) : (0.42 + panelUnit * 0.10)),
+                '--gh-shadow': `-14px 0 34px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.18 + panelUnit * 0.10) : (0.18 + panelUnit * 0.06))}`,
+                '--gh-input-bg': buildLinearGradient('135deg', [
+                    `${rgbaFromColor(composerTop, hasWallpaper ? (0.18 + composerUnit * 0.16) : 0.94)} 0%`,
+                    `${rgbaFromColor(composerBottom, hasWallpaper ? (0.12 + composerUnit * 0.12) : 0.96)} 100%`
+                ]),
+                '--gh-input-border': rgbaFromColor(messageBorder, hasWallpaper ? (0.12 + composerUnit * 0.12) : (0.24 + composerUnit * 0.10)),
+                '--gh-active-bg': rgbaFromColor(activeTint, hasWallpaper ? (0.28 + panelUnit * 0.10) : 0.88),
+                '--gh-right-overlay': buildLinearGradient('180deg', [
+                    `${rgbaFromColor(panelTop, hasWallpaper ? (0.22 + panelUnit * 0.16) : 0.99)} 0%`,
+                    `${rgbaFromColor(panelBottom, hasWallpaper ? (0.14 + panelUnit * 0.12) : 0.97)} 100%`
+                ]),
+                '--gh-panel-card-bg': buildLinearGradient('135deg', [
+                    `${rgbaFromColor(cardTop, hasWallpaper ? (0.18 + panelUnit * 0.14) : 0.98)} 0%`,
+                    `${rgbaFromColor(cardBottom, hasWallpaper ? (0.12 + panelUnit * 0.10) : 0.96)} 100%`
+                ]),
+                '--gh-panel-card-border': rgbaFromColor(panelBorder, hasWallpaper ? (0.10 + panelUnit * 0.12) : (0.20 + panelUnit * 0.10)),
+                '--gh-sidebar-button-bg': rgbaFromColor(activeTint, hasWallpaper ? (0.18 + panelUnit * 0.10) : 0.82),
+                '--gh-msg-user-bg': buildLinearGradient('135deg', [
+                    `${rgbaFromColor(messageTop, hasWallpaper ? (0.24 + messageUnit * 0.18) : 0.98)} 0%`,
+                    `${rgbaFromColor(userAccent, hasWallpaper ? (0.12 + messageUnit * 0.12) : 0.94)} 100%`
+                ]),
+                '--gh-msg-assistant-bg': hasWallpaper
+                    ? buildLinearGradient('135deg', [
+                        `${rgbaFromColor(messageTop, 0.22 + messageUnit * 0.16)} 0%`,
+                        `${rgbaFromColor(messageAccent, 0.14 + messageUnit * 0.14)} 100%`
+                    ])
+                    : 'transparent',
+                '--gh-msg-border': rgbaFromColor(messageBorder, hasWallpaper ? (0.10 + messageUnit * 0.12) : (0.18 + messageUnit * 0.08)),
+                '--gh-msg-shadow': `0 16px 34px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.16 + messageUnit * 0.10) : (0.16 + messageUnit * 0.08))}`,
+                '--gh-msg-blur': messageBlur,
+                '--gh-panel-blur': panelBlur,
+                '--gh-composer-blur': composerBlur,
+                '--gh-composer-shadow': `0 12px 28px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.14 + composerUnit * 0.10) : (0.16 + composerUnit * 0.08))}`,
                 '--gh-page-sidebar-bg-light': buildLinearGradient('180deg', [
                     `${rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.70), 0.18)} 0%`,
                     `${rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.16), 0.08)} 100%`
@@ -664,85 +836,123 @@ if (!window.__MY_EXT__) {
                     `${rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.18), 0.12)} 100%`
                 ]),
                 '--gh-page-sidebar-bg-dark': buildLinearGradient('180deg', [
-                    `${rgbaFromColor(sidebarTop, 0.26 + panelUnit * 0.18)} 0%`,
-                    `${rgbaFromColor(sidebarBottom, 0.18 + panelUnit * 0.12)} 100%`
+                    `${rgbaFromColor(sidebarTop, hasWallpaper ? (0.26 + panelUnit * 0.18) : 0.99)} 0%`,
+                    `${rgbaFromColor(sidebarBottom, hasWallpaper ? (0.18 + panelUnit * 0.12) : 0.97)} 100%`
                 ]),
                 '--gh-page-chat-bg-dark': 'transparent',
                 '--gh-page-composer-bg-dark': buildLinearGradient('135deg', [
-                    `${rgbaFromColor(composerTop, 0.20 + composerUnit * 0.16)} 0%`,
-                    `${rgbaFromColor(composerBottom, 0.14 + composerUnit * 0.12)} 100%`
+                    `${rgbaFromColor(composerTop, hasWallpaper ? (0.20 + composerUnit * 0.16) : 0.98)} 0%`,
+                    `${rgbaFromColor(composerBottom, hasWallpaper ? (0.14 + composerUnit * 0.12) : 0.95)} 100%`
                 ]),
                 '--gh-page-accent-soft': rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.34), 0.22 + panelUnit * 0.08),
-                '--gh-page-accent-soft-dark': rgbaFromColor(activeTint, 0.26 + panelUnit * 0.10),
+                '--gh-page-accent-soft-dark': rgbaFromColor(activeTint, hasWallpaper ? (0.26 + panelUnit * 0.10) : 0.90),
                 '--gh-page-accent-strong': preset.accent,
                 '--gh-page-link': preset.accent,
-                '--gh-page-selection': rgbaFromColor(blendRgbColors('#0b1324', preset.primary, 0.72), 0.26)
+                '--gh-page-selection': rgbaFromColor(blendRgbColors('#0b1324', preset.primary, 0.72), hasWallpaper ? 0.26 : 0.32)
             };
         }
 
-        const sidebarTop = blendRgbColors('#ffffff', preset.light, 0.72);
-        const sidebarBottom = blendRgbColors('#ffffff', preset.primary, 0.16 + panelUnit * 0.12);
-        const panelTop = blendRgbColors('#ffffff', preset.light, 0.78);
-        const panelBottom = blendRgbColors('#ffffff', preset.secondary, 0.18 + panelUnit * 0.14);
-        const cardTop = blendRgbColors('#ffffff', preset.light, 0.60);
-        const cardBottom = blendRgbColors('#ffffff', preset.secondary, 0.20 + panelUnit * 0.10);
-        const userTop = blendRgbColors('#ffffff', preset.light, 0.70);
-        const userBottom = blendRgbColors('#ffffff', preset.secondary, 0.16 + messageUnit * 0.14);
-        const assistantTop = blendRgbColors('#ffffff', preset.light, 0.76);
-        const assistantBottom = blendRgbColors('#ffffff', preset.primary, 0.18 + messageUnit * 0.16);
-        const panelBorder = blendRgbColors('#ffffff', preset.primary, 0.12);
-        const messageBorder = blendRgbColors('#ffffff', preset.primary, 0.16);
-        const activeTint = blendRgbColors('#ffffff', preset.primary, 0.34);
-        const shadowTint = blendRgbColors('#0f172a', preset.primary, 0.16);
-        const composerTop = blendRgbColors('#ffffff', preset.light, 0.64);
-        const composerBottom = blendRgbColors('#ffffff', preset.primary, 0.18 + composerUnit * 0.12);
+        const sidebarTop = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.light, 0.72)
+            : blendRgbColors('#ffffff', preset.light, 0.92);
+        const sidebarBottom = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.primary, 0.16 + panelUnit * 0.12)
+            : blendRgbColors('#ffffff', preset.primary, 0.24 + panelUnit * 0.16);
+        const panelTop = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.light, 0.78)
+            : blendRgbColors('#ffffff', preset.light, 0.90);
+        const panelBottom = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.secondary, 0.18 + panelUnit * 0.14)
+            : blendRgbColors('#ffffff', preset.secondary, 0.26 + panelUnit * 0.16);
+        const cardTop = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.light, 0.60)
+            : blendRgbColors('#ffffff', preset.light, 0.88);
+        const cardBottom = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.secondary, 0.20 + panelUnit * 0.10)
+            : blendRgbColors('#ffffff', preset.primary, 0.20 + panelUnit * 0.14);
+        const userTop = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.light, 0.70)
+            : blendRgbColors('#ffffff', preset.light, 0.90);
+        const userBottom = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.secondary, 0.16 + messageUnit * 0.14)
+            : blendRgbColors('#ffffff', preset.secondary, 0.20 + messageUnit * 0.14);
+        const assistantTop = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.light, 0.76)
+            : blendRgbColors('#ffffff', preset.light, 0.94);
+        const assistantBottom = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.primary, 0.18 + messageUnit * 0.16)
+            : blendRgbColors('#ffffff', preset.primary, 0.18 + messageUnit * 0.14);
+        const panelBorder = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.primary, 0.12)
+            : blendRgbColors('#cbd5e1', preset.primary, 0.18);
+        const messageBorder = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.primary, 0.16)
+            : blendRgbColors('#cbd5e1', preset.primary, 0.18);
+        const activeTint = blendRgbColors('#eff6ff', preset.primary, hasWallpaper ? 0.34 : 0.46);
+        const shadowTint = hasWallpaper
+            ? blendRgbColors('#0f172a', preset.primary, 0.16)
+            : blendRgbColors('#94a3b8', preset.primary, 0.10);
+        const composerTop = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.light, 0.64)
+            : blendRgbColors('#ffffff', preset.light, 0.90);
+        const composerBottom = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.primary, 0.18 + composerUnit * 0.12)
+            : blendRgbColors('#ffffff', preset.primary, 0.18 + composerUnit * 0.12);
+        const chatTop = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.light, 0.34)
+            : blendRgbColors('#ffffff', preset.light, 0.60);
+        const chatBottom = hasWallpaper
+            ? blendRgbColors('#ffffff', preset.primary, 0.08 + panelUnit * 0.06)
+            : blendRgbColors('#ffffff', preset.primary, 0.12 + panelUnit * 0.08);
 
         return {
-            '--gh-bg': rgbaFromColor(cardTop, 0.14 + panelUnit * 0.10),
-            '--gh-bg-secondary': rgbaFromColor(cardBottom, 0.10 + panelUnit * 0.08),
+            '--gh-bg': rgbaFromColor(cardTop, hasWallpaper ? (0.14 + panelUnit * 0.10) : 0.97),
+            '--gh-bg-secondary': rgbaFromColor(cardBottom, hasWallpaper ? (0.10 + panelUnit * 0.08) : 0.93),
             '--gh-text': 'rgba(15, 23, 42, 0.92)',
             '--gh-text-secondary': 'rgba(51, 65, 85, 0.78)',
-            '--gh-border': rgbaFromColor(panelBorder, 0.20 + panelUnit * 0.10),
-            '--gh-hover': rgbaFromColor(panelBottom, 0.10 + panelUnit * 0.08),
-            '--gh-shadow': `-14px 0 34px ${rgbaFromColor(shadowTint, 0.10 + panelUnit * 0.06)}`,
+            '--gh-border': rgbaFromColor(panelBorder, hasWallpaper ? (0.20 + panelUnit * 0.10) : (0.34 + panelUnit * 0.08)),
+            '--gh-hover': rgbaFromColor(panelBottom, hasWallpaper ? (0.10 + panelUnit * 0.08) : (0.60 + panelUnit * 0.10)),
+            '--gh-shadow': `-14px 0 34px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.10 + panelUnit * 0.06) : (0.14 + panelUnit * 0.05))}`,
             '--gh-input-bg': buildLinearGradient('135deg', [
-                `${rgbaFromColor(composerTop, 0.18 + composerUnit * 0.14)} 0%`,
-                `${rgbaFromColor(composerBottom, 0.10 + composerUnit * 0.10)} 100%`
+                `${rgbaFromColor(composerTop, hasWallpaper ? (0.18 + composerUnit * 0.14) : 0.96)} 0%`,
+                `${rgbaFromColor(composerBottom, hasWallpaper ? (0.10 + composerUnit * 0.10) : 0.90)} 100%`
             ]),
-            '--gh-input-border': rgbaFromColor(messageBorder, 0.24 + composerUnit * 0.10),
-            '--gh-active-bg': rgbaFromColor(activeTint, 0.18 + panelUnit * 0.08),
+            '--gh-input-border': rgbaFromColor(messageBorder, hasWallpaper ? (0.24 + composerUnit * 0.10) : (0.38 + composerUnit * 0.08)),
+            '--gh-active-bg': rgbaFromColor(activeTint, hasWallpaper ? (0.18 + panelUnit * 0.08) : (0.34 + panelUnit * 0.10)),
             '--gh-right-overlay': buildLinearGradient('180deg', [
-                `${rgbaFromColor(panelTop, 0.16 + panelUnit * 0.12)} 0%`,
-                `${rgbaFromColor(panelBottom, 0.08 + panelUnit * 0.10)} 100%`
+                `${rgbaFromColor(panelTop, hasWallpaper ? (0.16 + panelUnit * 0.12) : 0.98)} 0%`,
+                `${rgbaFromColor(panelBottom, hasWallpaper ? (0.08 + panelUnit * 0.10) : 0.94)} 100%`
             ]),
             '--gh-panel-card-bg': buildLinearGradient('135deg', [
-                `${rgbaFromColor(cardTop, 0.14 + panelUnit * 0.12)} 0%`,
-                `${rgbaFromColor(cardBottom, 0.08 + panelUnit * 0.08)} 100%`
+                `${rgbaFromColor(cardTop, hasWallpaper ? (0.14 + panelUnit * 0.12) : 0.96)} 0%`,
+                `${rgbaFromColor(cardBottom, hasWallpaper ? (0.08 + panelUnit * 0.08) : 0.92)} 100%`
             ]),
-            '--gh-panel-card-border': rgbaFromColor(panelBorder, 0.22 + panelUnit * 0.10),
-            '--gh-sidebar-button-bg': rgbaFromColor(activeTint, 0.14 + panelUnit * 0.08),
+            '--gh-panel-card-border': rgbaFromColor(panelBorder, hasWallpaper ? (0.22 + panelUnit * 0.10) : (0.36 + panelUnit * 0.08)),
+            '--gh-sidebar-button-bg': rgbaFromColor(activeTint, hasWallpaper ? (0.14 + panelUnit * 0.08) : (0.32 + panelUnit * 0.10)),
             '--gh-msg-user-bg': buildLinearGradient('135deg', [
-                `${rgbaFromColor(userTop, 0.26 + messageUnit * 0.18)} 0%`,
-                `${rgbaFromColor(userBottom, 0.10 + messageUnit * 0.10)} 100%`
+                `${rgbaFromColor(userTop, hasWallpaper ? (0.26 + messageUnit * 0.18) : 0.96)} 0%`,
+                `${rgbaFromColor(userBottom, hasWallpaper ? (0.10 + messageUnit * 0.10) : 0.88)} 100%`
             ]),
-            '--gh-msg-assistant-bg': buildLinearGradient('135deg', [
-                `${rgbaFromColor(assistantTop, 0.24 + messageUnit * 0.16)} 0%`,
-                `${rgbaFromColor(assistantBottom, 0.12 + messageUnit * 0.12)} 100%`
-            ]),
-            '--gh-msg-border': rgbaFromColor(messageBorder, 0.24 + messageUnit * 0.12),
-            '--gh-msg-shadow': `0 14px 32px ${rgbaFromColor(shadowTint, 0.08 + messageUnit * 0.08)}`,
+            '--gh-msg-assistant-bg': hasWallpaper
+                ? buildLinearGradient('135deg', [
+                    `${rgbaFromColor(assistantTop, 0.24 + messageUnit * 0.16)} 0%`,
+                    `${rgbaFromColor(assistantBottom, 0.12 + messageUnit * 0.12)} 100%`
+                ])
+                : 'transparent',
+            '--gh-msg-border': rgbaFromColor(messageBorder, hasWallpaper ? (0.24 + messageUnit * 0.12) : (0.38 + messageUnit * 0.10)),
+            '--gh-msg-shadow': `0 14px 32px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.08 + messageUnit * 0.08) : (0.10 + messageUnit * 0.06))}`,
             '--gh-msg-blur': messageBlur,
             '--gh-panel-blur': panelBlur,
             '--gh-composer-blur': composerBlur,
-            '--gh-composer-shadow': `0 10px 24px ${rgbaFromColor(shadowTint, 0.08 + composerUnit * 0.08)}`,
+            '--gh-composer-shadow': `0 10px 24px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.08 + composerUnit * 0.08) : (0.10 + composerUnit * 0.06))}`,
             '--gh-page-sidebar-bg-light': buildLinearGradient('180deg', [
-                `${rgbaFromColor(sidebarTop, 0.14 + panelUnit * 0.12)} 0%`,
-                `${rgbaFromColor(sidebarBottom, 0.06 + panelUnit * 0.10)} 100%`
+                `${rgbaFromColor(sidebarTop, hasWallpaper ? (0.14 + panelUnit * 0.12) : 0.98)} 0%`,
+                `${rgbaFromColor(sidebarBottom, hasWallpaper ? (0.06 + panelUnit * 0.10) : 0.94)} 100%`
             ]),
             '--gh-page-chat-bg-light': 'transparent',
             '--gh-page-composer-bg-light': buildLinearGradient('135deg', [
-                `${rgbaFromColor(composerTop, 0.18 + composerUnit * 0.14)} 0%`,
-                `${rgbaFromColor(composerBottom, 0.10 + composerUnit * 0.10)} 100%`
+                `${rgbaFromColor(composerTop, hasWallpaper ? (0.18 + composerUnit * 0.14) : 0.97)} 0%`,
+                `${rgbaFromColor(composerBottom, hasWallpaper ? (0.10 + composerUnit * 0.10) : 0.90)} 100%`
             ]),
             '--gh-page-sidebar-bg-dark': buildLinearGradient('180deg', [
                 `${rgbaFromColor(blendRgbColors('#020617', preset.primary, 0.22), 0.26)} 0%`,
@@ -753,11 +963,11 @@ if (!window.__MY_EXT__) {
                 `${rgbaFromColor(blendRgbColors('#08111d', preset.light, 0.12), 0.24)} 0%`,
                 `${rgbaFromColor(blendRgbColors('#08111d', preset.primary, 0.18), 0.16)} 100%`
             ]),
-            '--gh-page-accent-soft': rgbaFromColor(activeTint, 0.20 + panelUnit * 0.08),
+            '--gh-page-accent-soft': rgbaFromColor(activeTint, hasWallpaper ? (0.20 + panelUnit * 0.08) : 0.88),
             '--gh-page-accent-soft-dark': rgbaFromColor(blendRgbColors('#0b1324', preset.primary, 0.72), 0.24 + panelUnit * 0.10),
             '--gh-page-accent-strong': preset.accent,
             '--gh-page-link': preset.accent,
-            '--gh-page-selection': rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.38), 0.28)
+            '--gh-page-selection': rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.38), hasWallpaper ? 0.28 : 0.34)
         };
     }
 
@@ -6815,33 +7025,39 @@ if (!window.__MY_EXT__) {
         applyThemePresetVariables(presetKey, persist = true) {
             const cfg = this.getThemeConfig();
             const preset = getThemePresetByKey(presetKey);
-            const gradient = `linear-gradient(135deg, ${preset.primary} 0%, ${preset.secondary} 100%)`;
             const root = document.documentElement;
-            root.style.setProperty('--gh-theme-primary', preset.primary);
-            root.style.setProperty('--gh-theme-secondary', preset.secondary);
-            root.style.setProperty('--gh-theme-accent', preset.accent);
-            root.style.setProperty('--gh-theme-accent-dark', preset.accent);
-            root.style.setProperty('--gh-theme-light', preset.light);
-            root.style.setProperty('--gh-primary', preset.primary);
-            root.style.setProperty('--gh-primary-hover', preset.accent);
-            root.style.setProperty('--gh-tag-active-bg', preset.primary);
-            root.style.setProperty('--gh-gradient', gradient);
-            root.style.setProperty('--gh-header-bg', gradient);
-            root.style.setProperty('--gh-theme-surface-light-base', rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.64), 1));
-            root.style.setProperty('--gh-theme-surface-light-accent', rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.18), 1));
-            root.style.setProperty('--gh-theme-surface-dark-base', rgbaFromColor(blendRgbColors('#020617', preset.primary, 0.18), 1));
-            root.style.setProperty('--gh-theme-surface-dark-accent', rgbaFromColor(blendRgbColors('#020617', preset.secondary, 0.16), 1));
-            root.style.setProperty('--gh-page-sidebar-bg-light', 'color-mix(in srgb, #ffffff, transparent 84%)');
-            root.style.setProperty('--gh-page-chat-bg-light', 'transparent');
-            root.style.setProperty('--gh-page-composer-bg-light', 'color-mix(in srgb, #ffffff, transparent 78%)');
-            root.style.setProperty('--gh-page-sidebar-bg-dark', 'color-mix(in srgb, #020617, transparent 80%)');
-            root.style.setProperty('--gh-page-chat-bg-dark', 'transparent');
-            root.style.setProperty('--gh-page-composer-bg-dark', 'color-mix(in srgb, #020617, transparent 74%)');
-            root.style.setProperty('--gh-page-accent-soft', `color-mix(in srgb, ${preset.primary}, transparent 84%)`);
-            root.style.setProperty('--gh-page-accent-soft-dark', `color-mix(in srgb, ${preset.primary}, transparent 74%)`);
-            root.style.setProperty('--gh-page-accent-strong', preset.accent);
-            root.style.setProperty('--gh-page-link', preset.accent);
-            root.style.setProperty('--gh-page-selection', `color-mix(in srgb, ${preset.primary}, transparent 82%)`);
+            if (preset.isOriginal) {
+                THEME_PRESET_INLINE_VAR_KEYS.forEach((key) => {
+                    root.style.removeProperty(key);
+                });
+            } else {
+                const gradient = `linear-gradient(135deg, ${preset.primary} 0%, ${preset.secondary} 100%)`;
+                root.style.setProperty('--gh-theme-primary', preset.primary);
+                root.style.setProperty('--gh-theme-secondary', preset.secondary);
+                root.style.setProperty('--gh-theme-accent', preset.accent);
+                root.style.setProperty('--gh-theme-accent-dark', preset.accent);
+                root.style.setProperty('--gh-theme-light', preset.light);
+                root.style.setProperty('--gh-primary', preset.primary);
+                root.style.setProperty('--gh-primary-hover', preset.accent);
+                root.style.setProperty('--gh-tag-active-bg', preset.primary);
+                root.style.setProperty('--gh-gradient', gradient);
+                root.style.setProperty('--gh-header-bg', gradient);
+                root.style.setProperty('--gh-theme-surface-light-base', rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.64), 1));
+                root.style.setProperty('--gh-theme-surface-light-accent', rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.18), 1));
+                root.style.setProperty('--gh-theme-surface-dark-base', rgbaFromColor(blendRgbColors('#020617', preset.primary, 0.18), 1));
+                root.style.setProperty('--gh-theme-surface-dark-accent', rgbaFromColor(blendRgbColors('#020617', preset.secondary, 0.16), 1));
+                root.style.setProperty('--gh-page-sidebar-bg-light', 'color-mix(in srgb, #ffffff, transparent 84%)');
+                root.style.setProperty('--gh-page-chat-bg-light', 'transparent');
+                root.style.setProperty('--gh-page-composer-bg-light', 'color-mix(in srgb, #ffffff, transparent 78%)');
+                root.style.setProperty('--gh-page-sidebar-bg-dark', 'color-mix(in srgb, #020617, transparent 80%)');
+                root.style.setProperty('--gh-page-chat-bg-dark', 'transparent');
+                root.style.setProperty('--gh-page-composer-bg-dark', 'color-mix(in srgb, #020617, transparent 74%)');
+                root.style.setProperty('--gh-page-accent-soft', `color-mix(in srgb, ${preset.primary}, transparent 84%)`);
+                root.style.setProperty('--gh-page-accent-soft-dark', `color-mix(in srgb, ${preset.primary}, transparent 74%)`);
+                root.style.setProperty('--gh-page-accent-strong', preset.accent);
+                root.style.setProperty('--gh-page-link', preset.accent);
+                root.style.setProperty('--gh-page-selection', `color-mix(in srgb, ${preset.primary}, transparent 82%)`);
+            }
 
             if (cfg.presetKey !== preset.key) {
                 cfg.presetKey = preset.key;
@@ -7187,44 +7403,44 @@ if (!window.__MY_EXT__) {
                     box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
                 }
 
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [aria-current="page"],
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [data-active="true"],
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [aria-selected="true"],
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [data-state="active"],
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [role="option"][aria-selected="true"],
-                :root[data-gh-theme-active="true"] nav[aria-label*="Chat history"] [aria-current="page"],
-                :root[data-gh-theme-active="true"] nav[aria-label*="聊天历史"] [aria-current="page"],
-                :root[data-gh-theme-active="true"] [data-testid="sidebar"] [aria-current="page"] {
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [aria-current="page"],
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [data-active="true"],
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [aria-selected="true"],
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [data-state="active"],
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [role="option"][aria-selected="true"],
+                :root[data-gh-page-theme="true"] nav[aria-label*="Chat history"] [aria-current="page"],
+                :root[data-gh-page-theme="true"] nav[aria-label*="聊天历史"] [aria-current="page"],
+                :root[data-gh-page-theme="true"] [data-testid="sidebar"] [aria-current="page"] {
                     background: var(--gh-page-accent-soft) !important;
                     color: var(--gh-page-accent-strong) !important;
                 }
 
-                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [aria-current="page"],
-                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [data-active="true"],
-                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [aria-selected="true"],
-                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [data-state="active"],
-                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [role="option"][aria-selected="true"],
-                :root[data-gh-theme-active="true"][data-gh-mode="dark"] nav[aria-label*="Chat history"] [aria-current="page"],
-                :root[data-gh-theme-active="true"][data-gh-mode="dark"] nav[aria-label*="聊天历史"] [aria-current="page"],
-                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-testid="sidebar"] [aria-current="page"] {
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [aria-current="page"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [data-active="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [aria-selected="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [data-state="active"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [role="option"][aria-selected="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"] nav[aria-label*="Chat history"] [aria-current="page"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"] nav[aria-label*="聊天历史"] [aria-current="page"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [aria-current="page"] {
                     background: var(--gh-page-accent-soft-dark) !important;
                     color: #ffffff !important;
                 }
 
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-main="true"] a,
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-chat-list="true"] a,
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-composer="true"] a {
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-main="true"] a,
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-chat-list="true"] a,
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer="true"] a {
                     color: var(--gh-page-link) !important;
                 }
 
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-main="true"] ::selection,
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-chat-list="true"] ::selection {
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-main="true"] ::selection,
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-chat-list="true"] ::selection {
                     background: var(--gh-page-selection);
                 }
 
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-composer="true"] button[type="submit"],
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-composer="true"] button[data-testid*="send"],
-                :root[data-gh-theme-active="true"] [data-gh-theme-host-composer="true"] button[class*="send"] {
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer="true"] button[type="submit"],
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer="true"] button[data-testid*="send"],
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer="true"] button[class*="send"] {
                     background-color: var(--gh-page-accent-strong) !important;
                     border-color: transparent !important;
                     color: #ffffff !important;
@@ -7393,6 +7609,206 @@ if (!window.__MY_EXT__) {
                     }
                 }
 
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] aside[aria-label*="Chat history"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] aside[aria-label*="聊天历史"] {
+                    --sidebar-mask-bg: transparent;
+                    --bg-elevated-secondary: transparent;
+                    background: var(--gh-page-sidebar-bg-light) !important;
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="聊天历史"] {
+                    background: var(--gh-page-sidebar-bg-dark) !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-center,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-main="true"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-chat-list="true"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #chatgpt-helper-center,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-main="true"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-chat-list="true"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] main,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [role="main"] {
+                    background: transparent !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-composer="true"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main form,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] form {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-right {
+                    background: var(--gh-right-overlay) !important;
+                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-content {
+                    background: transparent !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-tabs,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-search-bar,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-categories,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .outline-fixed-toolbar {
+                    background: color-mix(in srgb, var(--gh-bg-secondary), transparent 2%) !important;
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-search-input,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .outline-search-input,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .outline-toolbar-btn {
+                    background: var(--gh-input-bg) !important;
+                    border-color: var(--gh-input-border) !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-prompt-item,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .outline-item.user-query-node,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-empty-state,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-theme-block,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-right .chatgpt-helper-tab-content,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-right .outline-item {
+                    background: var(--gh-panel-card-bg) !important;
+                    border-color: var(--gh-panel-card-border) !important;
+                    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gh-panel-card-border), transparent 18%);
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"] > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] nav[aria-label*="Chat history"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] nav[aria-label*="聊天历史"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] nav,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] aside {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"] {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"] button,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"] button {
+                    background: var(--gh-sidebar-button-bg) !important;
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"] {
+                    background: var(--gh-page-composer-bg-light) !important;
+                    border-radius: 28px !important;
+                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"] {
+                    background: var(--gh-page-composer-bg-dark) !important;
+                }
+
+                @supports selector(:has(*)) {
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="user"] > div:has(> div[class*="rounded-2xl"]),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="user"] > div:has(> div[class*="rounded-2xl"]),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="user"] > div > div:has(> div[class*="rounded-2xl"]),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="user"] > div > div:has(> div[class*="rounded-2xl"]) {
+                        background: var(--gh-msg-user-bg) !important;
+                        box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                        padding: 8px 10px !important;
+                        border-radius: 24px !important;
+                        background-clip: padding-box;
+                    }
+
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="assistant"] > div:has(> .markdown),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="assistant"] > div:has(> .markdown),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="assistant"] > div:has(> [class*="markdown"]),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="assistant"] > div:has(> [class*="markdown"]),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="assistant"] > div > div:has(> .markdown),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="assistant"] > div > div:has(> .markdown),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="assistant"] > div > div:has(> [class*="markdown"]),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="assistant"] > div > div:has(> [class*="markdown"]) {
+                        background: transparent !important;
+                        background-image: none !important;
+                        box-shadow: none !important;
+                        padding: 0 !important;
+                        border-radius: 0 !important;
+                        backdrop-filter: none !important;
+                        -webkit-backdrop-filter: none !important;
+                    }
+
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-msg-glass="true"] main [data-message-author-role="user"] > div:has(> div[class*="rounded-2xl"]),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="user"] > div:has(> div[class*="rounded-2xl"]),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-msg-glass="true"] main [data-message-author-role="user"] > div > div:has(> div[class*="rounded-2xl"]),
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="user"] > div > div:has(> div[class*="rounded-2xl"]) {
+                        backdrop-filter: blur(var(--gh-msg-blur));
+                        -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                    }
+
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="user"] div[class*="rounded-2xl"],
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="user"] div[class*="rounded-2xl"],
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="assistant"] [class*="markdown"],
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="assistant"] [class*="markdown"] {
+                        background: transparent !important;
+                        background-image: none !important;
+                        box-shadow: none !important;
+                        padding: 0 !important;
+                        border-radius: 0 !important;
+                        overflow: visible !important;
+                    }
+                }
+
+                @supports not selector(:has(*)) {
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="user"] > div > div,
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="user"] > div > div,
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="user"] div[class*="rounded-2xl"],
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="user"] div[class*="rounded-2xl"] {
+                        background: var(--gh-msg-user-bg) !important;
+                        box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                        padding: 10px 12px !important;
+                        background-clip: padding-box;
+                        border-radius: 24px !important;
+                        overflow: hidden;
+                    }
+
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] main [data-message-author-role="assistant"] [class*="markdown"],
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [role="main"] [data-message-author-role="assistant"] [class*="markdown"] {
+                        background: transparent !important;
+                        background-image: none !important;
+                        box-shadow: none !important;
+                        padding: 0 !important;
+                        border-radius: 0 !important;
+                        overflow: visible !important;
+                    }
+
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-msg-glass="true"] main [data-message-author-role="user"] > div > div,
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="user"] > div > div,
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-msg-glass="true"] main [data-message-author-role="user"] div[class*="rounded-2xl"],
+                    :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="user"] div[class*="rounded-2xl"] {
+                        backdrop-filter: blur(var(--gh-msg-blur));
+                        -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                    }
+                }
+
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] #stage-slideover-sidebar,
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] [data-testid="sidebar"] {
                     box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha));
@@ -7480,36 +7896,6 @@ if (!window.__MY_EXT__) {
 
         syncThemeSurfaceVariables(canRenderBackground) {
             const root = document.documentElement;
-            const keys = [
-                '--gh-bg',
-                '--gh-bg-secondary',
-                '--gh-text',
-                '--gh-text-secondary',
-                '--gh-border',
-                '--gh-hover',
-                '--gh-shadow',
-                '--gh-input-bg',
-                '--gh-input-border',
-                '--gh-active-bg',
-                '--gh-right-overlay',
-                '--gh-panel-card-bg',
-                '--gh-panel-card-border',
-                '--gh-sidebar-button-bg',
-                '--gh-msg-user-bg',
-                '--gh-msg-assistant-bg',
-                '--gh-msg-border',
-                '--gh-msg-shadow',
-                '--gh-msg-blur',
-                '--gh-panel-blur',
-                '--gh-composer-blur',
-                '--gh-composer-shadow'
-            ];
-
-            if (!canRenderBackground) {
-                keys.forEach((key) => root.style.removeProperty(key));
-                return;
-            }
-
             const isDark = this.detectEffectiveThemeFromDom() === 'dark';
             const cfg = this.getThemeConfig();
             const preset = getThemePresetByKey(cfg.presetKey);
@@ -7519,11 +7905,6 @@ if (!window.__MY_EXT__) {
                 messageIntensity: cfg.messageGlassIntensity,
                 panelIntensity: cfg.panelGlassIntensity
             });
-
-            if (!surfaceVars) {
-                keys.forEach((key) => root.style.removeProperty(key));
-                return;
-            }
 
             Object.entries(surfaceVars).forEach(([key, value]) => {
                 root.style.setProperty(key, value);
@@ -7535,10 +7916,12 @@ if (!window.__MY_EXT__) {
             const cfg = this.getThemeConfig();
             const canRenderBackground = Boolean(cfg.backgroundImageEnabled && this.themeBackgroundObjectUrl);
             const root = document.documentElement;
+            const pageThemeEnabled = cfg.presetKey !== 'original';
             this.syncHelperThemeMode(this.detectEffectiveThemeFromDom());
             this.refreshThemeHostTargets();
             root.setAttribute('data-gh-theme-active', 'true');
             root.setAttribute('data-gh-theme-preset', cfg.presetKey || 'blue');
+            root.setAttribute('data-gh-page-theme', pageThemeEnabled ? 'true' : 'false');
             root.setAttribute('data-gh-bg-enabled', canRenderBackground ? 'true' : 'false');
             root.setAttribute('data-gh-msg-glass', cfg.messageGlassEnabled ? 'true' : 'false');
             root.setAttribute('data-gh-sidebar-enhance', cfg.sidebarTextEnhanceEnabled ? 'true' : 'false');
@@ -7663,48 +8046,35 @@ if (!window.__MY_EXT__) {
             const canRenderBackground = Boolean(cfg.backgroundImageEnabled && this.themeBackgroundObjectUrl);
             const isDark = this.currentEffectiveTheme === 'dark';
             const preset = getThemePresetByKey(cfg.presetKey);
+            const pageThemeEnabled = !preset.isOriginal;
             const previewVars = buildThemeSurfaceVars(preset, {
                 isDark,
                 canRenderBackground,
                 messageIntensity: cfg.messageGlassIntensity,
                 panelIntensity: cfg.panelGlassIntensity
             });
-            const previewNavBg = canRenderBackground && previewVars
+            const previewNavBg = canRenderBackground
                 ? (isDark ? previewVars['--gh-page-sidebar-bg-dark'] : previewVars['--gh-page-sidebar-bg-light'])
-                : (isDark ? rgbaFromColor(blendRgbColors('#0f172a', preset.primary, 0.18), 0.88) : 'rgba(255, 255, 255, 0.92)');
-            const previewInputBg = canRenderBackground && previewVars
+                : (pageThemeEnabled
+                    ? (isDark ? previewVars['--gh-page-sidebar-bg-dark'] : previewVars['--gh-page-sidebar-bg-light'])
+                    : (isDark ? 'rgba(15, 23, 42, 0.920)' : 'rgba(255, 255, 255, 0.960)'));
+            const previewInputBg = canRenderBackground
                 ? (isDark ? previewVars['--gh-page-composer-bg-dark'] : previewVars['--gh-page-composer-bg-light'])
-                : (isDark ? rgbaFromColor(blendRgbColors('#0f172a', preset.primary, 0.14), 0.78) : rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.36), 0.90));
-            const previewMessageUserBg = cfg.messageGlassEnabled
-                ? ((canRenderBackground && previewVars)
-                    ? previewVars['--gh-msg-user-bg']
-                    : (isDark
-                        ? buildLinearGradient('135deg', [
-                            `${rgbaFromColor(blendRgbColors('#0f172a', preset.primary, 0.22), 0.82)} 0%`,
-                            `${rgbaFromColor(blendRgbColors('#0f172a', preset.secondary, 0.16), 0.66)} 100%`
-                        ])
-                        : buildLinearGradient('135deg', [
-                            `${rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.62), 0.92)} 0%`,
-                            `${rgbaFromColor(blendRgbColors('#ffffff', preset.secondary, 0.18), 0.80)} 100%`
-                        ])))
-                : (isDark ? 'rgba(15, 23, 42, 0.84)' : 'rgba(255,255,255,0.92)');
-            const previewMessageAssistantBg = cfg.messageGlassEnabled
-                ? ((canRenderBackground && previewVars)
-                    ? previewVars['--gh-msg-assistant-bg']
-                    : (isDark
-                        ? buildLinearGradient('135deg', [
-                            `${rgbaFromColor(blendRgbColors('#0f172a', preset.light, 0.12), 0.78)} 0%`,
-                            `${rgbaFromColor(blendRgbColors('#0f172a', preset.primary, 0.20), 0.62)} 100%`
-                        ])
-                        : buildLinearGradient('135deg', [
-                            `${rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.66), 0.90)} 0%`,
-                            `${rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.20), 0.74)} 100%`
-                        ])))
-                : (isDark ? 'rgba(15, 23, 42, 0.72)' : rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.46), 0.92));
-            const previewBorder = canRenderBackground && previewVars
+                : (pageThemeEnabled
+                    ? (isDark ? previewVars['--gh-page-composer-bg-dark'] : previewVars['--gh-page-composer-bg-light'])
+                    : (isDark ? '#334155' : '#ffffff'));
+            const previewChatBg = 'transparent';
+            const previewMessageUserBg = (canRenderBackground || pageThemeEnabled)
+                ? previewVars['--gh-msg-user-bg']
+                : (isDark ? 'rgba(51, 65, 85, 0.940)' : 'rgba(255,255,255,0.920)');
+            const previewAssistantBubble = canRenderBackground && cfg.messageGlassEnabled;
+            const previewMessageAssistantBg = previewAssistantBubble
+                ? previewVars['--gh-msg-assistant-bg']
+                : 'transparent';
+            const previewBorder = previewVars
                 ? previewVars['--gh-panel-card-border']
                 : (isDark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.32)');
-            const previewMessageBorder = canRenderBackground && previewVars
+            const previewMessageBorder = previewVars
                 ? previewVars['--gh-msg-border']
                 : previewBorder;
 
@@ -7721,20 +8091,30 @@ if (!window.__MY_EXT__) {
             refs.previewNav.style.backdropFilter = canRenderBackground && previewVars
                 ? `blur(${previewVars['--gh-panel-blur']})`
                 : 'none';
+            refs.previewChat.style.background = previewChatBg;
+            refs.previewChat.style.border = '1px solid transparent';
             refs.previewUserMsg.style.background = previewMessageUserBg;
             refs.previewAssistantMsg.style.background = previewMessageAssistantBg;
             refs.previewUserMsg.style.border = `1px solid ${previewMessageBorder}`;
-            refs.previewAssistantMsg.style.border = `1px solid ${previewMessageBorder}`;
-            refs.previewUserMsg.style.padding = cfg.messageGlassEnabled ? '10px 12px' : '8px 10px';
-            refs.previewAssistantMsg.style.padding = cfg.messageGlassEnabled ? '14px 18px' : '10px 12px';
-            refs.previewUserMsg.style.borderRadius = cfg.messageGlassEnabled ? '24px' : '18px';
-            refs.previewAssistantMsg.style.borderRadius = cfg.messageGlassEnabled ? '28px' : '20px';
-            refs.previewAssistantMsg.style.backdropFilter = cfg.messageGlassEnabled
-                ? ((canRenderBackground && previewVars) ? `blur(${previewVars['--gh-msg-blur']})` : (isDark ? 'blur(14px)' : 'blur(18px)'))
+            refs.previewAssistantMsg.style.border = previewAssistantBubble
+                ? `1px solid ${previewMessageBorder}`
+                : '1px solid transparent';
+            refs.previewUserMsg.style.padding = canRenderBackground
+                ? (cfg.messageGlassEnabled ? '10px 12px' : '8px 10px')
+                : '10px 12px';
+            refs.previewAssistantMsg.style.padding = previewAssistantBubble ? '14px 18px' : '0';
+            refs.previewUserMsg.style.borderRadius = canRenderBackground
+                ? (cfg.messageGlassEnabled ? '24px' : '18px')
+                : '20px';
+            refs.previewAssistantMsg.style.borderRadius = previewAssistantBubble ? '28px' : '0';
+            refs.previewAssistantMsg.style.backdropFilter = previewAssistantBubble
+                ? `blur(${previewVars['--gh-msg-blur']})`
                 : 'none';
-            refs.previewUserMsg.style.backdropFilter = cfg.messageGlassEnabled
-                ? ((canRenderBackground && previewVars) ? `blur(${previewVars['--gh-msg-blur']})` : (isDark ? 'blur(14px)' : 'blur(18px)'))
+            refs.previewUserMsg.style.backdropFilter = (cfg.messageGlassEnabled || !canRenderBackground)
+                ? ((canRenderBackground && previewVars) ? `blur(${previewVars['--gh-msg-blur']})` : 'none')
                 : 'none';
+            refs.previewAssistantMsg.style.boxShadow = previewAssistantBubble ? `inset 0 0 0 1px ${previewMessageBorder}` : 'none';
+            refs.previewAssistantMsg.style.color = '';
             refs.previewInput.style.background = previewInputBg;
             refs.previewInput.style.border = `1px solid ${previewMessageBorder}`;
             refs.previewInput.style.backdropFilter = canRenderBackground && previewVars
@@ -7788,11 +8168,16 @@ if (!window.__MY_EXT__) {
                 const presetBtn = createElement('button', {
                     className: 'chatgpt-helper-theme-preset',
                     type: 'button',
-                    title: preset.key,
+                    title: preset.labelKey ? this.t(preset.labelKey) : preset.key,
                     'data-preset-key': preset.key
                 });
-                presetBtn.style.background = preset.primary;
-                presetBtn.style.color = preset.primary;
+                if (preset.isOriginal) {
+                    presetBtn.classList.add('is-original');
+                    presetBtn.textContent = this.t(preset.labelKey) || 'Original';
+                } else {
+                    presetBtn.style.background = preset.primary;
+                    presetBtn.style.color = preset.primary;
+                }
                 presetGrid.appendChild(presetBtn);
                 presetButtons.push(presetBtn);
             });
@@ -8119,6 +8504,7 @@ if (!window.__MY_EXT__) {
                 preview,
                 previewBg,
                 previewNav,
+                previewChat,
                 previewUserMsg,
                 previewAssistantMsg,
                 previewInput
@@ -10471,10 +10857,10 @@ if (!window.__MY_EXT__) {
                 }
 
                 .chatgpt-helper-theme-preset-grid {
-                    display: grid;
-                    grid-template-columns: repeat(5, 46px);
+                    display: flex;
+                    flex-wrap: wrap;
                     gap: 10px;
-                    width: fit-content;
+                    width: 100%;
                     padding: 14px;
                     border-radius: 14px;
                     border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 10%);
@@ -10498,6 +10884,24 @@ if (!window.__MY_EXT__) {
 
                 .chatgpt-helper-theme-preset:hover {
                     transform: scale(1.06);
+                }
+
+                .chatgpt-helper-theme-preset.is-original {
+                    width: auto;
+                    min-width: 92px;
+                    padding: 0 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #f8fafc !important;
+                    font-size: 12px;
+                    font-weight: 700;
+                    letter-spacing: 0.02em;
+                    background: linear-gradient(135deg, #334155 0%, #64748b 100%);
+                }
+
+                .chatgpt-helper-theme-preset.is-original:hover {
+                    transform: translateY(-1px);
                 }
 
                 .chatgpt-helper-theme-upload {
