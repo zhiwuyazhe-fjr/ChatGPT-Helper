@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="icons/icon128.png" alt="ChatGPT Helper Logo" width="128" height="128">
+  <img src="icons/logo.svg" alt="ChatGPT Helper Logo" width="128" height="128">
   <h1>✨ ChatGPT Helper</h1>
   <p>
     <strong>极简、强大的 ChatGPT 网页增强助手</strong>

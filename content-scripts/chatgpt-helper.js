@@ -89,6 +89,36 @@ if (!window.__MY_EXT__) {
             autoDetect: '自动检测',
             chinese: '简体中文',
             english: 'English',
+            themeSettingsSection: '主题设置',
+            openThemeSettings: '打开主题设置',
+            themeDialogTitle: '主题',
+            themeAppearance: '外观',
+            themeAppearanceSystem: '跟随系统',
+            themeAppearanceLight: '浅色',
+            themeAppearanceDark: '深色',
+            themeColorPresets: '颜色',
+            themeWallpaper: '壁纸',
+            themeEnableWallpaper: '启用壁纸',
+            themeDropImage: '将图片拖放到这里',
+            themeFileTypes: '支持 PNG、JPG、WebP，最大 5MB',
+            themeSelectFile: '选择文件',
+            themeRemoveImage: '移除背景图',
+            themeBlur: '模糊',
+            themeMessageGlass: '消息毛玻璃效果',
+            themeMessageGlassIntensity: '消息毛玻璃强度',
+            themePanelGlassIntensity: '侧栏/右栏毛玻璃强度',
+            themeSidebarEnhance: '侧栏文字增强',
+            themeSidebarEnhanceIntensity: '增强强度',
+            themeLivePreview: '实时预览',
+            themeUploadSuccess: '背景图片已更新',
+            themeBackgroundRemoved: '背景图片已移除',
+            themeNoBackground: '暂无背景图片',
+            themeInvalidType: '仅支持 PNG/JPG/WebP 格式',
+            themeFileTooLarge: '图片大小不能超过 5MB',
+            themeImageLoadFailed: '图片加载失败，请重试',
+            themeSwitchedLight: '已切换到浅色模式',
+            themeSwitchedDark: '已切换到深色模式',
+            themeSwitchFailed: '主题切换失败',
             pageSettings: '页面设置',
             outlineSettings: '大纲设置',
             searchConversations: '搜索会话...',
@@ -217,6 +247,36 @@ if (!window.__MY_EXT__) {
             autoDetect: 'Auto Detect',
             chinese: '简体中文',
             english: 'English',
+            themeSettingsSection: 'Theme Settings',
+            openThemeSettings: 'Open Theme Settings',
+            themeDialogTitle: 'Theme',
+            themeAppearance: 'Appearance',
+            themeAppearanceSystem: 'System',
+            themeAppearanceLight: 'Light',
+            themeAppearanceDark: 'Dark',
+            themeColorPresets: 'Colors',
+            themeWallpaper: 'Wallpaper',
+            themeEnableWallpaper: 'Enable Wallpaper',
+            themeDropImage: 'Drop image here',
+            themeFileTypes: 'PNG/JPG/WebP up to 5MB',
+            themeSelectFile: 'Select File',
+            themeRemoveImage: 'Remove Background',
+            themeBlur: 'Blur',
+            themeMessageGlass: 'Message Glass Effect',
+            themeMessageGlassIntensity: 'Message Glass Intensity',
+            themePanelGlassIntensity: 'Side Panel Glass Intensity',
+            themeSidebarEnhance: 'Sidebar Text Enhance',
+            themeSidebarEnhanceIntensity: 'Enhance Intensity',
+            themeLivePreview: 'Live Preview',
+            themeUploadSuccess: 'Background image updated',
+            themeBackgroundRemoved: 'Background image removed',
+            themeNoBackground: 'No background image',
+            themeInvalidType: 'Only PNG/JPG/WebP is supported',
+            themeFileTooLarge: 'Image size must be 5MB or less',
+            themeImageLoadFailed: 'Image loading failed, please try again',
+            themeSwitchedLight: 'Switched to light mode',
+            themeSwitchedDark: 'Switched to dark mode',
+            themeSwitchFailed: 'Theme switch failed',
             pageSettings: 'Page Settings',
             outlineSettings: 'Outline Settings',
             searchConversations: 'Search conversations...',
@@ -329,6 +389,50 @@ if (!window.__MY_EXT__) {
         { id: 'scrollBottom', enabled: true },
     ];
 
+    const THEME_PRESETS = [
+        { key: 'blue', primary: '#4285f4', secondary: '#60a5fa', accent: '#2563eb', light: '#eaf2ff' },
+        { key: 'gray', primary: '#52525b', secondary: '#71717a', accent: '#3f3f46', light: '#f3f4f6' },
+        { key: 'red', primary: '#dc2626', secondary: '#f87171', accent: '#b91c1c', light: '#ffecec' },
+        { key: 'pink', primary: '#db2777', secondary: '#f472b6', accent: '#be185d', light: '#ffe6f3' },
+        { key: 'purple', primary: '#9333ea', secondary: '#c084fc', accent: '#7e22ce', light: '#f2e9ff' },
+        { key: 'cyan', primary: '#0891b2', secondary: '#22d3ee', accent: '#0e7490', light: '#e2fbff' },
+        { key: 'teal', primary: '#0d9488', secondary: '#2dd4bf', accent: '#0f766e', light: '#e2fdf8' },
+        { key: 'green', primary: '#16a34a', secondary: '#4ade80', accent: '#15803d', light: '#e8ffe8' },
+        { key: 'yellow', primary: '#ca8a04', secondary: '#facc15', accent: '#a16207', light: '#fff8d8' },
+        { key: 'orange', primary: '#ea580c', secondary: '#fb923c', accent: '#c2410c', light: '#fff0e4' },
+    ];
+
+    const THEME_PRESET_MAP = THEME_PRESETS.reduce((acc, preset) => {
+        acc[preset.key] = preset;
+        return acc;
+    }, {});
+
+    const THEME_BACKGROUND_DB_NAME = 'chatgpt_helper_theme';
+    const THEME_BACKGROUND_DB_VERSION = 1;
+    const THEME_BACKGROUND_STORE = 'assets';
+    const THEME_BACKGROUND_MAX_SIZE = 5 * 1024 * 1024;
+    const THEME_BACKGROUND_ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+    const THEME_HOST_ATTRS = [
+        'data-gh-theme-host-sidebar',
+        'data-gh-theme-host-main',
+        'data-gh-theme-host-chat-list',
+        'data-gh-theme-host-composer'
+    ];
+
+    const DEFAULT_THEME_CONFIG = {
+        appearanceMode: 'system', // 'system' | 'light' | 'dark'
+        presetKey: 'blue',
+        backgroundImageEnabled: false,
+        backgroundBlurPx: 5,
+        messageGlassEnabled: false,
+        messageGlassIntensity: 60,
+        panelGlassIntensity: 45,
+        sidebarTextEnhanceEnabled: true,
+        sidebarTextEnhanceIntensity: 20,
+        backgroundAssetId: null,
+        updatedAt: ''
+    };
+
     // 默认设置
     const DEFAULT_SETTINGS = {
         panelWidth: 320,
@@ -339,6 +443,7 @@ if (!window.__MY_EXT__) {
         tabOrder: ['prompts', 'outline', 'conversations', 'export'],
         collapsedButtonsOrder: DEFAULT_COLLAPSED_BUTTONS_ORDER,
         themeMode: null, // 'light' | 'dark' | null
+        themeConfig: { ...DEFAULT_THEME_CONFIG },
         anchorEnabled: true,
         themeEnabled: true,
         manualAnchorEnabled: true,
@@ -421,6 +526,359 @@ if (!window.__MY_EXT__) {
     function clearElement(el) {
         while (el.firstChild) {
             el.firstChild.remove();
+        }
+    }
+
+    function clampNumber(value, min, max) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return min;
+        return Math.min(max, Math.max(min, n));
+    }
+
+    function normalizeHexColor(value, fallback = '#4285f4') {
+        if (typeof value !== 'string') return fallback;
+        const trimmed = value.trim();
+        if (/^#[\da-fA-F]{6}$/.test(trimmed)) return trimmed;
+        if (/^#[\da-fA-F]{3}$/.test(trimmed)) {
+            return `#${trimmed[1]}${trimmed[1]}${trimmed[2]}${trimmed[2]}${trimmed[3]}${trimmed[3]}`;
+        }
+        return fallback;
+    }
+
+    function hexToRgb(value, fallback = '#4285f4') {
+        const hex = normalizeHexColor(value, fallback).slice(1);
+        return {
+            r: parseInt(hex.slice(0, 2), 16),
+            g: parseInt(hex.slice(2, 4), 16),
+            b: parseInt(hex.slice(4, 6), 16)
+        };
+    }
+
+    function blendRgbColors(baseColor, tintColor, tintWeight = 0.5) {
+        const base = typeof baseColor === 'string' ? hexToRgb(baseColor) : baseColor;
+        const tint = typeof tintColor === 'string' ? hexToRgb(tintColor) : tintColor;
+        const weight = clampNumber(tintWeight, 0, 1);
+        return {
+            r: Math.round(base.r + ((tint.r - base.r) * weight)),
+            g: Math.round(base.g + ((tint.g - base.g) * weight)),
+            b: Math.round(base.b + ((tint.b - base.b) * weight))
+        };
+    }
+
+    function rgbaFromColor(color, alpha = 1) {
+        const rgb = typeof color === 'string' ? hexToRgb(color) : color;
+        return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${clampNumber(alpha, 0, 1).toFixed(3)})`;
+    }
+
+    function buildLinearGradient(angle, stops) {
+        return `linear-gradient(${angle}, ${stops.join(', ')})`;
+    }
+
+    function createThemeAssetId() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+        }
+        return `theme-bg-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    function getThemePresetByKey(key) {
+        return THEME_PRESET_MAP[key] || THEME_PRESET_MAP.blue;
+    }
+
+    function buildThemeSurfaceVars(presetInput, options = {}) {
+        if (!options.canRenderBackground) return null;
+
+        const preset = presetInput && typeof presetInput === 'object'
+            ? presetInput
+            : getThemePresetByKey('blue');
+        const isDark = Boolean(options.isDark);
+        const panelUnit = clampNumber(options.panelIntensity, 0, 100) / 100;
+        const messageUnit = clampNumber(options.messageIntensity, 0, 100) / 100;
+        const composerUnit = Math.min(1, Math.max(panelUnit * 0.55, messageUnit * 0.85));
+        const panelBlur = `${8 + Math.round(panelUnit * 10)}px`;
+        const messageBlur = `${10 + Math.round(messageUnit * 12)}px`;
+        const composerBlur = `${9 + Math.round(composerUnit * 11)}px`;
+
+        if (isDark) {
+            const sidebarTop = blendRgbColors('#020617', preset.primary, 0.12 + panelUnit * 0.18);
+            const sidebarBottom = blendRgbColors('#020617', preset.secondary, 0.08 + panelUnit * 0.16);
+            const panelTop = blendRgbColors('#07111f', preset.primary, 0.14 + panelUnit * 0.18);
+            const panelBottom = blendRgbColors('#07111f', preset.secondary, 0.10 + panelUnit * 0.16);
+            const cardTop = blendRgbColors('#091220', preset.primary, 0.16 + panelUnit * 0.14);
+            const cardBottom = blendRgbColors('#08111c', preset.secondary, 0.10 + panelUnit * 0.12);
+            const messageTop = blendRgbColors('#0b1324', preset.light, 0.14 + messageUnit * 0.16);
+            const messageAccent = blendRgbColors('#09111f', preset.primary, 0.18 + messageUnit * 0.18);
+            const userAccent = blendRgbColors('#08111d', preset.secondary, 0.14 + messageUnit * 0.16);
+            const panelBorder = blendRgbColors('#dbeafe', preset.primary, 0.16);
+            const messageBorder = blendRgbColors('#f8fafc', preset.primary, 0.18);
+            const activeTint = blendRgbColors('#0b1324', preset.primary, 0.74);
+            const shadowTint = blendRgbColors('#020617', preset.primary, 0.28);
+            const composerTop = blendRgbColors('#09111f', preset.light, 0.12 + composerUnit * 0.14);
+            const composerBottom = blendRgbColors('#08111d', preset.primary, 0.16 + composerUnit * 0.16);
+
+            return {
+                '--gh-bg': rgbaFromColor(cardTop, 0.18 + panelUnit * 0.14),
+                '--gh-bg-secondary': rgbaFromColor(cardBottom, 0.14 + panelUnit * 0.10),
+                '--gh-text': 'rgba(248, 250, 252, 0.96)',
+                '--gh-text-secondary': 'rgba(203, 213, 225, 0.78)',
+                '--gh-border': rgbaFromColor(panelBorder, 0.08 + panelUnit * 0.12),
+                '--gh-hover': rgbaFromColor(panelBottom, 0.10 + panelUnit * 0.10),
+                '--gh-shadow': `-14px 0 34px ${rgbaFromColor(shadowTint, 0.18 + panelUnit * 0.10)}`,
+                '--gh-input-bg': buildLinearGradient('135deg', [
+                    `${rgbaFromColor(composerTop, 0.18 + composerUnit * 0.16)} 0%`,
+                    `${rgbaFromColor(composerBottom, 0.12 + composerUnit * 0.12)} 100%`
+                ]),
+                '--gh-input-border': rgbaFromColor(messageBorder, 0.12 + composerUnit * 0.12),
+                '--gh-active-bg': rgbaFromColor(activeTint, 0.28 + panelUnit * 0.10),
+                '--gh-right-overlay': buildLinearGradient('180deg', [
+                    `${rgbaFromColor(panelTop, 0.22 + panelUnit * 0.16)} 0%`,
+                    `${rgbaFromColor(panelBottom, 0.14 + panelUnit * 0.12)} 100%`
+                ]),
+                '--gh-panel-card-bg': buildLinearGradient('135deg', [
+                    `${rgbaFromColor(cardTop, 0.18 + panelUnit * 0.14)} 0%`,
+                    `${rgbaFromColor(cardBottom, 0.12 + panelUnit * 0.10)} 100%`
+                ]),
+                '--gh-panel-card-border': rgbaFromColor(panelBorder, 0.10 + panelUnit * 0.12),
+                '--gh-sidebar-button-bg': rgbaFromColor(activeTint, 0.18 + panelUnit * 0.10),
+                '--gh-msg-user-bg': buildLinearGradient('135deg', [
+                    `${rgbaFromColor(messageTop, 0.24 + messageUnit * 0.18)} 0%`,
+                    `${rgbaFromColor(userAccent, 0.12 + messageUnit * 0.12)} 100%`
+                ]),
+                '--gh-msg-assistant-bg': buildLinearGradient('135deg', [
+                    `${rgbaFromColor(messageTop, 0.22 + messageUnit * 0.16)} 0%`,
+                    `${rgbaFromColor(messageAccent, 0.14 + messageUnit * 0.14)} 100%`
+                ]),
+                '--gh-msg-border': rgbaFromColor(messageBorder, 0.10 + messageUnit * 0.12),
+                '--gh-msg-shadow': `0 16px 34px ${rgbaFromColor(shadowTint, 0.16 + messageUnit * 0.10)}`,
+                '--gh-msg-blur': messageBlur,
+                '--gh-panel-blur': panelBlur,
+                '--gh-composer-blur': composerBlur,
+                '--gh-composer-shadow': `0 12px 28px ${rgbaFromColor(shadowTint, 0.14 + composerUnit * 0.10)}`,
+                '--gh-page-sidebar-bg-light': buildLinearGradient('180deg', [
+                    `${rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.70), 0.18)} 0%`,
+                    `${rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.16), 0.08)} 100%`
+                ]),
+                '--gh-page-chat-bg-light': 'transparent',
+                '--gh-page-composer-bg-light': buildLinearGradient('135deg', [
+                    `${rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.62), 0.22)} 0%`,
+                    `${rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.18), 0.12)} 100%`
+                ]),
+                '--gh-page-sidebar-bg-dark': buildLinearGradient('180deg', [
+                    `${rgbaFromColor(sidebarTop, 0.26 + panelUnit * 0.18)} 0%`,
+                    `${rgbaFromColor(sidebarBottom, 0.18 + panelUnit * 0.12)} 100%`
+                ]),
+                '--gh-page-chat-bg-dark': 'transparent',
+                '--gh-page-composer-bg-dark': buildLinearGradient('135deg', [
+                    `${rgbaFromColor(composerTop, 0.20 + composerUnit * 0.16)} 0%`,
+                    `${rgbaFromColor(composerBottom, 0.14 + composerUnit * 0.12)} 100%`
+                ]),
+                '--gh-page-accent-soft': rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.34), 0.22 + panelUnit * 0.08),
+                '--gh-page-accent-soft-dark': rgbaFromColor(activeTint, 0.26 + panelUnit * 0.10),
+                '--gh-page-accent-strong': preset.accent,
+                '--gh-page-link': preset.accent,
+                '--gh-page-selection': rgbaFromColor(blendRgbColors('#0b1324', preset.primary, 0.72), 0.26)
+            };
+        }
+
+        const sidebarTop = blendRgbColors('#ffffff', preset.light, 0.72);
+        const sidebarBottom = blendRgbColors('#ffffff', preset.primary, 0.16 + panelUnit * 0.12);
+        const panelTop = blendRgbColors('#ffffff', preset.light, 0.78);
+        const panelBottom = blendRgbColors('#ffffff', preset.secondary, 0.18 + panelUnit * 0.14);
+        const cardTop = blendRgbColors('#ffffff', preset.light, 0.60);
+        const cardBottom = blendRgbColors('#ffffff', preset.secondary, 0.20 + panelUnit * 0.10);
+        const userTop = blendRgbColors('#ffffff', preset.light, 0.70);
+        const userBottom = blendRgbColors('#ffffff', preset.secondary, 0.16 + messageUnit * 0.14);
+        const assistantTop = blendRgbColors('#ffffff', preset.light, 0.76);
+        const assistantBottom = blendRgbColors('#ffffff', preset.primary, 0.18 + messageUnit * 0.16);
+        const panelBorder = blendRgbColors('#ffffff', preset.primary, 0.12);
+        const messageBorder = blendRgbColors('#ffffff', preset.primary, 0.16);
+        const activeTint = blendRgbColors('#ffffff', preset.primary, 0.34);
+        const shadowTint = blendRgbColors('#0f172a', preset.primary, 0.16);
+        const composerTop = blendRgbColors('#ffffff', preset.light, 0.64);
+        const composerBottom = blendRgbColors('#ffffff', preset.primary, 0.18 + composerUnit * 0.12);
+
+        return {
+            '--gh-bg': rgbaFromColor(cardTop, 0.14 + panelUnit * 0.10),
+            '--gh-bg-secondary': rgbaFromColor(cardBottom, 0.10 + panelUnit * 0.08),
+            '--gh-text': 'rgba(15, 23, 42, 0.92)',
+            '--gh-text-secondary': 'rgba(51, 65, 85, 0.78)',
+            '--gh-border': rgbaFromColor(panelBorder, 0.20 + panelUnit * 0.10),
+            '--gh-hover': rgbaFromColor(panelBottom, 0.10 + panelUnit * 0.08),
+            '--gh-shadow': `-14px 0 34px ${rgbaFromColor(shadowTint, 0.10 + panelUnit * 0.06)}`,
+            '--gh-input-bg': buildLinearGradient('135deg', [
+                `${rgbaFromColor(composerTop, 0.18 + composerUnit * 0.14)} 0%`,
+                `${rgbaFromColor(composerBottom, 0.10 + composerUnit * 0.10)} 100%`
+            ]),
+            '--gh-input-border': rgbaFromColor(messageBorder, 0.24 + composerUnit * 0.10),
+            '--gh-active-bg': rgbaFromColor(activeTint, 0.18 + panelUnit * 0.08),
+            '--gh-right-overlay': buildLinearGradient('180deg', [
+                `${rgbaFromColor(panelTop, 0.16 + panelUnit * 0.12)} 0%`,
+                `${rgbaFromColor(panelBottom, 0.08 + panelUnit * 0.10)} 100%`
+            ]),
+            '--gh-panel-card-bg': buildLinearGradient('135deg', [
+                `${rgbaFromColor(cardTop, 0.14 + panelUnit * 0.12)} 0%`,
+                `${rgbaFromColor(cardBottom, 0.08 + panelUnit * 0.08)} 100%`
+            ]),
+            '--gh-panel-card-border': rgbaFromColor(panelBorder, 0.22 + panelUnit * 0.10),
+            '--gh-sidebar-button-bg': rgbaFromColor(activeTint, 0.14 + panelUnit * 0.08),
+            '--gh-msg-user-bg': buildLinearGradient('135deg', [
+                `${rgbaFromColor(userTop, 0.26 + messageUnit * 0.18)} 0%`,
+                `${rgbaFromColor(userBottom, 0.10 + messageUnit * 0.10)} 100%`
+            ]),
+            '--gh-msg-assistant-bg': buildLinearGradient('135deg', [
+                `${rgbaFromColor(assistantTop, 0.24 + messageUnit * 0.16)} 0%`,
+                `${rgbaFromColor(assistantBottom, 0.12 + messageUnit * 0.12)} 100%`
+            ]),
+            '--gh-msg-border': rgbaFromColor(messageBorder, 0.24 + messageUnit * 0.12),
+            '--gh-msg-shadow': `0 14px 32px ${rgbaFromColor(shadowTint, 0.08 + messageUnit * 0.08)}`,
+            '--gh-msg-blur': messageBlur,
+            '--gh-panel-blur': panelBlur,
+            '--gh-composer-blur': composerBlur,
+            '--gh-composer-shadow': `0 10px 24px ${rgbaFromColor(shadowTint, 0.08 + composerUnit * 0.08)}`,
+            '--gh-page-sidebar-bg-light': buildLinearGradient('180deg', [
+                `${rgbaFromColor(sidebarTop, 0.14 + panelUnit * 0.12)} 0%`,
+                `${rgbaFromColor(sidebarBottom, 0.06 + panelUnit * 0.10)} 100%`
+            ]),
+            '--gh-page-chat-bg-light': 'transparent',
+            '--gh-page-composer-bg-light': buildLinearGradient('135deg', [
+                `${rgbaFromColor(composerTop, 0.18 + composerUnit * 0.14)} 0%`,
+                `${rgbaFromColor(composerBottom, 0.10 + composerUnit * 0.10)} 100%`
+            ]),
+            '--gh-page-sidebar-bg-dark': buildLinearGradient('180deg', [
+                `${rgbaFromColor(blendRgbColors('#020617', preset.primary, 0.22), 0.26)} 0%`,
+                `${rgbaFromColor(blendRgbColors('#020617', preset.secondary, 0.16), 0.16)} 100%`
+            ]),
+            '--gh-page-chat-bg-dark': 'transparent',
+            '--gh-page-composer-bg-dark': buildLinearGradient('135deg', [
+                `${rgbaFromColor(blendRgbColors('#08111d', preset.light, 0.12), 0.24)} 0%`,
+                `${rgbaFromColor(blendRgbColors('#08111d', preset.primary, 0.18), 0.16)} 100%`
+            ]),
+            '--gh-page-accent-soft': rgbaFromColor(activeTint, 0.20 + panelUnit * 0.08),
+            '--gh-page-accent-soft-dark': rgbaFromColor(blendRgbColors('#0b1324', preset.primary, 0.72), 0.24 + panelUnit * 0.10),
+            '--gh-page-accent-strong': preset.accent,
+            '--gh-page-link': preset.accent,
+            '--gh-page-selection': rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.38), 0.28)
+        };
+    }
+
+    function normalizeThemeConfig(rawConfig, legacyThemeMode) {
+        const input = rawConfig && typeof rawConfig === 'object' ? rawConfig : {};
+        const appearanceModeRaw = input.appearanceMode || legacyThemeMode || 'system';
+        const appearanceMode = ['system', 'light', 'dark'].includes(appearanceModeRaw)
+            ? appearanceModeRaw
+            : 'system';
+        const presetKey = THEME_PRESET_MAP[input.presetKey] ? input.presetKey : 'blue';
+        const backgroundAssetId = typeof input.backgroundAssetId === 'string' && input.backgroundAssetId.trim()
+            ? input.backgroundAssetId.trim()
+            : null;
+        const backgroundImageEnabled = Boolean(input.backgroundImageEnabled) && Boolean(backgroundAssetId);
+        const updatedAt = typeof input.updatedAt === 'string' && input.updatedAt
+            ? input.updatedAt
+            : new Date().toISOString();
+
+        return {
+            appearanceMode,
+            presetKey,
+            backgroundImageEnabled,
+            backgroundBlurPx: Math.round(clampNumber(input.backgroundBlurPx, 0, 20)),
+            messageGlassEnabled: Boolean(input.messageGlassEnabled),
+            messageGlassIntensity: input.messageGlassIntensity == null
+                ? DEFAULT_THEME_CONFIG.messageGlassIntensity
+                : Math.round(clampNumber(input.messageGlassIntensity, 0, 100)),
+            panelGlassIntensity: input.panelGlassIntensity == null
+                ? DEFAULT_THEME_CONFIG.panelGlassIntensity
+                : Math.round(clampNumber(input.panelGlassIntensity, 0, 100)),
+            sidebarTextEnhanceEnabled:
+                typeof input.sidebarTextEnhanceEnabled === 'boolean'
+                    ? input.sidebarTextEnhanceEnabled
+                    : true,
+            sidebarTextEnhanceIntensity: Math.round(clampNumber(input.sidebarTextEnhanceIntensity, 0, 100)),
+            backgroundAssetId,
+            updatedAt
+        };
+    }
+
+    class ThemeAssetRepository {
+        constructor() {
+            this.dbPromise = null;
+        }
+
+        openDB() {
+            if (this.dbPromise) return this.dbPromise;
+            this.dbPromise = new Promise((resolve, reject) => {
+                try {
+                    const request = indexedDB.open(THEME_BACKGROUND_DB_NAME, THEME_BACKGROUND_DB_VERSION);
+                    request.onupgradeneeded = () => {
+                        const db = request.result;
+                        if (!db.objectStoreNames.contains(THEME_BACKGROUND_STORE)) {
+                            db.createObjectStore(THEME_BACKGROUND_STORE, { keyPath: 'id' });
+                        }
+                    };
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error || new Error('IndexedDB open failed'));
+                } catch (error) {
+                    reject(error);
+                }
+            });
+            return this.dbPromise;
+        }
+
+        async getAsset(id) {
+            if (!id) return null;
+            const db = await this.openDB();
+            return await new Promise((resolve, reject) => {
+                try {
+                    const tx = db.transaction(THEME_BACKGROUND_STORE, 'readonly');
+                    const store = tx.objectStore(THEME_BACKGROUND_STORE);
+                    const req = store.get(id);
+                    req.onsuccess = () => resolve(req.result || null);
+                    req.onerror = () => reject(req.error || new Error('get asset failed'));
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        async putAsset(blob, mimeType) {
+            const db = await this.openDB();
+            const id = createThemeAssetId();
+            const now = new Date().toISOString();
+            const row = {
+                id,
+                mimeType: mimeType || blob.type,
+                size: blob.size,
+                blob,
+                createdAt: now,
+                updatedAt: now
+            };
+            await new Promise((resolve, reject) => {
+                try {
+                    const tx = db.transaction(THEME_BACKGROUND_STORE, 'readwrite');
+                    const store = tx.objectStore(THEME_BACKGROUND_STORE);
+                    const req = store.put(row);
+                    req.onsuccess = () => resolve();
+                    req.onerror = () => reject(req.error || new Error('put asset failed'));
+                } catch (error) {
+                    reject(error);
+                }
+            });
+            return row;
+        }
+
+        async deleteAsset(id) {
+            if (!id) return;
+            const db = await this.openDB();
+            await new Promise((resolve, reject) => {
+                try {
+                    const tx = db.transaction(THEME_BACKGROUND_STORE, 'readwrite');
+                    const store = tx.objectStore(THEME_BACKGROUND_STORE);
+                    const req = store.delete(id);
+                    req.onsuccess = () => resolve();
+                    req.onerror = () => reject(req.error || new Error('delete asset failed'));
+                } catch (error) {
+                    reject(error);
+                }
+            });
         }
     }
 
@@ -5960,6 +6418,24 @@ if (!window.__MY_EXT__) {
 
                 // 初始化主题监听器
                 this.themeObserver = null;
+                this.systemThemeMediaQuery = null;
+                this.systemThemeListener = null;
+                this.currentEffectiveTheme = 'light';
+                this.themeAssetRepository = new ThemeAssetRepository();
+                this.themeBackgroundObjectUrl = null;
+                this.themeBackgroundObjectAssetId = null;
+                this.themeModal = null;
+                this.themeModalRefs = null;
+                this.themeModalEscHandler = null;
+                this.themeModalBackdropHandler = null;
+                this.themeRuntimeStyleReady = false;
+                this.themeHostRefreshQueued = false;
+                this.beforeUnloadHandler = () => {
+                    this.revokeThemeBackgroundObjectUrl();
+                    this.stopSystemThemeListener();
+                    this.closeThemeSettingsModal();
+                };
+                window.addEventListener('beforeunload', this.beforeUnloadHandler);
 
                 try {
                     this.init();
@@ -5988,7 +6464,41 @@ if (!window.__MY_EXT__) {
 
         loadSettings() {
             const saved = window.GM_getValue(SETTING_KEYS.SETTINGS, null);
-            const settings = saved ? { ...DEFAULT_SETTINGS, ...saved } : DEFAULT_SETTINGS;
+            const source = saved && typeof saved === 'object' ? saved : {};
+            const settings = {
+                ...DEFAULT_SETTINGS,
+                ...source,
+                prompts: { ...DEFAULT_SETTINGS.prompts, ...(source.prompts || {}) },
+                outline: { ...DEFAULT_SETTINGS.outline, ...(source.outline || {}) },
+                conversations: { ...DEFAULT_SETTINGS.conversations, ...(source.conversations || {}) },
+                pageWidth: { ...DEFAULT_SETTINGS.pageWidth, ...(source.pageWidth || {}) },
+                readingHistory: { ...DEFAULT_SETTINGS.readingHistory, ...(source.readingHistory || {}) },
+                formulaCopy: { ...DEFAULT_SETTINGS.formulaCopy, ...(source.formulaCopy || {}) },
+                tableCopy: { ...DEFAULT_SETTINGS.tableCopy, ...(source.tableCopy || {}) },
+                tabSettings: { ...DEFAULT_SETTINGS.tabSettings, ...(source.tabSettings || {}) }
+            };
+
+            settings.themeConfig = normalizeThemeConfig(source.themeConfig, source.themeMode);
+            settings.themeMode = null;
+
+            if (!Array.isArray(settings.tabOrder)) {
+                settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
+            }
+
+            if (!Array.isArray(settings.collapsedButtonsOrder)) {
+                settings.collapsedButtonsOrder = DEFAULT_COLLAPSED_BUTTONS_ORDER.map((item) => ({ ...item }));
+            } else {
+                settings.collapsedButtonsOrder = settings.collapsedButtonsOrder
+                    .filter((item) => item && COLLAPSED_BUTTON_DEFS[item.id])
+                    .map((item) => ({
+                        id: item.id,
+                        enabled: item.enabled !== false
+                    }));
+                if (settings.collapsedButtonsOrder.length === 0) {
+                    settings.collapsedButtonsOrder = DEFAULT_COLLAPSED_BUTTONS_ORDER.map((item) => ({ ...item }));
+                }
+            }
+
             // 确保 tabOrder 包含 export（兼容旧版本）
             if (settings.tabOrder && !settings.tabOrder.includes('export')) {
                 settings.tabOrder.push('export');
@@ -5999,7 +6509,1643 @@ if (!window.__MY_EXT__) {
         }
 
         saveSettings() {
+            this.settings.themeConfig = normalizeThemeConfig(this.settings.themeConfig, this.settings.themeMode);
             window.GM_setValue(SETTING_KEYS.SETTINGS, this.settings);
+        }
+
+        getThemeConfig() {
+            if (!this.settings.themeConfig || typeof this.settings.themeConfig !== 'object') {
+                this.settings.themeConfig = normalizeThemeConfig(null, this.settings.themeMode);
+            }
+            return this.settings.themeConfig;
+        }
+
+        updateThemeButtons() {
+            const isDark = this.currentEffectiveTheme === 'dark';
+            const quickThemeBtn = document.getElementById('quick-btn-theme');
+            if (quickThemeBtn) {
+                quickThemeBtn.textContent = isDark ? '🌙' : '☀';
+            }
+            const headerThemeBtn = document.getElementById('chatgpt-helper-header-theme-btn');
+            if (headerThemeBtn) {
+                headerThemeBtn.textContent = isDark ? '☀' : '🌙';
+            }
+        }
+
+        syncHelperThemeMode(mode) {
+            const normalizedMode = mode === 'dark' ? 'dark' : 'light';
+            document.body.dataset.ghMode = normalizedMode;
+            document.body.setAttribute('data-gh-mode', normalizedMode);
+            document.documentElement.setAttribute('data-gh-mode', normalizedMode);
+            this.currentEffectiveTheme = normalizedMode;
+            this.updateThemeButtons();
+        }
+
+        getSystemPreferredTheme() {
+            try {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    return 'dark';
+                }
+            } catch (e) {
+                // ignore
+            }
+            return 'light';
+        }
+
+        stopSystemThemeListener() {
+            if (!this.systemThemeMediaQuery || !this.systemThemeListener) return;
+            try {
+                if (typeof this.systemThemeMediaQuery.removeEventListener === 'function') {
+                    this.systemThemeMediaQuery.removeEventListener('change', this.systemThemeListener);
+                } else if (typeof this.systemThemeMediaQuery.removeListener === 'function') {
+                    this.systemThemeMediaQuery.removeListener(this.systemThemeListener);
+                }
+            } catch (e) {
+                // ignore
+            }
+            this.systemThemeMediaQuery = null;
+            this.systemThemeListener = null;
+        }
+
+        startSystemThemeListener() {
+            this.stopSystemThemeListener();
+            if (!window.matchMedia) return;
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+            const handler = () => {
+                const cfg = this.getThemeConfig();
+                if (cfg.appearanceMode !== 'system') return;
+                const targetTheme = mediaQuery.matches ? 'dark' : 'light';
+                void this.applyEffectiveTheme(targetTheme, {
+                    preferNative: false,
+                    persist: false,
+                    fromSystem: true
+                });
+            };
+            try {
+                if (typeof mediaQuery.addEventListener === 'function') {
+                    mediaQuery.addEventListener('change', handler);
+                } else if (typeof mediaQuery.addListener === 'function') {
+                    mediaQuery.addListener(handler);
+                }
+            } catch (e) {
+                // ignore
+            }
+            this.systemThemeMediaQuery = mediaQuery;
+            this.systemThemeListener = handler;
+        }
+
+        detectEffectiveThemeFromDom() {
+            const bodyClass = document.body.className;
+            const htmlClass = document.documentElement.className;
+            const bodyStyle = window.getComputedStyle(document.body);
+            const hasDarkClass = /\bdark\b/i.test(bodyClass) ||
+                /\bdark-theme\b/i.test(bodyClass) ||
+                /\bdark\b/i.test(htmlClass) ||
+                /\bdark-theme\b/i.test(htmlClass);
+            const hasLightClass = /\blight\b/i.test(bodyClass) ||
+                /\blight-theme\b/i.test(bodyClass) ||
+                /\blight\b/i.test(htmlClass) ||
+                /\blight-theme\b/i.test(htmlClass);
+
+            if (hasDarkClass) return 'dark';
+            if (hasLightClass) return 'light';
+
+            const dataTheme = document.body.dataset.theme ||
+                document.documentElement.dataset.theme ||
+                document.documentElement.getAttribute('data-theme');
+            if (dataTheme === 'dark') return 'dark';
+            if (dataTheme === 'light') return 'light';
+
+            const inlineColorScheme = document.body.style.colorScheme;
+            const computedColorScheme = bodyStyle.colorScheme;
+            const colorScheme = inlineColorScheme || computedColorScheme;
+            if (colorScheme === 'dark') return 'dark';
+            if (colorScheme === 'light') return 'light';
+
+            const bgColor = bodyStyle.backgroundColor || '';
+            const rgbMatch = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+            if (rgbMatch) {
+                const r = parseInt(rgbMatch[1], 10);
+                const g = parseInt(rgbMatch[2], 10);
+                const b = parseInt(rgbMatch[3], 10);
+                const brightness = (r + g + b) / 3;
+                if (brightness < 128) return 'dark';
+            }
+            return 'light';
+        }
+
+        findNativeThemeToggleButton() {
+            const helperPanel = document.getElementById('chatgpt-helper-panel');
+            const isInHelperPanel = (btn) => {
+                if (!btn) return false;
+                if (helperPanel && helperPanel.contains(btn)) return true;
+                let element = btn;
+                while (element && element !== document.body) {
+                    if (element.id && element.id.includes('chatgpt-helper')) return true;
+                    if (typeof element.className === 'string' && element.className.includes('chatgpt-helper')) return true;
+                    element = element.parentElement;
+                }
+                return false;
+            };
+
+            const selectors = [
+                'button[aria-label*="theme" i]',
+                'button[data-testid*="theme" i]',
+                '[role="button"][aria-label*="theme" i]'
+            ];
+
+            for (const selector of selectors) {
+                const candidates = Array.from(document.querySelectorAll(selector));
+                for (const candidate of candidates) {
+                    const btn = candidate.closest('button') || candidate;
+                    if (!btn || btn.tagName !== 'BUTTON' || isInHelperPanel(btn)) continue;
+                    const rect = btn.getBoundingClientRect();
+                    if (rect.width <= 0 || rect.height <= 0) continue;
+                    return btn;
+                }
+            }
+
+            return null;
+        }
+
+        async tryToggleNativeTheme(targetTheme) {
+            const currentTheme = this.detectEffectiveThemeFromDom();
+            if (currentTheme === targetTheme) return true;
+
+            const btn = this.findNativeThemeToggleButton();
+            if (!btn) return false;
+
+            try {
+                btn.click();
+            } catch (e) {
+                try {
+                    btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+                } catch (e2) {
+                    return false;
+                }
+            }
+
+            for (let attempt = 0; attempt < 8; attempt++) {
+                await new Promise(resolve => setTimeout(resolve, 150));
+                if (this.detectEffectiveThemeFromDom() === targetTheme) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        directApplyPageTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark', 'dark-theme');
+                document.documentElement.classList.add('dark', 'dark-theme');
+                document.body.classList.remove('light', 'light-theme');
+                document.documentElement.classList.remove('light', 'light-theme');
+                document.body.style.colorScheme = 'dark';
+                document.documentElement.style.colorScheme = 'dark';
+                document.body.dataset.theme = 'dark';
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.body.setAttribute('data-mode', 'dark');
+                document.documentElement.setAttribute('data-mode', 'dark');
+            } else {
+                document.body.classList.remove('dark', 'dark-theme');
+                document.documentElement.classList.remove('dark', 'dark-theme');
+                document.body.classList.add('light', 'light-theme');
+                document.documentElement.classList.add('light', 'light-theme');
+                document.body.style.colorScheme = 'light';
+                document.documentElement.style.colorScheme = 'light';
+                document.body.dataset.theme = 'light';
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.body.setAttribute('data-mode', 'light');
+                document.documentElement.setAttribute('data-mode', 'light');
+            }
+
+            try {
+                localStorage.setItem('theme', theme);
+            } catch (e) {
+                // ignore
+            }
+
+            this.syncHelperThemeMode(theme);
+            window.dispatchEvent(new CustomEvent('themechange', { detail: { mode: theme } }));
+            document.dispatchEvent(new CustomEvent('themechange', { detail: { mode: theme } }));
+            try {
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: 'theme',
+                    newValue: theme,
+                    oldValue: null
+                }));
+            } catch (e) {
+                // ignore
+            }
+        }
+
+        async applyEffectiveTheme(theme, options = {}) {
+            const opts = {
+                preferNative: true,
+                persist: false,
+                fromSystem: false,
+                ...options
+            };
+
+            const normalizedTheme = theme === 'dark' ? 'dark' : 'light';
+            let applied = false;
+            if (opts.preferNative) {
+                applied = await this.tryToggleNativeTheme(normalizedTheme);
+            }
+
+            if (!applied) {
+                this.directApplyPageTheme(normalizedTheme);
+            } else {
+                this.syncHelperThemeMode(this.detectEffectiveThemeFromDom());
+            }
+
+            this.settings.themeMode = normalizedTheme;
+            if (opts.persist) {
+                this.saveSettings();
+            }
+
+            this.updateThemeVisualState();
+            if (this.themeModalRefs) {
+                this.syncThemeModalState();
+            }
+            return normalizedTheme;
+        }
+
+        async applyAppearanceMode(mode, options = {}) {
+            const opts = {
+                persist: true,
+                showToast: false,
+                preferNative: true,
+                ...options
+            };
+            const cfg = this.getThemeConfig();
+            const normalizedMode = ['system', 'light', 'dark'].includes(mode) ? mode : 'system';
+            cfg.appearanceMode = normalizedMode;
+            cfg.updatedAt = new Date().toISOString();
+
+            if (normalizedMode === 'system') {
+                this.startSystemThemeListener();
+                const systemTheme = this.getSystemPreferredTheme();
+                await this.applyEffectiveTheme(systemTheme, {
+                    preferNative: false,
+                    persist: false,
+                    fromSystem: true
+                });
+            } else {
+                this.stopSystemThemeListener();
+                await this.applyEffectiveTheme(normalizedMode, {
+                    preferNative: opts.preferNative,
+                    persist: false
+                });
+            }
+
+            if (opts.persist) {
+                this.saveSettings();
+            }
+
+            if (opts.showToast) {
+                if (normalizedMode === 'dark') {
+                    this.showToast(this.t('themeSwitchedDark'));
+                } else if (normalizedMode === 'light') {
+                    this.showToast(this.t('themeSwitchedLight'));
+                }
+            }
+        }
+
+        applyThemePresetVariables(presetKey, persist = true) {
+            const cfg = this.getThemeConfig();
+            const preset = getThemePresetByKey(presetKey);
+            const gradient = `linear-gradient(135deg, ${preset.primary} 0%, ${preset.secondary} 100%)`;
+            const root = document.documentElement;
+            root.style.setProperty('--gh-theme-primary', preset.primary);
+            root.style.setProperty('--gh-theme-secondary', preset.secondary);
+            root.style.setProperty('--gh-theme-accent', preset.accent);
+            root.style.setProperty('--gh-theme-accent-dark', preset.accent);
+            root.style.setProperty('--gh-theme-light', preset.light);
+            root.style.setProperty('--gh-primary', preset.primary);
+            root.style.setProperty('--gh-primary-hover', preset.accent);
+            root.style.setProperty('--gh-tag-active-bg', preset.primary);
+            root.style.setProperty('--gh-gradient', gradient);
+            root.style.setProperty('--gh-header-bg', gradient);
+            root.style.setProperty('--gh-theme-surface-light-base', rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.64), 1));
+            root.style.setProperty('--gh-theme-surface-light-accent', rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.18), 1));
+            root.style.setProperty('--gh-theme-surface-dark-base', rgbaFromColor(blendRgbColors('#020617', preset.primary, 0.18), 1));
+            root.style.setProperty('--gh-theme-surface-dark-accent', rgbaFromColor(blendRgbColors('#020617', preset.secondary, 0.16), 1));
+            root.style.setProperty('--gh-page-sidebar-bg-light', 'color-mix(in srgb, #ffffff, transparent 84%)');
+            root.style.setProperty('--gh-page-chat-bg-light', 'transparent');
+            root.style.setProperty('--gh-page-composer-bg-light', 'color-mix(in srgb, #ffffff, transparent 78%)');
+            root.style.setProperty('--gh-page-sidebar-bg-dark', 'color-mix(in srgb, #020617, transparent 80%)');
+            root.style.setProperty('--gh-page-chat-bg-dark', 'transparent');
+            root.style.setProperty('--gh-page-composer-bg-dark', 'color-mix(in srgb, #020617, transparent 74%)');
+            root.style.setProperty('--gh-page-accent-soft', `color-mix(in srgb, ${preset.primary}, transparent 84%)`);
+            root.style.setProperty('--gh-page-accent-soft-dark', `color-mix(in srgb, ${preset.primary}, transparent 74%)`);
+            root.style.setProperty('--gh-page-accent-strong', preset.accent);
+            root.style.setProperty('--gh-page-link', preset.accent);
+            root.style.setProperty('--gh-page-selection', `color-mix(in srgb, ${preset.primary}, transparent 82%)`);
+
+            if (cfg.presetKey !== preset.key) {
+                cfg.presetKey = preset.key;
+                cfg.updatedAt = new Date().toISOString();
+                if (persist) {
+                    this.saveSettings();
+                }
+            }
+
+            if (this.themeModalRefs) {
+                this.syncThemeModalState();
+            }
+        }
+
+        markThemeHostElement(element, attrName) {
+            if (!(element instanceof HTMLElement)) return false;
+            element.setAttribute(attrName, 'true');
+            return true;
+        }
+
+        markThemeHostChain(element, attrName, options = {}) {
+            if (!(element instanceof HTMLElement)) return false;
+
+            let current = element;
+            let depth = 0;
+            let marked = false;
+
+            while (current && current !== document.body && current !== document.documentElement && depth < 6) {
+                if (options.kind === 'sidebar') {
+                    const rect = current.getBoundingClientRect();
+                    const isLikelySidebarShell = rect.width >= 140
+                        && rect.width <= Math.max(520, Math.floor(window.innerWidth * 0.42))
+                        && rect.height >= Math.floor(window.innerHeight * 0.45)
+                        && rect.left <= 32;
+
+                    if (!isLikelySidebarShell) {
+                        if (depth === 0) {
+                            return false;
+                        }
+                        break;
+                    }
+                }
+
+                current.setAttribute(attrName, 'true');
+                marked = true;
+                current = current.parentElement;
+                depth += 1;
+            }
+
+            return marked;
+        }
+
+        clearThemeHostMarks() {
+            THEME_HOST_ATTRS.forEach((attrName) => {
+                document.querySelectorAll(`[${attrName}="true"]`).forEach((node) => {
+                    node.removeAttribute(attrName);
+                });
+            });
+        }
+
+        refreshThemeHostTargets() {
+            this.clearThemeHostMarks();
+
+            const sidebarCandidates = [
+                this.adapter?.getSidebarContainer ? this.adapter.getSidebarContainer() : null,
+                document.querySelector('[data-testid="sidebar"]'),
+                document.querySelector('nav[aria-label*="Chat history"]'),
+                document.querySelector('nav[aria-label*="聊天历史"]'),
+                document.querySelector('aside[aria-label*="Chat history"]'),
+                document.querySelector('aside[aria-label*="聊天历史"]')
+            ];
+
+            let sidebarHost = null;
+            for (const candidate of sidebarCandidates) {
+                if (this.markThemeHostChain(candidate, 'data-gh-theme-host-sidebar', { kind: 'sidebar' })) {
+                    sidebarHost = candidate;
+                    break;
+                }
+            }
+            if (sidebarHost && sidebarHost.closest) {
+                const sidebarWrapper = sidebarHost.closest('[data-testid="sidebar"], aside, nav');
+                this.markThemeHostChain(sidebarWrapper, 'data-gh-theme-host-sidebar', { kind: 'sidebar' });
+                this.markThemeHostElement(sidebarHost.firstElementChild, 'data-gh-theme-host-sidebar');
+                this.markThemeHostElement(sidebarHost.firstElementChild && sidebarHost.firstElementChild.firstElementChild, 'data-gh-theme-host-sidebar');
+            }
+
+            const mainCandidates = [
+                this.adapter?.getChatContainer ? this.adapter.getChatContainer() : null,
+                document.querySelector('main'),
+                document.querySelector('[role="main"]')
+            ];
+            let mainHost = null;
+            for (const candidate of mainCandidates) {
+                if (this.markThemeHostElement(candidate, 'data-gh-theme-host-main')) {
+                    mainHost = candidate;
+                    break;
+                }
+            }
+
+            const chatListSelectors = [
+                'main [data-testid*="conversation"]',
+                'main [class*="conversation"]',
+                'main [data-message-author-role]',
+                '[role="main"] [data-message-author-role]',
+                '[role="main"] [class*="overflow-y-auto"]'
+            ];
+            let chatListHost = null;
+            for (const selector of chatListSelectors) {
+                const hit = document.querySelector(selector);
+                if (!hit) continue;
+                const container = hit.closest('[class*="overflow"], [class*="conversation"], section, article, main') || hit;
+                if (this.markThemeHostElement(container, 'data-gh-theme-host-chat-list')) {
+                    chatListHost = container;
+                    break;
+                }
+            }
+            if (!chatListHost && mainHost) {
+                this.markThemeHostElement(mainHost, 'data-gh-theme-host-chat-list');
+            }
+
+            const composerInput = this.adapter?.textarea
+                || document.querySelector('#prompt-textarea')
+                || document.querySelector('textarea[placeholder*="Message"]')
+                || document.querySelector('textarea[placeholder*="消息"]')
+                || document.querySelector('div[contenteditable="true"][role="textbox"]')
+                || document.querySelector('div[contenteditable="true"]');
+            const composerHost = composerInput
+                ? (composerInput.closest('form')
+                    || composerInput.closest('[data-testid*="composer"]')
+                    || composerInput.closest('[class*="composer"]')
+                    || composerInput.closest('[class*="footer"]')
+                    || composerInput.parentElement)
+                : (document.querySelector('[data-testid*="composer"]')
+                    || document.querySelector('main form')
+                    || document.querySelector('[role="main"] form'));
+            this.markThemeHostElement(composerHost, 'data-gh-theme-host-composer');
+        }
+
+        queueThemeHostRefresh() {
+            if (this.themeHostRefreshQueued) return;
+            this.themeHostRefreshQueued = true;
+            const flush = () => {
+                this.themeHostRefreshQueued = false;
+                this.refreshThemeHostTargets();
+            };
+            if (typeof requestAnimationFrame === 'function') {
+                requestAnimationFrame(flush);
+            } else {
+                setTimeout(flush, 16);
+            }
+        }
+
+        ensureThemeRuntimeStyle() {
+            if (this.themeRuntimeStyleReady) return;
+            let style = document.getElementById('chatgpt-helper-theme-runtime-style');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'chatgpt-helper-theme-runtime-style';
+                style.textContent = `
+                :root {
+                    --gh-bg-image: none;
+                    --gh-bg-blur: 5px;
+                    --gh-sidebar-enhance-alpha: 0.2;
+                    --gh-bg-overlay-light: rgba(12, 18, 32, 0.18);
+                    --gh-bg-overlay-dark: rgba(2, 6, 23, 0.48);
+                    --gh-panel-blur: 14px;
+                    --gh-composer-blur: 16px;
+                    --gh-page-sidebar-bg-light: color-mix(in srgb, #ffffff, transparent 84%);
+                    --gh-page-chat-bg-light: transparent;
+                    --gh-page-composer-bg-light: color-mix(in srgb, #ffffff, transparent 78%);
+                    --gh-page-sidebar-bg-dark: color-mix(in srgb, #020617, transparent 80%);
+                    --gh-page-chat-bg-dark: transparent;
+                    --gh-page-composer-bg-dark: color-mix(in srgb, #020617, transparent 74%);
+                    --gh-page-accent-soft: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 84%);
+                    --gh-page-accent-soft-dark: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 74%);
+                    --gh-page-accent-strong: var(--gh-theme-accent, #2563eb);
+                    --gh-page-link: var(--gh-theme-accent, #2563eb);
+                    --gh-page-selection: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 82%);
+                    --gh-right-overlay: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+                    --gh-panel-card-bg: rgba(255,255,255,0.14);
+                    --gh-panel-card-border: rgba(255,255,255,0.28);
+                    --gh-sidebar-button-bg: rgba(255,255,255,0.14);
+                    --gh-msg-user-bg: color-mix(in srgb, #ffffff, transparent 24%);
+                    --gh-msg-assistant-bg: color-mix(in srgb, #edf4ff, transparent 30%);
+                    --gh-msg-border: rgba(255,255,255,0.42);
+                    --gh-msg-shadow: 0 14px 32px rgba(15, 23, 42, 0.10);
+                    --gh-msg-blur: 18px;
+                    --gh-composer-shadow: 0 10px 24px rgba(15, 23, 42, 0.10);
+                }
+
+                #chatgpt-helper-theme-bg-layer {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 0;
+                    pointer-events: none;
+                    display: none;
+                    background-image: none;
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    filter: blur(var(--gh-bg-blur));
+                    transform: scale(1.08);
+                    transform-origin: center center;
+                }
+
+                #chatgpt-helper-theme-bg-layer::after {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    background: var(--gh-bg-overlay-light);
+                }
+
+                :root[data-gh-bg-enabled="true"] #chatgpt-helper-theme-bg-layer {
+                    display: block;
+                    background-image: var(--gh-bg-image);
+                    filter: blur(var(--gh-bg-blur)) brightness(0.7) saturate(0.88);
+                }
+
+                :root[data-gh-bg-enabled="true"] body,
+                :root[data-gh-bg-enabled="true"] #__next {
+                    background-color: transparent !important;
+                }
+
+                :root[data-gh-mode="dark"] #chatgpt-helper-theme-bg-layer {
+                    filter: blur(var(--gh-bg-blur)) brightness(0.5) saturate(0.82);
+                }
+
+                :root[data-gh-mode="dark"] #chatgpt-helper-theme-bg-layer::after {
+                    background: var(--gh-bg-overlay-dark);
+                }
+
+                :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar,
+                :root[data-gh-bg-enabled="true"] [data-testid="sidebar"],
+                :root[data-gh-bg-enabled="true"] aside[aria-label*="Chat history"],
+                :root[data-gh-bg-enabled="true"] aside[aria-label*="聊天历史"] {
+                    --sidebar-mask-bg: transparent;
+                    --bg-elevated-secondary: transparent;
+                    background: var(--gh-page-sidebar-bg-light) !important;
+                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
+                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="true"] #chatgpt-helper-right {
+                    background: var(--gh-right-overlay) !important;
+                    backdrop-filter: blur(calc(var(--gh-panel-blur) + 2px)) saturate(1.03);
+                    -webkit-backdrop-filter: blur(calc(var(--gh-panel-blur) + 2px)) saturate(1.03);
+                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar > div,
+                :root[data-gh-bg-enabled="true"] [data-testid="sidebar"] > div,
+                :root[data-gh-bg-enabled="true"] nav[aria-label*="Chat history"],
+                :root[data-gh-bg-enabled="true"] nav[aria-label*="聊天历史"],
+                :root[data-gh-bg-enabled="true"] #chatgpt-helper-left,
+                :root[data-gh-bg-enabled="true"] #chatgpt-helper-center,
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar="true"] nav,
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar="true"] aside {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="true"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"] {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"] button,
+                :root[data-gh-bg-enabled="true"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"] button {
+                    background: var(--gh-sidebar-button-bg) !important;
+                    backdrop-filter: blur(calc(var(--gh-panel-blur) - 2px));
+                    -webkit-backdrop-filter: blur(calc(var(--gh-panel-blur) - 2px));
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-main="true"],
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-chat-list="true"],
+                :root[data-gh-bg-enabled="true"] main,
+                :root[data-gh-bg-enabled="true"] [role="main"] {
+                    background: transparent !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"],
+                :root[data-gh-bg-enabled="true"] main form,
+                :root[data-gh-bg-enabled="true"] [role="main"] form {
+                    background: transparent !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                    border-radius: 0;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"] {
+                    background: var(--gh-page-composer-bg-light) !important;
+                    backdrop-filter: blur(var(--gh-composer-blur));
+                    -webkit-backdrop-filter: blur(var(--gh-composer-blur));
+                    border-radius: 28px !important;
+                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-testid="sidebar"],
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="聊天历史"] {
+                    background: var(--gh-page-sidebar-bg-dark) !important;
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #chatgpt-helper-right {
+                    background: var(--gh-right-overlay) !important;
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-main="true"],
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-chat-list="true"],
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] main,
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [role="main"] {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"],
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] main form,
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [role="main"] form {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"] {
+                    background: var(--gh-page-composer-bg-dark) !important;
+                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"] button,
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"] button {
+                    background: var(--gh-sidebar-button-bg) !important;
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [aria-current="page"],
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [data-active="true"],
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [aria-selected="true"],
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [data-state="active"],
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-sidebar="true"] [role="option"][aria-selected="true"],
+                :root[data-gh-theme-active="true"] nav[aria-label*="Chat history"] [aria-current="page"],
+                :root[data-gh-theme-active="true"] nav[aria-label*="聊天历史"] [aria-current="page"],
+                :root[data-gh-theme-active="true"] [data-testid="sidebar"] [aria-current="page"] {
+                    background: var(--gh-page-accent-soft) !important;
+                    color: var(--gh-page-accent-strong) !important;
+                }
+
+                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [aria-current="page"],
+                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [data-active="true"],
+                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [aria-selected="true"],
+                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [data-state="active"],
+                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [role="option"][aria-selected="true"],
+                :root[data-gh-theme-active="true"][data-gh-mode="dark"] nav[aria-label*="Chat history"] [aria-current="page"],
+                :root[data-gh-theme-active="true"][data-gh-mode="dark"] nav[aria-label*="聊天历史"] [aria-current="page"],
+                :root[data-gh-theme-active="true"][data-gh-mode="dark"] [data-testid="sidebar"] [aria-current="page"] {
+                    background: var(--gh-page-accent-soft-dark) !important;
+                    color: #ffffff !important;
+                }
+
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-main="true"] a,
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-chat-list="true"] a,
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-composer="true"] a {
+                    color: var(--gh-page-link) !important;
+                }
+
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-main="true"] ::selection,
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-chat-list="true"] ::selection {
+                    background: var(--gh-page-selection);
+                }
+
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-composer="true"] button[type="submit"],
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-composer="true"] button[data-testid*="send"],
+                :root[data-gh-theme-active="true"] [data-gh-theme-host-composer="true"] button[class*="send"] {
+                    background-color: var(--gh-page-accent-strong) !important;
+                    border-color: transparent !important;
+                    color: #ffffff !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] #chatgpt-helper-content {
+                    background: transparent !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] #chatgpt-helper-tabs,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-search-bar,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-categories,
+                :root[data-gh-bg-enabled="true"] .outline-fixed-toolbar {
+                    background: color-mix(in srgb, var(--gh-bg-secondary), transparent 6%) !important;
+                    backdrop-filter: blur(var(--gh-panel-blur));
+                    -webkit-backdrop-filter: blur(var(--gh-panel-blur));
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-search-input,
+                :root[data-gh-bg-enabled="true"] .outline-search-input,
+                :root[data-gh-bg-enabled="true"] .outline-toolbar-btn {
+                    background: var(--gh-input-bg) !important;
+                    border-color: var(--gh-input-border) !important;
+                    backdrop-filter: blur(calc(var(--gh-panel-blur) - 2px));
+                    -webkit-backdrop-filter: blur(calc(var(--gh-panel-blur) - 2px));
+                }
+
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-prompt-item,
+                :root[data-gh-bg-enabled="true"] .outline-item.user-query-node,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-empty-state,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-theme-block {
+                    background: var(--gh-panel-card-bg) !important;
+                    border-color: var(--gh-panel-card-border) !important;
+                    backdrop-filter: blur(var(--gh-panel-blur));
+                    -webkit-backdrop-filter: blur(var(--gh-panel-blur));
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] #chatgpt-helper-right .chatgpt-helper-tab-content,
+                :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] #chatgpt-helper-right .chatgpt-helper-prompt-item,
+                :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] #chatgpt-helper-right .outline-item {
+                    background: color-mix(in srgb, var(--gh-panel-card-bg), transparent 6%) !important;
+                    backdrop-filter: blur(calc(var(--gh-msg-blur) - 2px));
+                    -webkit-backdrop-filter: blur(calc(var(--gh-msg-blur) - 2px));
+                    box-shadow: inset 0 0 1px 0 var(--gh-msg-border);
+                }
+
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container,
+                :root[data-gh-bg-enabled="true"] #thread-bottom,
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container > div,
+                :root[data-gh-bg-enabled="true"] #thread-bottom > div,
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container > div > div,
+                :root[data-gh-bg-enabled="true"] main [class*="composer-parent"],
+                :root[data-gh-bg-enabled="true"] main [class*="sharp-edge-bottom-shadow"],
+                :root[data-gh-bg-enabled="true"] main [class*="sharp-edge-top-shadow"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="composer-parent"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sharp-edge-bottom-shadow"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sharp-edge-top-shadow"] {
+                    background: transparent !important;
+                    box-shadow: none !important;
+                    background-image: none !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container::before,
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container::after,
+                :root[data-gh-bg-enabled="true"] #thread-bottom::before,
+                :root[data-gh-bg-enabled="true"] #thread-bottom::after,
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container > div::before,
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container > div::after,
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="text-token-text-secondary"],
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-bg-secondary"],
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-bg-tertiary"],
+                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-bg-elevated"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="text-token-text-secondary"][class*="text-xs"] {
+                    background: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                }
+
+                @supports selector(:has(*)) {
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="user"] > div:has(> div[class*="rounded-2xl"]),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="user"] > div:has(> div[class*="rounded-2xl"]),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="user"] > div > div:has(> div[class*="rounded-2xl"]),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="user"] > div > div:has(> div[class*="rounded-2xl"]) {
+                        background: var(--gh-msg-user-bg) !important;
+                        backdrop-filter: blur(var(--gh-msg-blur));
+                        -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                        box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                        padding: 8px 10px !important;
+                        border-radius: 24px !important;
+                        background-clip: padding-box;
+                    }
+
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] > div:has(> .markdown),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] > div:has(> .markdown),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] > div:has(> [class*="markdown"]),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] > div:has(> [class*="markdown"]),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] > div > div:has(> .markdown),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] > div > div:has(> .markdown),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] > div > div:has(> [class*="markdown"]),
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] > div > div:has(> [class*="markdown"]) {
+                        background: var(--gh-msg-assistant-bg) !important;
+                        backdrop-filter: blur(var(--gh-msg-blur));
+                        -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                        box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                        padding: 14px 18px !important;
+                        border-radius: 28px !important;
+                        background-clip: padding-box;
+                    }
+
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="user"] div[class*="rounded-2xl"],
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="user"] div[class*="rounded-2xl"],
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] [class*="markdown"],
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] [class*="markdown"] {
+                        background: transparent !important;
+                        background-image: none !important;
+                        backdrop-filter: none !important;
+                        -webkit-backdrop-filter: none !important;
+                        box-shadow: none !important;
+                    }
+
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] [class*="markdown"],
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] [class*="markdown"] {
+                        padding: 0 !important;
+                        border-radius: 0 !important;
+                        overflow: visible !important;
+                    }
+                }
+
+                @supports not selector(:has(*)) {
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="user"] > div > div,
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="user"] > div > div,
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="user"] div[class*="rounded-2xl"],
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="user"] div[class*="rounded-2xl"] {
+                        background: var(--gh-msg-user-bg) !important;
+                        backdrop-filter: blur(var(--gh-msg-blur));
+                        -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                        box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                        padding: 10px 12px !important;
+                        background-clip: padding-box;
+                        border-radius: 24px !important;
+                        overflow: hidden;
+                    }
+
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] .markdown,
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] main [data-message-author-role="assistant"] [class*="markdown"],
+                    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [role="main"] [data-message-author-role="assistant"] [class*="markdown"] {
+                        background: var(--gh-msg-assistant-bg) !important;
+                        backdrop-filter: blur(var(--gh-msg-blur));
+                        -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                        box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                        padding: 14px 18px !important;
+                        border-radius: 28px !important;
+                        background-clip: padding-box;
+                        overflow: hidden;
+                    }
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] #stage-slideover-sidebar,
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] [data-testid="sidebar"] {
+                    box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha));
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] {
+                    box-shadow: none;
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] nav[aria-label*="Chat history"],
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] nav[aria-label*="聊天历史"],
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-testid="sidebar"] {
+                    box-shadow: none;
+                }
+                `;
+                document.head.appendChild(style);
+            }
+            this.themeRuntimeStyleReady = true;
+        }
+
+        ensureThemeBackgroundLayer() {
+            let layer = document.getElementById('chatgpt-helper-theme-bg-layer');
+            if (!layer) {
+                layer = document.createElement('div');
+                layer.id = 'chatgpt-helper-theme-bg-layer';
+                layer.setAttribute('aria-hidden', 'true');
+                document.body.prepend(layer);
+            }
+            return layer;
+        }
+
+        sanitizeCssUrl(url) {
+            if (!url) return 'none';
+            const escaped = String(url).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+            return `url("${escaped}")`;
+        }
+
+        revokeThemeBackgroundObjectUrl() {
+            if (!this.themeBackgroundObjectUrl) return;
+            try {
+                URL.revokeObjectURL(this.themeBackgroundObjectUrl);
+            } catch (e) {
+                // ignore
+            }
+            this.themeBackgroundObjectUrl = null;
+            this.themeBackgroundObjectAssetId = null;
+        }
+
+        async resolveThemeBackgroundObjectUrl(assetId) {
+            if (!assetId) {
+                this.revokeThemeBackgroundObjectUrl();
+                return null;
+            }
+            if (this.themeBackgroundObjectAssetId === assetId && this.themeBackgroundObjectUrl) {
+                return this.themeBackgroundObjectUrl;
+            }
+            const row = await this.themeAssetRepository.getAsset(assetId);
+            if (!row || !row.blob) {
+                this.revokeThemeBackgroundObjectUrl();
+                return null;
+            }
+            this.revokeThemeBackgroundObjectUrl();
+            this.themeBackgroundObjectUrl = URL.createObjectURL(row.blob);
+            this.themeBackgroundObjectAssetId = assetId;
+            return this.themeBackgroundObjectUrl;
+        }
+
+        async refreshThemeBackgroundState() {
+            const cfg = this.getThemeConfig();
+            if (!cfg.backgroundImageEnabled || !cfg.backgroundAssetId) {
+                this.revokeThemeBackgroundObjectUrl();
+                this.updateThemeVisualState();
+                return;
+            }
+
+            const url = await this.resolveThemeBackgroundObjectUrl(cfg.backgroundAssetId);
+            if (!url) {
+                cfg.backgroundImageEnabled = false;
+                cfg.backgroundAssetId = null;
+                cfg.updatedAt = new Date().toISOString();
+                this.saveSettings();
+            }
+            this.updateThemeVisualState();
+        }
+
+        syncThemeSurfaceVariables(canRenderBackground) {
+            const root = document.documentElement;
+            const keys = [
+                '--gh-bg',
+                '--gh-bg-secondary',
+                '--gh-text',
+                '--gh-text-secondary',
+                '--gh-border',
+                '--gh-hover',
+                '--gh-shadow',
+                '--gh-input-bg',
+                '--gh-input-border',
+                '--gh-active-bg',
+                '--gh-right-overlay',
+                '--gh-panel-card-bg',
+                '--gh-panel-card-border',
+                '--gh-sidebar-button-bg',
+                '--gh-msg-user-bg',
+                '--gh-msg-assistant-bg',
+                '--gh-msg-border',
+                '--gh-msg-shadow',
+                '--gh-msg-blur',
+                '--gh-panel-blur',
+                '--gh-composer-blur',
+                '--gh-composer-shadow'
+            ];
+
+            if (!canRenderBackground) {
+                keys.forEach((key) => root.style.removeProperty(key));
+                return;
+            }
+
+            const isDark = this.detectEffectiveThemeFromDom() === 'dark';
+            const cfg = this.getThemeConfig();
+            const preset = getThemePresetByKey(cfg.presetKey);
+            const surfaceVars = buildThemeSurfaceVars(preset, {
+                isDark,
+                canRenderBackground,
+                messageIntensity: cfg.messageGlassIntensity,
+                panelIntensity: cfg.panelGlassIntensity
+            });
+
+            if (!surfaceVars) {
+                keys.forEach((key) => root.style.removeProperty(key));
+                return;
+            }
+
+            Object.entries(surfaceVars).forEach(([key, value]) => {
+                root.style.setProperty(key, value);
+            });
+        }
+
+        updateThemeVisualState() {
+            this.ensureThemeRuntimeStyle();
+            const cfg = this.getThemeConfig();
+            const canRenderBackground = Boolean(cfg.backgroundImageEnabled && this.themeBackgroundObjectUrl);
+            const root = document.documentElement;
+            this.syncHelperThemeMode(this.detectEffectiveThemeFromDom());
+            this.refreshThemeHostTargets();
+            root.setAttribute('data-gh-theme-active', 'true');
+            root.setAttribute('data-gh-theme-preset', cfg.presetKey || 'blue');
+            root.setAttribute('data-gh-bg-enabled', canRenderBackground ? 'true' : 'false');
+            root.setAttribute('data-gh-msg-glass', cfg.messageGlassEnabled ? 'true' : 'false');
+            root.setAttribute('data-gh-sidebar-enhance', cfg.sidebarTextEnhanceEnabled ? 'true' : 'false');
+            root.style.setProperty('--gh-bg-image', this.sanitizeCssUrl(this.themeBackgroundObjectUrl));
+            root.style.setProperty('--gh-bg-blur', `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`);
+            root.style.setProperty('--gh-sidebar-enhance-alpha', (clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100).toFixed(2));
+            this.syncThemeSurfaceVariables(canRenderBackground);
+
+            const layer = this.ensureThemeBackgroundLayer();
+            layer.style.display = canRenderBackground ? 'block' : 'none';
+            layer.style.backgroundImage = this.sanitizeCssUrl(this.themeBackgroundObjectUrl);
+
+            if (this.themeModalRefs) {
+                this.updateThemePreviewCard();
+            }
+        }
+
+        validateThemeBackgroundFile(file) {
+            if (!file || !(file instanceof File)) {
+                throw new Error(this.t('themeImageLoadFailed'));
+            }
+            if (!THEME_BACKGROUND_ALLOWED_TYPES.includes(file.type)) {
+                throw new Error(this.t('themeInvalidType'));
+            }
+            if (file.size > THEME_BACKGROUND_MAX_SIZE) {
+                throw new Error(this.t('themeFileTooLarge'));
+            }
+        }
+
+        async uploadThemeBackgroundFile(file) {
+            this.validateThemeBackgroundFile(file);
+            const cfg = this.getThemeConfig();
+            const oldAssetId = cfg.backgroundAssetId;
+            const row = await this.themeAssetRepository.putAsset(file, file.type);
+            cfg.backgroundAssetId = row.id;
+            cfg.backgroundImageEnabled = true;
+            cfg.updatedAt = new Date().toISOString();
+            this.saveSettings();
+            await this.refreshThemeBackgroundState();
+            if (oldAssetId && oldAssetId !== row.id) {
+                await this.themeAssetRepository.deleteAsset(oldAssetId).catch(() => undefined);
+            }
+            if (this.themeModalRefs) {
+                this.syncThemeModalState();
+            }
+            this.showToast(this.t('themeUploadSuccess'));
+        }
+
+        async removeThemeBackgroundFile() {
+            const cfg = this.getThemeConfig();
+            const oldAssetId = cfg.backgroundAssetId;
+            cfg.backgroundImageEnabled = false;
+            cfg.backgroundAssetId = null;
+            cfg.updatedAt = new Date().toISOString();
+            this.saveSettings();
+            this.revokeThemeBackgroundObjectUrl();
+            this.updateThemeVisualState();
+            if (oldAssetId) {
+                await this.themeAssetRepository.deleteAsset(oldAssetId).catch(() => undefined);
+            }
+            if (this.themeModalRefs) {
+                this.syncThemeModalState();
+            }
+            this.showToast(this.t('themeBackgroundRemoved'));
+        }
+
+        async initializeThemeSystem() {
+            const cfg = this.getThemeConfig();
+            this.refreshThemeHostTargets();
+            this.applyThemePresetVariables(cfg.presetKey, false);
+            await this.applyAppearanceMode(cfg.appearanceMode, {
+                persist: false,
+                showToast: false,
+                preferNative: false
+            });
+            await this.refreshThemeBackgroundState();
+            this.queueThemeHostRefresh();
+        }
+
+        syncThemeModalState() {
+            if (!this.themeModalRefs) return;
+            const refs = this.themeModalRefs;
+            const cfg = this.getThemeConfig();
+            const canRenderBackground = Boolean(cfg.backgroundImageEnabled && this.themeBackgroundObjectUrl);
+
+            refs.appearanceButtons.system.classList.toggle('active', cfg.appearanceMode === 'system');
+            refs.appearanceButtons.light.classList.toggle('active', cfg.appearanceMode === 'light');
+            refs.appearanceButtons.dark.classList.toggle('active', cfg.appearanceMode === 'dark');
+
+            refs.presetButtons.forEach((btn) => {
+                const isActive = btn.dataset.presetKey === cfg.presetKey;
+                btn.classList.toggle('active', isActive);
+            });
+
+            refs.wallpaperEnable.checked = cfg.backgroundImageEnabled && Boolean(cfg.backgroundAssetId);
+            refs.blurRange.value = `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}`;
+            refs.blurValue.textContent = `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`;
+            refs.messageGlass.checked = Boolean(cfg.messageGlassEnabled);
+            refs.messageGlassIntensityRange.disabled = !cfg.messageGlassEnabled;
+            refs.messageGlassIntensityRange.value = `${Math.round(clampNumber(cfg.messageGlassIntensity, 0, 100))}`;
+            refs.messageGlassIntensityValue.textContent = `${Math.round(clampNumber(cfg.messageGlassIntensity, 0, 100))}%`;
+            refs.panelGlassIntensityRange.value = `${Math.round(clampNumber(cfg.panelGlassIntensity, 0, 100))}`;
+            refs.panelGlassIntensityValue.textContent = `${Math.round(clampNumber(cfg.panelGlassIntensity, 0, 100))}%`;
+            refs.sidebarEnhance.checked = Boolean(cfg.sidebarTextEnhanceEnabled);
+            refs.sidebarEnhanceRange.disabled = !cfg.sidebarTextEnhanceEnabled;
+            refs.sidebarEnhanceRange.value = `${Math.round(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100))}`;
+            refs.sidebarEnhanceValue.textContent = `${Math.round(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100))}%`;
+
+            refs.removeFileBtn.disabled = !cfg.backgroundAssetId;
+            refs.uploadDrop.classList.toggle('has-image', canRenderBackground);
+            refs.uploadBg.style.backgroundImage = canRenderBackground
+                ? this.sanitizeCssUrl(this.themeBackgroundObjectUrl)
+                : 'none';
+
+            this.updateThemePreviewCard();
+        }
+
+        updateThemePreviewCard() {
+            if (!this.themeModalRefs) return;
+            const refs = this.themeModalRefs;
+            const cfg = this.getThemeConfig();
+            const canRenderBackground = Boolean(cfg.backgroundImageEnabled && this.themeBackgroundObjectUrl);
+            const isDark = this.currentEffectiveTheme === 'dark';
+            const preset = getThemePresetByKey(cfg.presetKey);
+            const previewVars = buildThemeSurfaceVars(preset, {
+                isDark,
+                canRenderBackground,
+                messageIntensity: cfg.messageGlassIntensity,
+                panelIntensity: cfg.panelGlassIntensity
+            });
+            const previewNavBg = canRenderBackground && previewVars
+                ? (isDark ? previewVars['--gh-page-sidebar-bg-dark'] : previewVars['--gh-page-sidebar-bg-light'])
+                : (isDark ? rgbaFromColor(blendRgbColors('#0f172a', preset.primary, 0.18), 0.88) : 'rgba(255, 255, 255, 0.92)');
+            const previewInputBg = canRenderBackground && previewVars
+                ? (isDark ? previewVars['--gh-page-composer-bg-dark'] : previewVars['--gh-page-composer-bg-light'])
+                : (isDark ? rgbaFromColor(blendRgbColors('#0f172a', preset.primary, 0.14), 0.78) : rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.36), 0.90));
+            const previewMessageUserBg = cfg.messageGlassEnabled
+                ? ((canRenderBackground && previewVars)
+                    ? previewVars['--gh-msg-user-bg']
+                    : (isDark
+                        ? buildLinearGradient('135deg', [
+                            `${rgbaFromColor(blendRgbColors('#0f172a', preset.primary, 0.22), 0.82)} 0%`,
+                            `${rgbaFromColor(blendRgbColors('#0f172a', preset.secondary, 0.16), 0.66)} 100%`
+                        ])
+                        : buildLinearGradient('135deg', [
+                            `${rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.62), 0.92)} 0%`,
+                            `${rgbaFromColor(blendRgbColors('#ffffff', preset.secondary, 0.18), 0.80)} 100%`
+                        ])))
+                : (isDark ? 'rgba(15, 23, 42, 0.84)' : 'rgba(255,255,255,0.92)');
+            const previewMessageAssistantBg = cfg.messageGlassEnabled
+                ? ((canRenderBackground && previewVars)
+                    ? previewVars['--gh-msg-assistant-bg']
+                    : (isDark
+                        ? buildLinearGradient('135deg', [
+                            `${rgbaFromColor(blendRgbColors('#0f172a', preset.light, 0.12), 0.78)} 0%`,
+                            `${rgbaFromColor(blendRgbColors('#0f172a', preset.primary, 0.20), 0.62)} 100%`
+                        ])
+                        : buildLinearGradient('135deg', [
+                            `${rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.66), 0.90)} 0%`,
+                            `${rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.20), 0.74)} 100%`
+                        ])))
+                : (isDark ? 'rgba(15, 23, 42, 0.72)' : rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.46), 0.92));
+            const previewBorder = canRenderBackground && previewVars
+                ? previewVars['--gh-panel-card-border']
+                : (isDark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.32)');
+            const previewMessageBorder = canRenderBackground && previewVars
+                ? previewVars['--gh-msg-border']
+                : previewBorder;
+
+            refs.preview.classList.toggle('has-bg', canRenderBackground);
+            refs.previewBg.style.backgroundImage = canRenderBackground
+                ? this.sanitizeCssUrl(this.themeBackgroundObjectUrl)
+                : 'none';
+            refs.preview.style.setProperty('--gh-preview-blur', `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`);
+            refs.previewNav.style.background = previewNavBg;
+            refs.previewNav.style.border = `1px solid ${previewBorder}`;
+            refs.previewNav.style.boxShadow = cfg.sidebarTextEnhanceEnabled && !isDark && canRenderBackground
+                ? `inset 0 0 0 9999px rgba(255,255,255,${(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100).toFixed(2)}), inset 0 0 0 1px ${previewBorder}`
+                : `inset 0 0 0 1px ${previewBorder}`;
+            refs.previewNav.style.backdropFilter = canRenderBackground && previewVars
+                ? `blur(${previewVars['--gh-panel-blur']})`
+                : 'none';
+            refs.previewUserMsg.style.background = previewMessageUserBg;
+            refs.previewAssistantMsg.style.background = previewMessageAssistantBg;
+            refs.previewUserMsg.style.border = `1px solid ${previewMessageBorder}`;
+            refs.previewAssistantMsg.style.border = `1px solid ${previewMessageBorder}`;
+            refs.previewUserMsg.style.padding = cfg.messageGlassEnabled ? '10px 12px' : '8px 10px';
+            refs.previewAssistantMsg.style.padding = cfg.messageGlassEnabled ? '14px 18px' : '10px 12px';
+            refs.previewUserMsg.style.borderRadius = cfg.messageGlassEnabled ? '24px' : '18px';
+            refs.previewAssistantMsg.style.borderRadius = cfg.messageGlassEnabled ? '28px' : '20px';
+            refs.previewAssistantMsg.style.backdropFilter = cfg.messageGlassEnabled
+                ? ((canRenderBackground && previewVars) ? `blur(${previewVars['--gh-msg-blur']})` : (isDark ? 'blur(14px)' : 'blur(18px)'))
+                : 'none';
+            refs.previewUserMsg.style.backdropFilter = cfg.messageGlassEnabled
+                ? ((canRenderBackground && previewVars) ? `blur(${previewVars['--gh-msg-blur']})` : (isDark ? 'blur(14px)' : 'blur(18px)'))
+                : 'none';
+            refs.previewInput.style.background = previewInputBg;
+            refs.previewInput.style.border = `1px solid ${previewMessageBorder}`;
+            refs.previewInput.style.backdropFilter = canRenderBackground && previewVars
+                ? `blur(${previewVars['--gh-composer-blur']})`
+                : 'none';
+            refs.previewInput.style.boxShadow = canRenderBackground && previewVars
+                ? `inset 0 0 0 1px ${previewMessageBorder}`
+                : 'none';
+        }
+
+        openThemeSettingsModal() {
+            if (this.themeModal && this.themeModal.isConnected) {
+                this.syncThemeModalState();
+                requestAnimationFrame(() => this.themeModal.classList.add('open'));
+                return;
+            }
+
+            const overlay = createElement('div', { id: 'chatgpt-helper-theme-modal' });
+            const dialog = createElement('div', { className: 'chatgpt-helper-theme-modal-dialog' });
+            const header = createElement('div', { className: 'chatgpt-helper-theme-modal-header' });
+            header.appendChild(createElement('span', {}, this.t('themeDialogTitle') || 'Theme'));
+            const closeBtn = createElement('button', {
+                className: 'chatgpt-helper-theme-modal-close',
+                type: 'button',
+                title: 'Close'
+            }, '×');
+            header.appendChild(closeBtn);
+
+            const body = createElement('div', { className: 'chatgpt-helper-theme-modal-body' });
+            const main = createElement('div', { className: 'chatgpt-helper-theme-main' });
+            const side = createElement('div', { className: 'chatgpt-helper-theme-side' });
+
+            const appearanceBlock = createElement('div', { className: 'chatgpt-helper-theme-block' });
+            appearanceBlock.appendChild(createElement('div', { className: 'chatgpt-helper-theme-block-title' }, this.t('themeAppearance') || 'Appearance'));
+            const appearanceSegment = createElement('div', { className: 'chatgpt-helper-theme-segment' });
+            const appearanceButtons = {
+                system: createElement('button', { type: 'button' }, this.t('themeAppearanceSystem') || 'System'),
+                light: createElement('button', { type: 'button' }, this.t('themeAppearanceLight') || 'Light'),
+                dark: createElement('button', { type: 'button' }, this.t('themeAppearanceDark') || 'Dark')
+            };
+            appearanceSegment.appendChild(appearanceButtons.system);
+            appearanceSegment.appendChild(appearanceButtons.light);
+            appearanceSegment.appendChild(appearanceButtons.dark);
+            appearanceBlock.appendChild(appearanceSegment);
+
+            const colorsBlock = createElement('div', { className: 'chatgpt-helper-theme-block' });
+            colorsBlock.appendChild(createElement('div', { className: 'chatgpt-helper-theme-block-title' }, this.t('themeColorPresets') || 'Colors'));
+            const presetGrid = createElement('div', { className: 'chatgpt-helper-theme-preset-grid' });
+            const presetButtons = [];
+            THEME_PRESETS.forEach((preset) => {
+                const presetBtn = createElement('button', {
+                    className: 'chatgpt-helper-theme-preset',
+                    type: 'button',
+                    title: preset.key,
+                    'data-preset-key': preset.key
+                });
+                presetBtn.style.background = preset.primary;
+                presetBtn.style.color = preset.primary;
+                presetGrid.appendChild(presetBtn);
+                presetButtons.push(presetBtn);
+            });
+            colorsBlock.appendChild(presetGrid);
+
+            const wallpaperBlock = createElement('div', { className: 'chatgpt-helper-theme-block' });
+            wallpaperBlock.appendChild(createElement('div', { className: 'chatgpt-helper-theme-block-title' }, this.t('themeWallpaper') || 'Wallpaper'));
+
+            const wallpaperEnableRow = createElement('div', { className: 'chatgpt-helper-theme-row' });
+            wallpaperEnableRow.appendChild(createElement('span', {}, this.t('themeEnableWallpaper') || 'Enable Wallpaper'));
+            const wallpaperEnable = createElement('input', { type: 'checkbox' });
+            wallpaperEnableRow.appendChild(wallpaperEnable);
+            wallpaperBlock.appendChild(wallpaperEnableRow);
+
+            const uploadDrop = createElement('div', { className: 'chatgpt-helper-theme-upload' });
+            const uploadBg = createElement('div', { className: 'chatgpt-helper-theme-upload-bg' });
+            const uploadContent = createElement('div', { className: 'chatgpt-helper-theme-upload-content' });
+            uploadContent.appendChild(createElement('div', { style: { fontSize: '26px' } }, '☁'));
+            uploadContent.appendChild(createElement('div', {}, this.t('themeDropImage') || 'Drop image here'));
+            uploadContent.appendChild(createElement('div', {
+                style: { fontSize: '12px', color: 'var(--gh-text-secondary)' }
+            }, this.t('themeFileTypes') || 'PNG/JPG/WebP up to 5MB'));
+            const uploadButtons = createElement('div', { style: { display: 'flex', gap: '8px' } });
+            const selectFileBtn = createElement('button', {
+                className: 'chatgpt-helper-theme-launch-btn',
+                type: 'button'
+            }, this.t('themeSelectFile') || 'Select File');
+            const removeFileBtn = createElement('button', {
+                className: 'chatgpt-helper-theme-launch-btn',
+                type: 'button'
+            }, this.t('themeRemoveImage') || 'Remove');
+            uploadButtons.appendChild(selectFileBtn);
+            uploadButtons.appendChild(removeFileBtn);
+            uploadContent.appendChild(uploadButtons);
+            uploadDrop.appendChild(uploadBg);
+            uploadDrop.appendChild(uploadContent);
+            wallpaperBlock.appendChild(uploadDrop);
+
+            const fileInput = createElement('input', {
+                type: 'file',
+                accept: 'image/png,image/jpeg,image/webp',
+                style: { display: 'none' }
+            });
+            wallpaperBlock.appendChild(fileInput);
+
+            const blurRow = createElement('div', { className: 'chatgpt-helper-theme-row' });
+            blurRow.appendChild(createElement('span', {}, this.t('themeBlur') || 'Blur'));
+            const blurControls = createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } });
+            const blurRange = createElement('input', {
+                type: 'range',
+                min: 0,
+                max: 20,
+                step: 1
+            });
+            const blurValue = createElement('span', { style: { minWidth: '44px', textAlign: 'right', fontSize: '12px' } }, '5px');
+            blurControls.appendChild(blurRange);
+            blurControls.appendChild(blurValue);
+            blurRow.appendChild(blurControls);
+            wallpaperBlock.appendChild(blurRow);
+
+            const messageGlassRow = createElement('div', { className: 'chatgpt-helper-theme-row' });
+            messageGlassRow.appendChild(createElement('span', {}, this.t('themeMessageGlass') || 'Message Glass Effect'));
+            const messageGlass = createElement('input', { type: 'checkbox' });
+            messageGlassRow.appendChild(messageGlass);
+            wallpaperBlock.appendChild(messageGlassRow);
+
+            const messageGlassIntensityRow = createElement('div', { className: 'chatgpt-helper-theme-row' });
+            messageGlassIntensityRow.appendChild(createElement('span', {}, this.t('themeMessageGlassIntensity') || 'Message Glass Intensity'));
+            const messageGlassIntensityControls = createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } });
+            const messageGlassIntensityRange = createElement('input', {
+                type: 'range',
+                min: 0,
+                max: 100,
+                step: 1
+            });
+            const messageGlassIntensityValue = createElement('span', { style: { minWidth: '44px', textAlign: 'right', fontSize: '12px' } }, '60%');
+            messageGlassIntensityControls.appendChild(messageGlassIntensityRange);
+            messageGlassIntensityControls.appendChild(messageGlassIntensityValue);
+            messageGlassIntensityRow.appendChild(messageGlassIntensityControls);
+            wallpaperBlock.appendChild(messageGlassIntensityRow);
+
+            const panelGlassIntensityRow = createElement('div', { className: 'chatgpt-helper-theme-row' });
+            panelGlassIntensityRow.appendChild(createElement('span', {}, this.t('themePanelGlassIntensity') || 'Side Panel Glass Intensity'));
+            const panelGlassIntensityControls = createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } });
+            const panelGlassIntensityRange = createElement('input', {
+                type: 'range',
+                min: 0,
+                max: 100,
+                step: 1
+            });
+            const panelGlassIntensityValue = createElement('span', { style: { minWidth: '44px', textAlign: 'right', fontSize: '12px' } }, '45%');
+            panelGlassIntensityControls.appendChild(panelGlassIntensityRange);
+            panelGlassIntensityControls.appendChild(panelGlassIntensityValue);
+            panelGlassIntensityRow.appendChild(panelGlassIntensityControls);
+            wallpaperBlock.appendChild(panelGlassIntensityRow);
+
+            const sidebarEnhanceRow = createElement('div', { className: 'chatgpt-helper-theme-row' });
+            sidebarEnhanceRow.appendChild(createElement('span', {}, this.t('themeSidebarEnhance') || 'Sidebar Text Enhance'));
+            const sidebarEnhance = createElement('input', { type: 'checkbox' });
+            sidebarEnhanceRow.appendChild(sidebarEnhance);
+            wallpaperBlock.appendChild(sidebarEnhanceRow);
+
+            const sidebarEnhanceIntensityRow = createElement('div', { className: 'chatgpt-helper-theme-row' });
+            sidebarEnhanceIntensityRow.appendChild(createElement('span', {}, this.t('themeSidebarEnhanceIntensity') || 'Enhance Intensity'));
+            const sidebarEnhanceControls = createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px' } });
+            const sidebarEnhanceRange = createElement('input', {
+                type: 'range',
+                min: 0,
+                max: 100,
+                step: 1
+            });
+            const sidebarEnhanceValue = createElement('span', { style: { minWidth: '44px', textAlign: 'right', fontSize: '12px' } }, '20%');
+            sidebarEnhanceControls.appendChild(sidebarEnhanceRange);
+            sidebarEnhanceControls.appendChild(sidebarEnhanceValue);
+            sidebarEnhanceIntensityRow.appendChild(sidebarEnhanceControls);
+            wallpaperBlock.appendChild(sidebarEnhanceIntensityRow);
+
+            main.appendChild(appearanceBlock);
+            main.appendChild(colorsBlock);
+            main.appendChild(wallpaperBlock);
+
+            side.appendChild(createElement('div', { className: 'chatgpt-helper-theme-block-title' }, this.t('themeLivePreview') || 'Live Preview'));
+            const preview = createElement('div', { className: 'chatgpt-helper-theme-preview' });
+            const previewBg = createElement('div', { className: 'chatgpt-helper-theme-preview-bg' });
+            const previewInner = createElement('div', { className: 'chatgpt-helper-theme-preview-inner' });
+            const previewNav = createElement('div', { className: 'chatgpt-helper-theme-preview-nav' });
+            for (let i = 0; i < 5; i++) {
+                const item = createElement('div', {
+                    style: {
+                        height: '20px',
+                        marginBottom: '10px',
+                        borderRadius: '999px',
+                        background: i === 2
+                            ? 'color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 30%)'
+                            : 'color-mix(in srgb, var(--gh-text-secondary, #9ca3af), transparent 75%)'
+                    }
+                });
+                previewNav.appendChild(item);
+            }
+
+            const previewChat = createElement('div', { className: 'chatgpt-helper-theme-preview-chat' });
+            const previewUserMsg = createElement('div', { className: 'chatgpt-helper-theme-preview-msg user' }, 'Summarize recent updates.');
+            const previewAssistantMsg = createElement('div', { className: 'chatgpt-helper-theme-preview-msg assistant' }, 'Theme engine, wallpaper controls, and live preview are now enabled.');
+            const previewInput = createElement('div', { className: 'chatgpt-helper-theme-preview-input' });
+            previewChat.appendChild(previewUserMsg);
+            previewChat.appendChild(previewAssistantMsg);
+            previewChat.appendChild(previewInput);
+            previewInner.appendChild(previewNav);
+            previewInner.appendChild(previewChat);
+            preview.appendChild(previewBg);
+            preview.appendChild(previewInner);
+            side.appendChild(preview);
+
+            body.appendChild(main);
+            body.appendChild(side);
+            dialog.appendChild(header);
+            dialog.appendChild(body);
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+
+            const onAppearanceChange = (mode) => {
+                void this.applyAppearanceMode(mode, {
+                    persist: true,
+                    showToast: false,
+                    preferNative: true
+                }).catch((error) => {
+                    console.error('[ChatGPT Helper] applyAppearanceMode 失败:', error);
+                    this.showToast(this.t('themeSwitchFailed'));
+                });
+            };
+            appearanceButtons.system.addEventListener('click', () => onAppearanceChange('system'));
+            appearanceButtons.light.addEventListener('click', () => onAppearanceChange('light'));
+            appearanceButtons.dark.addEventListener('click', () => onAppearanceChange('dark'));
+
+            presetButtons.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const key = btn.dataset.presetKey;
+                    this.applyThemePresetVariables(key, true);
+                    this.updateThemeVisualState();
+                });
+            });
+
+            wallpaperEnable.addEventListener('change', () => {
+                const cfg = this.getThemeConfig();
+                if (!cfg.backgroundAssetId && wallpaperEnable.checked) {
+                    wallpaperEnable.checked = false;
+                    this.showToast(this.t('themeNoBackground'));
+                    return;
+                }
+                cfg.backgroundImageEnabled = Boolean(wallpaperEnable.checked && cfg.backgroundAssetId);
+                cfg.updatedAt = new Date().toISOString();
+                this.saveSettings();
+                void this.refreshThemeBackgroundState();
+            });
+
+            blurRange.addEventListener('input', () => {
+                const cfg = this.getThemeConfig();
+                cfg.backgroundBlurPx = Math.round(clampNumber(blurRange.value, 0, 20));
+                cfg.updatedAt = new Date().toISOString();
+                blurValue.textContent = `${cfg.backgroundBlurPx}px`;
+                this.saveSettings();
+                this.updateThemeVisualState();
+            });
+
+            messageGlass.addEventListener('change', () => {
+                const cfg = this.getThemeConfig();
+                cfg.messageGlassEnabled = Boolean(messageGlass.checked);
+                cfg.updatedAt = new Date().toISOString();
+                this.saveSettings();
+                this.updateThemeVisualState();
+                this.syncThemeModalState();
+            });
+
+            messageGlassIntensityRange.addEventListener('input', () => {
+                const cfg = this.getThemeConfig();
+                cfg.messageGlassIntensity = Math.round(clampNumber(messageGlassIntensityRange.value, 0, 100));
+                cfg.updatedAt = new Date().toISOString();
+                messageGlassIntensityValue.textContent = `${cfg.messageGlassIntensity}%`;
+                this.saveSettings();
+                this.updateThemeVisualState();
+            });
+
+            panelGlassIntensityRange.addEventListener('input', () => {
+                const cfg = this.getThemeConfig();
+                cfg.panelGlassIntensity = Math.round(clampNumber(panelGlassIntensityRange.value, 0, 100));
+                cfg.updatedAt = new Date().toISOString();
+                panelGlassIntensityValue.textContent = `${cfg.panelGlassIntensity}%`;
+                this.saveSettings();
+                this.updateThemeVisualState();
+            });
+
+            sidebarEnhance.addEventListener('change', () => {
+                const cfg = this.getThemeConfig();
+                cfg.sidebarTextEnhanceEnabled = Boolean(sidebarEnhance.checked);
+                cfg.updatedAt = new Date().toISOString();
+                this.saveSettings();
+                this.updateThemeVisualState();
+                this.syncThemeModalState();
+            });
+
+            sidebarEnhanceRange.addEventListener('input', () => {
+                const cfg = this.getThemeConfig();
+                cfg.sidebarTextEnhanceIntensity = Math.round(clampNumber(sidebarEnhanceRange.value, 0, 100));
+                cfg.updatedAt = new Date().toISOString();
+                sidebarEnhanceValue.textContent = `${cfg.sidebarTextEnhanceIntensity}%`;
+                this.saveSettings();
+                this.updateThemeVisualState();
+            });
+
+            selectFileBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files && fileInput.files[0];
+                fileInput.value = '';
+                if (!file) return;
+                void this.uploadThemeBackgroundFile(file).catch((error) => {
+                    const message = error && error.message ? error.message : this.t('themeImageLoadFailed');
+                    this.showToast(message);
+                });
+            });
+
+            removeFileBtn.addEventListener('click', () => {
+                void this.removeThemeBackgroundFile().catch((error) => {
+                    console.error('[ChatGPT Helper] removeThemeBackgroundFile 失败:', error);
+                });
+            });
+
+            ['dragenter', 'dragover'].forEach((eventName) => {
+                uploadDrop.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadDrop.classList.add('dragging');
+                });
+            });
+            ['dragleave', 'drop'].forEach((eventName) => {
+                uploadDrop.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadDrop.classList.remove('dragging');
+                });
+            });
+            uploadDrop.addEventListener('drop', (e) => {
+                const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+                if (!file) return;
+                void this.uploadThemeBackgroundFile(file).catch((error) => {
+                    const message = error && error.message ? error.message : this.t('themeImageLoadFailed');
+                    this.showToast(message);
+                });
+            });
+
+            const closeModal = () => this.closeThemeSettingsModal();
+            closeBtn.addEventListener('click', closeModal);
+            this.themeModalBackdropHandler = (event) => {
+                if (event.target === overlay) {
+                    closeModal();
+                }
+            };
+            overlay.addEventListener('click', this.themeModalBackdropHandler);
+            this.themeModalEscHandler = (event) => {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeModal();
+                }
+            };
+            document.addEventListener('keydown', this.themeModalEscHandler, true);
+
+            this.themeModal = overlay;
+            this.themeModalRefs = {
+                appearanceButtons,
+                presetButtons,
+                wallpaperEnable,
+                blurRange,
+                blurValue,
+                messageGlass,
+                messageGlassIntensityRange,
+                messageGlassIntensityValue,
+                panelGlassIntensityRange,
+                panelGlassIntensityValue,
+                sidebarEnhance,
+                sidebarEnhanceRange,
+                sidebarEnhanceValue,
+                uploadDrop,
+                uploadBg,
+                removeFileBtn,
+                preview,
+                previewBg,
+                previewNav,
+                previewUserMsg,
+                previewAssistantMsg,
+                previewInput
+            };
+            this.syncThemeModalState();
+            requestAnimationFrame(() => overlay.classList.add('open'));
+        }
+
+        closeThemeSettingsModal() {
+            if (!this.themeModal) return;
+            this.themeModal.classList.remove('open');
+            const modalToRemove = this.themeModal;
+            setTimeout(() => {
+                if (modalToRemove && modalToRemove.parentNode) {
+                    modalToRemove.parentNode.removeChild(modalToRemove);
+                }
+            }, 200);
+            if (this.themeModalBackdropHandler) {
+                this.themeModal.removeEventListener('click', this.themeModalBackdropHandler);
+            }
+            if (this.themeModalEscHandler) {
+                document.removeEventListener('keydown', this.themeModalEscHandler, true);
+            }
+            this.themeModal = null;
+            this.themeModalRefs = null;
+            this.themeModalEscHandler = null;
+            this.themeModalBackdropHandler = null;
         }
 
         async requestNotificationPermission() {
@@ -6058,6 +8204,14 @@ if (!window.__MY_EXT__) {
                 setTimeout(() => {
                     try {
                         if (this.panel) {
+                            try {
+                                this.initializeThemeSystem().catch((e) => {
+                                    console.error('[ChatGPT Helper] initializeThemeSystem 错误:', e);
+                                });
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] initializeThemeSystem 调用错误:', e);
+                            }
+
                             try {
                                 this.createUI();
                             } catch (e) {
@@ -6186,6 +8340,14 @@ if (!window.__MY_EXT__) {
                                     this.createLayout();
                                     if (this.panel) {
                                         try {
+                                            this.initializeThemeSystem().catch((e3) => {
+                                                console.error('[ChatGPT Helper] 重试 initializeThemeSystem 错误:', e3);
+                                            });
+                                        } catch (e3) {
+                                            console.error('[ChatGPT Helper] 重试 initializeThemeSystem 调用错误:', e3);
+                                        }
+
+                                        try {
                                             this.createUI();
                                             this.createCollapsedButtons();
                                             this.bindEvents();
@@ -6220,12 +8382,12 @@ if (!window.__MY_EXT__) {
                     }
                 }
 
-                // ChatGPT 主题色 - 更美观的配色
+                // 默认主题色（实际运行时会由主题预设动态覆盖）
                 const colors = {
-                    primary: '#2dd4bf', // ChatGPT 绿色 - 亮色模式下变浅
-                    secondary: '#5eead4',
-                    accent: '#14b8a6', // 深绿色 - 亮色模式下变浅
-                    light: '#e6f7f3', // 浅绿色背景
+                    primary: '#4285f4',
+                    secondary: '#60a5fa',
+                    accent: '#2563eb',
+                    light: '#eaf2ff',
                 };
                 const gradient = `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`;
 
@@ -6256,6 +8418,11 @@ if (!window.__MY_EXT__) {
                     --gh-folder-bg-expanded: #c7d2fe;
                     --gh-border-active: #6366f1;
                     --gh-checkbox-bg: #4f46e5;
+                    --gh-theme-primary: ${colors.primary};
+                    --gh-theme-secondary: ${colors.secondary};
+                    --gh-theme-accent: ${colors.accent};
+                    --gh-theme-accent-dark: ${colors.accent};
+                    --gh-theme-light: ${colors.light};
                     /* Outline Highlight Colors (Light Mode) */
                     --gh-outline-locate-bg: rgba(16, 185, 129, 0.25);
                     --gh-outline-locate-border: #10b981;
@@ -6283,9 +8450,13 @@ if (!window.__MY_EXT__) {
                     --gh-input-bg: #334155;
                     --gh-input-border: #64748b;
                     --gh-active-bg: #3b82f6;
-                    --gh-header-bg: #000000;
+                    --gh-header-bg: linear-gradient(
+                        135deg,
+                        color-mix(in srgb, var(--gh-theme-primary, #4285f4), #020617 80%),
+                        color-mix(in srgb, var(--gh-theme-secondary, #60a5fa), #020617 84%)
+                    );
                     --gh-tag-active-bg: rgba(59, 130, 246, 0.3);
-                    --gh-primary-hover: #2563eb;
+                    --gh-primary-hover: var(--gh-theme-accent-dark, #2563eb);
                 }
 
                 /* 移除 @media (prefers-color-scheme: dark) 自动应用，只通过 body[data-gh-mode="dark"] 控制 */
@@ -6327,6 +8498,7 @@ if (!window.__MY_EXT__) {
                     flex-direction: column;
                     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
                     overflow: hidden;
+                    isolation: isolate;
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
                     border-radius: 0;
                 }
@@ -6370,25 +8542,44 @@ if (!window.__MY_EXT__) {
                     background: var(--gh-border, #475569);
                 }
                 
-                /* 确保亮色模式下使用白色背景，不使用黑色 */
-                body:not([data-gh-mode="dark"]) #chatgpt-helper-right {
+                body[data-gh-mode="light"] #chatgpt-helper-right {
                     background: var(--gh-bg, #ffffff) !important;
                 }
                 
-                body:not([data-gh-mode="dark"]) #chatgpt-helper-content {
+                body[data-gh-mode="light"] #chatgpt-helper-content {
                     background: var(--gh-bg, #ffffff) !important;
                 }
                 
-                body:not([data-gh-mode="dark"]) #chatgpt-helper-tabs {
+                body[data-gh-mode="light"] #chatgpt-helper-tabs {
                     background: var(--gh-bg, #ffffff) !important;
                 }
                 
-                body:not([data-gh-mode="dark"]) .chatgpt-helper-search-bar {
+                body[data-gh-mode="light"] .chatgpt-helper-search-bar {
                     background: var(--gh-bg-secondary, #f9fafb) !important;
                 }
                 
-                body:not([data-gh-mode="dark"]) .chatgpt-helper-categories {
+                body[data-gh-mode="light"] .chatgpt-helper-categories {
                     background: var(--gh-bg, #ffffff) !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="light"] #chatgpt-helper-right,
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] #chatgpt-helper-right {
+                    background: var(--gh-right-overlay) !important;
+                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border) !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="light"] #chatgpt-helper-content,
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] #chatgpt-helper-content {
+                    background: transparent !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="light"] #chatgpt-helper-tabs,
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] #chatgpt-helper-tabs,
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="light"] .chatgpt-helper-search-bar,
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] .chatgpt-helper-search-bar,
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="light"] .chatgpt-helper-categories,
+                :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] .chatgpt-helper-categories {
+                    background: color-mix(in srgb, var(--gh-bg-secondary), transparent 6%) !important;
                 }
                 
                 body[data-gh-mode="dark"] #chatgpt-helper-right {
@@ -6397,7 +8588,7 @@ if (!window.__MY_EXT__) {
                 }
                 
                 body[data-gh-mode="dark"] #chatgpt-helper-header {
-                    background: #000000 !important;
+                    background: var(--gh-header-bg) !important;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                 }
                 
@@ -8120,6 +10311,384 @@ if (!window.__MY_EXT__) {
                     display: inline-block;
                 }
 
+                .chatgpt-helper-theme-launch-btn {
+                    padding: 9px 15px;
+                    border-radius: 12px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 18%);
+                    background: color-mix(in srgb, var(--gh-bg, #ffffff), transparent 6%);
+                    color: var(--gh-text, #111827);
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-weight: 600;
+                    letter-spacing: 0.01em;
+                    transition: all 0.2s ease;
+                }
+
+                .chatgpt-helper-theme-launch-btn:hover {
+                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 8%);
+                    border-color: var(--gh-primary, #10a37f);
+                    transform: translateY(-1px);
+                }
+
+                #chatgpt-helper-theme-modal {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 10050;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background:
+                        radial-gradient(1200px 520px at 82% 10%, rgba(64, 109, 255, 0.2), transparent 60%),
+                        radial-gradient(980px 640px at 12% 100%, rgba(15, 118, 110, 0.18), transparent 70%),
+                        rgba(2, 6, 23, 0.72);
+                    backdrop-filter: blur(8px);
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity 0.24s ease;
+                    padding: 14px;
+                }
+
+                #chatgpt-helper-theme-modal.open {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+
+                .chatgpt-helper-theme-modal-dialog {
+                    width: min(1180px, 96vw);
+                    height: min(880px, 93vh);
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg, #ffffff), #f8fbff 22%) 0%, var(--gh-bg, #ffffff) 42%),
+                        var(--gh-bg, #ffffff);
+                    color: var(--gh-text, #111827);
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 10%);
+                    border-radius: 20px;
+                    box-shadow:
+                        0 34px 90px rgba(2, 6, 23, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-theme-modal-dialog {
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, #0b1324, var(--gh-theme-primary, #4285f4) 12%) 0%, #080d16 44%),
+                        #0b111a;
+                    border-color: color-mix(in srgb, #334155, transparent 12%);
+                }
+
+                .chatgpt-helper-theme-modal-header {
+                    height: 64px;
+                    padding: 0 22px;
+                    border-bottom: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 12%);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    font-size: 24px;
+                    font-weight: 700;
+                    letter-spacing: 0.01em;
+                }
+
+                .chatgpt-helper-theme-modal-close {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 10px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 8%);
+                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 20%);
+                    color: inherit;
+                    cursor: pointer;
+                    font-size: 20px;
+                    transition: all 0.2s ease;
+                }
+
+                .chatgpt-helper-theme-modal-close:hover {
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 90%);
+                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 20%);
+                }
+
+                .chatgpt-helper-theme-modal-body {
+                    flex: 1;
+                    min-height: 0;
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr) 370px;
+                    gap: 0;
+                    overflow: hidden;
+                }
+
+                .chatgpt-helper-theme-main {
+                    overflow: auto;
+                    padding: 22px 24px 28px;
+                }
+
+                .chatgpt-helper-theme-side {
+                    border-left: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 12%);
+                    padding: 22px 20px;
+                    overflow: auto;
+                    background: color-mix(in srgb, var(--gh-bg-secondary, #f8fafc), transparent 4%);
+                }
+
+                .chatgpt-helper-theme-block {
+                    margin-bottom: 26px;
+                }
+
+                .chatgpt-helper-theme-block-title {
+                    font-size: 15px;
+                    font-weight: 700;
+                    margin-bottom: 12px;
+                }
+
+                .chatgpt-helper-theme-segment {
+                    display: inline-flex;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 10%);
+                    border-radius: 12px;
+                    overflow: hidden;
+                    background: color-mix(in srgb, var(--gh-bg-secondary, #f9fafb), transparent 8%);
+                }
+
+                .chatgpt-helper-theme-segment button {
+                    border: none;
+                    border-right: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 14%);
+                    background: transparent;
+                    color: var(--gh-text, #1f2937);
+                    padding: 9px 14px;
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-weight: 700;
+                    transition: all 0.2s ease;
+                }
+
+                .chatgpt-helper-theme-segment button:last-child {
+                    border-right: none;
+                }
+
+                .chatgpt-helper-theme-segment button:hover {
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 92%);
+                }
+
+                .chatgpt-helper-theme-segment button.active {
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), #0b1220 10%);
+                    color: #fff;
+                }
+
+                .chatgpt-helper-theme-preset-grid {
+                    display: grid;
+                    grid-template-columns: repeat(5, 46px);
+                    gap: 10px;
+                    width: fit-content;
+                    padding: 14px;
+                    border-radius: 14px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 10%);
+                    background: color-mix(in srgb, var(--gh-bg-secondary, #f9fafb), transparent 4%);
+                }
+
+                .chatgpt-helper-theme-preset {
+                    width: 46px;
+                    height: 46px;
+                    border-radius: 12px;
+                    border: 1px solid transparent;
+                    cursor: pointer;
+                    position: relative;
+                    transition: transform 0.16s ease, box-shadow 0.2s ease;
+                }
+
+                .chatgpt-helper-theme-preset.active {
+                    border-color: #ffffff;
+                    box-shadow: 0 0 0 2px color-mix(in srgb, currentColor, white 10%), 0 8px 20px rgba(0, 0, 0, 0.2);
+                }
+
+                .chatgpt-helper-theme-preset:hover {
+                    transform: scale(1.06);
+                }
+
+                .chatgpt-helper-theme-upload {
+                    border: 2px dashed color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 10%);
+                    border-radius: 14px;
+                    min-height: 220px;
+                    padding: 18px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    position: relative;
+                    overflow: hidden;
+                    background: color-mix(in srgb, var(--gh-bg-secondary, #f9fafb), transparent 5%);
+                    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+                }
+
+                .chatgpt-helper-theme-upload.dragging {
+                    border-color: var(--gh-primary, #3b82f6);
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 90%);
+                    transform: translateY(-1px);
+                }
+
+                .chatgpt-helper-theme-upload-bg {
+                    position: absolute;
+                    inset: 0;
+                    background-size: cover;
+                    background-position: center;
+                    opacity: 0.88;
+                    filter: brightness(0.72);
+                }
+
+                .chatgpt-helper-theme-upload.has-image::after {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background: linear-gradient(180deg, rgba(2, 6, 23, 0.28) 0%, rgba(2, 6, 23, 0.52) 100%);
+                    z-index: 1;
+                    pointer-events: none;
+                }
+
+                .chatgpt-helper-theme-upload-content {
+                    position: relative;
+                    z-index: 2;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    align-items: center;
+                }
+
+                .chatgpt-helper-theme-upload.has-image .chatgpt-helper-theme-upload-content {
+                    color: #f8fafc;
+                    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+                }
+
+                .chatgpt-helper-theme-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    margin-bottom: 12px;
+                    padding: 10px 12px;
+                    border-radius: 12px;
+                    background: color-mix(in srgb, var(--gh-bg-secondary, #f8fafc), transparent 12%);
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 18%);
+                }
+
+                .chatgpt-helper-theme-row input[type="range"] {
+                    width: 220px;
+                    accent-color: var(--gh-primary, #3b82f6);
+                }
+
+                .chatgpt-helper-theme-row input[type="checkbox"] {
+                    appearance: none;
+                    width: 42px;
+                    height: 24px;
+                    border-radius: 999px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 8%);
+                    background: color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 24%);
+                    cursor: pointer;
+                    position: relative;
+                    transition: all 0.2s ease;
+                }
+
+                .chatgpt-helper-theme-row input[type="checkbox"]::after {
+                    content: '';
+                    position: absolute;
+                    top: 2px;
+                    left: 2px;
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 999px;
+                    background: #ffffff;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.24);
+                    transition: transform 0.2s ease;
+                }
+
+                .chatgpt-helper-theme-row input[type="checkbox"]:checked {
+                    background: var(--gh-primary, #3b82f6);
+                    border-color: var(--gh-primary, #3b82f6);
+                }
+
+                .chatgpt-helper-theme-row input[type="checkbox"]:checked::after {
+                    transform: translateX(18px);
+                }
+
+                .chatgpt-helper-theme-preview {
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 8%);
+                    border-radius: 18px;
+                    min-height: 350px;
+                    overflow: hidden;
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg, #ffffff), #f8fbff 26%) 0%, var(--gh-bg, #ffffff) 50%),
+                        var(--gh-bg, #ffffff);
+                    position: relative;
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 10px 30px rgba(2, 6, 23, 0.28);
+                }
+
+                .chatgpt-helper-theme-preview-bg {
+                    position: absolute;
+                    inset: -12px;
+                    background-size: cover;
+                    background-position: center;
+                    filter: blur(var(--gh-preview-blur, 5px));
+                    transform: scale(1.06);
+                    opacity: 0;
+                    transition: opacity 0.2s ease;
+                }
+
+                .chatgpt-helper-theme-preview.has-bg .chatgpt-helper-theme-preview-bg {
+                    opacity: 1;
+                }
+
+                .chatgpt-helper-theme-preview-inner {
+                    position: relative;
+                    z-index: 1;
+                    height: 100%;
+                    display: grid;
+                    grid-template-columns: 84px 1fr;
+                    min-height: 350px;
+                }
+
+                .chatgpt-helper-theme-preview-nav {
+                    padding: 12px 8px;
+                    background: color-mix(in srgb, var(--gh-bg-secondary, #f8fafc), transparent 12%);
+                    border-right: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 12%);
+                }
+
+                .chatgpt-helper-theme-preview-chat {
+                    padding: 14px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+
+                .chatgpt-helper-theme-preview-msg {
+                    border-radius: 12px;
+                    padding: 10px 12px;
+                    font-size: 13px;
+                    line-height: 1.35;
+                    max-width: 90%;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 28%);
+                }
+
+                .chatgpt-helper-theme-preview-msg.user {
+                    margin-left: auto;
+                    background: color-mix(in srgb, var(--gh-bg-secondary, #f1f5f9), transparent 18%);
+                }
+
+                .chatgpt-helper-theme-preview-msg.assistant {
+                    background: color-mix(in srgb, var(--gh-theme-light, #ecf3ff), transparent 8%);
+                }
+
+                .chatgpt-helper-theme-preview-input {
+                    margin-top: auto;
+                    border-radius: 999px;
+                    height: 34px;
+                    background: color-mix(in srgb, var(--gh-bg-secondary, #f1f5f9), transparent 0%);
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 12%);
+                }
+
+                @media (max-width: 980px) {
+                    .chatgpt-helper-theme-modal-body {
+                        grid-template-columns: 1fr;
+                    }
+                    .chatgpt-helper-theme-side {
+                        border-left: none;
+                        border-top: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 12%);
+                    }
+                }
+
                 /* 响应式调整中栏 - 通过 JS 动态更新 */
             `;
                 try {
@@ -9833,6 +12402,22 @@ if (!window.__MY_EXT__) {
                             handleTextChange();
                         }
                     });
+                } else if (item.type === 'button') {
+                    control = createElement('button', {
+                        className: 'chatgpt-helper-theme-launch-btn',
+                        type: 'button'
+                    }, item.buttonText || this.t('openThemeSettings') || 'Open Theme Settings');
+                    control.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (item.onClick) {
+                            try {
+                                item.onClick();
+                            } catch (err) {
+                                console.error('[ChatGPT Helper] Button onClick error:', err);
+                            }
+                        }
+                    });
                 }
 
                 if (control) {
@@ -9915,6 +12500,17 @@ if (!window.__MY_EXT__) {
                     }
                 }
             ]);
+
+            const themeSection = this.createSettingSection(this.t('themeSettingsSection') || '主题设置', [
+                {
+                    label: this.t('themeDialogTitle') || '主题',
+                    type: 'button',
+                    buttonText: this.t('openThemeSettings') || '打开主题设置',
+                    onClick: () => {
+                        this.openThemeSettingsModal();
+                    }
+                }
+            ], { defaultExpanded: true });
 
             // 功能设置（可折叠）
             const featureSection = this.createSettingSection(this.t('featureSettings') || '功能设置', [
@@ -10475,6 +13071,7 @@ if (!window.__MY_EXT__) {
             ]);
 
             settingsContent.appendChild(panelSection);
+            settingsContent.appendChild(themeSection);
             settingsContent.appendChild(featureSection);
             settingsContent.appendChild(pageSection);
             settingsContent.appendChild(collapsedSection);
@@ -12201,333 +14798,30 @@ if (!window.__MY_EXT__) {
 
         toggleTheme(event) {
             try {
-                console.log('[ChatGPT Helper] toggleTheme 被调用');
-
-                // 检测当前主题（更全面的检测）
-                const bodyClass = document.body.className;
-                const htmlClass = document.documentElement.className;
-                const bodyStyle = window.getComputedStyle(document.body);
-
-                // 多种方式检测当前主题
-                const isDark = /\bdark\b/i.test(bodyClass) ||
-                    /\bdark\b/i.test(htmlClass) ||
-                    /\bdark-theme\b/i.test(bodyClass) ||
-                    bodyStyle.colorScheme === 'dark' ||
-                    document.body.style.colorScheme === 'dark' ||
-                    document.body.dataset.theme === 'dark' ||
-                    document.documentElement.dataset.theme === 'dark' ||
-                    document.documentElement.getAttribute('data-theme') === 'dark';
-
-                const nextMode = isDark ? 'light' : 'dark';
-                console.log('[ChatGPT Helper] 当前主题:', isDark ? 'dark' : 'light', '切换到:', nextMode);
-
-                // 方法1: 尝试查找并触发 ChatGPT 的原生主题切换按钮
-                const findThemeButton = () => {
-                    // 排除助手面板内的所有按钮，避免误触发删除等操作
-                    const helperPanel = document.getElementById('chatgpt-helper-panel');
-                    
-                    // 检查按钮是否在助手面板内的辅助函数
-                    const isInHelperPanel = (btn) => {
-                        if (!helperPanel) return false;
-                        // 检查按钮本身或其任何父元素是否在助手面板内
-                        let element = btn;
-                        while (element && element !== document.body) {
-                            if (helperPanel.contains(element)) {
-                                return true;
-                            }
-                            // 检查是否有助手面板相关的类名或ID
-                            if (element.id && element.id.includes('chatgpt-helper')) {
-                                return true;
-                            }
-                            if (element.className && typeof element.className === 'string' && 
-                                element.className.includes('chatgpt-helper')) {
-                                return true;
-                            }
-                            element = element.parentElement;
-                        }
-                        return false;
-                    };
-                    
-                    // ChatGPT 可能使用的选择器
-                    const selectors = [
-                        'button[aria-label*="theme" i]',
-                        'button[aria-label*="Theme" i]',
-                        'button[data-testid*="theme" i]',
-                        '[role="button"][aria-label*="theme" i]',
-                        // 查找所有按钮，检查其 SVG 图标（但排除助手面板内的）
-                        'button svg',
-                        'nav button',
-                        'header button',
-                    ];
-
-                    for (const selector of selectors) {
-                        try {
-                            const elements = document.querySelectorAll(selector);
-                            for (const el of elements) {
-                                const btn = el.closest('button') || el;
-                                if (!btn || btn.tagName !== 'BUTTON') continue;
-
-                                // 严格排除助手面板内的按钮（包括提示词列表中的按钮）
-                                if (isInHelperPanel(btn)) {
-                                    continue;
-                                }
-
-                                const rect = btn.getBoundingClientRect();
-                                if (rect.width === 0 || rect.height === 0) continue;
-
-                                // 检查是否有 SVG 图标（主题切换按钮通常有图标）
-                                const svg = btn.querySelector('svg');
-                                if (svg) {
-                                    // 检查是否是主题相关的图标
-                                    const viewBox = svg.getAttribute('viewBox') || '';
-                                    const paths = Array.from(svg.querySelectorAll('path'));
-                                    const pathD = paths.map(p => p.getAttribute('d') || '').join('');
-
-                                    // Material Icons 主题图标特征 - 更精确的检查
-                                    // 删除按钮的viewBox也是"0 0 24 24"，但路径不同，需要更精确的匹配
-                                    const isThemeIcon = pathD.includes('M480') || 
-                                                       pathD.includes('M12 2.69') || 
-                                                       pathD.includes('M12 18') ||
-                                                       (viewBox.includes('24') && (pathD.includes('M20') || pathD.includes('M4 6')));
-                                    
-                                    // 排除明显不是主题图标的特征（如删除图标）
-                                    const isDeleteIcon = pathD.includes('M3 6h18') || pathD.includes('M19 6v14');
-                                    if (isDeleteIcon) {
-                                        continue;
-                                    }
-
-                                    if (isThemeIcon) {
-                                        console.log('[ChatGPT Helper] 找到可能的主题按钮:', btn);
-                                        return btn;
-                                    }
-                                }
-                            }
-                        } catch (e) {
-                            continue;
-                        }
-                    }
-                    return null;
-                };
-
-                let themeToggleBtn = findThemeButton();
-
-                // 方法2: 如果找不到，尝试直接操作 ChatGPT 的主题
-                if (!themeToggleBtn) {
-                    console.log('[ChatGPT Helper] 未找到主题按钮，直接切换主题');
-
-                    // 直接切换 ChatGPT 的主题
-                    if (nextMode === 'dark') {
-                        document.body.classList.add('dark', 'dark-theme');
-                        document.documentElement.classList.add('dark', 'dark-theme');
-                        document.body.classList.remove('light', 'light-theme');
-                        document.documentElement.classList.remove('light', 'light-theme');
-                        document.body.style.colorScheme = 'dark';
-                        document.documentElement.style.colorScheme = 'dark';
-                        document.body.dataset.theme = 'dark';
-                        document.documentElement.setAttribute('data-theme', 'dark');
-                        // ChatGPT 可能使用的其他属性
-                        document.body.setAttribute('data-mode', 'dark');
-                        document.documentElement.setAttribute('data-mode', 'dark');
-                    } else {
-                        document.body.classList.remove('dark', 'dark-theme');
-                        document.documentElement.classList.remove('dark', 'dark-theme');
-                        document.body.classList.add('light', 'light-theme');
-                        document.documentElement.classList.add('light', 'light-theme');
-                        document.body.style.colorScheme = 'light';
-                        document.documentElement.style.colorScheme = 'light';
-                        document.body.dataset.theme = 'light';
-                        document.documentElement.setAttribute('data-theme', 'light');
-                        document.body.setAttribute('data-mode', 'light');
-                        document.documentElement.setAttribute('data-mode', 'light');
-                    }
-
-                    // 同步到助手面板
-                    if (nextMode === 'dark') {
-                        document.body.dataset.ghMode = 'dark';
-                        document.documentElement.setAttribute('data-gh-mode', 'dark');
-                    } else {
-                        delete document.body.dataset.ghMode;
-                        document.documentElement.removeAttribute('data-gh-mode');
-                    }
-
-                    this.settings.themeMode = nextMode;
-                    this.saveSettings();
-
-                    // 更新所有主题按钮图标
-                    const themeBtn = document.getElementById('quick-btn-theme');
-                    if (themeBtn) {
-                        themeBtn.textContent = nextMode === 'dark' ? '🌙' : '☀';
-                    }
-                    const headerThemeBtn = document.getElementById('chatgpt-helper-header-theme-btn');
-                    if (headerThemeBtn) {
-                        headerThemeBtn.textContent = nextMode === 'dark' ? '☀' : '🌙';
-                    }
-
-                    // 触发主题变化事件
-                    window.dispatchEvent(new CustomEvent('themechange', { detail: { mode: nextMode } }));
-                    document.dispatchEvent(new CustomEvent('themechange', { detail: { mode: nextMode } }));
-
-                    // 触发 storage 事件（ChatGPT 可能监听这个）
-                    window.dispatchEvent(new StorageEvent('storage', {
-                        key: 'theme',
-                        newValue: nextMode
-                    }));
-
-                    this.showToast(nextMode === 'dark' ? '已切换到暗色模式' : '已切换到亮色模式');
-                    console.log('[ChatGPT Helper] 直接主题切换完成:', nextMode);
-
-                    // 延迟检查并更新
-                    setTimeout(() => {
-                        this.monitorTheme();
-                    }, 300);
-                } else {
-                    // 找到按钮，触发点击
-                    console.log('[ChatGPT Helper] 找到主题按钮，触发点击');
-
-                    // 使用多种方式触发点击
-                    const triggerClick = () => {
-                        try {
-                            themeToggleBtn.click();
-                        } catch (e) {
-                            try {
-                                const evt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
-                                themeToggleBtn.dispatchEvent(evt);
-                            } catch (e2) {
-                                const mousedown = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
-                                const mouseup = new MouseEvent('mouseup', { bubbles: true, cancelable: true });
-                                themeToggleBtn.dispatchEvent(mousedown);
-                                setTimeout(() => {
-                                    themeToggleBtn.dispatchEvent(mouseup);
-                                    themeToggleBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-                                }, 10);
-                            }
-                        }
-                    };
-
-                    triggerClick();
-
-                    // 延迟检查并更新
-                    setTimeout(() => {
-                        this.monitorTheme();
-                        const newIsDark = document.body.dataset.ghMode === 'dark' ||
-                            /\bdark\b/i.test(document.body.className);
-                        const themeBtn = document.getElementById('quick-btn-theme');
-                        if (themeBtn) {
-                            themeBtn.textContent = newIsDark ? '🌙' : '☀';
-                        }
-                        const headerThemeBtn = document.getElementById('chatgpt-helper-header-theme-btn');
-                        if (headerThemeBtn) {
-                            headerThemeBtn.textContent = newIsDark ? '☀' : '🌙';
-                        }
-                    }, 500);
-                }
+                const currentTheme = this.detectEffectiveThemeFromDom();
+                const nextMode = currentTheme === 'dark' ? 'light' : 'dark';
+                void this.applyAppearanceMode(nextMode, {
+                    persist: true,
+                    showToast: true,
+                    preferNative: true
+                }).catch((error) => {
+                    console.error('[ChatGPT Helper] 主题切换失败:', error, error && error.stack);
+                    this.showToast(this.t('themeSwitchFailed'));
+                });
             } catch (error) {
                 console.error('[ChatGPT Helper] 主题切换失败:', error, error.stack);
-                this.showToast('主题切换失败: ' + error.message);
+                this.showToast(this.t('themeSwitchFailed'));
             }
         }
 
         monitorTheme() {
             const checkTheme = () => {
-                // 优先级 Class > Data > Style
-                const bodyClass = document.body.className;
-                const htmlClass = document.documentElement.className;
-                const bodyStyle = window.getComputedStyle(document.body);
-
-                const hasDarkClass = /\bdark\b/i.test(bodyClass) ||
-                    /\bdark-theme\b/i.test(bodyClass) ||
-                    /\bdark\b/i.test(htmlClass) ||
-                    /\bdark-theme\b/i.test(htmlClass);
-                const hasLightClass = /\blight\b/i.test(bodyClass) ||
-                    /\blight-theme\b/i.test(bodyClass) ||
-                    /\blight\b/i.test(htmlClass) ||
-                    /\blight-theme\b/i.test(htmlClass);
-
-                // 1. 显式 Class（优先）
-                let isDark = false;
-                if (hasDarkClass) {
-                    isDark = true;
-                } else if (hasLightClass) {
-                    isDark = false;
-                } else {
-                    // 2. Data Attribute
-                    const dataTheme = document.body.dataset.theme ||
-                        document.documentElement.dataset.theme ||
-                        document.documentElement.getAttribute('data-theme');
-                    if (dataTheme === 'dark') {
-                        isDark = true;
-                    } else if (dataTheme === 'light') {
-                        isDark = false;
-                    } else {
-                        // 3. Style color-scheme（检查内联样式和计算样式）
-                        const inlineColorScheme = document.body.style.colorScheme;
-                        const computedColorScheme = bodyStyle.colorScheme;
-                        const colorScheme = inlineColorScheme || computedColorScheme;
-
-                        if (colorScheme === 'dark') {
-                            isDark = true;
-                        } else if (colorScheme === 'light') {
-                            isDark = false;
-                        } else {
-                            // 4. 检查背景色（作为最后的手段）
-                            const bgColor = bodyStyle.backgroundColor;
-                            // 如果背景色是深色（RGB 值较低），可能是暗色主题
-                            const rgbMatch = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-                            if (rgbMatch) {
-                                const r = parseInt(rgbMatch[1]);
-                                const g = parseInt(rgbMatch[2]);
-                                const b = parseInt(rgbMatch[3]);
-                                const brightness = (r + g + b) / 3;
-                                // 如果平均亮度低于 128，可能是暗色主题
-                                if (brightness < 128) {
-                                    isDark = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                const detectedMode = isDark ? 'dark' : 'light';
-
-                // 同步到助手面板 UI (ghMode) 和 color-scheme
-                if (isDark) {
-                    document.body.dataset.ghMode = 'dark';
-                    document.documentElement.setAttribute('data-gh-mode', 'dark');
-                    // 同步 color-scheme，确保原生控件（如 checkbox）颜色一致
-                    if (!document.body.style.colorScheme || document.body.style.colorScheme !== 'dark') {
-                        document.body.style.colorScheme = 'dark';
-                    }
-                } else {
-                    delete document.body.dataset.ghMode;
-                    document.documentElement.removeAttribute('data-gh-mode');
-                    // 同步 color-scheme，确保原生控件（如 checkbox）颜色一致
-                    if (!document.body.style.colorScheme || document.body.style.colorScheme !== 'light') {
-                        document.body.style.colorScheme = 'light';
-                    }
-                }
-
-                // 同步到设置（仅在真正改变时）
-                const currentSavedMode = this.settings.themeMode;
-                if (currentSavedMode !== detectedMode) {
-                    this.settings.themeMode = detectedMode;
-                    this.saveSettings();
-                    console.log('[ChatGPT Helper] 主题已同步:', detectedMode);
-                }
-
-                // 更新所有主题按钮图标
-                const themeBtn = document.getElementById('quick-btn-theme');
-                if (themeBtn) {
-                    const newIcon = detectedMode === 'dark' ? '🌙' : '☀';
-                    if (themeBtn.textContent !== newIcon) {
-                        themeBtn.textContent = newIcon;
-                    }
-                }
-                const headerThemeBtn = document.getElementById('chatgpt-helper-header-theme-btn');
-                if (headerThemeBtn) {
-                    const newHeaderIcon = detectedMode === 'dark' ? '☀' : '🌙';
-                    if (headerThemeBtn.textContent !== newHeaderIcon) {
-                        headerThemeBtn.textContent = newHeaderIcon;
-                    }
+                const detectedMode = this.detectEffectiveThemeFromDom();
+                const changed = this.currentEffectiveTheme !== detectedMode;
+                this.syncHelperThemeMode(detectedMode);
+                this.settings.themeMode = detectedMode;
+                if (changed) {
+                    this.updateThemeVisualState();
                 }
             };
 
@@ -12626,6 +14920,7 @@ if (!window.__MY_EXT__) {
                     if (this.updateLayout) {
                         this.updateLayout();
                     }
+                    this.queueThemeHostRefresh();
                 }, 300);
             });
 
@@ -12657,6 +14952,7 @@ if (!window.__MY_EXT__) {
                         if (this.updateLayout) {
                             this.updateLayout();
                         }
+                        this.queueThemeHostRefresh();
                         if (this.currentTab === 'outline') {
                             // 重置大纲管理器，强制重新初始化
                             if (this.outlineManager) {
@@ -12692,6 +14988,7 @@ if (!window.__MY_EXT__) {
                     if (this.updateLayout) {
                         this.updateLayout();
                     }
+                    this.queueThemeHostRefresh();
                     // 重置大纲管理器
                     if (this.currentTab === 'outline') {
                         if (this.outlineManager) {
