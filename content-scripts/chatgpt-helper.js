@@ -121,8 +121,32 @@ if (!window.__MY_EXT__) {
             themeSwitchedDark: '已切换到深色模式',
             themeSwitchFailed: '主题切换失败',
             aboutButton: '关于',
+            aboutTopEntryTitle: '关于',
             aboutDialogTitle: '关于 ChatGPT Helper',
-            aboutTagline: '极简、强大的 ChatGPT 网页增强助手',
+            aboutTagline: '为重度 ChatGPT 使用者打造的高效增强工作台',
+            aboutMotivationTitle: '😘 开发动机',
+            aboutMotivationContent: '这不仅仅是一个插件，更是一位 TJU 计算机学生对极致体验的追求。作为 ChatGPT 的重度使用者，我亲手打造了这个工具包，只为消除那些恼人的小摩擦。愿它能陪你翻过琐碎的深山，去看见真正重要的奇思妙想。',
+            aboutFeedbackTitle: '💬 反馈',
+            aboutFeatureRequest: '功能建议',
+            aboutBugSupport: '问题反馈 / 支持',
+            aboutOpenSourceTitle: '🌱 开源项目',
+            aboutSupportTitle: '💕 支持项目',
+            aboutSupportContent: 'ChatGPT Helper的成长，离不开你的每一次高效交互。如果它曾为你节省过一分钟，或带来过一次惊喜，请考虑支持它的未来。每一份认可，都是我继续敲下下一行代码的动力💕',
+            aboutShare: '分享给朋友',
+            aboutAuthorTitle: '👨‍💻 关于作者',
+            aboutAuthorBio: '📍 TJU | CS 在读\n🚀 AI 探索者 | 预备役创业者\n✨ Elon Musk 信徒',
+            aboutFooterNote: '多平台兼容 · 本地解析零上传 · 重度 ChatGPT 玩家的效率工具包',
+            aboutRepoButton: 'GitHub 仓库',
+            aboutRepoLabel: '项目仓库',
+            aboutAuthorGithub: '作者 GitHub',
+            aboutClose: '关闭',
+            aboutCopyRepoSuccess: '分享链接已复制',
+            aboutCopyRepoFailed: '复制失败，请手动复制仓库链接',
+            aboutVersionTitle: '版本信息',
+            aboutVersionLabel: '版本',
+            aboutAuthorLabel: '作者',
+            aboutLicenseLabel: '许可证',
+            aboutPoweredBy: '为专注的 ChatGPT 工作流打造❤️',
             aboutIntroTitle: '项目简介',
             aboutIntro: 'ChatGPT Helper 通过右侧功能面板为 ChatGPT 提供提示词管理、对话大纲、会话整理、导出与阅读定位等增强能力，尽量保持原页面结构不被打断。',
             aboutFeaturesTitle: '核心能力',
@@ -130,15 +154,9 @@ if (!window.__MY_EXT__) {
             aboutFeatureOutline: '自动生成对话大纲与导航',
             aboutFeatureConversations: '历史会话整理与批量管理',
             aboutFeatureExport: '多格式导出与阅读定位增强',
-            aboutSupportTitle: '支持范围',
             aboutSupportSites: '支持 chatgpt.com、chat.openai.com 与 new.oaifree.com',
             aboutPrivacyTitle: '隐私与权限',
             aboutPrivacy: '所有设置与数据处理均在本地浏览器完成；扩展使用 storage 保存配置，notifications 仅用于完成提醒，不会上传对话内容。',
-            aboutVersionTitle: '版本信息',
-            aboutVersionLabel: '版本',
-            aboutAuthorLabel: '作者',
-            aboutLicenseLabel: '许可证',
-            aboutPoweredBy: '为专注的 ChatGPT 工作流打造',
             pageSettings: '页面设置',
             outlineSettings: '大纲设置',
             searchConversations: '搜索会话...',
@@ -299,8 +317,32 @@ if (!window.__MY_EXT__) {
             themeSwitchedDark: 'Switched to dark mode',
             themeSwitchFailed: 'Theme switch failed',
             aboutButton: 'About',
+            aboutTopEntryTitle: 'About',
             aboutDialogTitle: 'About ChatGPT Helper',
-            aboutTagline: 'A minimal but powerful enhancement layer for ChatGPT',
+            aboutTagline: 'A focused productivity layer designed for heavy ChatGPT users',
+            aboutMotivationTitle: '😘 Motivation',
+            aboutMotivationContent: '😘This is more than just an extension. It is one TJU computer science student\'s pursuit of a smoother, more delightful ChatGPT experience. As a heavy ChatGPT user, I built this toolkit by hand to remove the tiny frictions that keep interrupting real thinking. I hope it helps you get past the busy clutter and spend more time on ideas that truly matter.',
+            aboutFeedbackTitle: '💬 Feedback',
+            aboutFeatureRequest: 'Feature Request',
+            aboutBugSupport: 'Bug Report / Support',
+            aboutOpenSourceTitle: '🌱 Open Source',
+            aboutSupportTitle: '💕 Support the Project',
+            aboutSupportContent: 'The growth of ChatGPT Helper comes from every efficient interaction you have with it. If it has ever saved you a minute or brought you a small surprise, please consider supporting its future. Every bit of recognition is fuel for the next line of code. 💕',
+            aboutShare: 'Share with Friends',
+            aboutAuthorTitle: '👨‍💻 About the Author',
+            aboutAuthorBio: '📍 TJU | CS 在读\n🚀 AI 探索者 | 预备役创业者\n✨ Elon Musk 信徒',
+            aboutFooterNote: 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com · Local-first, no conversation uploads',
+            aboutRepoButton: 'GitHub Repository',
+            aboutRepoLabel: 'Repository',
+            aboutAuthorGithub: 'Author GitHub',
+            aboutClose: 'Close',
+            aboutCopyRepoSuccess: 'Share link copied',
+            aboutCopyRepoFailed: 'Copy failed, please copy the repository link manually',
+            aboutVersionTitle: 'Version Info',
+            aboutVersionLabel: 'Version',
+            aboutAuthorLabel: 'Author',
+            aboutLicenseLabel: 'License',
+            aboutPoweredBy: 'Built for focused ChatGPT workflows',
             aboutIntroTitle: 'Overview',
             aboutIntro: 'ChatGPT Helper adds a focused side panel for prompt management, outlines, conversation organization, exports, and reading-position utilities while keeping the native ChatGPT flow familiar.',
             aboutFeaturesTitle: 'Core Features',
@@ -308,15 +350,9 @@ if (!window.__MY_EXT__) {
             aboutFeatureOutline: 'Automatic outline generation and navigation',
             aboutFeatureConversations: 'Conversation organization and batch actions',
             aboutFeatureExport: 'Multi-format export and reading-position tools',
-            aboutSupportTitle: 'Supported Sites',
             aboutSupportSites: 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com',
             aboutPrivacyTitle: 'Privacy & Permissions',
             aboutPrivacy: 'All settings and data processing stay in your browser. The extension uses storage for local preferences and notifications only for completion alerts.',
-            aboutVersionTitle: 'Version Info',
-            aboutVersionLabel: 'Version',
-            aboutAuthorLabel: 'Author',
-            aboutLicenseLabel: 'License',
-            aboutPoweredBy: 'Built for focused ChatGPT workflows',
             pageSettings: 'Page Settings',
             outlineSettings: 'Outline Settings',
             searchConversations: 'Search conversations...',
@@ -480,6 +516,10 @@ if (!window.__MY_EXT__) {
     const THEME_BACKGROUND_STORE = 'assets';
     const THEME_BACKGROUND_MAX_SIZE = 5 * 1024 * 1024;
     const THEME_BACKGROUND_ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+    const FEATURE_REQUEST_URL = '';
+    const ISSUE_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper/issues/new';
+    const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
+    const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
     const THEME_HOST_ATTRS = [
         'data-gh-theme-host-sidebar',
         'data-gh-theme-host-main',
@@ -612,6 +652,52 @@ if (!window.__MY_EXT__) {
             return runtime && typeof runtime.getManifest === 'function' ? runtime.getManifest() : null;
         } catch (e) {
             return null;
+        }
+    }
+
+    function openExternalLink(url) {
+        if (!url) return false;
+        try {
+            window.open(url, '_blank', 'noopener,noreferrer');
+            return true;
+        } catch (e) {
+            try {
+                window.open(url, '_blank');
+                return true;
+            } catch (e2) {
+                return false;
+            }
+        }
+    }
+
+    async function copyTextToClipboard(text) {
+        if (!text) return false;
+        try {
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+                await navigator.clipboard.writeText(text);
+                return true;
+            }
+        } catch (e) {
+            // Fall back to execCommand below.
+        }
+
+        try {
+            const textarea = createElement('textarea', { value: text });
+            textarea.setAttribute('readonly', 'readonly');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.style.pointerEvents = 'none';
+            textarea.style.left = '-9999px';
+            textarea.style.top = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            textarea.setSelectionRange(0, textarea.value.length);
+            const success = document.execCommand('copy');
+            textarea.remove();
+            return !!success;
+        } catch (e) {
+            return false;
         }
     }
 
@@ -2612,10 +2698,12 @@ if (!window.__MY_EXT__) {
                     padding: '12px 24px',
                     borderRadius: '8px',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    zIndex: '10000',
+                    zIndex: '10120',
                     fontSize: '14px',
                     animation: 'fadeIn 0.3s',
-                    border: '1px solid var(--gh-border)'
+                    border: '1px solid var(--gh-border)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)'
                 }
             }, message);
             document.body.appendChild(toast);
@@ -7989,79 +8077,175 @@ if (!window.__MY_EXT__) {
 
             const manifest = getExtensionManifestMeta() || {};
             const productName = manifest.name || 'ChatGPT Helper';
-            const version = manifest.version || '1.0.0';
-            const author = manifest.author || 'zhiwuyazhe_fjr';
+            const version = manifest.version || '2.1.0';
+            const author = typeof manifest.author === 'string'
+                ? manifest.author
+                : (manifest.author && typeof manifest.author.name === 'string' ? manifest.author.name : 'zhiwuyazhe_fjr');
 
             const overlay = createElement('div', { id: 'chatgpt-helper-about-modal' });
             const dialog = createElement('div', { className: 'chatgpt-helper-about-dialog' });
+            dialog.setAttribute('role', 'dialog');
+            dialog.setAttribute('aria-modal', 'true');
+            dialog.setAttribute('aria-label', this.t('aboutDialogTitle') || 'About ChatGPT Helper');
 
             const header = createElement('div', { className: 'chatgpt-helper-about-header' });
             const titleWrap = createElement('div', { className: 'chatgpt-helper-about-title-wrap' });
             titleWrap.appendChild(createHelperLogoNode({
-                size: 56,
+                size: 64,
                 className: 'chatgpt-helper-about-logo',
                 title: productName,
             }));
 
             const titleText = createElement('div', { className: 'chatgpt-helper-about-title-text' });
-            titleText.appendChild(createElement('div', { className: 'chatgpt-helper-about-name' }, productName));
-            titleText.appendChild(createElement('div', { className: 'chatgpt-helper-about-tagline' }, this.t('aboutTagline') || 'A minimal but powerful enhancement layer for ChatGPT'));
+            const nameRow = createElement('div', { className: 'chatgpt-helper-about-name-row' });
+            nameRow.appendChild(createElement('div', { className: 'chatgpt-helper-about-name' }, productName));
+            nameRow.appendChild(createElement('div', { className: 'chatgpt-helper-about-badge' }, `v${version}`));
+            titleText.appendChild(nameRow);
+            titleText.appendChild(createElement('div', { className: 'chatgpt-helper-about-tagline' }, this.t('aboutTagline') || 'A focused productivity layer designed for heavy ChatGPT users'));
             titleWrap.appendChild(titleText);
 
-            const versionBadge = createElement('div', { className: 'chatgpt-helper-about-badge' }, `v${version}`);
             const closeBtn = createElement('button', {
                 className: 'chatgpt-helper-about-close',
                 type: 'button',
-                title: 'Close'
+                title: this.t('aboutClose') || 'Close'
             }, '×');
 
             header.appendChild(titleWrap);
-            header.appendChild(versionBadge);
             header.appendChild(closeBtn);
 
             const body = createElement('div', { className: 'chatgpt-helper-about-body' });
+            const shell = createElement('div', { className: 'chatgpt-helper-about-shell' });
 
-            const introCard = createElement('div', { className: 'chatgpt-helper-about-card hero' });
-            introCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-title' }, this.t('aboutIntroTitle') || 'Overview'));
-            introCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-text' }, this.t('aboutIntro') || 'ChatGPT Helper adds a focused side panel for prompt management, outlines, conversation organization, exports, and reading-position utilities while keeping the native ChatGPT flow familiar.'));
-            body.appendChild(introCard);
+            const createSection = (title, options = {}) => {
+                const section = createElement('section', {
+                    className: `chatgpt-helper-about-section${options.soft ? ' soft' : ''}${options.tight ? ' tight' : ''}`
+                });
+                section.appendChild(createElement('div', { className: 'chatgpt-helper-about-section-title' }, title));
+                if (options.text) {
+                    section.appendChild(createElement('div', { className: 'chatgpt-helper-about-section-text' }, options.text));
+                }
+                if (options.bodyNode) {
+                    section.appendChild(options.bodyNode);
+                }
+                if (options.actions && options.actions.children.length) {
+                    section.appendChild(options.actions);
+                }
+                return section;
+            };
 
-            const featuresCard = createElement('div', { className: 'chatgpt-helper-about-card' });
-            featuresCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-title' }, this.t('aboutFeaturesTitle') || 'Core Features'));
-            const featureList = createElement('ul', { className: 'chatgpt-helper-about-list' });
-            [
-                this.t('aboutFeaturePrompts') || 'Prompt management and quick insertion',
-                this.t('aboutFeatureOutline') || 'Automatic outline generation and navigation',
-                this.t('aboutFeatureConversations') || 'Conversation organization and batch actions',
-                this.t('aboutFeatureExport') || 'Multi-format export and reading-position tools',
-            ].forEach((text) => featureList.appendChild(createElement('li', {}, text)));
-            featuresCard.appendChild(featureList);
-            body.appendChild(featuresCard);
+            const createActionRow = () => createElement('div', { className: 'chatgpt-helper-about-actions' });
+            const createActionButton = (label, options = {}) => {
+                const button = createElement('button', {
+                    className: `chatgpt-helper-about-link-btn ${options.variant || 'ghost'}${options.disabled ? ' disabled' : ''}`,
+                    type: 'button',
+                    disabled: !!options.disabled,
+                    title: options.title || ''
+                }, label);
+                if (options.onClick && !options.disabled) {
+                    button.addEventListener('click', options.onClick);
+                }
+                return button;
+            };
 
-            const supportCard = createElement('div', { className: 'chatgpt-helper-about-card' });
-            supportCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-title' }, this.t('aboutSupportTitle') || 'Supported Sites'));
-            supportCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-text' }, this.t('aboutSupportSites') || 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com'));
-            body.appendChild(supportCard);
+            const motivationSection = createSection(
+                this.t('aboutMotivationTitle') || '😘 Motivation',
+                {
+                    text: this.t('aboutMotivationContent') || 'This is more than just an extension.',
+                }
+            );
 
-            const privacyCard = createElement('div', { className: 'chatgpt-helper-about-card' });
-            privacyCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-title' }, this.t('aboutPrivacyTitle') || 'Privacy & Permissions'));
-            privacyCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-text' }, this.t('aboutPrivacy') || 'All settings and data processing stay in your browser. The extension uses storage for local preferences and notifications only for completion alerts.'));
-            body.appendChild(privacyCard);
+            const feedbackActions = createActionRow();
+            feedbackActions.appendChild(createActionButton(
+                this.t('aboutFeatureRequest') || 'Feature Request',
+                {
+                    variant: 'ghost',
+                    disabled: !FEATURE_REQUEST_URL,
+                    title: FEATURE_REQUEST_URL ? '' : (this.t('disabled') || 'Disabled')
+                }
+            ));
+            feedbackActions.appendChild(createActionButton(
+                this.t('aboutBugSupport') || 'Bug Report / Support',
+                {
+                    variant: 'ghost',
+                    onClick: () => openExternalLink(ISSUE_URL)
+                }
+            ));
+            const feedbackSection = createSection(
+                this.t('aboutFeedbackTitle') || '💬 Feedback',
+                { actions: feedbackActions, tight: true }
+            );
 
-            const metaGrid = createElement('div', { className: 'chatgpt-helper-about-meta-grid' });
-            [
-                { label: this.t('aboutVersionLabel') || 'Version', value: version },
-                { label: this.t('aboutAuthorLabel') || 'Author', value: author },
-                { label: this.t('aboutLicenseLabel') || 'License', value: 'MIT' },
-            ].forEach((item) => {
-                const metaCard = createElement('div', { className: 'chatgpt-helper-about-meta-card' });
-                metaCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-meta-label' }, item.label));
-                metaCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-meta-value' }, item.value));
-                metaGrid.appendChild(metaCard);
-            });
-            body.appendChild(metaGrid);
+            const openSourceInfo = createElement('div', { className: 'chatgpt-helper-about-inline-meta' });
+            openSourceInfo.appendChild(createElement('span', { className: 'chatgpt-helper-about-inline-label' }, `${this.t('aboutRepoLabel') || 'Repository'}:`));
+            openSourceInfo.appendChild(createElement('span', { className: 'chatgpt-helper-about-inline-value' }, REPO_URL.replace(/^https?:\/\//, '')));
+            const openSourceActions = createActionRow();
+            openSourceActions.appendChild(createActionButton(
+                this.t('aboutRepoButton') || 'GitHub Repository',
+                {
+                    variant: 'ghost',
+                    onClick: () => openExternalLink(REPO_URL)
+                }
+            ));
+            const openSourceSection = createSection(
+                this.t('aboutOpenSourceTitle') || '🌱 Open Source',
+                {
+                    bodyNode: openSourceInfo,
+                    actions: openSourceActions,
+                    tight: true
+                }
+            );
 
-            const footer = createElement('div', { className: 'chatgpt-helper-about-footer' }, this.t('aboutPoweredBy') || 'Built for focused ChatGPT workflows');
+            const supportActions = createActionRow();
+            supportActions.appendChild(createActionButton(
+                this.t('aboutShare') || 'Share with Friends',
+                {
+                    variant: 'soft',
+                    onClick: async () => {
+                        const copied = await copyTextToClipboard(REPO_URL);
+                        this.showToast(copied
+                            ? (this.t('aboutCopyRepoSuccess') || 'Repository link copied')
+                            : (this.t('aboutCopyRepoFailed') || 'Copy failed'));
+                    }
+                }
+            ));
+            const supportSection = createSection(
+                this.t('aboutSupportTitle') || '💕 Support the Project',
+                {
+                    text: this.t('aboutSupportContent') || 'Every bit of recognition is fuel for the next line of code.',
+                    actions: supportActions,
+                }
+            );
+
+            const authorBody = createElement('div', { className: 'chatgpt-helper-about-author-block' });
+            authorBody.appendChild(createElement('div', { className: 'chatgpt-helper-about-author-name' }, author || 'zhiwuyazhe_fjr'));
+            authorBody.appendChild(createElement('div', { className: 'chatgpt-helper-about-section-text chatgpt-helper-about-author-bio' }, this.t('aboutAuthorBio') || 'Author bio coming soon'));
+            const authorActions = createActionRow();
+            authorActions.appendChild(createActionButton(
+                this.t('aboutAuthorGithub') || 'Author GitHub',
+                {
+                    variant: 'ghost',
+                    onClick: () => openExternalLink(AUTHOR_GITHUB_URL)
+                }
+            ));
+            const authorSection = createSection(
+                this.t('aboutAuthorTitle') || '👨‍💻 About the Author',
+                {
+                    bodyNode: authorBody,
+                    actions: authorActions,
+                    tight: true
+                }
+            );
+
+            shell.appendChild(motivationSection);
+            shell.appendChild(feedbackSection);
+            shell.appendChild(openSourceSection);
+            shell.appendChild(supportSection);
+            shell.appendChild(authorSection);
+            body.appendChild(shell);
+
+            const footer = createElement('div', { className: 'chatgpt-helper-about-footer' });
+            footer.appendChild(createElement('div', { className: 'chatgpt-helper-about-footer-note' }, this.t('aboutFooterNote') || 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com · Local-first, no conversation uploads'));
+            footer.appendChild(createElement('div', { className: 'chatgpt-helper-about-footer-text' }, this.t('aboutPoweredBy') || 'Built for focused ChatGPT workflows'));
 
             dialog.appendChild(header);
             dialog.appendChild(body);
@@ -10834,6 +11018,38 @@ if (!window.__MY_EXT__) {
                         inset 0 1px 0 rgba(255,255,255,0.04);
                 }
 
+                .chatgpt-helper-header-about-btn {
+                    position: relative;
+                }
+
+                .chatgpt-helper-about-entry-icon {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 999px;
+                    border: 1.6px solid #f97316;
+                    color: #ea580c;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 11px;
+                    font-weight: 800;
+                    line-height: 1;
+                    background: rgba(255, 247, 237, 0.2);
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-entry-icon {
+                    color: #fdba74;
+                    border-color: #fb923c;
+                    background: rgba(249, 115, 22, 0.14);
+                }
+
+                #chatgpt-helper-header.gh-compact .chatgpt-helper-about-entry-icon {
+                    width: 14px;
+                    height: 14px;
+                    font-size: 10px;
+                }
+
                 #chatgpt-helper-about-modal {
                     position: fixed;
                     inset: 0;
@@ -10843,10 +11059,10 @@ if (!window.__MY_EXT__) {
                     justify-content: center;
                     padding: 18px;
                     background:
-                        radial-gradient(1200px 520px at 18% 8%, rgba(14, 165, 233, 0.18), transparent 60%),
-                        radial-gradient(1100px 560px at 88% 100%, rgba(99, 102, 241, 0.16), transparent 65%),
-                        rgba(2, 6, 23, 0.72);
-                    backdrop-filter: blur(10px);
+                        radial-gradient(980px 420px at 10% 0%, rgba(249, 115, 22, 0.10), transparent 58%),
+                        radial-gradient(1100px 540px at 100% 100%, rgba(99, 102, 241, 0.12), transparent 64%),
+                        rgba(2, 6, 23, 0.70);
+                    backdrop-filter: blur(12px);
                     opacity: 0;
                     pointer-events: none;
                     transition: opacity 0.24s ease;
@@ -10858,28 +11074,28 @@ if (!window.__MY_EXT__) {
                 }
 
                 .chatgpt-helper-about-dialog {
-                    width: min(760px, 96vw);
-                    max-height: min(820px, 92vh);
+                    width: min(720px, 94vw);
+                    max-height: min(860px, 92vh);
                     display: flex;
                     flex-direction: column;
                     overflow: hidden;
-                    border-radius: 24px;
-                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 10%);
+                    border-radius: 28px;
+                    border: 1px solid rgba(226, 232, 240, 0.72);
                     background:
-                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg, #ffffff), white 16%) 0%, var(--gh-bg, #ffffff) 46%),
-                        var(--gh-bg, #ffffff);
+                        linear-gradient(180deg, #fffaf5 0%, #fffdfa 28%, #f8fafc 100%);
+                    color: #0f172a;
                     box-shadow:
-                        0 40px 90px rgba(2, 6, 23, 0.42),
-                        inset 0 1px 0 rgba(255,255,255,0.48);
+                        0 36px 92px rgba(15, 23, 42, 0.34),
+                        inset 0 1px 0 rgba(255,255,255,0.58);
                 }
 
                 body[data-gh-mode="dark"] .chatgpt-helper-about-dialog {
                     background:
-                        linear-gradient(180deg, color-mix(in srgb, #0b1324, var(--gh-primary, #3b82f6) 10%) 0%, #0a0f18 44%),
-                        #0b111a;
-                    border-color: color-mix(in srgb, #334155, transparent 10%);
+                        linear-gradient(180deg, #101016 0%, #0c0d12 100%);
+                    border-color: rgba(71, 85, 105, 0.34);
+                    color: #edf2ff;
                     box-shadow:
-                        0 44px 96px rgba(2, 6, 23, 0.54),
+                        0 44px 100px rgba(2, 6, 23, 0.56),
                         inset 0 1px 0 rgba(255,255,255,0.05);
                 }
 
@@ -10887,60 +11103,99 @@ if (!window.__MY_EXT__) {
                     position: relative;
                     display: flex;
                     align-items: center;
-                    justify-content: space-between;
+                    justify-content: flex-start;
                     gap: 16px;
-                    padding: 24px 28px 18px;
-                    border-bottom: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 16%);
+                    padding: 28px 30px 18px;
+                    border-bottom: 1px solid rgba(226, 232, 240, 0.72);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-header {
+                    border-bottom-color: rgba(71, 85, 105, 0.34);
                 }
 
                 .chatgpt-helper-about-title-wrap {
                     display: flex;
-                    align-items: center;
-                    gap: 16px;
+                    align-items: flex-start;
+                    gap: 18px;
                     min-width: 0;
+                    padding-right: 52px;
+                }
+
+                .chatgpt-helper-about-logo {
+                    border-radius: 20px;
+                    filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.10));
                 }
 
                 .chatgpt-helper-about-title-text {
                     min-width: 0;
                 }
 
+                .chatgpt-helper-about-name-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                }
+
                 .chatgpt-helper-about-name {
-                    font-size: 24px;
+                    font-size: 30px;
                     font-weight: 800;
-                    color: var(--gh-text, #111827);
-                    letter-spacing: 0.01em;
+                    color: #0f172a;
+                    letter-spacing: -0.02em;
                 }
 
                 .chatgpt-helper-about-tagline {
-                    margin-top: 4px;
-                    font-size: 13px;
-                    line-height: 1.5;
-                    color: var(--gh-text-secondary, #6b7280);
+                    margin-top: 8px;
+                    font-size: 14px;
+                    line-height: 1.75;
+                    color: #475569;
+                    max-width: 520px;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-name {
+                    color: #f8fbff;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-tagline {
+                    color: #b7c4d9;
                 }
 
                 .chatgpt-helper-about-badge {
-                    padding: 8px 12px;
+                    padding: 6px 11px;
                     border-radius: 999px;
-                    border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 12%);
-                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 12%);
+                    border: 1px solid rgba(203, 213, 225, 0.8);
+                    background: rgba(255,255,255,0.88);
                     font-size: 12px;
                     font-weight: 700;
-                    letter-spacing: 0.05em;
+                    letter-spacing: 0.04em;
+                    color: #0f172a;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-badge {
+                    background: rgba(15, 23, 42, 0.72);
+                    border-color: rgba(148, 163, 184, 0.24);
+                    color: #e5eefb;
                 }
 
                 .chatgpt-helper-about-close {
                     position: absolute;
-                    top: 16px;
-                    right: 16px;
-                    width: 36px;
-                    height: 36px;
+                    top: 20px;
+                    right: 20px;
+                    width: 38px;
+                    height: 38px;
                     border-radius: 12px;
-                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 12%);
-                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 18%);
-                    color: inherit;
+                    border: 1px solid rgba(203, 213, 225, 0.8);
+                    background: rgba(255,255,255,0.84);
+                    color: #0f172a;
                     cursor: pointer;
                     font-size: 20px;
                     transition: all 0.2s ease;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-close {
+                    background: rgba(15, 23, 42, 0.72);
+                    border-color: rgba(148, 163, 184, 0.24);
+                    color: #e5eefb;
                 }
 
                 .chatgpt-helper-about-close:hover {
@@ -10951,90 +11206,235 @@ if (!window.__MY_EXT__) {
                 .chatgpt-helper-about-body {
                     flex: 1;
                     overflow: auto;
+                    padding: 0 30px;
+                }
+
+                .chatgpt-helper-about-shell {
+                    width: 100%;
+                    max-width: 620px;
+                    margin: 0 auto;
+                    padding: 24px 0 18px;
+                }
+
+                .chatgpt-helper-about-section {
+                    padding: 0;
+                }
+
+                .chatgpt-helper-about-section + .chatgpt-helper-about-section {
+                    margin-top: 24px;
+                    padding-top: 24px;
+                    border-top: 1px solid rgba(226, 232, 240, 0.72);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-section + .chatgpt-helper-about-section {
+                    border-top-color: rgba(71, 85, 105, 0.34);
+                }
+
+                .chatgpt-helper-about-section.soft {
+                    padding: 18px 20px;
+                    border-radius: 20px;
+                    border: 1px solid rgba(226, 232, 240, 0.72);
+                    background:
+                        linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(248,250,252,0.92) 100%);
+                    box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.56),
+                        0 18px 32px rgba(15, 23, 42, 0.06);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-section.soft {
+                    border-color: rgba(71, 85, 105, 0.34);
+                    background:
+                        linear-gradient(180deg, rgba(20, 24, 34, 0.96) 0%, rgba(12, 14, 20, 0.98) 100%);
+                    box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.04),
+                        0 18px 34px rgba(2, 6, 23, 0.28);
+                }
+
+                .chatgpt-helper-about-section.tight .chatgpt-helper-about-actions {
+                    margin-top: 14px;
+                }
+
+                .chatgpt-helper-about-section-title {
+                    font-size: 18px;
+                    font-weight: 800;
+                    line-height: 1.35;
+                    color: #0f172a;
+                    letter-spacing: -0.01em;
+                    margin-bottom: 10px;
+                }
+
+                .chatgpt-helper-about-section-text {
+                    font-size: 14px;
+                    line-height: 1.85;
+                    color: #334155;
+                    white-space: pre-wrap;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-section-title {
+                    color: #f8fbff;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-section-text {
+                    color: #c8d5ea;
+                }
+
+                .chatgpt-helper-about-actions {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    margin-top: 16px;
+                }
+
+                .chatgpt-helper-about-link-btn {
+                    min-height: 40px;
+                    padding: 0 15px;
+                    border-radius: 999px;
+                    border: 1px solid rgba(203, 213, 225, 0.74);
+                    cursor: pointer;
+                    font-size: 13px;
+                    font-weight: 700;
+                    letter-spacing: 0.01em;
+                    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+                    color: #0f172a;
+                    background: rgba(255,255,255,0.84);
+                    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+                }
+
+                .chatgpt-helper-about-link-btn:hover {
+                    transform: translateY(-1px);
+                }
+
+                .chatgpt-helper-about-link-btn.soft {
+                    background:
+                        linear-gradient(135deg, color-mix(in srgb, var(--gh-primary, #3b82f6), white 82%) 0%, color-mix(in srgb, var(--gh-primary, #3b82f6), white 72%) 100%);
+                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 72%);
+                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), #0f172a 42%);
+                    box-shadow: 0 10px 24px rgba(59, 130, 246, 0.14);
+                }
+
+                .chatgpt-helper-about-link-btn.disabled,
+                .chatgpt-helper-about-link-btn:disabled {
+                    opacity: 0.46;
+                    cursor: not-allowed;
+                    box-shadow: none;
+                    transform: none;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-link-btn {
+                    background: rgba(15, 23, 42, 0.72);
+                    color: #e5eefb;
+                    border-color: rgba(148, 163, 184, 0.22);
+                    box-shadow: 0 16px 26px rgba(2, 6, 23, 0.24);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-link-btn.soft {
+                    background:
+                        linear-gradient(135deg, color-mix(in srgb, var(--gh-primary, #60a5fa), #0f172a 80%) 0%, color-mix(in srgb, var(--gh-primary, #60a5fa), #0b1220 74%) 100%);
+                    color: #ecf4ff;
+                    border-color: color-mix(in srgb, var(--gh-primary, #60a5fa), transparent 70%);
+                    box-shadow: 0 16px 32px rgba(2, 6, 23, 0.32);
+                }
+
+                .chatgpt-helper-about-author-block {
                     display: flex;
                     flex-direction: column;
-                    gap: 14px;
-                    padding: 20px 28px 24px;
+                    gap: 10px;
                 }
 
-                .chatgpt-helper-about-card {
-                    padding: 18px 18px 16px;
-                    border-radius: 18px;
-                    border: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 14%);
-                    background:
-                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg-secondary, #f9fafb), white 8%) 0%, var(--gh-bg-secondary, #f9fafb) 100%);
-                    box-shadow:
-                        0 14px 30px rgba(15, 23, 42, 0.06),
-                        inset 0 1px 0 rgba(255,255,255,0.4);
+                .chatgpt-helper-about-author-name {
+                    font-size: 18px;
+                    font-weight: 800;
+                    color: #0f172a;
+                    letter-spacing: -0.01em;
                 }
 
-                body[data-gh-mode="dark"] .chatgpt-helper-about-card {
-                    background:
-                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg-secondary, #111827), white 4%) 0%, var(--gh-bg-secondary, #111827) 100%);
-                    border-color: color-mix(in srgb, var(--gh-border, #334155), transparent 16%);
-                    box-shadow:
-                        0 16px 32px rgba(2, 6, 23, 0.26),
-                        inset 0 1px 0 rgba(255,255,255,0.04);
+                body[data-gh-mode="dark"] .chatgpt-helper-about-author-name {
+                    color: #f8fbff;
                 }
 
-                .chatgpt-helper-about-card.hero {
-                    background:
-                        linear-gradient(135deg, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 90%) 0%, color-mix(in srgb, var(--gh-bg-secondary, #f9fafb), white 10%) 100%);
+                .chatgpt-helper-about-author-bio {
+                    margin-bottom: 0;
                 }
 
-                .chatgpt-helper-about-card-title {
-                    font-size: 15px;
-                    font-weight: 700;
-                    color: var(--gh-text, #111827);
-                    margin-bottom: 8px;
-                }
-
-                .chatgpt-helper-about-card-text {
-                    font-size: 13px;
-                    line-height: 1.7;
-                    color: var(--gh-text-secondary, #6b7280);
-                }
-
-                .chatgpt-helper-about-list {
-                    margin: 0;
-                    padding-left: 18px;
-                    color: var(--gh-text-secondary, #6b7280);
-                    font-size: 13px;
+                .chatgpt-helper-about-inline-meta {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    margin-top: 6px;
+                    font-size: 12px;
                     line-height: 1.75;
                 }
 
-                .chatgpt-helper-about-meta-grid {
-                    display: grid;
-                    grid-template-columns: repeat(3, minmax(0, 1fr));
-                    gap: 12px;
-                }
-
-                .chatgpt-helper-about-meta-card {
-                    padding: 14px 16px;
-                    border-radius: 16px;
-                    border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 16%);
-                    background: color-mix(in srgb, var(--gh-bg, #ffffff), transparent 5%);
-                }
-
-                .chatgpt-helper-about-meta-label {
-                    font-size: 11px;
-                    text-transform: uppercase;
-                    letter-spacing: 0.08em;
-                    color: var(--gh-text-secondary, #9ca3af);
-                    margin-bottom: 6px;
-                }
-
-                .chatgpt-helper-about-meta-value {
-                    font-size: 14px;
+                .chatgpt-helper-about-inline-label {
                     font-weight: 700;
-                    color: var(--gh-text, #111827);
+                    color: #475569;
+                }
+
+                .chatgpt-helper-about-inline-value {
+                    color: #334155;
+                    word-break: break-all;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-inline-label {
+                    color: #a8bbd6;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-inline-value {
+                    color: #dbe7f6;
                 }
 
                 .chatgpt-helper-about-footer {
-                    padding: 0 28px 22px;
+                    padding: 16px 30px 24px;
                     text-align: center;
+                    border-top: 1px solid rgba(226, 232, 240, 0.72);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-footer {
+                    border-top-color: rgba(71, 85, 105, 0.34);
+                }
+
+                .chatgpt-helper-about-footer-note {
                     font-size: 12px;
-                    color: var(--gh-text-secondary, #9ca3af);
+                    line-height: 1.7;
+                    color: #475569;
+                    margin-bottom: 6px;
+                }
+
+                .chatgpt-helper-about-footer-text {
+                    font-size: 12px;
+                    color: #475569;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-footer-note,
+                body[data-gh-mode="dark"] .chatgpt-helper-about-footer-text {
+                    color: #9fb2cd;
+                }
+
+                @media (max-width: 640px) {
+                    .chatgpt-helper-about-header {
+                        padding: 24px 22px 16px;
+                    }
+
+                    .chatgpt-helper-about-body {
+                        padding: 0 22px;
+                    }
+
+                    .chatgpt-helper-about-shell {
+                        padding: 22px 0 16px;
+                    }
+
+                    .chatgpt-helper-about-title-wrap {
+                        gap: 14px;
+                    }
+
+                    .chatgpt-helper-about-name {
+                        font-size: 26px;
+                    }
+
+                    .chatgpt-helper-about-section.soft {
+                        padding: 16px 16px;
+                    }
                 }
                 
                 .chatgpt-helper-setting-controls {
@@ -11777,24 +12177,24 @@ if (!window.__MY_EXT__) {
                 try {
                     const width = headerEl.getBoundingClientRect().width;
                     
-                    // 220 是当前拖拽最小宽度；这里做一个更高一点的阈值，提前进入紧凑模式
-                    const compact = width < 290;
+                    // 顶部增加了 About 按钮后，提前进入紧凑模式，避免按钮溢出
+                    const compact = width < 318;
                     headerEl.classList.toggle('gh-compact', compact);
                     
                     // 非常窄时进一步压缩（避免极限情况下仍溢出）
-                    if (width < 250) {
+                    if (width < 270) {
                         headerEl.style.setProperty('--gh-header-btn-size', '22px');
                         headerEl.style.setProperty('--gh-header-controls-gap', '2px');
                         headerEl.style.setProperty('--gh-header-padding-h', '8px');
                         headerEl.style.setProperty('--gh-header-padding-v', '9px');
                         headerEl.style.setProperty('--gh-header-btn-font-size', '12px');
-                    } else if (width < 320) {
+                    } else if (width < 348) {
                         headerEl.style.setProperty('--gh-header-btn-size', '24px');
                         headerEl.style.setProperty('--gh-header-controls-gap', '2px');
                         headerEl.style.setProperty('--gh-header-padding-h', '10px');
                         headerEl.style.setProperty('--gh-header-padding-v', '10px');
                         headerEl.style.setProperty('--gh-header-btn-font-size', '13px');
-                    } else if (width < 380) {
+                    } else if (width < 404) {
                         headerEl.style.setProperty('--gh-header-btn-size', '26px');
                         headerEl.style.setProperty('--gh-header-controls-gap', '3px');
                         headerEl.style.setProperty('--gh-header-padding-h', '12px');
@@ -11913,11 +12313,27 @@ if (!window.__MY_EXT__) {
                 }
             });
 
+            const aboutBtn = createElement('button', {
+                className: 'chatgpt-helper-header-btn chatgpt-helper-header-about-btn',
+                title: this.t('aboutTopEntryTitle') || this.t('aboutButton') || 'About',
+                id: 'chatgpt-helper-header-about-btn',
+                type: 'button'
+            });
+            const aboutIcon = createElement('span', { className: 'chatgpt-helper-about-entry-icon' }, 'i');
+            aboutIcon.setAttribute('aria-hidden', 'true');
+            aboutBtn.appendChild(aboutIcon);
+            aboutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.openAboutModal();
+            });
+
             controls.appendChild(themeBtn);
             controls.appendChild(newChatBtn);
             controls.appendChild(refreshBtn);
             controls.appendChild(settingsBtn);
             controls.appendChild(collapseBtn);
+            controls.appendChild(aboutBtn);
 
             header.appendChild(title);
             header.appendChild(controls);
@@ -13104,7 +13520,7 @@ if (!window.__MY_EXT__) {
                         }
                     });
                 } else if (item.type === 'number') {
-                    control = createElement('input', {
+                    const inputAttrs = {
                         type: 'number',
                         value: item.value,
                         min: item.min !== undefined ? item.min : 200,
@@ -13118,7 +13534,11 @@ if (!window.__MY_EXT__) {
                             color: 'var(--gh-text)',
                             fontSize: '14px'
                         }
-                    });
+                    };
+                    if (item.step !== undefined) {
+                        inputAttrs.step = item.step;
+                    }
+                    control = createElement('input', inputAttrs);
                     const handleNumberChange = () => {
                         if (item.onChange) {
                             try {
@@ -13280,7 +13700,7 @@ if (!window.__MY_EXT__) {
                         this.openThemeSettingsModal();
                     }
                 }
-            ], { defaultExpanded: true });
+            ], { defaultExpanded: false });
 
             // 功能设置（可折叠）
             const featureSection = this.createSettingSection(this.t('featureSettings') || '功能设置', [
@@ -13324,6 +13744,45 @@ if (!window.__MY_EXT__) {
                             }
                         }, 100);
                         this.showToast(val ? '已启用防止自动滚动' : '已禁用防止自动滚动');
+                    }
+                },
+                {
+                    label: this.t('tabPlaySoundLabel') || '播放通知声音',
+                    type: 'toggle',
+                    value: this.settings.tabSettings?.notificationSound || false,
+                    onChange: (val) => {
+                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
+                        this.settings.tabSettings.notificationSound = val;
+                        if (this.settings.tabSettings.notificationVolume == null) {
+                            this.settings.tabSettings.notificationVolume = 0.5;
+                        }
+                        this.saveSettings();
+                    }
+                },
+                {
+                    label: this.t('tabVolumeLabel') || '通知音量（0.1-1.0）',
+                    type: 'number',
+                    value: this.settings.tabSettings?.notificationVolume || 0.5,
+                    min: 0.1,
+                    max: 1.0,
+                    step: 0.1,
+                    onChange: (val) => {
+                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
+                        let v = parseFloat(val);
+                        if (isNaN(v)) v = 0.5;
+                        v = Math.max(0.1, Math.min(1.0, v));
+                        this.settings.tabSettings.notificationVolume = v;
+                        this.saveSettings();
+                    }
+                },
+                {
+                    label: this.t('tabAutoFocusLabel') || '自动聚焦窗口',
+                    type: 'toggle',
+                    value: this.settings.tabSettings?.autoFocus || false,
+                    onChange: (val) => {
+                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
+                        this.settings.tabSettings.autoFocus = val;
+                        this.saveSettings();
                     }
                 }
             ]);
@@ -13736,45 +14195,6 @@ if (!window.__MY_EXT__) {
                         if (this.tabRenameManager) {
                             this.tabRenameManager.updateTabName(true);
                         }
-                    }
-                },
-                {
-                    label: this.t('tabPlaySoundLabel') || '播放通知声音',
-                    type: 'toggle',
-                    value: this.settings.tabSettings?.notificationSound || false,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.notificationSound = val;
-                        // 如果未设置默认音量，初始化为 0.5
-                        if (this.settings.tabSettings.notificationVolume == null) {
-                            this.settings.tabSettings.notificationVolume = 0.5;
-                        }
-                        this.saveSettings();
-                    }
-                },
-                {
-                    label: this.t('tabVolumeLabel') || '通知音量（0.1-1.0）',
-                    type: 'number',
-                    value: this.settings.tabSettings?.notificationVolume || 0.5,
-                    min: 0.1,
-                    max: 1.0,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        let v = parseFloat(val);
-                        if (isNaN(v)) v = 0.5;
-                        v = Math.max(0.1, Math.min(1.0, v));
-                        this.settings.tabSettings.notificationVolume = v;
-                        this.saveSettings();
-                    }
-                },
-                {
-                    label: this.t('tabAutoFocusLabel') || '自动聚焦窗口',
-                    type: 'toggle',
-                    value: this.settings.tabSettings?.autoFocus || false,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.autoFocus = val;
-                        this.saveSettings();
                     }
                 },
                 {
@@ -15659,9 +16079,12 @@ if (!window.__MY_EXT__) {
                     padding: '12px 24px',
                     borderRadius: '8px',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    zIndex: '10000',
+                    zIndex: '10120',
                     fontSize: '14px',
-                    animation: 'fadeIn 0.3s'
+                    animation: 'fadeIn 0.3s',
+                    border: '1px solid var(--gh-border)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)'
                 }
             }, message);
             document.body.appendChild(toast);
@@ -15932,5 +16355,3 @@ if (!window.__MY_EXT__) {
         console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
     }
 })();
-
-
