@@ -39,7 +39,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "libs/*.js"
+        "libs/*.js",
+        "icons/logo.svg"
       ],
       "matches": [
         "https://chat.openai.com/*",

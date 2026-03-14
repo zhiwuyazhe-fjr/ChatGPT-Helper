@@ -120,6 +120,25 @@ if (!window.__MY_EXT__) {
             themeSwitchedLight: '已切换到浅色模式',
             themeSwitchedDark: '已切换到深色模式',
             themeSwitchFailed: '主题切换失败',
+            aboutButton: '关于',
+            aboutDialogTitle: '关于 ChatGPT Helper',
+            aboutTagline: '极简、强大的 ChatGPT 网页增强助手',
+            aboutIntroTitle: '项目简介',
+            aboutIntro: 'ChatGPT Helper 通过右侧功能面板为 ChatGPT 提供提示词管理、对话大纲、会话整理、导出与阅读定位等增强能力，尽量保持原页面结构不被打断。',
+            aboutFeaturesTitle: '核心能力',
+            aboutFeaturePrompts: '提示词管理与快速插入',
+            aboutFeatureOutline: '自动生成对话大纲与导航',
+            aboutFeatureConversations: '历史会话整理与批量管理',
+            aboutFeatureExport: '多格式导出与阅读定位增强',
+            aboutSupportTitle: '支持范围',
+            aboutSupportSites: '支持 chatgpt.com、chat.openai.com 与 new.oaifree.com',
+            aboutPrivacyTitle: '隐私与权限',
+            aboutPrivacy: '所有设置与数据处理均在本地浏览器完成；扩展使用 storage 保存配置，notifications 仅用于完成提醒，不会上传对话内容。',
+            aboutVersionTitle: '版本信息',
+            aboutVersionLabel: '版本',
+            aboutAuthorLabel: '作者',
+            aboutLicenseLabel: '许可证',
+            aboutPoweredBy: '为专注的 ChatGPT 工作流打造',
             pageSettings: '页面设置',
             outlineSettings: '大纲设置',
             searchConversations: '搜索会话...',
@@ -279,6 +298,25 @@ if (!window.__MY_EXT__) {
             themeSwitchedLight: 'Switched to light mode',
             themeSwitchedDark: 'Switched to dark mode',
             themeSwitchFailed: 'Theme switch failed',
+            aboutButton: 'About',
+            aboutDialogTitle: 'About ChatGPT Helper',
+            aboutTagline: 'A minimal but powerful enhancement layer for ChatGPT',
+            aboutIntroTitle: 'Overview',
+            aboutIntro: 'ChatGPT Helper adds a focused side panel for prompt management, outlines, conversation organization, exports, and reading-position utilities while keeping the native ChatGPT flow familiar.',
+            aboutFeaturesTitle: 'Core Features',
+            aboutFeaturePrompts: 'Prompt management and quick insertion',
+            aboutFeatureOutline: 'Automatic outline generation and navigation',
+            aboutFeatureConversations: 'Conversation organization and batch actions',
+            aboutFeatureExport: 'Multi-format export and reading-position tools',
+            aboutSupportTitle: 'Supported Sites',
+            aboutSupportSites: 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com',
+            aboutPrivacyTitle: 'Privacy & Permissions',
+            aboutPrivacy: 'All settings and data processing stay in your browser. The extension uses storage for local preferences and notifications only for completion alerts.',
+            aboutVersionTitle: 'Version Info',
+            aboutVersionLabel: 'Version',
+            aboutAuthorLabel: 'Author',
+            aboutLicenseLabel: 'License',
+            aboutPoweredBy: 'Built for focused ChatGPT workflows',
             pageSettings: 'Page Settings',
             outlineSettings: 'Outline Settings',
             searchConversations: 'Search conversations...',
@@ -376,7 +414,7 @@ if (!window.__MY_EXT__) {
     // 折叠面板按钮定义
     const COLLAPSED_BUTTON_DEFS = {
         scrollTop: { icon: '⬆', labelKey: 'buttonScrollTop', canToggle: false, isPanelOnly: false },
-        panel: { icon: '✨', labelKey: null, label: 'ChatGPT Helper', canToggle: false, isPanelOnly: true },
+        panel: { icon: '', iconType: 'helper-logo', labelKey: null, label: 'ChatGPT Helper', canToggle: false, isPanelOnly: true },
         anchor: { icon: '⚓', labelKey: 'buttonAnchor', canToggle: true, isPanelOnly: true },
         theme: { icon: '☀', labelKey: 'buttonTheme', canToggle: true, isPanelOnly: true },
         manualAnchor: { icon: '📍', labelKey: 'buttonManualAnchor', canToggle: true, isPanelOnly: false, isGroup: true },
@@ -551,6 +589,68 @@ if (!window.__MY_EXT__) {
         });
         if (text) el.textContent = text;
         return el;
+    }
+
+    function getExtensionRuntime() {
+        if (typeof browser !== 'undefined' && browser.runtime) return browser.runtime;
+        if (typeof chrome !== 'undefined' && chrome.runtime) return chrome.runtime;
+        return null;
+    }
+
+    function getExtensionAssetUrl(path) {
+        const runtime = getExtensionRuntime();
+        try {
+            return runtime && typeof runtime.getURL === 'function' ? runtime.getURL(path) : path;
+        } catch (e) {
+            return path;
+        }
+    }
+
+    function getExtensionManifestMeta() {
+        const runtime = getExtensionRuntime();
+        try {
+            return runtime && typeof runtime.getManifest === 'function' ? runtime.getManifest() : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function createHelperLogoNode(options = {}) {
+        const {
+            size = 18,
+            className = '',
+            alt = 'ChatGPT Helper',
+            title = '',
+        } = options;
+        const img = createElement('img', {
+            className,
+            alt,
+            title,
+            src: getExtensionAssetUrl('icons/logo.svg'),
+            draggable: false,
+        });
+        img.width = size;
+        img.height = size;
+        img.style.width = `${size}px`;
+        img.style.height = `${size}px`;
+        img.style.display = 'block';
+        img.style.objectFit = 'contain';
+        img.style.flexShrink = '0';
+        return img;
+    }
+
+    function createCollapsedButtonIconNode(def, options = {}) {
+        if (def && def.iconType === 'helper-logo') {
+            return createHelperLogoNode({
+                size: options.size || 18,
+                className: options.className || 'chatgpt-helper-icon-logo',
+                title: options.title || def.label || 'ChatGPT Helper',
+            });
+        }
+        return createElement('span', {
+            className: options.className || '',
+            title: options.title || '',
+        }, def && def.icon ? def.icon : '');
     }
 
     function clearElement(el) {
@@ -3175,72 +3275,82 @@ if (!window.__MY_EXT__) {
 
     /**
      * 滚动锁定管理器
-     * 通过劫持原生滚动 API 和 MutationObserver 修正来实现防自动滚动
+     * 通过主滚动容器监听和 MutationObserver 修正来实现防自动滚动
      */
     class ScrollLockManager {
         constructor(siteAdapter) {
             this.siteAdapter = siteAdapter;
             this.enabled = false;
-            this.originalApis = null;
+            this.originalApis = {
+                scrollIntoView: Element.prototype.scrollIntoView,
+                scrollTo: window.scrollTo,
+                scrollBy: window.scrollBy,
+                elementScrollTo: Element.prototype.scrollTo,
+                elementScrollBy: Element.prototype.scrollBy,
+                elementScroll: Element.prototype.scroll,
+                scrollTopDescriptor: null,
+            };
+            this.usesPrototypeHijack = false;
             this.observer = null;
-            this.autoScrollObserver = null; // 自动滚动观察器
+            this.autoScrollObserver = null;
             this.cleanupInterval = null;
             this.lastScrollTop = this.getCurrentScrollTop();
+            this.lockedScrollTop = this.lastScrollTop;
             this.listeningContainer = null;
-            
-            // 性能优化：缓存容器引用
+
             this._cachedScrollContainer = null;
             this._cachedResponseContainer = null;
             this._cacheTimestamp = 0;
-            this._cacheTimeout = 2000; // 缓存2秒
-            
-            // 性能优化：防抖和节流
+            this._cacheTimeout = 2000;
+
             this._debounceTimer = null;
             this._throttleTimer = null;
-            this._isUpdatingScroll = false; // 标志位：是否正在更新滚动位置
-            
-            // 性能优化：RAF 相关
+            this._isUpdatingScroll = false;
             this._rafId = null;
             this._pendingScrollUpdate = false;
+            this._correctionRaf = null;
+            this._lastUserInteractionAt = 0;
+            this._lastProgrammaticFixAt = 0;
+            this._userIntentWindowMs = 480;
+            this._scrollJumpThreshold = 140;
+            this._userInputHandler = null;
+            this._lastTouchY = null;
         }
 
         getScrollContainer() {
-            // 性能优化：使用缓存
             const now = Date.now();
-            if (this._cachedScrollContainer && 
-                this._cachedScrollContainer.isConnected && 
+            if (this._cachedScrollContainer &&
+                this._cachedScrollContainer.isConnected &&
                 (now - this._cacheTimestamp) < this._cacheTimeout) {
                 return this._cachedScrollContainer;
             }
-            
+
             const container = this.siteAdapter?.getScrollContainer?.();
-            const result = (container && container.isConnected) ? container : 
-                          (document.scrollingElement || document.documentElement || document.body);
-            
+            const result = (container && container.isConnected)
+                ? container
+                : (document.scrollingElement || document.documentElement || document.body);
+
             this._cachedScrollContainer = result;
             this._cacheTimestamp = now;
             return result;
         }
-        
+
         getResponseContainer() {
-            // 性能优化：使用缓存
             const now = Date.now();
-            if (this._cachedResponseContainer && 
-                this._cachedResponseContainer.isConnected && 
+            if (this._cachedResponseContainer &&
+                this._cachedResponseContainer.isConnected &&
                 (now - this._cacheTimestamp) < this._cacheTimeout) {
                 return this._cachedResponseContainer;
             }
-            
-            const container = this.siteAdapter?.getResponseContainer?.() ||
-                            this.siteAdapter?.getScrollContainer?.();
-            
+
+            const container = this.siteAdapter?.getResponseContainer?.() || this.siteAdapter?.getScrollContainer?.();
             if (container && container.isConnected) {
                 this._cachedResponseContainer = container;
                 this._cacheTimestamp = now;
             }
             return container;
         }
-        
+
         clearCache() {
             this._cachedScrollContainer = null;
             this._cachedResponseContainer = null;
@@ -3254,7 +3364,6 @@ if (!window.__MY_EXT__) {
         }
 
         isMainScrollElement(element) {
-            // 性能优化：使用缓存的容器
             const container = this._cachedScrollContainer || this.getScrollContainer();
             if (!container || !element) return false;
             if (element === container) return true;
@@ -3276,7 +3385,6 @@ if (!window.__MY_EXT__) {
                 try {
                     this.listeningContainer.removeEventListener('scroll', this.onScrollHandler);
                 } catch (e) {
-                    // 忽略错误
                 }
             }
             if (container) {
@@ -3287,465 +3395,127 @@ if (!window.__MY_EXT__) {
                 }
             }
             this.listeningContainer = container;
-            this.lastScrollTop = this.getCurrentScrollTop();
+            const current = this.getCurrentScrollTop();
+            this.lastScrollTop = current;
+            this.lockedScrollTop = current;
         }
 
         setEnabled(enabled) {
-            console.log('[ChatGPT Helper] ScrollLockManager.setEnabled 调用:', {
-                当前状态: this.enabled,
-                新状态: enabled,
-                是否跳过: this.enabled === enabled
-            });
-            if (this.enabled === enabled) {
-                console.log('[ChatGPT Helper] 状态相同，跳过设置');
-                return;
-            }
+            if (this.enabled === enabled) return;
             this.enabled = enabled;
-
             if (enabled) {
                 this.enable();
             } else {
                 this.disable();
             }
-            console.log('[ChatGPT Helper] ScrollLockManager.setEnabled 完成，当前状态:', this.enabled);
         }
 
         enable() {
-            console.log('[ChatGPT Helper] Enabling Scroll Lock System');
-            this.clearCache(); // 清除缓存，重新获取容器
+            this.clearCache();
             this.lastScrollTop = this.getCurrentScrollTop();
-            this.hijackApis();
+            this.lockedScrollTop = this.lastScrollTop;
             this.startObserver();
             this.startScrollListener();
-            // 停止自动滚动
             this.stopAutoScroll();
         }
 
         disable() {
-            console.log('[ChatGPT Helper] Disabling Scroll Lock System');
-            this.clearCache(); // 清除缓存
-            this.restoreApis();
+            this.clearCache();
             this.stopObserver();
             this.stopScrollListener();
-            // 停止我们自己的自动滚动（如果正在运行）
             this.stopAutoScroll();
-            // 注意：不需要启动我们自己的自动滚动，恢复 API 后 ChatGPT 原本的自动滚动会自动恢复工作
+            if (this._correctionRaf) {
+                cancelAnimationFrame(this._correctionRaf);
+                this._correctionRaf = null;
+            }
+            this._isUpdatingScroll = false;
         }
 
         hijackApis() {
-            const self = this;
-            
-            // 如果 originalApis 存在，检查 API 是否已经被恢复
-            // 如果 API 已经被恢复（即 window.scrollTo === originalApis.scrollTo），则需要重新劫持
-            if (this.originalApis) {
-                // 检查 API 是否已经被恢复
-                const isRestored = window.scrollTo === this.originalApis.scrollTo;
-                if (!isRestored) {
-                    // API 仍然被劫持，不需要重新劫持
-                    console.log('[ChatGPT Helper] hijackApis: API 仍然被劫持，跳过重新劫持');
-                    return;
-                } else {
-                    // API 已经被恢复，需要重新劫持
-                    // 使用 originalApis 中保存的原始 API 来重新劫持
-                    console.log('[ChatGPT Helper] hijackApis: 检测到 API 已被恢复，使用原始 API 重新劫持');
-                    // 不需要重新保存 originalApis，直接使用现有的
-                }
-            } else {
-                // 第一次劫持，保存原始 API
-                this.originalApis = {
-                    scrollIntoView: Element.prototype.scrollIntoView,
-                    scrollTo: window.scrollTo,
-                    scrollBy: window.scrollBy,
-                    elementScrollTo: Element.prototype.scrollTo,
-                    elementScrollBy: Element.prototype.scrollBy,
-                    elementScroll: Element.prototype.scroll,
-                    scrollTopDescriptor: Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop') || Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop'),
-                };
-            }
-
-            Element.prototype.scrollIntoView = function (options) {
-                // 性能优化：快速检查
-                if (!self.enabled || self.shouldBypassLock(options, this)) {
-                    return self.originalApis.scrollIntoView.call(this, options);
-                }
-                if (self.shouldBlockScroll()) {
-                    return;
-                }
-                return self.originalApis.scrollIntoView.call(this, options);
-            };
-
-            window.scrollTo = function (x, y) {
-                // 性能优化：快速检查
-                if (!self.enabled || self.shouldBypassLock(x, null)) {
-                    return self.originalApis.scrollTo.apply(this, arguments);
-                }
-                
-                let targetY = y;
-                if (typeof x === 'object' && x !== null) {
-                    targetY = x.top;
-                }
-                
-                if (typeof targetY === 'number') {
-                    const isWindowScroll = self.isMainScrollElement(document.scrollingElement);
-                    if (isWindowScroll && self.shouldBlockScroll()) {
-                        const currentY = window.scrollY || 0;
-                        if (targetY > currentY + 50) {
-                            return;
-                        }
-                    }
-                }
-                
-                return self.originalApis.scrollTo.apply(this, arguments);
-            };
-
-            if (this.originalApis.scrollBy) {
-                window.scrollBy = function (x, y) {
-                    // 性能优化：快速检查
-                    if (!self.enabled || self.shouldBypassLock(x, null)) {
-                        return self.originalApis.scrollBy.apply(this, arguments);
-                    }
-                    
-                    let deltaY = y;
-                    if (typeof x === 'object' && x !== null) {
-                        deltaY = x.top;
-                    }
-                    
-                    if (typeof deltaY === 'number' && deltaY > 50) {
-                        const isWindowScroll = self.isMainScrollElement(document.scrollingElement);
-                        if (isWindowScroll && self.shouldBlockScroll()) {
-                            return;
-                        }
-                    }
-                    
-                    return self.originalApis.scrollBy.apply(this, arguments);
-                };
-            }
-
-            if (this.originalApis.elementScrollTo) {
-                Element.prototype.scrollTo = function (x, y) {
-                    // 性能优化：快速检查
-                    if (!self.enabled || self.shouldBypassLock(x, this)) {
-                        return self.originalApis.elementScrollTo.apply(this, arguments);
-                    }
-                    
-                    if (!self.isMainScrollElement(this) || !self.shouldBlockScroll()) {
-                        return self.originalApis.elementScrollTo.apply(this, arguments);
-                    }
-                    
-                    let targetY = y;
-                    if (typeof x === 'object' && x !== null) {
-                        targetY = x.top;
-                    }
-                    
-                    if (typeof targetY === 'number') {
-                        const currentScrollTop = this.scrollTop || 0;
-                        
-                        // 检查是否在底部
-                        const isAtBottom = this.scrollHeight && this.clientHeight ?
-                            (this.scrollHeight - currentScrollTop - this.clientHeight <= 50) : false;
-                        
-                        // 如果页面在底部且用户尝试向上滚动，允许滚动
-                        if (isAtBottom && targetY < currentScrollTop) {
-                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
-                            self.lastScrollTop = targetY;
-                            return self.originalApis.elementScrollTo.apply(this, arguments);
-                        }
-                        
-                        // 只阻止向下滚动，允许向上滚动
-                        if (targetY > currentScrollTop + 50) {
-                            // 向下滚动超过50px，阻止
-                            return;
-                        }
-                        // 向上滚动或小幅向下滚动，允许并更新 lastScrollTop
-                        if (targetY < currentScrollTop) {
-                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
-                            self.lastScrollTop = targetY;
-                        }
-                    }
-                    
-                    return self.originalApis.elementScrollTo.apply(this, arguments);
-                };
-            }
-
-            if (this.originalApis.elementScroll) {
-                Element.prototype.scroll = function (x, y) {
-                    // 性能优化：快速检查
-                    if (!self.enabled || self.shouldBypassLock(x, this)) {
-                        return self.originalApis.elementScroll.apply(this, arguments);
-                    }
-                    
-                    if (!self.isMainScrollElement(this) || !self.shouldBlockScroll()) {
-                        return self.originalApis.elementScroll.apply(this, arguments);
-                    }
-                    
-                    let targetY = y;
-                    if (typeof x === 'object' && x !== null) {
-                        targetY = x.top;
-                    }
-                    
-                    if (typeof targetY === 'number') {
-                        const currentScrollTop = this.scrollTop || 0;
-                        
-                        // 检查是否在底部
-                        const isAtBottom = this.scrollHeight && this.clientHeight ?
-                            (this.scrollHeight - currentScrollTop - this.clientHeight <= 50) : false;
-                        
-                        // 如果页面在底部且用户尝试向上滚动，允许滚动
-                        if (isAtBottom && targetY < currentScrollTop) {
-                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
-                            self.lastScrollTop = targetY;
-                            return self.originalApis.elementScroll.apply(this, arguments);
-                        }
-                        
-                        // 只阻止向下滚动，允许向上滚动
-                        if (targetY > currentScrollTop + 50) {
-                            // 向下滚动超过50px，阻止
-                            return;
-                        }
-                        // 向上滚动或小幅向下滚动，允许并更新 lastScrollTop
-                        if (targetY < currentScrollTop) {
-                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
-                            self.lastScrollTop = targetY;
-                        }
-                    }
-                    
-                    return self.originalApis.elementScroll.apply(this, arguments);
-                };
-            }
-
-            if (this.originalApis.elementScrollBy) {
-                Element.prototype.scrollBy = function (x, y) {
-                    // 性能优化：快速检查
-                    if (!self.enabled || self.shouldBypassLock(x, this)) {
-                        return self.originalApis.elementScrollBy.apply(this, arguments);
-                    }
-                    
-                    if (!self.isMainScrollElement(this) || !self.shouldBlockScroll()) {
-                        return self.originalApis.elementScrollBy.apply(this, arguments);
-                    }
-                    
-                    let deltaY = y;
-                    if (typeof x === 'object' && x !== null) {
-                        deltaY = x.top;
-                    }
-                    
-                    if (typeof deltaY === 'number') {
-                        const currentScrollTop = this.scrollTop || 0;
-                        
-                        // 检查是否在底部
-                        const isAtBottom = this.scrollHeight && this.clientHeight ?
-                            (this.scrollHeight - currentScrollTop - this.clientHeight <= 50) : false;
-                        
-                        // 如果页面在底部且用户尝试向上滚动（deltaY < 0），允许滚动
-                        if (isAtBottom && deltaY < 0) {
-                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
-                            const targetY = currentScrollTop + deltaY;
-                            self.lastScrollTop = Math.max(0, targetY);
-                            return self.originalApis.elementScrollBy.apply(this, arguments);
-                        }
-                        
-                        // 只阻止向下滚动超过50px
-                        if (deltaY > 50) {
-                            return;
-                        }
-                    }
-                    
-                    return self.originalApis.elementScrollBy.apply(this, arguments);
-                };
-            }
-
-            if (this.originalApis.scrollTopDescriptor) {
-                Object.defineProperty(Element.prototype, 'scrollTop', {
-                    get: function () {
-                        return self.originalApis.scrollTopDescriptor.get ? self.originalApis.scrollTopDescriptor.get.call(this) : 0;
-                    },
-                    set: function (value) {
-                        // 性能优化：如果正在更新滚动位置（由我们自己触发），则绕过检查
-                        if (self._isUpdatingScroll) {
-                            if (self.originalApis.scrollTopDescriptor.set) {
-                                self.originalApis.scrollTopDescriptor.set.call(this, value);
-                            }
-                            return;
-                        }
-                        
-                        // 性能优化：快速检查，避免不必要的计算
-                        if (!self.enabled || !self.shouldBlockScroll()) {
-                            if (self.originalApis.scrollTopDescriptor.set) {
-                                self.originalApis.scrollTopDescriptor.set.call(this, value);
-                            }
-                            return;
-                        }
-                        
-                        // 性能优化：使用缓存的容器引用
-                        if (!self.isMainScrollElement(this) || self.shouldBypassLock(null, this)) {
-                            if (self.originalApis.scrollTopDescriptor.set) {
-                                self.originalApis.scrollTopDescriptor.set.call(this, value);
-                            }
-                            return;
-                        }
-                        
-                        const currentScrollTop = self.originalApis.scrollTopDescriptor.get ? 
-                            self.originalApis.scrollTopDescriptor.get.call(this) : this.scrollTop;
-                        
-                        // 检查是否在底部
-                        const container = this;
-                        const isAtBottom = container && container.scrollHeight && container.clientHeight ?
-                            (container.scrollHeight - container.scrollTop - container.clientHeight <= 50) : false;
-                        
-                        // 如果页面在底部且用户尝试向上滚动，允许滚动
-                        if (isAtBottom && typeof value === 'number' && value < currentScrollTop) {
-                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
-                            self.lastScrollTop = value;
-                            if (self.originalApis.scrollTopDescriptor.set) {
-                                self.originalApis.scrollTopDescriptor.set.call(this, value);
-                            }
-                            return;
-                        }
-                        
-                        // 只阻止向下滚动，允许向上滚动
-                        // 如果用户向上滚动（value < currentScrollTop），允许
-                        if (typeof value === 'number' && value > currentScrollTop + 50) {
-                            // 向下滚动超过50px，阻止
-                            return;
-                        }
-                        // 向上滚动或小幅向下滚动，允许并更新 lastScrollTop
-                        if (typeof value === 'number' && value < currentScrollTop) {
-                            // 用户向上滚动，更新 lastScrollTop 以允许滚动
-                            self.lastScrollTop = value;
-                        }
-                        
-                        if (self.originalApis.scrollTopDescriptor.set) {
-                            self.originalApis.scrollTopDescriptor.set.call(this, value);
-                        }
-                    },
-                    configurable: true,
-                });
-            }
+            return;
         }
 
         restoreApis() {
-            if (!this.originalApis) {
-                console.log('[ChatGPT Helper] restoreApis: originalApis 不存在，跳过恢复');
-                return;
-            }
-
-            console.log('[ChatGPT Helper] restoreApis: 开始恢复原始 API');
-
-            // 恢复所有被劫持的 API
-            try {
-                Element.prototype.scrollIntoView = this.originalApis.scrollIntoView;
-                console.log('[ChatGPT Helper] restoreApis: 已恢复 scrollIntoView');
-            } catch (e) {
-                console.error('[ChatGPT Helper] restoreApis: 恢复 scrollIntoView 失败', e);
-            }
-
-            try {
-                window.scrollTo = this.originalApis.scrollTo;
-                console.log('[ChatGPT Helper] restoreApis: 已恢复 window.scrollTo');
-            } catch (e) {
-                console.error('[ChatGPT Helper] restoreApis: 恢复 window.scrollTo 失败', e);
-            }
-
-            if (this.originalApis.scrollBy) {
-                try {
-                    window.scrollBy = this.originalApis.scrollBy;
-                    console.log('[ChatGPT Helper] restoreApis: 已恢复 window.scrollBy');
-                } catch (e) {
-                    console.error('[ChatGPT Helper] restoreApis: 恢复 window.scrollBy 失败', e);
-                }
-            }
-
-            if (this.originalApis.elementScrollTo) {
-                try {
-                    Element.prototype.scrollTo = this.originalApis.elementScrollTo;
-                    console.log('[ChatGPT Helper] restoreApis: 已恢复 Element.prototype.scrollTo');
-                } catch (e) {
-                    console.error('[ChatGPT Helper] restoreApis: 恢复 Element.prototype.scrollTo 失败', e);
-                }
-            }
-
-            if (this.originalApis.elementScrollBy) {
-                try {
-                    Element.prototype.scrollBy = this.originalApis.elementScrollBy;
-                    console.log('[ChatGPT Helper] restoreApis: 已恢复 Element.prototype.scrollBy');
-                } catch (e) {
-                    console.error('[ChatGPT Helper] restoreApis: 恢复 Element.prototype.scrollBy 失败', e);
-                }
-            }
-
-            if (this.originalApis.elementScroll) {
-                try {
-                    Element.prototype.scroll = this.originalApis.elementScroll;
-                    console.log('[ChatGPT Helper] restoreApis: 已恢复 Element.prototype.scroll');
-                } catch (e) {
-                    console.error('[ChatGPT Helper] restoreApis: 恢复 Element.prototype.scroll 失败', e);
-                }
-            }
-
-            // 恢复 scrollTop descriptor
-            if (this.originalApis.scrollTopDescriptor) {
-                try {
-                    Object.defineProperty(Element.prototype, 'scrollTop', this.originalApis.scrollTopDescriptor);
-                    console.log('[ChatGPT Helper] restoreApis: 已恢复 scrollTop descriptor');
-                } catch (e) {
-                    console.error('[ChatGPT Helper] restoreApis: 恢复 scrollTop descriptor 失败', e);
-                    // 如果恢复失败，尝试删除自定义的 descriptor
-                    try {
-                        delete Element.prototype.scrollTop;
-                        console.log('[ChatGPT Helper] restoreApis: 已删除自定义的 scrollTop descriptor');
-                    } catch (e2) {
-                        console.error('[ChatGPT Helper] restoreApis: 删除自定义 scrollTop descriptor 失败', e2);
-                    }
-                }
-            } else {
-                console.log('[ChatGPT Helper] restoreApis: scrollTopDescriptor 不存在，跳过恢复');
-            }
-
-            // 关键修复：不要将 originalApis 设置为 null，而是保留它
-            // 这样，如果之后再次启用滚动锁定，hijackApis() 可以重新劫持
-            // 但是，我们需要标记 API 已经被恢复，以便 hijackApis() 知道需要重新劫持
-            this._apisRestored = true;
-            
-            // 验证恢复是否成功
-            const verifyRestored = () => {
-                if (!this.originalApis) return;
-                const checks = {
-                    scrollIntoView: Element.prototype.scrollIntoView === this.originalApis.scrollIntoView,
-                    windowScrollTo: window.scrollTo === this.originalApis.scrollTo,
-                    elementScrollTo: Element.prototype.scrollTo === this.originalApis.elementScrollTo,
-                };
-                const allRestored = Object.values(checks).every(v => v);
-                console.log('[ChatGPT Helper] restoreApis: API 恢复验证', checks, {全部恢复: allRestored});
-                return allRestored;
-            };
-            
-            // 延迟验证，确保所有恢复操作都已完成
-            setTimeout(() => {
-                verifyRestored();
-            }, 0);
-            
-            console.log('[ChatGPT Helper] restoreApis: 所有 API 恢复完成（保留 originalApis 以便重新劫持）');
+            return;
         }
 
         shouldBlockScroll() {
-            return true;
+            return this.enabled;
+        }
+
+        markUserInteraction() {
+            this._lastUserInteractionAt = Date.now();
+            const current = this.getCurrentScrollTop();
+            this.lastScrollTop = current;
+            this.lockedScrollTop = current;
+        }
+
+        hasRecentUserInteraction() {
+            return (Date.now() - this._lastUserInteractionAt) < this._userIntentWindowMs;
+        }
+
+        isProtectingPosition() {
+            if (!this.enabled) return false;
+            if (this.hasRecentUserInteraction()) return false;
+            return Boolean(this.siteAdapter?.isGenerating?.());
         }
 
         startScrollListener() {
             const onScroll = () => {
-                if (this.enabled) {
-                    const currentScrollTop = this.getCurrentScrollTop();
-                    // 如果用户向上滚动，立即更新 lastScrollTop 以允许滚动
-                    // 如果用户向下滚动，只有在滚动锁定生效时才更新（由 _checkAndFixScroll 处理）
-                    if (currentScrollTop < this.lastScrollTop) {
-                        // 用户向上滚动，立即更新以允许
-                        this.lastScrollTop = currentScrollTop;
-                    }
+                const currentScrollTop = this.getCurrentScrollTop();
+
+                if (!this.enabled) {
+                    this.lastScrollTop = currentScrollTop;
+                    this.lockedScrollTop = currentScrollTop;
+                    return;
                 }
+
+                if (this._isUpdatingScroll || (Date.now() - this._lastProgrammaticFixAt) < 80) {
+                    this.lastScrollTop = currentScrollTop;
+                    this.lockedScrollTop = currentScrollTop;
+                    return;
+                }
+
+                if (!this.isProtectingPosition()) {
+                    this.lastScrollTop = currentScrollTop;
+                    this.lockedScrollTop = currentScrollTop;
+                    return;
+                }
+
+                if (currentScrollTop > this.lockedScrollTop + this._scrollJumpThreshold) {
+                    this.scheduleScrollCorrection(this.lockedScrollTop);
+                    return;
+                }
+
+                this.lastScrollTop = currentScrollTop;
             };
+
+            const markIntent = (event) => {
+                if (!this.enabled) return;
+                if (event.type === 'keydown') {
+                    const keys = ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', 'Space'];
+                    if (!keys.includes(event.key)) return;
+                }
+                if (event.type === 'touchmove' && event.touches && event.touches.length) {
+                    const currentY = event.touches[0].clientY;
+                    if (this._lastTouchY != null && Math.abs(currentY - this._lastTouchY) < 3) {
+                        return;
+                    }
+                    this._lastTouchY = currentY;
+                }
+                this.markUserInteraction();
+            };
+
             this.onScrollHandlerOptions = { passive: true, capture: true };
             window.addEventListener('scroll', onScroll, this.onScrollHandlerOptions);
             this.onScrollHandler = onScroll;
+            this._userInputHandler = markIntent;
+            window.addEventListener('wheel', markIntent, { passive: true, capture: true });
+            window.addEventListener('touchstart', markIntent, { passive: true, capture: true });
+            window.addEventListener('touchmove', markIntent, { passive: true, capture: true });
+            window.addEventListener('pointerdown', markIntent, { passive: true, capture: true });
+            window.addEventListener('mousedown', markIntent, { passive: true, capture: true });
+            window.addEventListener('keydown', markIntent, { capture: true });
             this.refreshContainerListener();
         }
 
@@ -3759,33 +3529,37 @@ if (!window.__MY_EXT__) {
                 this.onScrollHandler = null;
                 this.onScrollHandlerOptions = null;
             }
+            if (this._userInputHandler) {
+                window.removeEventListener('wheel', this._userInputHandler, { capture: true });
+                window.removeEventListener('touchstart', this._userInputHandler, { capture: true });
+                window.removeEventListener('touchmove', this._userInputHandler, { capture: true });
+                window.removeEventListener('pointerdown', this._userInputHandler, { capture: true });
+                window.removeEventListener('mousedown', this._userInputHandler, { capture: true });
+                window.removeEventListener('keydown', this._userInputHandler, { capture: true });
+                this._userInputHandler = null;
+            }
+            this._lastTouchY = null;
         }
 
         startObserver() {
-            // 性能优化：使用防抖，避免频繁触发
             const handleMutations = (mutations) => {
                 if (!this.enabled) return;
-
-                // 性能优化：快速检查是否有相关变化
-                let hasRelevantChange = false;
                 const responseContainer = this.getResponseContainer();
                 if (!responseContainer) return;
 
-                // 性能优化：只检查前几个 mutation，避免遍历所有
+                let hasRelevantChange = false;
                 for (let i = 0; i < Math.min(mutations.length, 10); i++) {
                     const mutation = mutations[i];
                     if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                         for (let j = 0; j < Math.min(mutation.addedNodes.length, 5); j++) {
                             const node = mutation.addedNodes[j];
                             if (node.nodeType === 1) {
-                                // 性能优化：快速检查，避免复杂的 DOM 查询
                                 try {
                                     if (responseContainer.contains(node)) {
                                         hasRelevantChange = true;
                                         break;
                                     }
                                 } catch (e) {
-                                    // 忽略错误，继续处理
                                 }
                             }
                         }
@@ -3794,105 +3568,105 @@ if (!window.__MY_EXT__) {
                 }
 
                 if (hasRelevantChange) {
-                    // 性能优化：使用防抖，避免频繁更新
                     if (this._debounceTimer) {
                         clearTimeout(this._debounceTimer);
                     }
                     this._debounceTimer = setTimeout(() => {
                         this._updateScrollPosition();
-                    }, 50); // 50ms 防抖
+                    }, 40);
                 }
             };
 
             this.observer = new MutationObserver(handleMutations);
-
-            // 性能优化：缩小监听范围，只监听响应容器而不是整个 document.body
             const responseContainer = this.getResponseContainer();
             const observeTarget = responseContainer || document.body;
-            
-            // 性能优化：如果容器存在，只监听容器，否则监听 body
             this.observer.observe(observeTarget, {
                 childList: true,
-                subtree: responseContainer ? true : false, // 如果监听容器，使用 subtree；如果监听 body，不使用 subtree
+                subtree: true,
             });
 
-            // 性能优化：使用 requestAnimationFrame 替代 setInterval，并增加间隔
-            const cleanup = () => {
-                if (!this.enabled) {
-                    this._rafId = null;
-                    return;
-                }
-                
-                this._rafId = requestAnimationFrame(() => {
-                    if (this.enabled) {
-                        this.refreshContainerListener();
-                        this._checkAndFixScroll();
-                    }
-                    // 性能优化：每 2 秒执行一次清理（约 120 帧）
-                    setTimeout(cleanup, 2000);
-                });
-            };
-            
-            // 延迟启动，避免立即执行
-            setTimeout(cleanup, 2000);
+            this.cleanupInterval = setInterval(() => {
+                if (!this.enabled) return;
+                this.refreshContainerListener();
+                this._checkAndFixScroll();
+            }, 1500);
         }
-        
+
+        scheduleScrollCorrection(targetTop) {
+            if (!this.enabled) return;
+            if (this._correctionRaf) {
+                cancelAnimationFrame(this._correctionRaf);
+            }
+            this._pendingScrollUpdate = true;
+            this._correctionRaf = requestAnimationFrame(() => {
+                this._pendingScrollUpdate = false;
+                this._correctionRaf = null;
+                this.applyScrollCorrection(targetTop);
+            });
+        }
+
+        applyScrollCorrection(targetTop) {
+            const container = this.getScrollContainer();
+            if (!container || !this.enabled) return;
+            if (this._isUpdatingScroll) return;
+
+            try {
+                this._isUpdatingScroll = true;
+                if (typeof container.scrollTo === 'function') {
+                    container.scrollTo({ top: targetTop, behavior: 'instant' });
+                } else {
+                    container.scrollTop = targetTop;
+                }
+                this._lastProgrammaticFixAt = Date.now();
+                this.lastScrollTop = targetTop;
+                this.lockedScrollTop = targetTop;
+            } catch (e) {
+                console.warn('[ChatGPT Helper] 修正滚动位置失败:', e);
+            } finally {
+                setTimeout(() => {
+                    this._isUpdatingScroll = false;
+                }, 0);
+            }
+        }
+
         _updateScrollPosition() {
             if (this._isUpdatingScroll) return;
-            
             const container = this.getScrollContainer();
             if (!container) return;
-            
-            try {
-                const currentScroll = container.scrollTop;
-                // 只阻止向下滚动，允许向上滚动
-                // 如果用户向上滚动（currentScroll < lastScrollTop），更新 lastScrollTop 而不是重置
-                if (currentScroll < this.lastScrollTop) {
-                    // 用户向上滚动，更新 lastScrollTop 以允许滚动
-                    this.lastScrollTop = currentScroll;
-                } else if (currentScroll > this.lastScrollTop + 100) {
-                    // 只阻止向下滚动超过100px
-                    // 性能优化：使用标志位绕过 setter 检查
-                    this._isUpdatingScroll = true;
-                    container.scrollTop = this.lastScrollTop;
-                    this._isUpdatingScroll = false;
-                } else {
-                    // 小幅向下滚动（<=100px），更新 lastScrollTop
-                    this.lastScrollTop = currentScroll;
-                }
-            } catch (e) {
-                this._isUpdatingScroll = false;
-                console.error('[ChatGPT Helper] 更新滚动位置错误:', e);
+            const currentScroll = container.scrollTop;
+
+            if (!this.isProtectingPosition()) {
+                this.lastScrollTop = currentScroll;
+                this.lockedScrollTop = currentScroll;
+                return;
             }
+
+            if (currentScroll > this.lockedScrollTop + this._scrollJumpThreshold) {
+                this.scheduleScrollCorrection(this.lockedScrollTop);
+                return;
+            }
+
+            this.lastScrollTop = currentScroll;
         }
-        
+
         _checkAndFixScroll() {
             if (this._isUpdatingScroll) return;
-            
             const container = this.getScrollContainer();
             if (!container) return;
-            
-            try {
-                const current = container.scrollTop;
-                // 只阻止向下滚动，允许向上滚动
-                // 如果用户向上滚动（current < lastScrollTop），更新 lastScrollTop 而不是重置
-                if (current < this.lastScrollTop) {
-                    // 用户向上滚动，更新 lastScrollTop 以允许滚动
-                    this.lastScrollTop = current;
-                } else if (current > this.lastScrollTop + 200) {
-                    // 只阻止向下滚动超过200px
-                    // 性能优化：使用标志位绕过 setter 检查
-                    this._isUpdatingScroll = true;
-                    container.scrollTop = this.lastScrollTop;
-                    this._isUpdatingScroll = false;
-                } else {
-                    // 小幅向下滚动（<=200px），更新 lastScrollTop
-                    this.lastScrollTop = current;
-                }
-            } catch (e) {
-                this._isUpdatingScroll = false;
-                console.error('[ChatGPT Helper] 检查滚动位置错误:', e);
+            const current = container.scrollTop;
+
+            if (!this.isProtectingPosition()) {
+                this.lastScrollTop = current;
+                this.lockedScrollTop = current;
+                return;
             }
+
+            if (current > this.lockedScrollTop + this._scrollJumpThreshold) {
+                this.scheduleScrollCorrection(this.lockedScrollTop);
+                return;
+            }
+
+            this.lastScrollTop = current;
         }
 
         stopObserver() {
@@ -3916,43 +3690,38 @@ if (!window.__MY_EXT__) {
                 clearTimeout(this._throttleTimer);
                 this._throttleTimer = null;
             }
+            if (this._correctionRaf) {
+                cancelAnimationFrame(this._correctionRaf);
+                this._correctionRaf = null;
+            }
             this._isUpdatingScroll = false;
             this._pendingScrollUpdate = false;
         }
 
         startAutoScroll() {
-            // 如果已经启用，先停止
             if (this.autoScrollObserver) {
                 this.stopAutoScroll();
             }
 
-            // 如果启用了防止自动滚动，不启动自动滚动
             if (this.enabled) {
-                console.log('[ChatGPT Helper] 防止自动滚动已启用，不启动自动滚动');
                 return;
             }
 
-            // 性能优化：使用防抖和节流
             let autoScrollDebounceTimer = null;
             let lastAutoScrollTime = 0;
-            const AUTO_SCROLL_THROTTLE = 200; // 节流：200ms 内最多执行一次
+            const AUTO_SCROLL_THROTTLE = 200;
 
-            // 监听内容变化，自动滚动到底部
             this.autoScrollObserver = new MutationObserver((mutations) => {
-                // 如果启用了防止自动滚动，则不执行（双重检查，确保状态正确）
                 if (this.enabled) return;
 
-                // 性能优化：节流检查
                 const now = Date.now();
                 if (now - lastAutoScrollTime < AUTO_SCROLL_THROTTLE) {
                     return;
                 }
 
-                // 性能优化：使用缓存的容器
                 const responseContainer = this.getResponseContainer();
                 if (!responseContainer) return;
 
-                // 性能优化：快速检查是否有相关变化
                 let hasNewContent = false;
                 for (let i = 0; i < Math.min(mutations.length, 10); i++) {
                     const mutation = mutations[i];
@@ -3966,7 +3735,6 @@ if (!window.__MY_EXT__) {
                                         break;
                                     }
                                 } catch (e) {
-                                    // 忽略错误
                                 }
                             }
                         }
@@ -3975,35 +3743,26 @@ if (!window.__MY_EXT__) {
                 }
 
                 if (hasNewContent) {
-                    // 性能优化：使用防抖
                     if (autoScrollDebounceTimer) {
                         clearTimeout(autoScrollDebounceTimer);
                     }
-                    
+
                     autoScrollDebounceTimer = setTimeout(() => {
-                        // 检查是否正在生成（ChatGPT正在回答）
                         const isGenerating = this.siteAdapter?.isGenerating?.();
                         if (isGenerating) {
                             const container = this.getScrollContainer();
                             if (!container) return;
-                            
-                            // 检查是否接近底部（在底部100px内），如果是则自动滚动到底部
                             const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight <= 100;
                             if (isNearBottom) {
                                 const targetTop = Math.max(0, container.scrollHeight - container.clientHeight);
-                                // 性能优化：使用 bypass 标志，避免触发滚动锁定
                                 try {
-                                    container.scrollTo({ 
-                                        top: targetTop, 
-                                        behavior: 'smooth',
-                                        __bypassLock: true 
+                                    container.scrollTo({
+                                        top: targetTop,
+                                        behavior: 'smooth'
                                     });
                                 } catch (e) {
-                                    // 如果 scrollTo 不支持 options，使用直接设置
                                     if (container.scrollTop !== undefined) {
-                                        container.__ghBypassLock = true;
                                         container.scrollTop = targetTop;
-                                        delete container.__ghBypassLock;
                                     }
                                 }
                                 lastAutoScrollTime = Date.now();
@@ -4013,10 +3772,8 @@ if (!window.__MY_EXT__) {
                 }
             });
 
-            // 性能优化：缩小监听范围
             const responseContainer = this.getResponseContainer();
             const observeTarget = responseContainer || document.body;
-            
             this.autoScrollObserver.observe(observeTarget, {
                 childList: true,
                 subtree: responseContainer ? true : false,
@@ -4030,7 +3787,6 @@ if (!window.__MY_EXT__) {
             }
         }
     }
-
     // ==================== 宽度样式管理器 ====================
 
     /**
@@ -5874,21 +5630,27 @@ if (!window.__MY_EXT__) {
             this.aiState = 'idle'; // 'idle' | 'generating' | 'completed'
             this.lastAiState = 'idle';
             this.userSawCompletion = false;
+            this.notificationAudioContext = null;
+            this.notificationAudioUnlocked = false;
+            this.pendingNotificationTone = false;
+            this.notificationUnlockHandler = null;
+            this.visibilityChangeHandler = null;
         }
 
         start() {
             if (this.isRunning) return;
             this.isRunning = true;
             this.updateTabName();
+            this.ensureNotificationAudioUnlock();
 
-            // 监听页面可见性变化
-            document.addEventListener('visibilitychange', () => this.onVisibilityChange());
+            if (!this.visibilityChangeHandler) {
+                this.visibilityChangeHandler = () => this.onVisibilityChange();
+            }
+            document.addEventListener('visibilitychange', this.visibilityChangeHandler);
 
-            // 定时更新标签页标题
             const intervalMs = (this.settings.tabSettings?.renameInterval || 3) * 1000;
             this.intervalId = setInterval(() => this.updateTabName(), intervalMs);
 
-            // 监听DOM变化检测生成状态
             this.startGenerationObserver();
         }
 
@@ -5905,10 +5667,14 @@ if (!window.__MY_EXT__) {
                 this.generationObserver.disconnect();
                 this.generationObserver = null;
             }
+
+            if (this.visibilityChangeHandler) {
+                document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+            }
+            this.teardownNotificationAudioUnlock();
         }
 
         restartInterval() {
-            // 重启定时器以应用新的间隔设置
             if (this.isRunning && this.intervalId) {
                 clearInterval(this.intervalId);
                 const intervalMs = (this.settings.tabSettings?.renameInterval || 3) * 1000;
@@ -5949,7 +5715,6 @@ if (!window.__MY_EXT__) {
             const wasGenerating = this.aiState === 'generating';
             this.aiState = 'completed';
 
-            // 如果正在生成，则发送完成通知（声音和自动聚焦）
             if (wasGenerating) {
                 this.sendCompletionNotification();
             }
@@ -5961,54 +5726,145 @@ if (!window.__MY_EXT__) {
         sendCompletionNotification() {
             const tabSettings = this.settings.tabSettings || {};
 
-            // 通知声音
             if (tabSettings.notificationSound) {
-                this.playNotificationSound(tabSettings.notificationVolume || 0.5);
+                void this.playNotificationSound(tabSettings.notificationVolume || 0.5);
             }
 
-            // 自动聚焦
             if (tabSettings.autoFocus) {
-                // 使用多种方法尝试聚焦窗口，提高成功率
                 try {
-                    // 方法1: 直接聚焦
                     if (window.focus) {
                         window.focus();
                     }
-                    // 方法2: 延迟聚焦（有时需要延迟才能生效）
                     setTimeout(() => {
                         try {
                             if (window.focus) {
                                 window.focus();
                             }
                         } catch (e) {
-                            // 忽略错误
                         }
                     }, 100);
-                    // 方法3: 通过顶层窗口聚焦
                     if (window.top && window.top !== window && window.top.focus) {
                         try {
                             window.top.focus();
                         } catch (e) {
-                            // 忽略跨域错误
                         }
                     }
                 } catch (e) {
-                    // 忽略错误
                 }
             }
         }
 
-        playNotificationSound(volume = 0.5) {
+        ensureNotificationAudioUnlock() {
+            if (this.notificationUnlockHandler) return;
+            this.notificationUnlockHandler = () => {
+                void this.unlockNotificationAudio().then((unlocked) => {
+                    if (unlocked && this.pendingNotificationTone) {
+                        const volume = this.settings.tabSettings?.notificationVolume || 0.5;
+                        this.pendingNotificationTone = false;
+                        void this.playNotificationSound(volume);
+                    }
+                });
+            };
+            ['pointerdown', 'keydown', 'touchstart'].forEach((eventName) => {
+                window.addEventListener(eventName, this.notificationUnlockHandler, { passive: true, capture: true });
+            });
+        }
+
+        teardownNotificationAudioUnlock() {
+            if (!this.notificationUnlockHandler) return;
+            ['pointerdown', 'keydown', 'touchstart'].forEach((eventName) => {
+                window.removeEventListener(eventName, this.notificationUnlockHandler, { capture: true });
+            });
+            this.notificationUnlockHandler = null;
+        }
+
+        getNotificationAudioContext() {
+            if (this.notificationAudioContext) return this.notificationAudioContext;
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
             try {
-                if (!this.notificationAudio) {
-                    this.notificationAudio = new Audio();
-                    // 使用简单的提示音（浏览器内置）
-                    this.notificationAudio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzGH0fLMeSwFJHfH8N2QQAoUXrTp66hVFAP';
-                }
-                this.notificationAudio.volume = Math.max(0.1, Math.min(1.0, volume));
-                this.notificationAudio.play().catch(() => { });
+                this.notificationAudioContext = new AudioCtx();
+                return this.notificationAudioContext;
             } catch (e) {
-                // 忽略错误
+                console.warn('[ChatGPT Helper] 创建 AudioContext 失败:', e);
+                return null;
+            }
+        }
+
+        async unlockNotificationAudio() {
+            const ctx = this.getNotificationAudioContext();
+            if (!ctx) return false;
+
+            try {
+                if (ctx.state === 'suspended') {
+                    await ctx.resume();
+                }
+                const gain = ctx.createGain();
+                gain.gain.value = 0.0001;
+                gain.connect(ctx.destination);
+                const osc = ctx.createOscillator();
+                const now = ctx.currentTime;
+                osc.type = 'sine';
+                osc.frequency.value = 440;
+                osc.connect(gain);
+                osc.start(now);
+                osc.stop(now + 0.01);
+
+                this.notificationAudioUnlocked = ctx.state === 'running';
+                if (this.notificationAudioUnlocked) {
+                    this.teardownNotificationAudioUnlock();
+                }
+                return this.notificationAudioUnlocked;
+            } catch (e) {
+                console.warn('[ChatGPT Helper] 解锁通知音失败:', e);
+                return false;
+            }
+        }
+
+        async playNotificationSound(volume = 0.5) {
+            const clampedVolume = Math.max(0.1, Math.min(1.0, Number(volume) || 0.5));
+            this.ensureNotificationAudioUnlock();
+
+            const ctx = this.getNotificationAudioContext();
+            if (!ctx) {
+                this.pendingNotificationTone = true;
+                return false;
+            }
+
+            const unlocked = await this.unlockNotificationAudio();
+            if (!unlocked) {
+                this.pendingNotificationTone = true;
+                return false;
+            }
+
+            try {
+                const now = ctx.currentTime + 0.01;
+                const master = ctx.createGain();
+                master.gain.setValueAtTime(0.0001, now);
+                master.gain.exponentialRampToValueAtTime(Math.max(0.02, clampedVolume * 0.08), now + 0.01);
+                master.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+                master.connect(ctx.destination);
+
+                const first = ctx.createOscillator();
+                first.type = 'sine';
+                first.frequency.setValueAtTime(880, now);
+                first.connect(master);
+                first.start(now);
+                first.stop(now + 0.11);
+
+                const second = ctx.createOscillator();
+                second.type = 'triangle';
+                second.frequency.setValueAtTime(1320, now + 0.14);
+                second.connect(master);
+                second.start(now + 0.14);
+                second.stop(now + 0.32);
+
+                this.pendingNotificationTone = false;
+                return true;
+            } catch (e) {
+                console.warn('[ChatGPT Helper] 播放通知音失败:', e);
+                this.pendingNotificationTone = true;
+                return false;
             }
         }
 
@@ -8123,6 +7979,134 @@ if (!window.__MY_EXT__) {
             refs.previewInput.style.boxShadow = canRenderBackground && previewVars
                 ? `inset 0 0 0 1px ${previewMessageBorder}`
                 : 'none';
+        }
+
+        openAboutModal() {
+            if (this.aboutModal && this.aboutModal.isConnected) {
+                requestAnimationFrame(() => this.aboutModal.classList.add('open'));
+                return;
+            }
+
+            const manifest = getExtensionManifestMeta() || {};
+            const productName = manifest.name || 'ChatGPT Helper';
+            const version = manifest.version || '1.0.0';
+            const author = manifest.author || 'zhiwuyazhe_fjr';
+
+            const overlay = createElement('div', { id: 'chatgpt-helper-about-modal' });
+            const dialog = createElement('div', { className: 'chatgpt-helper-about-dialog' });
+
+            const header = createElement('div', { className: 'chatgpt-helper-about-header' });
+            const titleWrap = createElement('div', { className: 'chatgpt-helper-about-title-wrap' });
+            titleWrap.appendChild(createHelperLogoNode({
+                size: 56,
+                className: 'chatgpt-helper-about-logo',
+                title: productName,
+            }));
+
+            const titleText = createElement('div', { className: 'chatgpt-helper-about-title-text' });
+            titleText.appendChild(createElement('div', { className: 'chatgpt-helper-about-name' }, productName));
+            titleText.appendChild(createElement('div', { className: 'chatgpt-helper-about-tagline' }, this.t('aboutTagline') || 'A minimal but powerful enhancement layer for ChatGPT'));
+            titleWrap.appendChild(titleText);
+
+            const versionBadge = createElement('div', { className: 'chatgpt-helper-about-badge' }, `v${version}`);
+            const closeBtn = createElement('button', {
+                className: 'chatgpt-helper-about-close',
+                type: 'button',
+                title: 'Close'
+            }, '×');
+
+            header.appendChild(titleWrap);
+            header.appendChild(versionBadge);
+            header.appendChild(closeBtn);
+
+            const body = createElement('div', { className: 'chatgpt-helper-about-body' });
+
+            const introCard = createElement('div', { className: 'chatgpt-helper-about-card hero' });
+            introCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-title' }, this.t('aboutIntroTitle') || 'Overview'));
+            introCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-text' }, this.t('aboutIntro') || 'ChatGPT Helper adds a focused side panel for prompt management, outlines, conversation organization, exports, and reading-position utilities while keeping the native ChatGPT flow familiar.'));
+            body.appendChild(introCard);
+
+            const featuresCard = createElement('div', { className: 'chatgpt-helper-about-card' });
+            featuresCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-title' }, this.t('aboutFeaturesTitle') || 'Core Features'));
+            const featureList = createElement('ul', { className: 'chatgpt-helper-about-list' });
+            [
+                this.t('aboutFeaturePrompts') || 'Prompt management and quick insertion',
+                this.t('aboutFeatureOutline') || 'Automatic outline generation and navigation',
+                this.t('aboutFeatureConversations') || 'Conversation organization and batch actions',
+                this.t('aboutFeatureExport') || 'Multi-format export and reading-position tools',
+            ].forEach((text) => featureList.appendChild(createElement('li', {}, text)));
+            featuresCard.appendChild(featureList);
+            body.appendChild(featuresCard);
+
+            const supportCard = createElement('div', { className: 'chatgpt-helper-about-card' });
+            supportCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-title' }, this.t('aboutSupportTitle') || 'Supported Sites'));
+            supportCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-text' }, this.t('aboutSupportSites') || 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com'));
+            body.appendChild(supportCard);
+
+            const privacyCard = createElement('div', { className: 'chatgpt-helper-about-card' });
+            privacyCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-title' }, this.t('aboutPrivacyTitle') || 'Privacy & Permissions'));
+            privacyCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-card-text' }, this.t('aboutPrivacy') || 'All settings and data processing stay in your browser. The extension uses storage for local preferences and notifications only for completion alerts.'));
+            body.appendChild(privacyCard);
+
+            const metaGrid = createElement('div', { className: 'chatgpt-helper-about-meta-grid' });
+            [
+                { label: this.t('aboutVersionLabel') || 'Version', value: version },
+                { label: this.t('aboutAuthorLabel') || 'Author', value: author },
+                { label: this.t('aboutLicenseLabel') || 'License', value: 'MIT' },
+            ].forEach((item) => {
+                const metaCard = createElement('div', { className: 'chatgpt-helper-about-meta-card' });
+                metaCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-meta-label' }, item.label));
+                metaCard.appendChild(createElement('div', { className: 'chatgpt-helper-about-meta-value' }, item.value));
+                metaGrid.appendChild(metaCard);
+            });
+            body.appendChild(metaGrid);
+
+            const footer = createElement('div', { className: 'chatgpt-helper-about-footer' }, this.t('aboutPoweredBy') || 'Built for focused ChatGPT workflows');
+
+            dialog.appendChild(header);
+            dialog.appendChild(body);
+            dialog.appendChild(footer);
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+
+            const closeModal = () => this.closeAboutModal();
+            closeBtn.addEventListener('click', closeModal);
+            this.aboutModalBackdropHandler = (event) => {
+                if (event.target === overlay) {
+                    closeModal();
+                }
+            };
+            overlay.addEventListener('click', this.aboutModalBackdropHandler);
+            this.aboutModalEscHandler = (event) => {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeModal();
+                }
+            };
+            document.addEventListener('keydown', this.aboutModalEscHandler, true);
+
+            this.aboutModal = overlay;
+            requestAnimationFrame(() => overlay.classList.add('open'));
+        }
+
+        closeAboutModal() {
+            if (!this.aboutModal) return;
+            this.aboutModal.classList.remove('open');
+            const modalToRemove = this.aboutModal;
+            setTimeout(() => {
+                if (modalToRemove && modalToRemove.parentNode) {
+                    modalToRemove.parentNode.removeChild(modalToRemove);
+                }
+            }, 200);
+            if (this.aboutModalBackdropHandler) {
+                this.aboutModal.removeEventListener('click', this.aboutModalBackdropHandler);
+            }
+            if (this.aboutModalEscHandler) {
+                document.removeEventListener('keydown', this.aboutModalEscHandler, true);
+            }
+            this.aboutModal = null;
+            this.aboutModalBackdropHandler = null;
+            this.aboutModalEscHandler = null;
         }
 
         openThemeSettingsModal() {
@@ -10586,30 +10570,40 @@ if (!window.__MY_EXT__) {
                 
                 /* 设置面板样式 */
                 .chatgpt-helper-setting-section {
-                    margin-bottom: 16px;
-                    background: var(--gh-bg-secondary, #f9fafb);
-                    border-radius: 8px;
-                    border: 1px solid var(--gh-border, #e5e7eb);
+                    margin-bottom: 18px;
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg-secondary, #f9fafb), white 20%) 0%, var(--gh-bg-secondary, #f9fafb) 100%);
+                    border-radius: 16px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 8%);
                     overflow: hidden;
-                    transition: all 0.2s;
+                    box-shadow:
+                        0 14px 30px rgba(15, 23, 42, 0.08),
+                        inset 0 1px 0 rgba(255,255,255,0.45);
+                    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-setting-section {
-                    background: var(--gh-bg-secondary, #1a1a1a);
-                    border-color: var(--gh-border, #2d3748);
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg-secondary, #101827), white 4%) 0%, var(--gh-bg-secondary, #101827) 100%);
+                    border-color: color-mix(in srgb, var(--gh-border, #2d3748), transparent 10%);
+                    box-shadow:
+                        0 18px 34px rgba(2, 6, 23, 0.34),
+                        inset 0 1px 0 rgba(255,255,255,0.04);
                 }
                 
                 .chatgpt-helper-setting-section-header {
                     cursor: pointer;
                     display: flex;
-                    justify-content: space-between;
+                    justify-content: center;
                     align-items: center;
                     user-select: none;
-                    padding: 12px 16px;
+                    padding: 16px 18px;
                     font-size: 14px;
-                    font-weight: 600;
+                    font-weight: 700;
                     color: var(--gh-text, #374151);
-                    transition: background 0.2s;
+                    letter-spacing: 0.06em;
+                    text-align: center;
+                    transition: background 0.2s, border-color 0.2s;
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-setting-section-header {
@@ -10617,43 +10611,56 @@ if (!window.__MY_EXT__) {
                 }
                 
                 .chatgpt-helper-setting-section-header:hover {
-                    background: var(--gh-hover, #f3f4f6);
+                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 12%);
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-setting-section-header:hover {
-                    background: var(--gh-hover, #1f2937);
+                    background: color-mix(in srgb, var(--gh-hover, #1f2937), transparent 8%);
                 }
                 
                 .chatgpt-helper-setting-section-content {
                     padding: 0 16px 16px 16px;
                     display: flex;
                     flex-direction: column;
-                    gap: 8px;
+                    gap: 10px;
                 }
                 
                 .chatgpt-helper-setting-item {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    padding: 12px;
-                    background: var(--gh-bg, #ffffff);
-                    border-radius: 8px;
-                    border: 1px solid var(--gh-border, #e5e7eb);
-                    transition: all 0.2s;
+                    padding: 14px 16px;
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg, #ffffff), white 12%) 0%, var(--gh-bg, #ffffff) 100%);
+                    border-radius: 14px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 18%);
+                    box-shadow:
+                        0 8px 18px rgba(15, 23, 42, 0.04),
+                        inset 0 1px 0 rgba(255,255,255,0.38);
+                    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-setting-item {
-                    background: var(--gh-bg, #0f1419);
-                    border-color: var(--gh-border, #2d3748);
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg, #0f1419), white 3%) 0%, var(--gh-bg, #0f1419) 100%);
+                    border-color: color-mix(in srgb, var(--gh-border, #2d3748), transparent 14%);
+                    box-shadow:
+                        0 10px 22px rgba(2, 6, 23, 0.28),
+                        inset 0 1px 0 rgba(255,255,255,0.03);
                 }
                 
                 .chatgpt-helper-setting-item:hover {
-                    border-color: var(--gh-primary, #10a37f);
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+                    transform: translateY(-1px);
+                    border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 24%);
+                    box-shadow:
+                        0 12px 26px rgba(15, 23, 42, 0.08),
+                        inset 0 1px 0 rgba(255,255,255,0.48);
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-setting-item:hover {
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    box-shadow:
+                        0 14px 28px rgba(2, 6, 23, 0.34),
+                        inset 0 1px 0 rgba(255,255,255,0.05);
                 }
                 
                 .chatgpt-helper-setting-item-info {
@@ -10667,7 +10674,7 @@ if (!window.__MY_EXT__) {
                 
                 .chatgpt-helper-setting-item-label {
                     font-size: 14px;
-                    font-weight: 500;
+                    font-weight: 600;
                     color: var(--gh-text, #374151);
                     margin-bottom: 2px;
                     white-space: nowrap;
@@ -10680,7 +10687,354 @@ if (!window.__MY_EXT__) {
                 .chatgpt-helper-setting-item-desc {
                     font-size: 12px;
                     color: var(--gh-text-secondary, #9ca3af);
-                    line-height: 1.3;
+                    line-height: 1.4;
+                }
+
+                .chatgpt-helper-settings-scroll {
+                    scrollbar-width: thin;
+                }
+
+                .chatgpt-helper-setting-section-title {
+                    display: inline-block;
+                    text-align: center;
+                }
+
+                .chatgpt-helper-theme-block-title,
+                .chatgpt-helper-setting-section-title {
+                    text-transform: none;
+                }
+
+                .chatgpt-helper-inline-icon,
+                .chatgpt-helper-icon-logo,
+                .chatgpt-helper-quick-btn-logo {
+                    filter: drop-shadow(0 4px 12px rgba(15, 23, 42, 0.18));
+                }
+
+                .chatgpt-helper-inline-icon-wrap {
+                    display: inline-flex;
+                    width: 28px;
+                    min-width: 28px;
+                    height: 28px;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 8px;
+                    border-radius: 10px;
+                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 10%);
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.42);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-inline-icon-wrap {
+                    background: color-mix(in srgb, var(--gh-hover, #1f2937), transparent 10%);
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+                }
+
+                .setting-toggle {
+                    position: relative;
+                    width: 42px;
+                    min-width: 42px;
+                    height: 24px;
+                    border-radius: 999px;
+                    cursor: pointer;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 8%);
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-hover, #e5e7eb), white 18%) 0%, color-mix(in srgb, var(--gh-hover, #e5e7eb), transparent 12%) 100%);
+                    box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.5),
+                        0 6px 14px rgba(15, 23, 42, 0.08);
+                    transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, transform 0.18s ease;
+                }
+
+                .setting-toggle::after {
+                    content: '';
+                    position: absolute;
+                    top: 2px;
+                    left: 2px;
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 999px;
+                    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+                    box-shadow:
+                        0 4px 10px rgba(15, 23, 42, 0.14),
+                        inset 0 1px 0 rgba(255,255,255,0.85);
+                    transition: transform 0.22s ease;
+                }
+
+                .setting-toggle.active {
+                    border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 24%);
+                    background:
+                        linear-gradient(135deg, color-mix(in srgb, var(--gh-primary, #10a37f), white 36%) 0%, color-mix(in srgb, var(--gh-primary, #10a37f), transparent 16%) 100%);
+                    box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.38),
+                        0 10px 18px rgba(15, 23, 42, 0.12);
+                }
+
+                .setting-toggle.active::after {
+                    transform: translateX(18px);
+                }
+
+                body[data-gh-mode="dark"] .setting-toggle {
+                    border-color: color-mix(in srgb, var(--gh-border, #334155), transparent 10%);
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, #111827, white 4%) 0%, #0f172a 100%);
+                    box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.05),
+                        0 8px 18px rgba(2, 6, 23, 0.28);
+                }
+
+                body[data-gh-mode="dark"] .setting-toggle::after {
+                    background: linear-gradient(180deg, #f8fafc 0%, #dbeafe 100%);
+                    box-shadow:
+                        0 4px 12px rgba(2, 6, 23, 0.42),
+                        inset 0 1px 0 rgba(255,255,255,0.7);
+                }
+
+                body[data-gh-mode="dark"] .setting-toggle.active {
+                    background:
+                        linear-gradient(135deg, color-mix(in srgb, var(--gh-primary, #6366f1), white 14%) 0%, color-mix(in srgb, var(--gh-primary, #6366f1), #0f172a 65%) 100%);
+                    box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.06),
+                        0 10px 24px rgba(2, 6, 23, 0.34);
+                }
+
+                .chatgpt-helper-settings-footer {
+                    padding: 10px 2px 4px;
+                }
+
+                .chatgpt-helper-about-btn {
+                    width: 100%;
+                    min-height: 48px;
+                    border-radius: 16px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 10%);
+                    background:
+                        linear-gradient(135deg, color-mix(in srgb, var(--gh-bg, #ffffff), white 10%) 0%, color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 10%) 100%);
+                    color: var(--gh-text, #111827);
+                    font-size: 14px;
+                    font-weight: 700;
+                    letter-spacing: 0.04em;
+                    cursor: pointer;
+                    box-shadow:
+                        0 14px 28px rgba(15, 23, 42, 0.08),
+                        inset 0 1px 0 rgba(255,255,255,0.46);
+                    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+                }
+
+                .chatgpt-helper-about-btn:hover {
+                    transform: translateY(-1px);
+                    border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 28%);
+                    box-shadow:
+                        0 18px 30px rgba(15, 23, 42, 0.12),
+                        inset 0 1px 0 rgba(255,255,255,0.52);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-btn {
+                    background:
+                        linear-gradient(135deg, color-mix(in srgb, var(--gh-bg, #0f1419), white 3%) 0%, color-mix(in srgb, var(--gh-hover, #1f2937), transparent 10%) 100%);
+                    box-shadow:
+                        0 18px 34px rgba(2, 6, 23, 0.28),
+                        inset 0 1px 0 rgba(255,255,255,0.04);
+                }
+
+                #chatgpt-helper-about-modal {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 10060;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 18px;
+                    background:
+                        radial-gradient(1200px 520px at 18% 8%, rgba(14, 165, 233, 0.18), transparent 60%),
+                        radial-gradient(1100px 560px at 88% 100%, rgba(99, 102, 241, 0.16), transparent 65%),
+                        rgba(2, 6, 23, 0.72);
+                    backdrop-filter: blur(10px);
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity 0.24s ease;
+                }
+
+                #chatgpt-helper-about-modal.open {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+
+                .chatgpt-helper-about-dialog {
+                    width: min(760px, 96vw);
+                    max-height: min(820px, 92vh);
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    border-radius: 24px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 10%);
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg, #ffffff), white 16%) 0%, var(--gh-bg, #ffffff) 46%),
+                        var(--gh-bg, #ffffff);
+                    box-shadow:
+                        0 40px 90px rgba(2, 6, 23, 0.42),
+                        inset 0 1px 0 rgba(255,255,255,0.48);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-dialog {
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, #0b1324, var(--gh-primary, #3b82f6) 10%) 0%, #0a0f18 44%),
+                        #0b111a;
+                    border-color: color-mix(in srgb, #334155, transparent 10%);
+                    box-shadow:
+                        0 44px 96px rgba(2, 6, 23, 0.54),
+                        inset 0 1px 0 rgba(255,255,255,0.05);
+                }
+
+                .chatgpt-helper-about-header {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 16px;
+                    padding: 24px 28px 18px;
+                    border-bottom: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 16%);
+                }
+
+                .chatgpt-helper-about-title-wrap {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    min-width: 0;
+                }
+
+                .chatgpt-helper-about-title-text {
+                    min-width: 0;
+                }
+
+                .chatgpt-helper-about-name {
+                    font-size: 24px;
+                    font-weight: 800;
+                    color: var(--gh-text, #111827);
+                    letter-spacing: 0.01em;
+                }
+
+                .chatgpt-helper-about-tagline {
+                    margin-top: 4px;
+                    font-size: 13px;
+                    line-height: 1.5;
+                    color: var(--gh-text-secondary, #6b7280);
+                }
+
+                .chatgpt-helper-about-badge {
+                    padding: 8px 12px;
+                    border-radius: 999px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 12%);
+                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 12%);
+                    font-size: 12px;
+                    font-weight: 700;
+                    letter-spacing: 0.05em;
+                }
+
+                .chatgpt-helper-about-close {
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 12px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 12%);
+                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 18%);
+                    color: inherit;
+                    cursor: pointer;
+                    font-size: 20px;
+                    transition: all 0.2s ease;
+                }
+
+                .chatgpt-helper-about-close:hover {
+                    transform: translateY(-1px);
+                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 26%);
+                }
+
+                .chatgpt-helper-about-body {
+                    flex: 1;
+                    overflow: auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 14px;
+                    padding: 20px 28px 24px;
+                }
+
+                .chatgpt-helper-about-card {
+                    padding: 18px 18px 16px;
+                    border-radius: 18px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 14%);
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg-secondary, #f9fafb), white 8%) 0%, var(--gh-bg-secondary, #f9fafb) 100%);
+                    box-shadow:
+                        0 14px 30px rgba(15, 23, 42, 0.06),
+                        inset 0 1px 0 rgba(255,255,255,0.4);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-card {
+                    background:
+                        linear-gradient(180deg, color-mix(in srgb, var(--gh-bg-secondary, #111827), white 4%) 0%, var(--gh-bg-secondary, #111827) 100%);
+                    border-color: color-mix(in srgb, var(--gh-border, #334155), transparent 16%);
+                    box-shadow:
+                        0 16px 32px rgba(2, 6, 23, 0.26),
+                        inset 0 1px 0 rgba(255,255,255,0.04);
+                }
+
+                .chatgpt-helper-about-card.hero {
+                    background:
+                        linear-gradient(135deg, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 90%) 0%, color-mix(in srgb, var(--gh-bg-secondary, #f9fafb), white 10%) 100%);
+                }
+
+                .chatgpt-helper-about-card-title {
+                    font-size: 15px;
+                    font-weight: 700;
+                    color: var(--gh-text, #111827);
+                    margin-bottom: 8px;
+                }
+
+                .chatgpt-helper-about-card-text {
+                    font-size: 13px;
+                    line-height: 1.7;
+                    color: var(--gh-text-secondary, #6b7280);
+                }
+
+                .chatgpt-helper-about-list {
+                    margin: 0;
+                    padding-left: 18px;
+                    color: var(--gh-text-secondary, #6b7280);
+                    font-size: 13px;
+                    line-height: 1.75;
+                }
+
+                .chatgpt-helper-about-meta-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                    gap: 12px;
+                }
+
+                .chatgpt-helper-about-meta-card {
+                    padding: 14px 16px;
+                    border-radius: 16px;
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 16%);
+                    background: color-mix(in srgb, var(--gh-bg, #ffffff), transparent 5%);
+                }
+
+                .chatgpt-helper-about-meta-label {
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                    color: var(--gh-text-secondary, #9ca3af);
+                    margin-bottom: 6px;
+                }
+
+                .chatgpt-helper-about-meta-value {
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: var(--gh-text, #111827);
+                }
+
+                .chatgpt-helper-about-footer {
+                    padding: 0 28px 22px;
+                    text-align: center;
+                    font-size: 12px;
+                    color: var(--gh-text-secondary, #9ca3af);
                 }
                 
                 .chatgpt-helper-setting-controls {
@@ -11485,7 +11839,11 @@ if (!window.__MY_EXT__) {
             // 头部 - 渐变背景
             const header = createElement('div', { id: 'chatgpt-helper-header' });
             const title = createElement('div', { id: 'chatgpt-helper-title' });
-            title.appendChild(createElement('span', {}, '✨'));
+            title.appendChild(createHelperLogoNode({
+                size: 18,
+                className: 'chatgpt-helper-icon-logo chatgpt-helper-header-logo',
+                title: this.t('panelTitle') || 'ChatGPT Helper',
+            }));
             title.appendChild(createElement('span', {}, this.t('panelTitle')));
 
             const controls = createElement('div', { id: 'chatgpt-helper-controls' });
@@ -12537,9 +12895,9 @@ if (!window.__MY_EXT__) {
             const section = createElement('div', {
                 className: 'chatgpt-helper-setting-section',
                 style: {
-                    marginBottom: '16px',
+                    marginBottom: '18px',
                     background: 'var(--gh-bg-secondary)',
-                    borderRadius: '8px',
+                    borderRadius: '16px',
                     border: '1px solid var(--gh-border)',
                     overflow: 'hidden'
                 }
@@ -12551,27 +12909,32 @@ if (!window.__MY_EXT__) {
                 style: {
                     cursor: 'pointer',
                     display: 'flex',
-                    justifyContent: 'space-between',
+                    justifyContent: 'center',
                     alignItems: 'center',
                     userSelect: 'none',
-                    padding: '12px 16px',
+                    padding: '16px 18px',
                     fontSize: '14px',
-                    fontWeight: '600',
+                    fontWeight: '700',
                     color: 'var(--gh-text)',
-                    transition: 'background 0.2s'
+                    transition: 'background 0.2s, border-color 0.2s',
+                    textAlign: 'center',
+                    position: 'relative'
                 }
             });
 
             const headerLeft = createElement('div', {
-                style: 'display: flex; align-items: center; gap: 8px;'
+                className: 'chatgpt-helper-setting-section-header-inner',
+                style: 'display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;'
             });
             // 箭头
             const arrow = createElement('span', {
-                style: 'font-size: 12px; color: var(--gh-text-secondary); transition: transform 0.2s; display: inline-block;',
+                style: 'font-size: 12px; color: var(--gh-text-secondary); transition: transform 0.2s; display: inline-block; position: absolute; right: 2px;',
                 className: 'collapse-arrow'
             }, '▶');
 
-            const headerTitle = createElement('span', {}, title);
+            const headerTitle = createElement('span', {
+                className: 'chatgpt-helper-setting-section-title'
+            }, title);
             headerLeft.appendChild(arrow);
             headerLeft.appendChild(headerTitle);
 
@@ -12636,17 +12999,19 @@ if (!window.__MY_EXT__) {
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        padding: '12px 0',
-                        borderBottom: '1px solid var(--gh-border)'
+                        padding: '14px 16px',
+                        borderBottom: 'none'
                     }
                 });
 
                 const label = createElement('div', {
+                    className: 'chatgpt-helper-setting-item-label',
                     style: {
                         fontSize: '14px',
                         color: 'var(--gh-text)',
                         flex: 1,
-                        paddingLeft: '4px'
+                        paddingLeft: '2px',
+                        textAlign: 'left'
                     }
                 }, item.label);
                 itemEl.appendChild(label);
@@ -12849,9 +13214,9 @@ if (!window.__MY_EXT__) {
                     className: 'chatgpt-helper-setting-section',
                     style: {
                         marginBottom: '24px',
-                        padding: '16px',
+                        padding: '18px',
                         background: 'var(--gh-bg-secondary)',
-                        borderRadius: '8px',
+                        borderRadius: '16px',
                         border: '1px solid var(--gh-border)'
                     }
                 });
@@ -12874,8 +13239,9 @@ if (!window.__MY_EXT__) {
 
         renderSettings(container) {
             const settingsContent = createElement('div', {
+                className: 'chatgpt-helper-settings-scroll',
                 style: {
-                    padding: '16px',
+                    padding: '18px 16px 26px',
                     overflowY: 'auto',
                     flex: 1
                 }
@@ -13014,7 +13380,7 @@ if (!window.__MY_EXT__) {
             // 折叠按钮设置（可折叠）
             const collapsedContainer = createElement('div', {});
             const collapsedBtnDesc = createElement('div', {
-                className: 'setting-item-desc',
+                className: 'chatgpt-helper-setting-item-desc',
                 style: 'padding: 0 12px 8px 12px; margin-bottom: 4px;'
             }, this.t('collapsedButtonsDesc') || '调整折叠面板按钮的显示顺序');
             collapsedContainer.appendChild(collapsedBtnDesc);
@@ -13025,22 +13391,27 @@ if (!window.__MY_EXT__) {
                 const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
                 if (!def) return;
 
-                const item = createElement('div', { className: 'setting-item' });
-                const info = createElement('div', { className: 'setting-item-info' });
+                const item = createElement('div', { className: 'chatgpt-helper-setting-item' });
+                const info = createElement('div', { className: 'chatgpt-helper-setting-item-info' });
                 const label = createElement('div', {
-                    className: 'setting-item-label',
+                    className: 'chatgpt-helper-setting-item-label',
                     style: 'display: flex; align-items: center;'
                 });
                 const iconSpan = createElement('span', {
-                    style: 'display: inline-block; width: 24px; text-align: center; margin-right: 4px;'
-                }, def.icon);
+                    className: 'chatgpt-helper-inline-icon-wrap',
+                    style: 'display: inline-flex; width: 24px; min-width: 24px; justify-content: center; align-items: center; margin-right: 6px;'
+                });
+                iconSpan.appendChild(createCollapsedButtonIconNode(def, {
+                    size: 18,
+                    className: 'chatgpt-helper-inline-icon'
+                }));
                 const buttonLabel = def.labelKey ? this.t(def.labelKey) : (def.label || '');
                 const textSpan = createElement('span', {}, buttonLabel);
                 label.appendChild(iconSpan);
                 label.appendChild(textSpan);
                 info.appendChild(label);
 
-                const controls = createElement('div', { className: 'setting-controls' });
+                const controls = createElement('div', { className: 'chatgpt-helper-setting-controls' });
 
                 // 可切换的按钮（anchor/theme/manualAnchor）添加开关
                 if (def.canToggle) {
@@ -13486,6 +13857,21 @@ if (!window.__MY_EXT__) {
             settingsContent.appendChild(tabSettingsSection);
             settingsContent.appendChild(copySettingsSection);
 
+            const aboutFooter = createElement('div', {
+                className: 'chatgpt-helper-settings-footer'
+            });
+            const aboutBtn = createElement('button', {
+                className: 'chatgpt-helper-about-btn',
+                type: 'button'
+            }, this.t('aboutButton') || 'About');
+            aboutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.openAboutModal();
+            });
+            aboutFooter.appendChild(aboutBtn);
+            settingsContent.appendChild(aboutFooter);
+
             container.appendChild(settingsContent);
         }
 
@@ -13850,7 +14236,12 @@ if (!window.__MY_EXT__) {
                         className: 'chatgpt-helper-quick-btn' + (def.isPanelOnly ? ' panel-only' : ''),
                         title: btnTitle,
                         id: `quick-btn-${btnConfig.id}`
-                    }, def.icon);
+                    });
+                    btn.appendChild(createCollapsedButtonIconNode(def, {
+                        size: btnConfig.id === 'panel' ? 20 : 18,
+                        className: btnConfig.id === 'panel' ? 'chatgpt-helper-quick-btn-logo' : 'chatgpt-helper-quick-btn-icon',
+                        title: btnTitle
+                    }));
 
                     // 绑定事件 - 使用直接绑定方式，确保this正确
                     const self = this;
@@ -15541,3 +15932,5 @@ if (!window.__MY_EXT__) {
         console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
     }
 })();
+
+
