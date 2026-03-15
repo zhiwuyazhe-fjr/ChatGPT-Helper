@@ -1445,27 +1445,13 @@ if (!window.__MY_EXT__) {
                     display: 'flex',
                     gap: '6px',
                     alignItems: 'center',
-                    background: 'var(--gh-bg-secondary)',
                     flexShrink: 0
                 }
             });
 
             // 文件夹选择
             const folderSelect = createElement('select', {
-                className: 'chatgpt-helper-folder-select',
-                style: {
-                    flex: 1,
-                    padding: '5px 8px',
-                    border: '1px solid var(--gh-input-border, #d1d5db)',
-                    borderRadius: '6px',
-                    background: 'var(--gh-bg-secondary, #f9fafb)',
-                    color: 'var(--gh-text, #374151)',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    minWidth: '80px',
-                    height: '32px',
-                    boxSizing: 'border-box'
-                }
+                className: 'chatgpt-helper-folder-select'
             });
             this.data.folders.forEach(folder => {
                 const option = createElement('option', { value: folder.id }, folder.name);
@@ -1482,87 +1468,23 @@ if (!window.__MY_EXT__) {
             // 同步按钮
             const syncBtn = createElement('button', {
                 className: 'chatgpt-helper-conversations-toolbar-btn sync',
-                title: this.t('syncConversations') || '同步会话',
-                style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minWidth: '32px',
-                    height: '32px',
-                    padding: '5px 8px',
-                    border: '1px solid var(--gh-input-border, #d1d5db)',
-                    borderRadius: '6px',
-                    background: 'var(--gh-bg-secondary, #f9fafb)',
-                    color: 'var(--gh-text, #374151)',
-                    cursor: 'pointer',
-                    fontSize: '13px',
-                    transition: 'all 0.2s',
-                    flexShrink: 0
-                }
+                title: this.t('syncConversations') || '同步会话'
             }, '🔄');
             syncBtn.addEventListener('click', () => this.syncConversations());
-            syncBtn.addEventListener('mouseenter', () => {
-                syncBtn.style.background = 'var(--gh-hover, #f3f4f6)';
-                syncBtn.style.borderColor = '#9ca3af';
-            });
-            syncBtn.addEventListener('mouseleave', () => {
-                syncBtn.style.background = 'var(--gh-bg-secondary, #f9fafb)';
-                syncBtn.style.borderColor = 'var(--gh-input-border, #d1d5db)';
-            });
             toolbar.appendChild(syncBtn);
 
             // 新建文件夹按钮
             const addFolderBtn = createElement('button', {
                 className: 'chatgpt-helper-conversations-toolbar-btn add-folder',
-                title: this.t('newFolder') || '新建文件夹',
-                style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minWidth: '32px',
-                    height: '32px',
-                    padding: '5px 8px',
-                    border: '1px solid var(--gh-input-border, #d1d5db)',
-                    borderRadius: '6px',
-                    background: 'var(--gh-bg-secondary, #f9fafb)',
-                    color: 'var(--gh-text, #374151)',
-                    cursor: 'pointer',
-                    fontSize: '13px',
-                    transition: 'all 0.2s',
-                    flexShrink: 0
-                }
+                title: this.t('newFolder') || '新建文件夹'
             }, '📁');
             addFolderBtn.addEventListener('click', () => this.showCreateFolderDialog());
-            addFolderBtn.addEventListener('mouseenter', () => {
-                addFolderBtn.style.background = 'var(--gh-hover, #f3f4f6)';
-                addFolderBtn.style.borderColor = '#9ca3af';
-            });
-            addFolderBtn.addEventListener('mouseleave', () => {
-                addFolderBtn.style.background = 'var(--gh-bg-secondary, #f9fafb)';
-                addFolderBtn.style.borderColor = 'var(--gh-input-border, #d1d5db)';
-            });
             toolbar.appendChild(addFolderBtn);
 
             // 批量操作按钮
             const batchBtn = createElement('button', {
                 className: 'chatgpt-helper-conversations-toolbar-btn batch-mode' + (this.batchMode ? ' active' : ''),
-                title: this.t('batchMode') || '批量操作',
-                style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minWidth: '32px',
-                    height: '32px',
-                    padding: '5px 8px',
-                    border: '1px solid var(--gh-input-border, #d1d5db)',
-                    borderRadius: '6px',
-                    background: this.batchMode ? 'var(--gh-border-active, #6366f1)' : 'var(--gh-bg-secondary, #f9fafb)',
-                    color: this.batchMode ? 'white' : 'var(--gh-text, #374151)',
-                    cursor: 'pointer',
-                    fontSize: '13px',
-                    transition: 'all 0.2s',
-                    flexShrink: 0
-                }
+                title: this.t('batchMode') || '批量操作'
             }, this.batchMode ? '✓' : '☑');
             batchBtn.addEventListener('click', () => {
                 this.batchMode = !this.batchMode;
@@ -1571,62 +1493,25 @@ if (!window.__MY_EXT__) {
                 }
                 this.createUI();
             });
-            batchBtn.addEventListener('mouseenter', () => {
-                if (!this.batchMode) {
-                    batchBtn.style.background = 'var(--gh-hover, #f3f4f6)';
-                    batchBtn.style.borderColor = '#9ca3af';
-                }
-            });
-            batchBtn.addEventListener('mouseleave', () => {
-                if (!this.batchMode) {
-                    batchBtn.style.background = 'var(--gh-bg-secondary, #f9fafb)';
-                    batchBtn.style.borderColor = 'var(--gh-input-border, #d1d5db)';
-                }
-            });
             toolbar.appendChild(batchBtn);
 
             // 批量操作工具栏（仅在批量模式下显示）
             if (this.batchMode) {
                 this.batchToolbar = createElement('div', {
-                    className: 'chatgpt-helper-batch-toolbar',
-                    style: {
-                        padding: '8px 12px',
-                        borderBottom: '1px solid var(--gh-border)',
-                        display: 'flex',
-                        gap: '8px',
-                        alignItems: 'center',
-                        background: 'var(--gh-active-bg)',
-                        fontSize: '13px'
-                    }
+                    className: 'chatgpt-helper-batch-toolbar'
                 });
                 this.batchToolbar.appendChild(createElement('span', {
                     style: { color: 'var(--gh-text)', fontWeight: '500' }
                 }, `${this.t('selected') || '已选择'} ${this.selectedIds.size} ${this.t('items') || '项'}`));
 
                 const moveBtn = createElement('button', {
-                    style: {
-                        padding: '4px 8px',
-                        border: '1px solid var(--gh-border)',
-                        borderRadius: '4px',
-                        background: 'var(--gh-bg)',
-                        color: 'var(--gh-text)',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                    }
+                    className: 'chatgpt-helper-batch-toolbar-btn'
                 }, `📁 ${this.t('move') || '移动'}`);
                 moveBtn.addEventListener('click', () => this.batchMove());
                 this.batchToolbar.appendChild(moveBtn);
 
                 const deleteBtn = createElement('button', {
-                    style: {
-                        padding: '4px 8px',
-                        border: '1px solid var(--gh-border)',
-                        borderRadius: '4px',
-                        background: '#ef4444',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                    }
+                    className: 'chatgpt-helper-batch-toolbar-btn danger'
                 }, '🗑 ' + (this.t('delete') || '删除'));
                 deleteBtn.addEventListener('click', () => this.batchDelete());
                 this.batchToolbar.appendChild(deleteBtn);
@@ -1638,27 +1523,13 @@ if (!window.__MY_EXT__) {
 
             // 搜索栏
             const searchBar = createElement('div', {
-                className: 'chatgpt-helper-conversations-search',
-                style: {
-                    padding: '12px',
-                    borderBottom: '1px solid var(--gh-border)',
-                    background: 'var(--gh-bg)'
-                }
+                className: 'chatgpt-helper-conversations-search'
             });
             const searchInput = createElement('input', {
+                className: 'chatgpt-helper-conversations-search-input',
                 type: 'text',
                 placeholder: this.t('searchConversations') || '搜索会话...',
-                value: this.searchQuery,
-                style: {
-                    width: '100%',
-                    padding: '8px 12px',
-                    border: '1px solid var(--gh-border)',
-                    borderRadius: '8px',
-                    background: 'var(--gh-input-bg)',
-                    color: 'var(--gh-text)',
-                    fontSize: '14px',
-                    boxSizing: 'border-box'
-                }
+                value: this.searchQuery
             });
             let searchTimeout = null;
             searchInput.addEventListener('input', () => {
@@ -1671,7 +1542,7 @@ if (!window.__MY_EXT__) {
 
             // 会话列表容器
             const listContainer = createElement('div', {
-                className: 'chatgpt-helper-conversations-list',
+                className: 'chatgpt-helper-conversations-root',
                 style: {
                     flex: 1,
                     overflowY: 'auto',
@@ -1715,12 +1586,7 @@ if (!window.__MY_EXT__) {
 
             if (visibleEntries.length === 0) {
                 this.listContainer.appendChild(createElement('div', {
-                    style: {
-                        textAlign: 'center',
-                        color: 'var(--gh-text-secondary)',
-                        padding: '40px 20px',
-                        fontSize: '14px'
-                    }
+                    className: 'chatgpt-helper-conversations-empty'
                 }, this.searchQuery ? '未找到匹配结果' : '暂无会话'));
                 return;
             }
@@ -1802,66 +1668,25 @@ if (!window.__MY_EXT__) {
             // 文件夹样式
             const item = createElement('div', {
                 className: 'chatgpt-helper-folder-item' + (folder.isDefault ? ' default' : ''),
-                'data-folder-id': folder.id,
-                style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 12px',
-                    marginBottom: '4px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    border: '1px solid transparent'
-                }
+                'data-folder-id': folder.id
             });
 
             const info = createElement('div', {
-                className: 'chatgpt-helper-folder-info',
-                style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    flex: 1,
-                    minWidth: 0
-                }
+                className: 'chatgpt-helper-folder-info'
             });
 
             const icon = createElement('span', {
-                className: 'chatgpt-helper-folder-icon',
-                style: {
-                    fontSize: '18px',
-                    width: '24px',
-                    height: '24px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                }
+                className: 'chatgpt-helper-folder-icon'
             }, folder.icon || '📁');
             info.appendChild(icon);
 
             const name = createElement('span', {
-                className: 'chatgpt-helper-folder-name',
-                style: {
-                    fontWeight: '500',
-                    color: 'var(--gh-text, #1f2937)',
-                    fontSize: '14px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    flex: 1
-                }
+                className: 'chatgpt-helper-folder-name'
             }, folder.name.replace(folder.icon || '', '').trim() || (folder.id === 'inbox' ? '收件箱' : folder.name));
             info.appendChild(name);
 
             const countSpan = createElement('span', {
-                className: 'chatgpt-helper-folder-count',
-                style: {
-                    fontSize: '12px',
-                    color: 'var(--gh-text-secondary, #6b7280)',
-                    marginLeft: '4px'
-                }
+                className: 'chatgpt-helper-folder-count'
             }, `(${count})`);
             info.appendChild(countSpan);
 
@@ -1869,35 +1694,14 @@ if (!window.__MY_EXT__) {
 
             // 右侧操作区（删除 + 展开箭头）
             const actions = createElement('div', {
-                className: 'chatgpt-helper-folder-actions',
-                style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    flexShrink: 0
-                }
+                className: 'chatgpt-helper-folder-actions'
             });
 
             // 删除文件夹按钮（默认文件夹不允许删除）
             if (!folder.isDefault && folder.id !== 'inbox') {
                 const deleteBtn = createElement('button', {
                     className: 'chatgpt-helper-folder-delete-btn',
-                    title: this.t('deleteFolder') || '删除文件夹',
-                    style: {
-                        width: '26px',
-                        height: '26px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: '6px',
-                        border: '1px solid transparent',
-                        background: 'transparent',
-                        color: 'var(--gh-text-secondary, #6b7280)',
-                        cursor: 'pointer',
-                        padding: 0,
-                        lineHeight: 1,
-                        fontSize: '14px'
-                    }
+                    title: this.t('deleteFolder') || '删除文件夹'
                 }, '🗑');
                 deleteBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -1910,9 +1714,6 @@ if (!window.__MY_EXT__) {
             const arrow = createElement('span', {
                 className: 'chatgpt-helper-folder-arrow',
                 style: {
-                    fontSize: '12px',
-                    color: 'var(--gh-text-secondary, #6b7280)',
-                    transition: 'transform 0.2s',
                     transform: this.expandedFolderId === folder.id ? 'rotate(90deg)' : 'rotate(0deg)'
                 }
             }, '▸');
@@ -1944,13 +1745,7 @@ if (!window.__MY_EXT__) {
 
             if (conversations.length === 0) {
                 container.appendChild(createElement('div', {
-                    className: 'chatgpt-helper-conversations-empty',
-                    style: {
-                        padding: '12px',
-                        color: 'var(--gh-text-secondary)',
-                        fontSize: '13px',
-                        textAlign: 'center'
-                    }
+                    className: 'chatgpt-helper-conversations-empty'
                 }, this.t('noConversations') || '该文件夹暂无会话'));
                 return;
             }
@@ -1964,21 +1759,8 @@ if (!window.__MY_EXT__) {
             // 将会话渲染到当前文件夹对应的列表容器中，而不是整个 listContainer 底部
             conversations.forEach(conv => {
                 const item = createElement('div', {
-                    className: 'chatgpt-helper-conversation-item',
-                    'data-conv-id': conv.id,
-                    style: {
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '8px 12px',
-                        marginBottom: '4px',
-                        background: 'var(--gh-bg, #ffffff)',
-                        border: '1px solid transparent',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        position: 'relative',
-                        gap: '8px'
-                    }
+                    className: 'chatgpt-helper-conversation-item' + (conv.pinned ? ' pinned' : ''),
+                    'data-conv-id': conv.id
                 });
 
                 // 批量选择复选框
@@ -2096,20 +1878,6 @@ if (!window.__MY_EXT__) {
                     } else if (!this.batchMode && conv.url) {
                         window.location.href = conv.url;
                     }
-                });
-
-                item.addEventListener('mouseenter', () => {
-                    item.style.background = 'var(--gh-hover)';
-                    item.style.borderColor = 'var(--gh-primary)';
-                    item.style.transform = 'translateY(-2px)';
-                    item.style.boxShadow = '0 4px 12px rgba(16, 163, 127, 0.15)';
-                });
-
-                item.addEventListener('mouseleave', () => {
-                    item.style.background = conv.pinned ? 'var(--gh-active-bg)' : 'var(--gh-bg-secondary)';
-                    item.style.borderColor = 'var(--gh-border)';
-                    item.style.transform = 'none';
-                    item.style.boxShadow = 'none';
                 });
 
                 // 关键修复：追加到当前文件夹的会话列表容器中
@@ -7398,7 +7166,7 @@ if (!window.__MY_EXT__) {
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-search-bar,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-categories,
                 :root[data-gh-bg-enabled="true"] .outline-fixed-toolbar {
-                    background: color-mix(in srgb, var(--gh-bg-secondary), transparent 6%) !important;
+                    background: var(--gh-panel-card-bg) !important;
                     backdrop-filter: blur(var(--gh-panel-blur));
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur));
                     box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
@@ -9133,7 +8901,7 @@ if (!window.__MY_EXT__) {
                 :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] .chatgpt-helper-search-bar,
                 :root[data-gh-bg-enabled="true"] body[data-gh-mode="light"] .chatgpt-helper-categories,
                 :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] .chatgpt-helper-categories {
-                    background: color-mix(in srgb, var(--gh-bg-secondary), transparent 6%) !important;
+                    background: var(--gh-panel-card-bg) !important;
                 }
                 
                 body[data-gh-mode="dark"] #chatgpt-helper-right {
@@ -10462,6 +10230,93 @@ if (!window.__MY_EXT__) {
                     box-shadow: none;
                 }
 
+                .chatgpt-helper-conversations-root {
+                    flex: 1;
+                    overflow-y: auto;
+                    overflow-x: hidden !important;
+                    padding: 8px;
+                    min-height: 0;
+                }
+
+                .chatgpt-helper-conversations-search {
+                    padding: 12px;
+                    border-bottom: 1px solid var(--gh-border, #e5e7eb);
+                    background: var(--gh-bg, #ffffff);
+                    flex-shrink: 0;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-conversations-search {
+                    background: var(--gh-bg, #111827);
+                    border-bottom-color: var(--gh-border, #475569);
+                }
+
+                .chatgpt-helper-conversations-search-input {
+                    width: 100%;
+                    padding: 8px 12px;
+                    border: 1px solid var(--gh-input-border, #d1d5db);
+                    border-radius: 8px;
+                    background: var(--gh-input-bg, #ffffff);
+                    color: var(--gh-text, #1f2937);
+                    font-size: 14px;
+                    box-sizing: border-box;
+                    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+                }
+
+                .chatgpt-helper-conversations-search-input:focus {
+                    outline: none;
+                    border-color: var(--gh-primary, #10a37f);
+                    box-shadow: 0 0 0 2px color-mix(in srgb, var(--gh-primary, #10a37f), transparent 80%);
+                }
+
+                .chatgpt-helper-batch-toolbar {
+                    padding: 8px 12px;
+                    border-bottom: 1px solid var(--gh-border, #e5e7eb);
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    background: var(--gh-active-bg, #e5e7eb);
+                    font-size: 13px;
+                    flex-shrink: 0;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-batch-toolbar {
+                    border-bottom-color: var(--gh-border, #475569);
+                }
+
+                .chatgpt-helper-batch-toolbar-btn {
+                    padding: 4px 8px;
+                    border: 1px solid var(--gh-border, #d1d5db);
+                    border-radius: 6px;
+                    background: var(--gh-bg, #ffffff);
+                    color: var(--gh-text, #1f2937);
+                    cursor: pointer;
+                    font-size: 12px;
+                    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+                }
+
+                .chatgpt-helper-batch-toolbar-btn:hover {
+                    transform: translateY(-1px);
+                    border-color: var(--gh-primary, #10a37f);
+                    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.10);
+                }
+
+                .chatgpt-helper-batch-toolbar-btn.danger {
+                    background: #ef4444;
+                    border-color: rgba(239, 68, 68, 0.65);
+                    color: #ffffff;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-batch-toolbar-btn {
+                    background: var(--gh-bg, #0f172a);
+                    border-color: var(--gh-border, #475569);
+                    color: var(--gh-text, #f8fafc);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-batch-toolbar-btn.danger {
+                    background: #dc2626;
+                    border-color: rgba(248, 113, 113, 0.55);
+                }
+
                 /* 会话模块样式 */
                 .chatgpt-helper-folder-item {
                     display: flex;
@@ -10559,6 +10414,19 @@ if (!window.__MY_EXT__) {
 
                 /* 默认隐藏删除按钮，hover 时显示（避免界面噪音） */
                 .chatgpt-helper-folder-delete-btn {
+                    width: 26px;
+                    height: 26px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 6px;
+                    border: 1px solid transparent;
+                    background: transparent;
+                    color: var(--gh-text-secondary, #6b7280);
+                    cursor: pointer;
+                    padding: 0;
+                    line-height: 1;
+                    font-size: 14px;
                     opacity: 0;
                     pointer-events: none;
                     transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
@@ -10643,6 +10511,7 @@ if (!window.__MY_EXT__) {
                     margin-bottom: 4px;
                     border-radius: 6px;
                     background: var(--gh-bg, #ffffff);
+                    border: 1px solid transparent;
                     cursor: pointer;
                     transition: all 0.2s;
                     gap: 8px;
@@ -10652,11 +10521,24 @@ if (!window.__MY_EXT__) {
                 body[data-gh-mode="dark"] .chatgpt-helper-conversation-item {
                     background: var(--gh-bg, #1e293b);
                 }
-                
+
+                .chatgpt-helper-conversation-item.pinned {
+                    background: color-mix(in srgb, var(--gh-active-bg, #e5e7eb), var(--gh-bg, #ffffff) 42%);
+                    border: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 18%);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-conversation-item.pinned {
+                    background: color-mix(in srgb, var(--gh-active-bg, rgba(59,130,246,0.3)), var(--gh-bg, #1e293b) 44%);
+                    border-color: color-mix(in srgb, var(--gh-border, #475569), transparent 20%);
+                }
+
                 .chatgpt-helper-conversation-item:hover {
                     background: var(--gh-hover, #f3f4f6);
+                    border-color: var(--gh-primary, #10a37f);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(16, 163, 127, 0.15);
                 }
-                
+
                 body[data-gh-mode="dark"] .chatgpt-helper-conversation-item:hover {
                     background: var(--gh-hover, #334155);
                 }
@@ -10750,6 +10632,36 @@ if (!window.__MY_EXT__) {
                 .chatgpt-helper-folder-select:focus {
                     outline: none;
                     border-color: var(--gh-border-active, #6366f1);
+                }
+
+                .chatgpt-helper-export-header {
+                    padding: 12px 16px;
+                    border-bottom: 1px solid var(--gh-border, #e5e7eb);
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 15px;
+                    font-weight: 500;
+                    color: var(--gh-text, #374151);
+                    background: var(--gh-bg-secondary, #f9fafb);
+                    flex-shrink: 0;
+                    position: relative;
+                    z-index: 10;
+                    box-sizing: border-box;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-export-header {
+                    background: var(--gh-bg-secondary, #0f172a);
+                    border-bottom-color: var(--gh-border, #475569);
+                }
+
+                .chatgpt-helper-export-container {
+                    flex: 1;
+                    overflow: auto;
+                    padding: 0;
+                    min-height: 0;
+                    position: relative;
+                    box-sizing: border-box;
                 }
                 
                 /* 设置面板样式 */
@@ -11845,6 +11757,97 @@ if (!window.__MY_EXT__) {
                         border-left: none;
                         border-top: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 12%);
                     }
+                }
+
+                :root[data-gh-bg-enabled="true"] #chatgpt-helper-header {
+                    background:
+                        linear-gradient(
+                            135deg,
+                            color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 82%) 0%,
+                            color-mix(in srgb, var(--gh-theme-secondary, #60a5fa), transparent 88%) 100%
+                        ) !important;
+                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.06);
+                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.06);
+                    box-shadow:
+                        inset 0 0 0 1px color-mix(in srgb, var(--gh-panel-card-border), transparent 10%),
+                        0 10px 24px rgba(15, 23, 42, 0.10);
+                }
+
+                :root[data-gh-bg-enabled="true"] #chatgpt-helper-tabs,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-search-bar,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-categories,
+                :root[data-gh-bg-enabled="true"] .outline-fixed-toolbar,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-toolbar,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-search,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar,
+                :root[data-gh-bg-enabled="true"] .scroll-nav-container,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-header {
+                    background: var(--gh-panel-card-bg) !important;
+                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
+                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="true"] #chatgpt-helper-content,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-content-panel,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-settings-scroll,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-settings-footer,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-root,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-container,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-panel {
+                    background: transparent !important;
+                    background-image: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-search-input,
+                :root[data-gh-bg-enabled="true"] .outline-search-input,
+                :root[data-gh-bg-enabled="true"] .outline-toolbar-btn,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-folder-select,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-toolbar-btn,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-search-input,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar-btn,
+                :root[data-gh-bg-enabled="true"] .scroll-nav-btn {
+                    background: var(--gh-input-bg) !important;
+                    border-color: var(--gh-input-border) !important;
+                    backdrop-filter: blur(calc(var(--gh-panel-blur) - 2px)) saturate(1.02);
+                    -webkit-backdrop-filter: blur(calc(var(--gh-panel-blur) - 2px)) saturate(1.02);
+                }
+
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-list,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-folder-item,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversation-item,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-setting-section,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-setting-item,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-about-btn,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid .menu-item {
+                    background: var(--gh-panel-card-bg) !important;
+                    border-color: var(--gh-panel-card-border) !important;
+                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.02);
+                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.02);
+                }
+
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-folder-item.default,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversation-item.pinned,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar {
+                    background: color-mix(in srgb, var(--gh-active-bg), transparent 28%) !important;
+                    border-color: color-mix(in srgb, var(--gh-panel-card-border), transparent 18%) !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-folder-item.expanded {
+                    background: color-mix(in srgb, var(--gh-active-bg), transparent 12%) !important;
+                    border-color: color-mix(in srgb, var(--gh-primary), transparent 24%) !important;
+                    box-shadow: 0 10px 24px color-mix(in srgb, var(--gh-primary), transparent 84%) !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-toolbar-btn:hover,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar-btn:hover,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-folder-item:hover,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversation-item:hover,
+                :root[data-gh-bg-enabled="true"] .scroll-nav-btn:hover,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-setting-item:hover,
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-about-btn:hover {
+                    background: color-mix(in srgb, var(--gh-hover), transparent 12%) !important;
+                    border-color: color-mix(in srgb, var(--gh-primary), transparent 18%) !important;
                 }
 
                 /* 响应式调整中栏 - 通过 JS 动态更新 */
@@ -13002,7 +13005,6 @@ if (!window.__MY_EXT__) {
                     fontSize: '15px',
                     fontWeight: '500',
                     color: 'var(--gh-text, #374151)',
-                    background: 'var(--gh-bg-secondary, #f9fafb)',
                     flexShrink: '0',
                     position: 'relative',
                     zIndex: '10',
@@ -13049,6 +13051,9 @@ if (!window.__MY_EXT__) {
                             mountedContainer.style.width = '100%';
                             mountedContainer.style.height = '100%';
                             mountedContainer.style.overflow = 'auto';
+                            mountedContainer.classList.add('chatgpt-helper-export-host');
+                            mountedContainer.setAttribute('data-gh-exporter-host', 'true');
+                            exportContainer.setAttribute('data-gh-exporter-container', 'true');
                             console.log('[ChatGPT Helper] ChatGPT Exporter 挂载成功');
                         }
                     } catch (e) {

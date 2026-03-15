@@ -23512,7 +23512,9 @@ ${content2}`;
       container.style.gap = "12px";
       container.style.alignContent = "start";
       container.style.overflowY = "auto";
-      container.className = "chatgpt-helper-export-grid";
+      container.style.background = "transparent";
+      container.className = "chatgpt-helper-export-grid chatgpt-helper-export-host";
+      container.setAttribute("data-gh-exporter-host", "true");
       targetElement.appendChild(container);
       
       // 添加卡片式按钮样式
@@ -23560,6 +23562,21 @@ ${content2}`;
         body[data-gh-mode="dark"] .chatgpt-helper-export-grid .menu-item {
           background: var(--gh-bg, #1f2937) !important;
           border-color: var(--gh-border, #374151) !important;
+        }
+        :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid {
+          background: transparent !important;
+        }
+        :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid .menu-item {
+          background: var(--gh-panel-card-bg, rgba(255,255,255,0.14)) !important;
+          border-color: var(--gh-panel-card-border, rgba(255,255,255,0.28)) !important;
+          backdrop-filter: blur(var(--gh-panel-blur, 14px)) saturate(1.02) !important;
+          -webkit-backdrop-filter: blur(var(--gh-panel-blur, 14px)) saturate(1.02) !important;
+          box-shadow: inset 0 0 0 1px var(--gh-panel-card-border, rgba(255,255,255,0.28)), 0 12px 24px rgba(15, 23, 42, 0.08) !important;
+        }
+        :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid .menu-item:hover {
+          background: color-mix(in srgb, var(--gh-panel-card-bg, rgba(255,255,255,0.14)), transparent 8%) !important;
+          border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 28%) !important;
+          box-shadow: inset 0 0 0 1px var(--gh-panel-card-border, rgba(255,255,255,0.28)), 0 16px 28px rgba(15, 23, 42, 0.12) !important;
         }
         .chatgpt-helper-export-grid .menu-item[disabled] {
           opacity: 0.5 !important;
