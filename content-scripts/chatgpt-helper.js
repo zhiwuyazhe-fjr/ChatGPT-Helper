@@ -529,7 +529,7 @@ if (!window.__MY_EXT__) {
 
     const DEFAULT_THEME_CONFIG = {
         appearanceMode: 'system', // 'system' | 'light' | 'dark'
-        presetKey: 'blue',
+        presetKey: 'original',
         backgroundImageEnabled: false,
         backgroundBlurPx: 5,
         messageGlassEnabled: false,
@@ -798,13 +798,13 @@ if (!window.__MY_EXT__) {
     }
 
     function getThemePresetByKey(key) {
-        return THEME_PRESET_MAP[key] || THEME_PRESET_MAP.blue;
+        return THEME_PRESET_MAP[key] || THEME_PRESET_MAP[DEFAULT_THEME_CONFIG.presetKey];
     }
 
     function buildThemeSurfaceVars(presetInput, options = {}) {
         const preset = presetInput && typeof presetInput === 'object'
             ? presetInput
-            : getThemePresetByKey('blue');
+            : getThemePresetByKey(DEFAULT_THEME_CONFIG.presetKey);
         const isDark = Boolean(options.isDark);
         const isOriginal = Boolean(preset && preset.isOriginal);
         const hasWallpaper = Boolean(options.canRenderBackground);
@@ -1163,7 +1163,9 @@ if (!window.__MY_EXT__) {
         const appearanceMode = ['system', 'light', 'dark'].includes(appearanceModeRaw)
             ? appearanceModeRaw
             : 'system';
-        const presetKey = THEME_PRESET_MAP[input.presetKey] ? input.presetKey : 'blue';
+        const presetKey = THEME_PRESET_MAP[input.presetKey]
+            ? input.presetKey
+            : DEFAULT_THEME_CONFIG.presetKey;
         const backgroundAssetId = typeof input.backgroundAssetId === 'string' && input.backgroundAssetId.trim()
             ? input.backgroundAssetId.trim()
             : null;
@@ -7712,7 +7714,7 @@ if (!window.__MY_EXT__) {
             this.syncHelperThemeMode(this.detectEffectiveThemeFromDom());
             this.refreshThemeHostTargets();
             root.setAttribute('data-gh-theme-active', 'true');
-            root.setAttribute('data-gh-theme-preset', cfg.presetKey || 'blue');
+            root.setAttribute('data-gh-theme-preset', cfg.presetKey || DEFAULT_THEME_CONFIG.presetKey);
             root.setAttribute('data-gh-page-theme', pageThemeEnabled ? 'true' : 'false');
             root.setAttribute('data-gh-bg-enabled', canRenderBackground ? 'true' : 'false');
             root.setAttribute('data-gh-msg-glass', cfg.messageGlassEnabled ? 'true' : 'false');
