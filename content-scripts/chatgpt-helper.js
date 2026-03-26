@@ -34,6 +34,7 @@ if (!window.__MY_EXT__) {
             addPrompt: '添加新提示词',
             allCategory: '全部',
             refresh: '刷新',
+            expand: '展开',
             collapse: '收起',
             edit: '编辑',
             delete: '删除',
@@ -81,7 +82,7 @@ if (!window.__MY_EXT__) {
             readingHistory: '阅读历史',
             anchorSettings: '锚点设置',
             copySettings: '复制功能',
-            tabSettings: 'tab栏功能',
+            tabFunctionSettings: 'tab栏功能',
             tabOrderSettings: 'tab栏功能',
             tabPageSettings: '标签页设置',
             languageSettings: '语言设置',
@@ -230,6 +231,7 @@ if (!window.__MY_EXT__) {
             addPrompt: 'Add New Prompt',
             allCategory: 'All',
             refresh: 'Refresh',
+            expand: 'Expand',
             collapse: 'Collapse',
             edit: 'Edit',
             delete: 'Delete',
@@ -277,7 +279,7 @@ if (!window.__MY_EXT__) {
             readingHistory: 'Reading History',
             anchorSettings: 'Anchor Settings',
             copySettings: 'Copy Features',
-            tabSettings: 'Tab Settings',
+            tabFunctionSettings: 'Tab Settings',
             tabOrderSettings: 'Tab Functions',
             tabPageSettings: 'Tab Settings',
             languageSettings: 'Language Settings',
@@ -390,7 +392,6 @@ if (!window.__MY_EXT__) {
             formulaDelimiterLabel: 'Use LaTeX Delimiters ($ / $$)',
             enableTableCopyLabel: 'Table Copy',
             languageChanged: 'Language changed',
-            expand: 'Expand',
             // Outline related
             outlineEmpty: 'No outline',
             outlineSearchResult: 'results',
@@ -5801,6 +5802,7 @@ if (!window.__MY_EXT__) {
     class ChatGPTAdapter {
         constructor() {
             this.textarea = null;
+            this.lastResponseContainer = null;
             this.findTextarea();
         }
 
@@ -5842,6 +5844,71 @@ if (!window.__MY_EXT__) {
                 document.querySelector('[role="main"]') ||
                 document.querySelector('.flex-1') ||
                 document.querySelector('[class*="flex"][class*="flex-col"]');
+        }
+
+        isScrollableOverflowValue(value) {
+            return value === 'auto' || value === 'scroll' || value === 'overlay';
+        }
+
+        hasScrollableOverflow(style) {
+            if (!style) return false;
+            return this.isScrollableOverflowValue(style.overflowY) ||
+                this.isScrollableOverflowValue(style.overflow);
+        }
+
+        isScrollableCandidate(element) {
+            if (!element || !element.isConnected || element.clientHeight <= 0 || element.getClientRects().length === 0) {
+                return false;
+            }
+            const style = window.getComputedStyle(element);
+            return element.scrollHeight > element.clientHeight && this.hasScrollableOverflow(style);
+        }
+
+        canScrollElement(element) {
+            if (!this.isScrollableCandidate(element)) {
+                return false;
+            }
+
+            try {
+                const originalScrollTop = element.scrollTop;
+                const maxScrollTop = Math.max(0, element.scrollHeight - element.clientHeight);
+                if (maxScrollTop <= 0) {
+                    return false;
+                }
+
+                const delta = originalScrollTop >= maxScrollTop - 1 ? -1 : 1;
+                const targetScrollTop = Math.max(0, Math.min(maxScrollTop, originalScrollTop + delta));
+                if (targetScrollTop === originalScrollTop) {
+                    return false;
+                }
+
+                element.scrollTop = targetScrollTop;
+                const didScroll = element.scrollTop !== originalScrollTop;
+                element.scrollTop = originalScrollTop;
+                return didScroll;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        cacheResponseContainer(element) {
+            if (element && element.isConnected) {
+                this.lastResponseContainer = element;
+            }
+            return element;
+        }
+
+        getCachedResponseContainer() {
+            if (!this.lastResponseContainer) {
+                return null;
+            }
+
+            if (!this.isScrollableCandidate(this.lastResponseContainer)) {
+                this.lastResponseContainer = null;
+                return null;
+            }
+
+            return this.lastResponseContainer;
         }
 
         insertPrompt(content) {
@@ -5904,10 +5971,13 @@ if (!window.__MY_EXT__) {
             // 关键修复：ChatGPT 的滚动发生在容器内部的子元素上
             // 需要查找真正可滚动的子元素，而不是容器本身
 
+            const cachedContainer = this.getCachedResponseContainer();
+            if (cachedContainer) {
+                return cachedContainer;
+            }
+
             // 1. 先找到主容器
-            const mainContainer = document.querySelector('main[class*="flex"]') ||
-                document.querySelector('main') ||
-                document.querySelector('[role="main"]') ||
+            const mainContainer = this.getChatContainer() ||
                 document.querySelector('.flex-1');
 
             if (mainContainer) {
@@ -5916,28 +5986,8 @@ if (!window.__MY_EXT__) {
                 const findScrollableChild = (element, depth = 0) => {
                     if (depth > 5) return null; // 限制深度
 
-                    // 检查当前元素是否可滚动
-                    const style = window.getComputedStyle(element);
-                    const hasOverflow = style.overflowY === 'auto' ||
-                        style.overflowY === 'scroll' ||
-                        style.overflow === 'auto' ||
-                        style.overflow === 'scroll';
-
-                    // 检查是否真正可滚动（内容超出容器）
-                    const isScrollable = element.scrollHeight > element.clientHeight && element.clientHeight > 0;
-
-                    if (isScrollable && hasOverflow) {
-                        // 测试是否可以设置 scrollTop（排除只读元素）
-                        try {
-                            const originalScrollTop = element.scrollTop;
-                            element.scrollTop = originalScrollTop + 1;
-                            if (element.scrollTop !== originalScrollTop) {
-                                element.scrollTop = originalScrollTop; // 恢复
-                                return element;
-                            }
-                        } catch (e) {
-                            // 忽略错误
-                        }
+                    if (this.canScrollElement(element)) {
+                        return element;
                     }
 
                     // 递归查找子元素
@@ -5950,48 +6000,23 @@ if (!window.__MY_EXT__) {
                 };
 
                 // 先检查容器本身
-                const containerStyle = window.getComputedStyle(mainContainer);
-                if (mainContainer.scrollHeight > mainContainer.clientHeight &&
-                    (containerStyle.overflowY === 'auto' || containerStyle.overflowY === 'scroll')) {
-                    // 测试容器是否可以滚动
-                    try {
-                        const originalScrollTop = mainContainer.scrollTop;
-                        mainContainer.scrollTop = originalScrollTop + 1;
-                        if (mainContainer.scrollTop !== originalScrollTop) {
-                            mainContainer.scrollTop = originalScrollTop;
-                            return mainContainer;
-                        }
-                    } catch (e) {
-                        // 忽略错误
-                    }
+                if (this.canScrollElement(mainContainer)) {
+                    return this.cacheResponseContainer(mainContainer);
                 }
 
                 // 在容器内部查找可滚动的子元素
                 const scrollableChild = findScrollableChild(mainContainer);
                 if (scrollableChild) {
                     console.log('[ChatGPT Helper] 找到可滚动的子元素:', scrollableChild);
-                    return scrollableChild;
+                    return this.cacheResponseContainer(scrollableChild);
                 }
 
                 // 如果找不到，尝试更激进的查找：查找所有有 overflow 样式的元素
                 const allElements = mainContainer.querySelectorAll('*');
                 for (const el of allElements) {
-                    const style = window.getComputedStyle(el);
-                    if ((style.overflowY === 'auto' || style.overflowY === 'scroll') &&
-                        el.scrollHeight > el.clientHeight &&
-                        el.clientHeight > 0) {
-                        // 测试是否可以滚动
-                        try {
-                            const originalScrollTop = el.scrollTop;
-                            el.scrollTop = originalScrollTop + 1;
-                            if (el.scrollTop !== originalScrollTop) {
-                                el.scrollTop = originalScrollTop;
-                                console.log('[ChatGPT Helper] 找到可滚动的元素（通过 overflow 样式）:', el);
-                                return el;
-                            }
-                        } catch (e) {
-                            // 忽略错误
-                        }
+                    if (this.canScrollElement(el)) {
+                        console.log('[ChatGPT Helper] 找到可滚动的元素（通过 overflow 样式）:', el);
+                        return this.cacheResponseContainer(el);
                     }
                 }
             }
@@ -6010,20 +6035,8 @@ if (!window.__MY_EXT__) {
                     let parent = message.parentElement;
                     let depth = 0;
                     while (parent && depth < 15) {
-                        const style = window.getComputedStyle(parent);
-                        if (parent.scrollHeight > parent.clientHeight &&
-                            (style.overflowY === 'auto' || style.overflowY === 'scroll')) {
-                            // 测试是否可以滚动
-                            try {
-                                const originalScrollTop = parent.scrollTop;
-                                parent.scrollTop = originalScrollTop + 1;
-                                if (parent.scrollTop !== originalScrollTop) {
-                                    parent.scrollTop = originalScrollTop;
-                                    return parent;
-                                }
-                            } catch (e) {
-                                // 忽略错误
-                            }
+                        if (this.canScrollElement(parent)) {
+                            return this.cacheResponseContainer(parent);
                         }
                         parent = parent.parentElement;
                         depth++;
@@ -6032,6 +6045,7 @@ if (!window.__MY_EXT__) {
             }
 
             // 4. 最后回退到 body
+            this.lastResponseContainer = null;
             console.log('[ChatGPT Helper] 未找到可滚动容器，回退到 body');
             return document.body;
         }
@@ -6964,7 +6978,7 @@ if (!window.__MY_EXT__) {
 
                 #chatgpt-helper-theme-bg-layer {
                     position: fixed;
-                    inset: 0;
+                    inset: -8vh -8vw;
                     z-index: 0;
                     pointer-events: none;
                     display: none;
@@ -6973,8 +6987,6 @@ if (!window.__MY_EXT__) {
                     background-position: center;
                     background-repeat: no-repeat;
                     filter: blur(var(--gh-bg-blur));
-                    transform: scale(1.08);
-                    transform-origin: center center;
                 }
 
                 #chatgpt-helper-theme-bg-layer::after {
@@ -6990,6 +7002,7 @@ if (!window.__MY_EXT__) {
                     filter: blur(var(--gh-bg-blur)) brightness(0.7) saturate(0.88);
                 }
 
+                :root[data-gh-bg-enabled="true"],
                 :root[data-gh-bg-enabled="true"] body,
                 :root[data-gh-bg-enabled="true"] #__next {
                     background-color: transparent !important;
@@ -7080,15 +7093,73 @@ if (!window.__MY_EXT__) {
                 :root[data-gh-bg-enabled="true"] main,
                 :root[data-gh-bg-enabled="true"] [role="main"] {
                     background: transparent !important;
+                    background-color: transparent !important;
                     backdrop-filter: none !important;
                     -webkit-backdrop-filter: none !important;
                     box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] header,
+                :root[data-gh-bg-enabled="true"] [role="banner"],
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"],
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] header::before,
+                :root[data-gh-bg-enabled="true"] header::after,
+                :root[data-gh-bg-enabled="true"] [role="banner"]::before,
+                :root[data-gh-bg-enabled="true"] [role="banner"]::after,
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"]::before,
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"]::after,
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"]::before,
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"]::after,
+                :root[data-gh-bg-enabled="true"] header > div,
+                :root[data-gh-bg-enabled="true"] header > div > div,
+                :root[data-gh-bg-enabled="true"] [role="banner"] > div,
+                :root[data-gh-bg-enabled="true"] [role="banner"] > div > div,
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"] > div,
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"] > div > div,
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"] > div,
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"] > div > div,
+                :root[data-gh-bg-enabled="true"] header [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="true"] header [class*="bg-token-bg-primary"],
+                :root[data-gh-bg-enabled="true"] header [class*="bg-token-bg-secondary"],
+                :root[data-gh-bg-enabled="true"] header [class*="bg-token-bg-tertiary"],
+                :root[data-gh-bg-enabled="true"] header [class*="bg-token-bg-elevated"],
+                :root[data-gh-bg-enabled="true"] [role="banner"] [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="true"] [role="banner"] [class*="bg-token-bg-primary"],
+                :root[data-gh-bg-enabled="true"] [role="banner"] [class*="bg-token-bg-secondary"],
+                :root[data-gh-bg-enabled="true"] [role="banner"] [class*="bg-token-bg-tertiary"],
+                :root[data-gh-bg-enabled="true"] [role="banner"] [class*="bg-token-bg-elevated"],
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"] [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"] [class*="bg-token-bg-primary"],
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"] [class*="bg-token-bg-secondary"],
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"] [class*="bg-token-bg-tertiary"],
+                :root[data-gh-bg-enabled="true"] [data-testid*="page-header"] [class*="bg-token-bg-elevated"],
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"] [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"] [class*="bg-token-bg-primary"],
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"] [class*="bg-token-bg-secondary"],
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"] [class*="bg-token-bg-tertiary"],
+                :root[data-gh-bg-enabled="true"] [data-element-id*="page-header"] [class*="bg-token-bg-elevated"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
                 }
 
                 :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"],
                 :root[data-gh-bg-enabled="true"] main form,
                 :root[data-gh-bg-enabled="true"] [role="main"] form {
                     background: transparent !important;
+                    background-color: transparent !important;
                     backdrop-filter: none !important;
                     -webkit-backdrop-filter: none !important;
                     border-radius: 0;
@@ -7102,6 +7173,70 @@ if (!window.__MY_EXT__) {
                     -webkit-backdrop-filter: blur(var(--gh-composer-blur));
                     border-radius: 28px !important;
                     box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
+                }
+
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"],
+                :root[data-gh-bg-enabled="true"] main [class*="top-shadow"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="top-shadow"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"]::before,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"]::before,
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"]::after,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"]::after,
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"]::before,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"]::before,
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"]::after,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"]::after,
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"] > div,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"] > div,
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"] > div > div,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"] > div > div,
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"] > div,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"] > div,
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"] > div > div,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"] > div > div,
+                :root[data-gh-bg-enabled="true"] main [class*="top-shadow"]::before,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="top-shadow"]::before,
+                :root[data-gh-bg-enabled="true"] main [class*="top-shadow"]::after,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="top-shadow"]::after,
+                :root[data-gh-bg-enabled="true"] main [class*="top-shadow"] > div,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="top-shadow"] > div,
+                :root[data-gh-bg-enabled="true"] main [class*="top-shadow"] > div > div,
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="top-shadow"] > div > div,
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"] [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"] [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"] [class*="bg-token-bg-primary"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"] [class*="bg-token-bg-primary"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"] [class*="bg-token-bg-secondary"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"] [class*="bg-token-bg-secondary"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"] [class*="bg-token-bg-tertiary"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"] [class*="bg-token-bg-tertiary"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"] [class*="bg-token-bg-elevated"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][class*="top-0"] [class*="bg-token-bg-elevated"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"] [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"] [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"] [class*="bg-token-bg-primary"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"] [class*="bg-token-bg-primary"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"] [class*="bg-token-bg-secondary"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"] [class*="bg-token-bg-secondary"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"] [class*="bg-token-bg-tertiary"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"] [class*="bg-token-bg-tertiary"],
+                :root[data-gh-bg-enabled="true"] main [class*="sticky"][style*="top: 0"] [class*="bg-token-bg-elevated"],
+                :root[data-gh-bg-enabled="true"] [role="main"] [class*="sticky"][style*="top: 0"] [class*="bg-token-bg-elevated"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
                 }
 
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
@@ -12356,6 +12491,16 @@ if (!window.__MY_EXT__) {
             this.headerSpacingObserver.observe(headerEl);
         }
 
+        updateCollapseButtonState() {
+            const collapseBtn = document.getElementById('chatgpt-helper-collapse-btn');
+            if (!collapseBtn) return;
+
+            const nextTitle = this.isCollapsed ? this.t('expand') || '展开' : this.t('collapse');
+            collapseBtn.textContent = this.isCollapsed ? '+' : '-';
+            collapseBtn.title = nextTitle;
+            collapseBtn.setAttribute('aria-label', nextTitle);
+        }
+
         createUI() {
             if (!this.panel) return;
 
@@ -12422,13 +12567,13 @@ if (!window.__MY_EXT__) {
                 className: 'chatgpt-helper-header-btn',
                 title: this.isCollapsed ? this.t('expand') || '展开' : this.t('collapse'),
                 id: 'chatgpt-helper-collapse-btn'
-            }, this.isCollapsed ? '+' : '−');
+            }, this.isCollapsed ? '+' : '-');
             collapseBtn.addEventListener('click', () => this.toggleCollapse());
 
             // 设置按钮
             const settingsBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
-                title: this.t('tabSettings'),
+                title: this.t('settingsTitle'),
                 id: 'chatgpt-helper-settings-btn'
             }, '⚙');
             settingsBtn.addEventListener('click', () => {
@@ -12465,6 +12610,7 @@ if (!window.__MY_EXT__) {
             header.appendChild(title);
             header.appendChild(controls);
             this.panel.appendChild(header);
+            this.updateCollapseButtonState();
             
             // 头部按钮自适应（避免拖动变窄时按钮溢出到右侧不可见）
             this.initHeaderResponsiveSpacing(header);
@@ -14642,6 +14788,7 @@ if (!window.__MY_EXT__) {
         toggleCollapse() {
             this.isCollapsed = !this.isCollapsed;
             this.panel.classList.toggle('collapsed', this.isCollapsed);
+            this.updateCollapseButtonState();
 
             // 折叠按钮已移除，只保留侧边栏按钮
 
