@@ -57,6 +57,9 @@
         moved: "已移动",
         exported: "已导出",
         synced: "已同步",
+        conversationSyncing: "正在同步会话...",
+        conversationSyncNoResults: "未加载到历史会话，请确认已登录 ChatGPT 后重试",
+        conversationSyncFailed: "会话同步失败，请稍后重试",
         newSessions: "个新会话",
         updatedSessions: "个会话",
         exportFormat: "选择导出格式：\n1. Markdown\n2. JSON\n3. TXT",
@@ -254,6 +257,9 @@
         moved: "Moved",
         exported: "Exported",
         synced: "Synced",
+        conversationSyncing: "Syncing conversations...",
+        conversationSyncNoResults: "No history conversations loaded. Make sure you are signed in to ChatGPT, then try again.",
+        conversationSyncFailed: "Conversation sync failed. Please try again later.",
         newSessions: "new sessions",
         updatedSessions: "sessions",
         exportFormat: "Select export format:\n1. Markdown\n2. JSON\n3. TXT",
@@ -1509,6 +1515,7 @@
         this.selectedIds = /* @__PURE__ */ new Set();
         this.batchMode = false;
         this.autoSyncInterval = null;
+        this.syncPromise = null;
         this.lastSyncTime = 0;
         this.startAutoSync();
       }
@@ -1579,6 +1586,31 @@
       }
       saveData() {
         window.GM_setValue("chatgpt_conversations", this.data);
+      }
+      ensureInboxFolder() {
+        if (!Array.isArray(this.data.folders)) {
+          this.data.folders = [];
+        }
+        if (!this.data.folders.some((folder) => folder && folder.id === "inbox")) {
+          this.data.folders.unshift({ id: "inbox", name: "📥 收件箱", icon: "📥", isDefault: true });
+        }
+      }
+      getTargetFolderId() {
+        this.ensureInboxFolder();
+        const folderIds = new Set(this.data.folders.map((folder) => folder && folder.id).filter(Boolean));
+        if (this.data.lastUsedFolderId && folderIds.has(this.data.lastUsedFolderId)) {
+          return this.data.lastUsedFolderId;
+        }
+        this.data.lastUsedFolderId = "inbox";
+        return "inbox";
+      }
+      normalizeConversationFolders() {
+        this.ensureInboxFolder();
+        const folderIds = new Set(this.data.folders.map((folder) => folder && folder.id).filter(Boolean));
+        Object.values(this.data.conversations || {}).forEach((conversation) => {
+          if (!conversation || folderIds.has(conversation.folderId)) return;
+          conversation.folderId = "inbox";
+        });
       }
       startAutoSync() {
         if (this.autoSyncInterval) {
@@ -1653,7 +1685,7 @@
           className: "chatgpt-helper-conversations-toolbar-btn sync",
           title: this.t("syncConversations") || "同步会话"
         }, "🔄");
-        syncBtn.addEventListener("click", () => this.syncConversations());
+        syncBtn.addEventListener("click", () => this.syncConversations({ showAlreadySyncing: true }));
         toolbar.appendChild(syncBtn);
         const addFolderBtn = createElement("button", {
           className: "chatgpt-helper-conversations-toolbar-btn add-folder",
@@ -1970,64 +2002,94 @@
           container.appendChild(item);
         });
       }
-      syncConversations() {
-        const conversations = this.adapter.getConversationList();
-        if (!conversations || conversations.length === 0) {
-          this.showToast(this.t("noConversations") || "未找到会话，请先打开侧边栏");
-          return;
-        }
-        this.lastSyncTime = Date.now();
-        let newCount = 0;
-        let updatedCount = 0;
-        const folderId = this.data.lastUsedFolderId || "inbox";
-        conversations.forEach((item) => {
-          const id = item.id;
-          const title = item.title;
-          const url = item.url;
-          const isPinned = item.isPinned || false;
-          const remoteUpdatedAt = item.updatedAt || item.createdAt;
-          const localConversation = this.data.conversations[id];
-          const actualUpdatedAt = remoteUpdatedAt || localConversation?.updatedAt || localConversation?.createdAt || Date.now();
-          if (!localConversation) {
-            this.data.conversations[id] = {
-              id,
-              title,
-              url,
-              folderId,
-              // 确保添加到收件箱
-              pinned: isPinned,
-              createdAt: actualUpdatedAt,
-              updatedAt: actualUpdatedAt
-            };
-            newCount++;
-          } else {
-            if (localConversation.title !== title) {
-              localConversation.title = title;
-              updatedCount++;
-            }
-            if (localConversation.url !== url) {
-              localConversation.url = url;
-            }
-            if (localConversation.pinned !== isPinned) {
-              localConversation.pinned = isPinned;
-              updatedCount++;
-            }
-            const currentUpdated = localConversation.updatedAt || 0;
-            if (actualUpdatedAt > currentUpdated) {
-              localConversation.updatedAt = actualUpdatedAt;
-            } else if (!remoteUpdatedAt && localConversation.updatedAt) ;
+      async syncConversations(options = {}) {
+        if (this.syncPromise) {
+          if (options.showAlreadySyncing) {
+            this.showToast(this.t("conversationSyncing") || "正在同步会话...");
           }
-        });
-        this.saveData();
-        this.renderConversationList();
-        if ((newCount > 0 || updatedCount > 0) && this.expandedFolderId) {
-          const expandedFolderList = this.listContainer?.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${this.expandedFolderId}"]`);
-          if (expandedFolderList) {
-            this.renderConversationsInFolder(this.expandedFolderId, expandedFolderList);
-          }
+          return this.syncPromise;
         }
-        const msg = newCount > 0 ? `${this.t("synced") || "已同步"} ${newCount} ${this.t("newSessions") || "个新会话"}` : updatedCount > 0 ? `${this.t("synced") || "已同步"} ${updatedCount} ${this.t("updatedSessions") || "个会话"}` : this.t("synced") || "同步完成";
-        this.showToast(msg);
+        this.syncPromise = (async () => {
+          try {
+            const conversations = await Promise.resolve(this.adapter.getConversationList());
+            this.lastSyncTime = Date.now();
+            if (!Array.isArray(conversations) || conversations.length === 0) {
+              this.showToast(this.t("conversationSyncNoResults") || "未加载到历史会话，请确认已登录 ChatGPT 后重试");
+              return { total: 0, newCount: 0, updatedCount: 0 };
+            }
+            if (!this.data.conversations) this.data.conversations = {};
+            this.normalizeConversationFolders();
+            let newCount = 0;
+            let updatedCount = 0;
+            const folderId = this.getTargetFolderId();
+            conversations.forEach((item) => {
+              if (!item || !item.id) return;
+              const id = item.id;
+              const title = item.title || "未命名对话";
+              const url = item.url;
+              const remoteCreatedAt = item.createdAt || null;
+              const remoteUpdatedAt = item.updatedAt || remoteCreatedAt;
+              const localConversation = this.data.conversations[id];
+              const actualUpdatedAt = remoteUpdatedAt || localConversation?.updatedAt || localConversation?.createdAt || Date.now();
+              const actualCreatedAt = remoteCreatedAt || localConversation?.createdAt || actualUpdatedAt;
+              if (!localConversation) {
+                this.data.conversations[id] = {
+                  id,
+                  title,
+                  url,
+                  folderId,
+                  pinned: Boolean(item.isPinned),
+                  createdAt: actualCreatedAt,
+                  updatedAt: actualUpdatedAt
+                };
+                newCount++;
+                return;
+              }
+              if (localConversation.title !== title) {
+                localConversation.title = title;
+                updatedCount++;
+              }
+              if (url && localConversation.url !== url) {
+                localConversation.url = url;
+                updatedCount++;
+              }
+              if (!localConversation.folderId) {
+                localConversation.folderId = folderId;
+              }
+              if (localConversation.pinned === void 0) {
+                localConversation.pinned = Boolean(item.isPinned);
+              }
+              if (actualCreatedAt && (!localConversation.createdAt || actualCreatedAt < localConversation.createdAt)) {
+                localConversation.createdAt = actualCreatedAt;
+                updatedCount++;
+              }
+              const currentUpdated = localConversation.updatedAt || 0;
+              if (actualUpdatedAt > currentUpdated) {
+                localConversation.updatedAt = actualUpdatedAt;
+                updatedCount++;
+              }
+            });
+            this.saveData();
+            this.renderConversationList();
+            if ((newCount > 0 || updatedCount > 0) && this.expandedFolderId) {
+              const expandedFolderList = this.listContainer?.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${this.expandedFolderId}"]`);
+              if (expandedFolderList) {
+                this.renderConversationsInFolder(this.expandedFolderId, expandedFolderList);
+              }
+            }
+            const msg = newCount > 0 ? `${this.t("synced") || "已同步"} ${newCount} ${this.t("newSessions") || "个新会话"}` : updatedCount > 0 ? `${this.t("synced") || "已同步"} ${updatedCount} ${this.t("updatedSessions") || "个会话"}` : this.t("synced") || "同步完成";
+            this.showToast(msg);
+            return { total: conversations.length, newCount, updatedCount };
+          } catch (error) {
+            console.error("[ChatGPT Helper] 同步会话失败:", error);
+            this.lastSyncTime = Date.now();
+            this.showToast(this.t("conversationSyncFailed") || "会话同步失败，请稍后重试");
+            return { total: 0, newCount: 0, updatedCount: 0, error };
+          } finally {
+            this.syncPromise = null;
+          }
+        })();
+        return this.syncPromise;
       }
       showCreateFolderDialog() {
         const name = prompt("请输入文件夹名称：");
@@ -5374,6 +5436,8 @@
       constructor() {
         this.textarea = null;
         this.lastResponseContainer = null;
+        this.accessTokenPromise = null;
+        this.accountIdPromise = null;
         this.findTextarea();
       }
       findTextarea() {
@@ -5616,13 +5680,169 @@
         }
         return null;
       }
-      getConversationList() {
+      getBackendApiBaseUrl() {
+        const origin = window.location?.origin || "https://chatgpt.com";
+        const apiMapping = {
+          "https://chat.openai.com": "https://chat.openai.com/backend-api",
+          "https://chatgpt.com": "https://chatgpt.com/backend-api",
+          "https://new.oaifree.com": "https://new.oaifree.com/backend-api"
+        };
+        return apiMapping[origin] || `${origin}/backend-api`;
+      }
+      getPageAccessToken() {
+        return window.__remixContext?.state?.loaderData?.root?.clientBootstrap?.session?.accessToken || window.__NEXT_DATA__?.props?.pageProps?.session?.accessToken || null;
+      }
+      async fetchSessionAccessToken() {
+        const response = await fetch(`${window.location.origin}/api/auth/session`, {
+          credentials: "include"
+        });
+        if (!response.ok) {
+          throw new Error(`Session request failed: ${response.status}`);
+        }
+        const session = await response.json();
+        if (!session?.accessToken) {
+          throw new Error("Session response did not include an access token");
+        }
+        return session.accessToken;
+      }
+      async getAccessToken() {
+        const pageAccessToken = this.getPageAccessToken();
+        if (pageAccessToken) return pageAccessToken;
+        if (!this.accessTokenPromise) {
+          this.accessTokenPromise = this.fetchSessionAccessToken().catch((error) => {
+            this.accessTokenPromise = null;
+            throw error;
+          });
+        }
+        return this.accessTokenPromise;
+      }
+      getCookie(key) {
+        return document.cookie.match(`(^|;)\\s*${key}\\s*=\\s*([^;]+)`)?.pop() || "";
+      }
+      async fetchBackendJson(url, options = {}, includeAccount = true) {
+        let accessToken = null;
+        try {
+          accessToken = await this.getAccessToken();
+        } catch (error) {
+          console.warn("[ChatGPT Helper] 未能获取 access token，尝试使用 Cookie 会话请求:", error);
+        }
+        const headers = { ...options.headers };
+        if (accessToken) {
+          headers.Authorization = `Bearer ${accessToken}`;
+          headers["X-Authorization"] = `Bearer ${accessToken}`;
+        }
+        if (includeAccount) {
+          const accountId = await this.getTeamAccountId();
+          if (accountId) {
+            headers["Chatgpt-Account-Id"] = accountId;
+          }
+        }
+        const response = await fetch(url, {
+          credentials: "include",
+          ...options,
+          headers
+        });
+        if (!response.ok) {
+          throw new Error(`ChatGPT API request failed: ${response.status} ${response.statusText || ""}`.trim());
+        }
+        return response.json();
+      }
+      async fetchTeamAccountId() {
+        const workspaceId = this.getCookie("_account");
+        if (!workspaceId) return null;
+        const url = `${this.getBackendApiBaseUrl()}/accounts/check/v4-2023-04-27`;
+        const accountsCheck = await this.fetchBackendJson(url, {}, false);
+        return accountsCheck?.accounts?.[workspaceId]?.account?.account_id || null;
+      }
+      async getTeamAccountId() {
+        if (!this.accountIdPromise) {
+          this.accountIdPromise = this.fetchTeamAccountId().catch((error) => {
+            console.warn("[ChatGPT Helper] 获取团队账号 ID 失败，继续使用默认账号:", error);
+            return null;
+          });
+        }
+        return this.accountIdPromise;
+      }
+      parseConversationTimestamp(value) {
+        if (!value) return null;
+        if (typeof value === "number") {
+          return value < 1e12 ? value * 1e3 : value;
+        }
+        const parsed = Date.parse(value);
+        return Number.isNaN(parsed) ? null : parsed;
+      }
+      normalizeConversationApiItem(item) {
+        if (!item || !item.id || item.is_archived || item.is_temporary_chat) {
+          return null;
+        }
+        const createdAt = this.parseConversationTimestamp(item.create_time);
+        const updatedAt = this.parseConversationTimestamp(item.update_time) || createdAt;
+        const title = (item.title || "").trim() || "未命名对话";
+        const url = new URL(`/c/${item.id}`, window.location.origin).href;
+        return {
+          id: item.id,
+          title,
+          url,
+          isPinned: Boolean(item.is_starred || item.pinned_time),
+          createdAt,
+          updatedAt
+        };
+      }
+      async fetchConversationListFromApi(maxConversations = 1e3, pageSize = 100) {
+        const conversations = [];
+        let offset = 0;
+        while (conversations.length < maxConversations) {
+          const limit = Math.min(pageSize, maxConversations - conversations.length);
+          const url = new URL(`${this.getBackendApiBaseUrl()}/conversations`);
+          url.searchParams.set("offset", String(offset));
+          url.searchParams.set("limit", String(limit));
+          const result = await this.fetchBackendJson(url.href);
+          const items = Array.isArray(result?.items) ? result.items : [];
+          if (items.length === 0) break;
+          items.forEach((item) => {
+            const normalized = this.normalizeConversationApiItem(item);
+            if (normalized && conversations.length < maxConversations) {
+              conversations.push(normalized);
+            }
+          });
+          offset += items.length;
+          const total = typeof result.total === "number" ? result.total : null;
+          const responseLimit = typeof result.limit === "number" ? result.limit : limit;
+          if (total !== null && offset >= total) break;
+          if (items.length < responseLimit) break;
+        }
+        return conversations;
+      }
+      async getConversationList(options = {}) {
+        try {
+          const conversations = await this.fetchConversationListFromApi(
+            options.maxConversations || 1e3,
+            options.pageSize || 100
+          );
+          if (conversations.length > 0) {
+            return conversations;
+          }
+          console.warn("[ChatGPT Helper] API 未返回历史会话，回退到侧边栏 DOM 扫描");
+        } catch (error) {
+          console.warn("[ChatGPT Helper] API 加载历史会话失败，回退到侧边栏 DOM 扫描:", error);
+        }
+        return this.getConversationListFromDom();
+      }
+      getConversationListFromDom() {
         const sidebar = this.getSidebarContainer();
         if (!sidebar) return [];
         const conversations = [];
+        const seenIds = /* @__PURE__ */ new Set();
         const selectors = [
+          'a[href^="/c/"]',
           'a[href*="/c/"]',
+          'a[href^="/chat/"]',
           'a[href*="/chat/"]',
+          '[data-testid*="history"] a[href*="/c/"]',
+          '[data-testid*="conversation"] a[href*="/c/"]',
+          '[class*="conversation"] a[href*="/c/"]',
+          'nav a[href*="/c/"]',
+          'aside a[href*="/c/"]',
           "nav a",
           "aside a",
           '[class*="conversation"] a',
@@ -5639,9 +5859,12 @@
           const idMatch = href.match(/\/c\/([^\/\?]+)/) || href.match(/\/chat\/([^\/\?]+)/);
           if (!idMatch) return;
           const id = idMatch[1];
+          if (seenIds.has(id)) return;
+          seenIds.add(id);
           const title = (item.innerText || item.textContent || "").trim().replace(/\s+/g, " ") || "未命名对话";
-          const url = href.startsWith("http") ? href : `https://chat.openai.com${href}`;
-          const isPinned = item.closest('[class*="pinned"]') !== null || item.closest('[data-pinned="true"]') !== null || item.getAttribute("data-pinned") === "true";
+          const url = new URL(href, window.location.origin).href;
+          const closest = typeof item.closest === "function" ? item.closest.bind(item) : () => null;
+          const isPinned = closest('[class*="pinned"]') !== null || closest('[data-pinned="true"]') !== null || item.getAttribute("data-pinned") === "true";
           let updatedAt = null;
           try {
             const timeEl = item.querySelector("time[datetime]") || item.closest("li, div, article, section")?.querySelector("time[datetime]");

@@ -82,6 +82,7 @@
             this.selectedIds = new Set();
             this.batchMode = false;
             this.autoSyncInterval = null;
+            this.syncPromise = null;
             this.lastSyncTime = 0; // 记录上次同步时间
             // 启动自动同步（每5分钟同步一次）
             this.startAutoSync();
@@ -166,6 +167,34 @@
 
         saveData() {
             window.GM_setValue('chatgpt_conversations', this.data);
+        }
+
+        ensureInboxFolder() {
+            if (!Array.isArray(this.data.folders)) {
+                this.data.folders = [];
+            }
+            if (!this.data.folders.some(folder => folder && folder.id === 'inbox')) {
+                this.data.folders.unshift({ id: 'inbox', name: '📥 收件箱', icon: '📥', isDefault: true });
+            }
+        }
+
+        getTargetFolderId() {
+            this.ensureInboxFolder();
+            const folderIds = new Set(this.data.folders.map(folder => folder && folder.id).filter(Boolean));
+            if (this.data.lastUsedFolderId && folderIds.has(this.data.lastUsedFolderId)) {
+                return this.data.lastUsedFolderId;
+            }
+            this.data.lastUsedFolderId = 'inbox';
+            return 'inbox';
+        }
+
+        normalizeConversationFolders() {
+            this.ensureInboxFolder();
+            const folderIds = new Set(this.data.folders.map(folder => folder && folder.id).filter(Boolean));
+            Object.values(this.data.conversations || {}).forEach((conversation) => {
+                if (!conversation || folderIds.has(conversation.folderId)) return;
+                conversation.folderId = 'inbox';
+            });
         }
 
         startAutoSync() {
@@ -259,7 +288,7 @@
                 className: 'chatgpt-helper-conversations-toolbar-btn sync',
                 title: this.t('syncConversations') || '同步会话'
             }, '🔄');
-            syncBtn.addEventListener('click', () => this.syncConversations());
+            syncBtn.addEventListener('click', () => this.syncConversations({ showAlreadySyncing: true }));
             toolbar.appendChild(syncBtn);
 
             // 新建文件夹按钮
@@ -664,90 +693,115 @@
             });
         }
 
-        syncConversations() {
-            // 使用适配器的 getConversationList 方法
-            const conversations = this.adapter.getConversationList();
-
-            if (!conversations || conversations.length === 0) {
-                this.showToast(this.t('noConversations') || '未找到会话，请先打开侧边栏');
-                return;
-            }
-            
-            // 更新同步时间
-            this.lastSyncTime = Date.now();
-
-            let newCount = 0;
-            let updatedCount = 0;
-            const folderId = this.data.lastUsedFolderId || 'inbox';
-
-            conversations.forEach(item => {
-                const id = item.id;
-                const title = item.title;
-                const url = item.url;
-                const isPinned = item.isPinned || false;
-                // 使用会话的实际更新时间，而不是当前时间
-                // 如果从DOM中提取到了更新时间，使用它；否则保留本地已有的更新时间，避免使用同步时间
-                const remoteUpdatedAt = item.updatedAt || item.createdAt;
-                const localConversation = this.data.conversations[id];
-                const actualUpdatedAt = remoteUpdatedAt || (localConversation?.updatedAt) || (localConversation?.createdAt) || Date.now();
-
-                if (!localConversation) {
-                    // 新会话：添加到指定文件夹（默认收件箱）
-                    this.data.conversations[id] = {
-                        id,
-                        title,
-                        url,
-                        folderId: folderId, // 确保添加到收件箱
-                        pinned: isPinned,
-                        createdAt: actualUpdatedAt,
-                        updatedAt: actualUpdatedAt
-                    };
-                    newCount++;
-                } else {
-                    // 更新已有会话
-                    if (localConversation.title !== title) {
-                        localConversation.title = title;
-                        updatedCount++;
-                    }
-                    if (localConversation.url !== url) {
-                        localConversation.url = url;
-                    }
-                    // 同步置顶状态
-                    if (localConversation.pinned !== isPinned) {
-                        localConversation.pinned = isPinned;
-                        updatedCount++;
-                    }
-
-                    // 仅当远端时间更晚时才更新本地更新时间，避免每次同步都"重置"为当前时间
-                    // 使用会话的实际更新时间，而不是同步时间
-                    const currentUpdated = localConversation.updatedAt || 0;
-                    if (actualUpdatedAt > currentUpdated) {
-                        localConversation.updatedAt = actualUpdatedAt;
-                    } else if (!remoteUpdatedAt && localConversation.updatedAt) {
-                        // 如果远端没有提供更新时间，保持本地已有的更新时间不变
-                        // 这样就不会用同步时间覆盖会话的实际更新时间
-                    }
+        async syncConversations(options = {}) {
+            if (this.syncPromise) {
+                if (options.showAlreadySyncing) {
+                    this.showToast(this.t('conversationSyncing') || '正在同步会话...');
                 }
-            });
-
-            this.saveData();
-            // 确保会话按照时间排序
-            this.renderConversationList();
-            
-            // 修复：如果有新会话或更新，且当前有展开的文件夹，需要重新渲染该文件夹的会话列表
-            if ((newCount > 0 || updatedCount > 0) && this.expandedFolderId) {
-                const expandedFolderList = this.listContainer?.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${this.expandedFolderId}"]`);
-                if (expandedFolderList) {
-                    this.renderConversationsInFolder(this.expandedFolderId, expandedFolderList);
-                }
+                return this.syncPromise;
             }
-            
-            const msg = newCount > 0
-                ? `${this.t('synced') || '已同步'} ${newCount} ${this.t('newSessions') || '个新会话'}`
-                : (updatedCount > 0
-                    ? `${this.t('synced') || '已同步'} ${updatedCount} ${this.t('updatedSessions') || '个会话'}`
-                    : (this.t('synced') || '同步完成'));
-            this.showToast(msg);
+
+            this.syncPromise = (async () => {
+                try {
+                    // 使用适配器的 getConversationList 方法；优先 API，失败时由适配器回退到 DOM。
+                    const conversations = await Promise.resolve(this.adapter.getConversationList());
+
+                    // 更新同步时间，避免失败时短时间内反复自动重试打扰页面。
+                    this.lastSyncTime = Date.now();
+
+                    if (!Array.isArray(conversations) || conversations.length === 0) {
+                        this.showToast(this.t('conversationSyncNoResults') || '未加载到历史会话，请确认已登录 ChatGPT 后重试');
+                        return { total: 0, newCount: 0, updatedCount: 0 };
+                    }
+
+                    if (!this.data.conversations) this.data.conversations = {};
+                    this.normalizeConversationFolders();
+
+                    let newCount = 0;
+                    let updatedCount = 0;
+                    const folderId = this.getTargetFolderId();
+
+                    conversations.forEach(item => {
+                        if (!item || !item.id) return;
+                        const id = item.id;
+                        const title = item.title || '未命名对话';
+                        const url = item.url;
+                        const remoteCreatedAt = item.createdAt || null;
+                        const remoteUpdatedAt = item.updatedAt || remoteCreatedAt;
+                        const localConversation = this.data.conversations[id];
+                        const actualUpdatedAt = remoteUpdatedAt || (localConversation?.updatedAt) || (localConversation?.createdAt) || Date.now();
+                        const actualCreatedAt = remoteCreatedAt || (localConversation?.createdAt) || actualUpdatedAt;
+
+                        if (!localConversation) {
+                            // 新会话放入当前目标文件夹；后续同步不会覆盖用户手动整理的 folderId/tagIds/pinned。
+                            this.data.conversations[id] = {
+                                id,
+                                title,
+                                url,
+                                folderId,
+                                pinned: Boolean(item.isPinned),
+                                createdAt: actualCreatedAt,
+                                updatedAt: actualUpdatedAt
+                            };
+                            newCount++;
+                            return;
+                        }
+
+                        if (localConversation.title !== title) {
+                            localConversation.title = title;
+                            updatedCount++;
+                        }
+                        if (url && localConversation.url !== url) {
+                            localConversation.url = url;
+                            updatedCount++;
+                        }
+                        if (!localConversation.folderId) {
+                            localConversation.folderId = folderId;
+                        }
+                        if (localConversation.pinned === undefined) {
+                            localConversation.pinned = Boolean(item.isPinned);
+                        }
+                        if (actualCreatedAt && (!localConversation.createdAt || actualCreatedAt < localConversation.createdAt)) {
+                            localConversation.createdAt = actualCreatedAt;
+                            updatedCount++;
+                        }
+
+                        // 仅当远端时间更晚时才更新本地更新时间，避免每次同步都"重置"为当前时间。
+                        const currentUpdated = localConversation.updatedAt || 0;
+                        if (actualUpdatedAt > currentUpdated) {
+                            localConversation.updatedAt = actualUpdatedAt;
+                            updatedCount++;
+                        }
+                    });
+
+                    this.saveData();
+                    this.renderConversationList();
+
+                    if ((newCount > 0 || updatedCount > 0) && this.expandedFolderId) {
+                        const expandedFolderList = this.listContainer?.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${this.expandedFolderId}"]`);
+                        if (expandedFolderList) {
+                            this.renderConversationsInFolder(this.expandedFolderId, expandedFolderList);
+                        }
+                    }
+
+                    const msg = newCount > 0
+                        ? `${this.t('synced') || '已同步'} ${newCount} ${this.t('newSessions') || '个新会话'}`
+                        : (updatedCount > 0
+                            ? `${this.t('synced') || '已同步'} ${updatedCount} ${this.t('updatedSessions') || '个会话'}`
+                            : (this.t('synced') || '同步完成'));
+                    this.showToast(msg);
+                    return { total: conversations.length, newCount, updatedCount };
+                } catch (error) {
+                    console.error('[ChatGPT Helper] 同步会话失败:', error);
+                    this.lastSyncTime = Date.now();
+                    this.showToast(this.t('conversationSyncFailed') || '会话同步失败，请稍后重试');
+                    return { total: 0, newCount: 0, updatedCount: 0, error };
+                } finally {
+                    this.syncPromise = null;
+                }
+            })();
+
+            return this.syncPromise;
         }
 
         showCreateFolderDialog() {

@@ -81,6 +81,7 @@ const document = {
     documentElement,
     body,
     head,
+    cookie: '',
     createElement: makeElement,
     createTextNode(text) { return { textContent: text } },
     getElementById() { return null },
@@ -161,5 +162,97 @@ if (typeof window.__MY_EXT__.ChatGPTExporterMount !== 'function') {
 if (!window.__MY_EXT__.helper?.ChatGPTHelper) {
     throw new Error('ChatGPTHelper was not registered')
 }
+
+async function runConversationSyncRegression() {
+    const { ChatGPTAdapter, ConversationManager } = window.__MY_EXT__.helper
+    if (!ChatGPTAdapter || !ConversationManager) {
+        throw new Error('Conversation modules were not registered')
+    }
+
+    const fetchCalls = []
+    const jsonResponse = (body) => ({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        json: async () => body,
+    })
+    const fakeFetch = async (url, options = {}) => {
+        const urlString = String(url)
+        fetchCalls.push({ url: urlString, options })
+        if (urlString === 'https://chatgpt.com/api/auth/session') {
+            return jsonResponse({ accessToken: 'test-token' })
+        }
+        if (urlString.startsWith('https://chatgpt.com/backend-api/conversations')) {
+            return jsonResponse({
+                items: [
+                    {
+                        id: 'conv-api-1',
+                        title: 'API conversation one',
+                        create_time: '2026-05-01T10:00:00.000Z',
+                        update_time: '2026-05-02T10:00:00.000Z',
+                        is_starred: true,
+                    },
+                    {
+                        id: 'conv-api-2',
+                        title: 'API conversation two',
+                        create_time: '2026-05-03T10:00:00.000Z',
+                        update_time: '2026-05-04T10:00:00.000Z',
+                    },
+                ],
+                limit: 100,
+                offset: 0,
+                total: 2,
+            })
+        }
+        throw new Error(`Unexpected fetch: ${urlString}`)
+    }
+    context.fetch = fakeFetch
+    window.fetch = fakeFetch
+
+    let storedConversations = null
+    window.GM_getValue = (key, value) => key === 'chatgpt_conversations' ? null : value
+    window.GM_setValue = (key, value) => {
+        if (key === 'chatgpt_conversations') {
+            storedConversations = value
+        }
+    }
+
+    const manager = new ConversationManager({
+        container: makeElement('div'),
+        settings: {},
+        adapter: new ChatGPTAdapter(),
+        i18n: (key) => key,
+    })
+    manager.showToast = () => {}
+    manager.renderConversationList = () => {}
+
+    try {
+        const result = await manager.syncConversations()
+        if (result.newCount !== 2) {
+            throw new Error(`Expected 2 synced conversations, got ${result.newCount}`)
+        }
+        if (!storedConversations?.conversations?.['conv-api-1'] || !storedConversations?.conversations?.['conv-api-2']) {
+            throw new Error('API conversations were not saved to chatgpt_conversations')
+        }
+        if (storedConversations.conversations['conv-api-1'].url !== 'https://chatgpt.com/c/conv-api-1') {
+            throw new Error('Conversation URL was not normalized to the current origin')
+        }
+        if (storedConversations.conversations['conv-api-1'].pinned !== true) {
+            throw new Error('Starred API conversation was not imported as pinned')
+        }
+        const apiCall = fetchCalls.find(call => call.url.startsWith('https://chatgpt.com/backend-api/conversations'))
+        if (!apiCall) {
+            throw new Error('Conversation sync did not call the backend conversations API')
+        }
+        if (apiCall.options.headers.Authorization !== 'Bearer test-token') {
+            throw new Error('Conversation API call did not include the session bearer token')
+        }
+    }
+    finally {
+        manager.stopAutoSync()
+    }
+}
+
+await runConversationSyncRegression()
 
 console.log('content script checks passed')

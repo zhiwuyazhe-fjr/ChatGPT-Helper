@@ -72,6 +72,8 @@
         constructor() {
             this.textarea = null;
             this.lastResponseContainer = null;
+            this.accessTokenPromise = null;
+            this.accountIdPromise = null;
             this.findTextarea();
         }
 
@@ -406,15 +408,198 @@
             return null;
         }
 
-        getConversationList() {
+        getBackendApiBaseUrl() {
+            const origin = window.location?.origin || 'https://chatgpt.com';
+            const apiMapping = {
+                'https://chat.openai.com': 'https://chat.openai.com/backend-api',
+                'https://chatgpt.com': 'https://chatgpt.com/backend-api',
+                'https://new.oaifree.com': 'https://new.oaifree.com/backend-api'
+            };
+            return apiMapping[origin] || `${origin}/backend-api`;
+        }
+
+        getPageAccessToken() {
+            return window.__remixContext?.state?.loaderData?.root?.clientBootstrap?.session?.accessToken ||
+                window.__NEXT_DATA__?.props?.pageProps?.session?.accessToken ||
+                null;
+        }
+
+        async fetchSessionAccessToken() {
+            const response = await fetch(`${window.location.origin}/api/auth/session`, {
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                throw new Error(`Session request failed: ${response.status}`);
+            }
+            const session = await response.json();
+            if (!session?.accessToken) {
+                throw new Error('Session response did not include an access token');
+            }
+            return session.accessToken;
+        }
+
+        async getAccessToken() {
+            const pageAccessToken = this.getPageAccessToken();
+            if (pageAccessToken) return pageAccessToken;
+
+            if (!this.accessTokenPromise) {
+                this.accessTokenPromise = this.fetchSessionAccessToken().catch((error) => {
+                    this.accessTokenPromise = null;
+                    throw error;
+                });
+            }
+            return this.accessTokenPromise;
+        }
+
+        getCookie(key) {
+            return document.cookie.match(`(^|;)\\s*${key}\\s*=\\s*([^;]+)`)?.pop() || '';
+        }
+
+        async fetchBackendJson(url, options = {}, includeAccount = true) {
+            let accessToken = null;
+            try {
+                accessToken = await this.getAccessToken();
+            } catch (error) {
+                console.warn('[ChatGPT Helper] 未能获取 access token，尝试使用 Cookie 会话请求:', error);
+            }
+
+            const headers = { ...options.headers };
+            if (accessToken) {
+                headers.Authorization = `Bearer ${accessToken}`;
+                headers['X-Authorization'] = `Bearer ${accessToken}`;
+            }
+
+            if (includeAccount) {
+                const accountId = await this.getTeamAccountId();
+                if (accountId) {
+                    headers['Chatgpt-Account-Id'] = accountId;
+                }
+            }
+
+            const response = await fetch(url, {
+                credentials: 'include',
+                ...options,
+                headers
+            });
+            if (!response.ok) {
+                throw new Error(`ChatGPT API request failed: ${response.status} ${response.statusText || ''}`.trim());
+            }
+            return response.json();
+        }
+
+        async fetchTeamAccountId() {
+            const workspaceId = this.getCookie('_account');
+            if (!workspaceId) return null;
+
+            const url = `${this.getBackendApiBaseUrl()}/accounts/check/v4-2023-04-27`;
+            const accountsCheck = await this.fetchBackendJson(url, {}, false);
+            return accountsCheck?.accounts?.[workspaceId]?.account?.account_id || null;
+        }
+
+        async getTeamAccountId() {
+            if (!this.accountIdPromise) {
+                this.accountIdPromise = this.fetchTeamAccountId().catch((error) => {
+                    console.warn('[ChatGPT Helper] 获取团队账号 ID 失败，继续使用默认账号:', error);
+                    return null;
+                });
+            }
+            return this.accountIdPromise;
+        }
+
+        parseConversationTimestamp(value) {
+            if (!value) return null;
+            if (typeof value === 'number') {
+                return value < 1e12 ? value * 1000 : value;
+            }
+            const parsed = Date.parse(value);
+            return Number.isNaN(parsed) ? null : parsed;
+        }
+
+        normalizeConversationApiItem(item) {
+            if (!item || !item.id || item.is_archived || item.is_temporary_chat) {
+                return null;
+            }
+
+            const createdAt = this.parseConversationTimestamp(item.create_time);
+            const updatedAt = this.parseConversationTimestamp(item.update_time) || createdAt;
+            const title = (item.title || '').trim() || '未命名对话';
+            const url = new URL(`/c/${item.id}`, window.location.origin).href;
+
+            return {
+                id: item.id,
+                title,
+                url,
+                isPinned: Boolean(item.is_starred || item.pinned_time),
+                createdAt,
+                updatedAt
+            };
+        }
+
+        async fetchConversationListFromApi(maxConversations = 1000, pageSize = 100) {
+            const conversations = [];
+            let offset = 0;
+
+            while (conversations.length < maxConversations) {
+                const limit = Math.min(pageSize, maxConversations - conversations.length);
+                const url = new URL(`${this.getBackendApiBaseUrl()}/conversations`);
+                url.searchParams.set('offset', String(offset));
+                url.searchParams.set('limit', String(limit));
+
+                const result = await this.fetchBackendJson(url.href);
+                const items = Array.isArray(result?.items) ? result.items : [];
+                if (items.length === 0) break;
+
+                items.forEach((item) => {
+                    const normalized = this.normalizeConversationApiItem(item);
+                    if (normalized && conversations.length < maxConversations) {
+                        conversations.push(normalized);
+                    }
+                });
+
+                offset += items.length;
+                const total = typeof result.total === 'number' ? result.total : null;
+                const responseLimit = typeof result.limit === 'number' ? result.limit : limit;
+                if (total !== null && offset >= total) break;
+                if (items.length < responseLimit) break;
+            }
+
+            return conversations;
+        }
+
+        async getConversationList(options = {}) {
+            try {
+                const conversations = await this.fetchConversationListFromApi(
+                    options.maxConversations || 1000,
+                    options.pageSize || 100
+                );
+                if (conversations.length > 0) {
+                    return conversations;
+                }
+                console.warn('[ChatGPT Helper] API 未返回历史会话，回退到侧边栏 DOM 扫描');
+            } catch (error) {
+                console.warn('[ChatGPT Helper] API 加载历史会话失败，回退到侧边栏 DOM 扫描:', error);
+            }
+
+            return this.getConversationListFromDom();
+        }
+
+        getConversationListFromDom() {
             // 从侧边栏获取会话列表
             const sidebar = this.getSidebarContainer();
             if (!sidebar) return [];
 
             const conversations = [];
+            const seenIds = new Set();
             const selectors = [
+                'a[href^="/c/"]',
                 'a[href*="/c/"]',
+                'a[href^="/chat/"]',
                 'a[href*="/chat/"]',
+                '[data-testid*="history"] a[href*="/c/"]',
+                '[data-testid*="conversation"] a[href*="/c/"]',
+                '[class*="conversation"] a[href*="/c/"]',
+                'nav a[href*="/c/"]',
+                'aside a[href*="/c/"]',
                 'nav a',
                 'aside a',
                 '[class*="conversation"] a',
@@ -436,13 +621,16 @@
                 if (!idMatch) return;
 
                 const id = idMatch[1];
+                if (seenIds.has(id)) return;
+                seenIds.add(id);
                 // 使用innerText避免乱码
                 const title = (item.innerText || item.textContent || '').trim().replace(/\s+/g, ' ') || '未命名对话';
-                const url = href.startsWith('http') ? href : `https://chat.openai.com${href}`;
+                const url = new URL(href, window.location.origin).href;
 
                 // 检查是否置顶
-                const isPinned = item.closest('[class*="pinned"]') !== null ||
-                    item.closest('[data-pinned="true"]') !== null ||
+                const closest = typeof item.closest === 'function' ? item.closest.bind(item) : () => null;
+                const isPinned = closest('[class*="pinned"]') !== null ||
+                    closest('[data-pinned="true"]') !== null ||
                     item.getAttribute('data-pinned') === 'true';
 
                 // 尝试从 DOM 中提取最近更新时间
