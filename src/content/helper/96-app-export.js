@@ -74,9 +74,35 @@
         return;
     }
     Object.assign(ChatGPTHelper.prototype, {
+        syncExporterLanguage() {
+            const exporterLang = getCurrentLang() === 'zh-CN' ? 'zh-Hans' : 'en-US';
+            try {
+                window.GM_setValue('exporter:language', JSON.stringify(exporterLang));
+            } catch (e) {
+                console.warn('[ChatGPT Helper] Failed to persist exporter language:', e);
+            }
+
+            const namespaceSync = window.__MY_EXT__?.ChatGPTExporterSetLanguage;
+            const windowSync = window.ChatGPTExporterSetLanguage;
+            if (typeof namespaceSync === 'function') {
+                namespaceSync(exporterLang);
+            } else if (typeof windowSync === 'function') {
+                windowSync(exporterLang);
+            }
+
+            try {
+                window.dispatchEvent(new CustomEvent('chatgpt-helper-language-changed', {
+                    detail: { language: exporterLang }
+                }));
+            } catch (e) {
+                // ignore
+            }
+        },
+
         renderExport(container) {
             // 通过 class 控制 flex 布局，避免 inline style 覆盖 display:none
             container.classList.add('chatgpt-helper-export-panel');
+            this.syncExporterLanguage();
 
             // 先创建标题栏
             const titleBar = createElement('div', {
@@ -89,7 +115,7 @@
             }));
             titleBar.appendChild(createElement('span', {
                 className: 'chatgpt-helper-export-header-title'
-            }, this.t('tabExport') || '导出'));
+            }, this.t('tabExport')));
 
             // 先添加标题栏到容器
             container.appendChild(titleBar);
@@ -137,7 +163,7 @@
                         console.error('[ChatGPT Helper] 挂载 ChatGPT Exporter 失败:', e);
                         exportContainer.appendChild(createElement('div', {
                             style: { padding: '12px', fontSize: '13px', color: 'var(--gh-text-secondary)' }
-                        }, '导出模块加载失败，请检查 ChatGPT Exporter 脚本是否正常运行。'));
+                        }, this.t('exportModuleLoadFailed')));
                     }
                 } else if (retryCount < maxRetries) {
                     retryCount++;
@@ -153,7 +179,7 @@
                     });
                     exportContainer.appendChild(createElement('div', {
                         style: { padding: '12px', fontSize: '13px', color: 'var(--gh-text-secondary)' }
-                    }, '未检测到 ChatGPT Exporter，请确保扩展已正确加载。'));
+                    }, this.t('exportModuleMissing')));
                 }
             };
             setTimeout(tryMount, 200); // 延迟 200ms 开始尝试

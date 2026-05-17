@@ -433,7 +433,7 @@
             const collapseBtn = document.getElementById('chatgpt-helper-collapse-btn');
             if (!collapseBtn) return;
 
-            const nextTitle = this.isCollapsed ? this.t('expand') || '展开' : this.t('collapse');
+            const nextTitle = this.isCollapsed ? this.t('expand') : this.t('collapse');
             setButtonIcon(collapseBtn, this.isCollapsed ? 'expand' : 'collapse', { size: 16 });
             collapseBtn.title = nextTitle;
             collapseBtn.setAttribute('aria-label', nextTitle);
@@ -461,10 +461,10 @@
             // 主题切换按钮
             const themeBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
-                title: '切换主题',
+                title: this.t('themeToggle'),
                 id: 'chatgpt-helper-header-theme-btn',
                 type: 'button', // 明确指定按钮类型，避免表单提交等意外行为
-                'aria-label': '切换主题'
+                'aria-label': this.t('themeToggle')
             });
             // 初始图标根据当前主题设置
             const isDark = document.body.dataset.ghMode === 'dark' ||
@@ -481,10 +481,10 @@
             // 新标签页开启对话按钮
             const newChatBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
-                title: '新标签页开启对话',
+                title: this.t('newChatInTab'),
                 id: 'chatgpt-helper-header-newchat-btn',
                 type: 'button',
-                'aria-label': '新标签页开启对话'
+                'aria-label': this.t('newChatInTab')
             });
             newChatBtn.appendChild(createSvgIconNode('plus', { size: 15 }));
             newChatBtn.addEventListener('click', () => {
@@ -510,10 +510,10 @@
             // 折叠按钮（头部）
             const collapseBtn = createElement('button', {
                 className: 'chatgpt-helper-header-btn',
-                title: this.isCollapsed ? this.t('expand') || '展开' : this.t('collapse'),
+                title: this.isCollapsed ? this.t('expand') : this.t('collapse'),
                 id: 'chatgpt-helper-collapse-btn',
                 type: 'button',
-                'aria-label': this.isCollapsed ? this.t('expand') || '展开' : this.t('collapse')
+                'aria-label': this.isCollapsed ? this.t('expand') : this.t('collapse')
             });
             collapseBtn.appendChild(createSvgIconNode(this.isCollapsed ? 'expand' : 'collapse', { size: 16 }));
             collapseBtn.addEventListener('click', () => this.toggleCollapse());
@@ -592,7 +592,7 @@
                     draggable: true
                 });
                 dragHandle.innerHTML = '⋮&nbsp;⋮';
-                dragHandle.setAttribute('title', '拖动改变顺序');
+                dragHandle.setAttribute('title', this.t('dragToReorder'));
                 
                 tab.appendChild(dragHandle);
                 tab.appendChild(createSvgIconNode(def.iconName || 'list', {
@@ -737,35 +737,35 @@
             const navScrollTopBtn = createElement('button', {
                 className: 'scroll-nav-btn',
                 id: 'scroll-top-btn',
-                title: '滚动到顶部',
+                title: this.t('outlineScrollTop'),
                 type: 'button',
-                'aria-label': '滚动到顶部'
+                'aria-label': this.t('outlineScrollTop')
             });
             navScrollTopBtn.appendChild(createSvgIconNode('arrowUp', { size: 15 }));
-            navScrollTopBtn.appendChild(createElement('span', {}, '顶部'));
+            navScrollTopBtn.appendChild(createElement('span', {}, this.t('buttonScrollTop')));
             navScrollTopBtn.addEventListener('click', () => this.scrollToTop());
 
             const navAnchorBtn = createElement('button', {
                 className: 'scroll-nav-btn',
                 id: 'scroll-anchor-btn',
-                title: '暂无锚点',
+                title: this.t('noAnchor'),
                 type: 'button',
-                'aria-label': '返回跳转前位置',
+                'aria-label': this.t('returnPreviousPosition'),
                 style: 'opacity: 0.4; cursor: default;'
             });
             navAnchorBtn.appendChild(createSvgIconNode('anchor', { size: 15 }));
-            navAnchorBtn.appendChild(createElement('span', {}, '返回'));
+            navAnchorBtn.appendChild(createElement('span', {}, this.t('buttonBack')));
             navAnchorBtn.addEventListener('click', () => this.handleAnchorClick());
 
             const navScrollBottomBtn = createElement('button', {
                 className: 'scroll-nav-btn',
                 id: 'scroll-bottom-btn',
-                title: '滚动到底部',
+                title: this.t('outlineScrollBottom'),
                 type: 'button',
-                'aria-label': '滚动到底部'
+                'aria-label': this.t('outlineScrollBottom')
             });
             navScrollBottomBtn.appendChild(createSvgIconNode('arrowDown', { size: 15 }));
-            navScrollBottomBtn.appendChild(createElement('span', {}, '底部'));
+            navScrollBottomBtn.appendChild(createElement('span', {}, this.t('buttonScrollBottom')));
             navScrollBottomBtn.addEventListener('click', () => this.scrollToBottom());
 
             scrollNavContainer.appendChild(navScrollTopBtn);

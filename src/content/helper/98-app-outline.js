@@ -144,7 +144,7 @@
                         color: 'var(--gh-text-secondary)',
                         fontSize: '14px'
                     }
-                }, '暂无大纲内容，请等待对话生成或刷新页面');
+                }, this.t('outlineNoContent'));
                 container.appendChild(emptyMsg);
             }
         },

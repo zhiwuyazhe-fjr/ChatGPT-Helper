@@ -7489,6 +7489,18 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     acc[cur.code] = { translation: cur.resource };
     return acc;
   }, {});
+  const KEY_HELPER_LANGUAGE = "chatgpt_language";
+  const HELPER_LANGUAGE_CHANGED_EVENT = "chatgpt-helper-language-changed";
+  function unwrapStoredLanguage(language) {
+    if (typeof language !== "string") return null;
+    if (!language) return null;
+    try {
+      const parsed = JSON.parse(language);
+      if (typeof parsed === "string") return parsed;
+    } catch {
+    }
+    return language.replace(/^"(.*)"$/, "$1");
+  }
   function standardizeLanguage(language) {
     if (!language) return null;
     if (language in LanguageMapping) return LanguageMapping[language];
@@ -7508,11 +7520,21 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const storedLanguage = window?.localStorage?.getItem(KEY_OAI_LOCALE);
     return storedLanguage?.replace(/^"(.*)"$/, "$1") ?? null;
   }
+  function getHelperLanguage() {
+    try {
+      const storedLanguage = unwrapStoredLanguage(window.GM_getValue?.(KEY_HELPER_LANGUAGE, ""));
+      if (!storedLanguage || storedLanguage === "auto") return null;
+      return storedLanguage;
+    } catch {
+      return null;
+    }
+  }
   function getDefaultLanguage() {
+    const helperLanguage = getHelperLanguage();
     const storedLanguage = ScriptStorage.get(KEY_LANGUAGE);
     const oaiLanguage = getOaiLanguage();
     const browserLanguage = getNavigatorLanguage();
-    return standardizeLanguage(storedLanguage) ?? standardizeLanguage(oaiLanguage) ?? standardizeLanguage(browserLanguage) ?? EN_US.code;
+    return standardizeLanguage(helperLanguage) ?? standardizeLanguage(storedLanguage) ?? standardizeLanguage(oaiLanguage) ?? standardizeLanguage(browserLanguage) ?? EN_US.code;
   }
   instance.use(initReactI18next).init({
     fallbackLng: EN_US.code,
@@ -7527,6 +7549,26 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   instance.on("languageChanged", (lng) => {
     ScriptStorage.set(KEY_LANGUAGE, lng);
   });
+  function syncLanguageFromHelper(language) {
+    const resolvedLanguage = standardizeLanguage(unwrapStoredLanguage(language)) ?? getDefaultLanguage();
+    ScriptStorage.set(KEY_LANGUAGE, resolvedLanguage);
+    if (instance.language !== resolvedLanguage) {
+      void instance.changeLanguage(resolvedLanguage);
+    }
+    return resolvedLanguage;
+  }
+  function installHelperLanguageSync() {
+    const namespace = window.__MY_EXT__ = window.__MY_EXT__ || {};
+    const sync = (language) => syncLanguageFromHelper(language);
+    window.ChatGPTExporterSetLanguage = sync;
+    namespace.ChatGPTExporterSetLanguage = sync;
+    window.addEventListener(HELPER_LANGUAGE_CHANGED_EVENT, (event) => {
+      const detail = event.detail;
+      const language = typeof detail === "string" ? detail : detail?.language;
+      sync(language);
+    });
+  }
+  installHelperLanguageSync();
   const templateHtml = `<!DOCTYPE html>\r
 <html lang="{{lang}}" data-theme="{{theme}}">\r
 <head>\r
@@ -22622,6 +22664,7 @@ ${content2}`;
     const mount = (targetElement) => {
       if (!targetElement) return null;
       ensureCompactStyle();
+      syncLanguageFromHelper();
       const container = document.createElement("div");
       container.style.width = "100%";
       container.style.height = "100%";

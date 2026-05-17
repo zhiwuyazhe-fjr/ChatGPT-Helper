@@ -30,6 +30,7 @@
         DEFAULT_THEME_CONFIG,
         DEFAULT_SETTINGS,
         DEFAULT_PROMPTS,
+        createDefaultPrompts,
         createElement,
         getExtensionRuntime,
         getExtensionAssetUrl,
@@ -76,7 +77,7 @@
     Object.assign(ChatGPTHelper.prototype, {
         loadPrompts() {
             const saved = window.GM_getValue(SETTING_KEYS.PROMPTS, null);
-            return saved || DEFAULT_PROMPTS;
+            return saved || createDefaultPrompts();
         },
 
         savePrompts() {
@@ -151,22 +152,22 @@
             }
 
             if (Notification.permission === 'denied') {
-                this.showToast('通知权限已被拒绝，请在浏览器设置中允许通知');
+                this.showToast(this.t('notificationPermissionDenied'));
                 return false;
             }
 
             try {
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
-                    this.showToast('通知权限已授予');
+                    this.showToast(this.t('notificationPermissionGranted'));
                     return true;
                 } else {
-                    this.showToast('通知权限被拒绝');
+                    this.showToast(this.t('notificationPermissionRejected'));
                     return false;
                 }
             } catch (err) {
                 console.error('[ChatGPT Helper] 请求通知权限失败:', err);
-                this.showToast('请求通知权限失败');
+                this.showToast(this.t('notificationPermissionFailed'));
                 return false;
             }
         },

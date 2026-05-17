@@ -149,7 +149,7 @@
 
             // 过滤提示词
             let filteredPrompts = this.prompts;
-            if (this.selectedCategory && this.selectedCategory !== '全部') {
+            if (this.selectedCategory && this.selectedCategory !== this.t('allCategory')) {
                 filteredPrompts = filteredPrompts.filter(p => p.category === this.selectedCategory);
             }
             if (this.searchQuery) {
@@ -163,7 +163,7 @@
             if (filteredPrompts.length === 0) {
                 listContainer.appendChild(createElement('div', {
                     style: { textAlign: 'center', color: 'var(--gh-text-secondary)', padding: '20px', fontSize: '14px' }
-                }, '暂无提示词'));
+                }, this.t('noPrompts')));
                 return;
             }
 
@@ -210,7 +210,7 @@
                 if (prompt.category) {
                     const categoryBtn = createElement('button', {
                         className: 'category-btn',
-                        title: `切换到分类: ${prompt.category}`,
+                        title: `${this.t('category')}: ${prompt.category}`,
                         type: 'button' // 明确指定按钮类型
                     });
                     categoryBtn.appendChild(createSvgIconNode('tag', { size: 14 }));
@@ -232,7 +232,7 @@
                 
                 const editBtn = createElement('button', {
                     className: 'edit-btn',
-                    title: '编辑'
+                    title: this.t('edit')
                 });
                 editBtn.appendChild(createSvgIconNode('edit', { size: 14 }));
                 editBtn.addEventListener('click', (e) => {
@@ -473,17 +473,17 @@
                 className: 'chatgpt-helper-prompt-dialog',
                 role: 'dialog',
                 'aria-modal': 'true',
-                'aria-label': prompt ? '编辑提示词' : '添加提示词'
+                'aria-label': prompt ? this.t('editPrompt') : this.t('addPrompt')
             });
 
             const title = createElement('h3', {
                 className: 'chatgpt-helper-prompt-dialog-title'
-            }, prompt ? '编辑提示词' : '添加提示词');
+            }, prompt ? this.t('editPrompt') : this.t('addPrompt'));
 
             const titleInput = createElement('input', {
                 className: 'chatgpt-helper-prompt-dialog-field',
                 type: 'text',
-                placeholder: '提示词标题',
+                placeholder: this.t('title'),
                 value: prompt?.title || ''
             });
 
@@ -496,7 +496,7 @@
             const categoryInput = createElement('input', {
                 className: 'chatgpt-helper-prompt-dialog-field',
                 type: 'text',
-                placeholder: this.t('category') + '（可选）',
+                placeholder: `${this.t('category')} (${this.t('optional')})`,
                 value: prompt?.category || ''
             });
 

@@ -20,6 +20,15 @@
         tabSettings: "设置",
         searchPlaceholder: "搜索提示词...",
         addPrompt: "添加新提示词",
+        editPrompt: "编辑提示词",
+        noPrompts: "暂无提示词",
+        optional: "可选",
+        defaultPromptCodeReviewTitle: "代码审查",
+        defaultPromptCodeReviewContent: "请帮我审查以下代码，指出潜在的问题和改进建议：",
+        defaultPromptCodeReviewCategory: "开发",
+        defaultPromptTranslateTitle: "翻译",
+        defaultPromptTranslateContent: "请将以下内容翻译成中文：",
+        defaultPromptTranslateCategory: "工具",
         allCategory: "全部",
         refresh: "刷新",
         expand: "展开",
@@ -41,6 +50,35 @@
         confirmDelete: "确定删除?",
         fillTitleContent: "请填写标题和内容",
         noConversations: "暂无会话",
+        noSearchResults: "未找到匹配结果",
+        inbox: "收件箱",
+        untitledConversation: "未命名对话",
+        promptFolderName: "请输入文件夹名称：",
+        moveToFolder: "移动到文件夹",
+        confirm: "确定",
+        confirmDeleteConversation: '确定要删除 "{title}" 吗？',
+        confirmDeleteConversations: "确定要删除 {count} 个会话吗？",
+        exportedConversations: "已导出 {count} 个会话",
+        openConversationFirst: "请先打开会话: {title}",
+        addTag: "添加标签",
+        tagPrompt: "输入标签名称（留空删除标签）：",
+        tagUpdated: "标签已更新",
+        exportInfoHeading: "导出信息",
+        conversationTitleLabel: "会话标题",
+        exportTimeLabel: "导出时间",
+        sourceLabel: "来源",
+        linkLabel: "链接",
+        userRole: "用户",
+        historyLoading: "正在加载历史...",
+        scrollContainerMissing: "未找到滚动容器",
+        historyLoadComplete: "历史加载完成",
+        pleaseWait: "请稍候...",
+        stop: "停止",
+        formulaCopied: "公式已复制",
+        copyFailed: "复制失败",
+        copyAsMarkdown: "复制为 Markdown",
+        tableCopied: "表格已复制",
+        outlineNoContent: "暂无大纲内容，请等待对话生成或刷新页面",
         syncConversations: "同步会话",
         newFolder: "新建文件夹",
         deleteFolder: "删除文件夹",
@@ -81,6 +119,32 @@
         autoDetect: "自动检测",
         chinese: "简体中文",
         english: "English",
+        languageChanged: "语言已更改",
+        themeToggle: "切换主题",
+        newChatInTab: "新标签页开启对话",
+        dragToReorder: "拖动改变顺序",
+        noAnchor: "暂无锚点",
+        noAnchorAutoHint: "暂无锚点（点击顶部/底部按钮可自动生成）",
+        setAnchor: "设置锚点",
+        clearAnchor: "清除锚点",
+        returnAnchor: "返回锚点",
+        returnPreviousPosition: "返回跳转前位置",
+        anchorSet: "已设置锚点",
+        anchorSetFailed: "设置锚点失败",
+        anchorCleared: "已清除锚点",
+        returnedAnchor: "已返回锚点",
+        returnedPreviousPosition: "已返回跳转前位置",
+        returnAnchorFailed: "返回锚点失败",
+        scrolledTop: "已滚动到顶部",
+        scrolledBottom: "已滚动到底部",
+        panelWidthUpdated: "已更新面板宽度，刷新页面生效",
+        notificationPermissionDenied: "通知权限已被拒绝，请在浏览器设置中允许通知",
+        notificationPermissionGranted: "通知权限已授予",
+        notificationPermissionRejected: "通知权限被拒绝",
+        notificationPermissionFailed: "请求通知权限失败",
+        exportModuleLoadFailed: "导出模块加载失败，请检查 ChatGPT Exporter 脚本是否正常运行。",
+        exportModuleMissing: "未检测到 ChatGPT Exporter，请确保扩展已正确加载。",
+        operationFailed: "操作失败",
         themeSettingsSection: "主题设置",
         openThemeSettings: "打开主题设置",
         themeDialogTitle: "主题",
@@ -172,6 +236,8 @@
         outlineIntervalLabel: "更新检测间隔（秒）",
         outlineSyncScrollLabel: "同步滚动",
         outlineMaxLevelLabel: "最大标题层级",
+        outlineLevelOnlyH1: "仅 H1",
+        outlineLevelAll: "H1-H6（全部）",
         tabAutoRenameLabel: "自动重命名标签页",
         tabRenameIntervalLabel: "重命名检测间隔（秒）",
         tabShowStatusLabel: "显示生成状态",
@@ -204,6 +270,7 @@
         buttonTheme: "主题",
         buttonManualAnchor: "手动锚点",
         buttonScrollBottom: "底部",
+        buttonBack: "返回",
         // Button actions
         moveUp: "上移",
         moveDown: "下移",
@@ -220,6 +287,15 @@
         tabSettings: "Settings",
         searchPlaceholder: "Search prompts...",
         addPrompt: "Add New Prompt",
+        editPrompt: "Edit Prompt",
+        noPrompts: "No prompts",
+        optional: "optional",
+        defaultPromptCodeReviewTitle: "Code Review",
+        defaultPromptCodeReviewContent: "Please review the following code and point out potential issues and improvements:",
+        defaultPromptCodeReviewCategory: "Development",
+        defaultPromptTranslateTitle: "Translate",
+        defaultPromptTranslateContent: "Please translate the following content into English:",
+        defaultPromptTranslateCategory: "Tools",
         allCategory: "All",
         refresh: "Refresh",
         expand: "Expand",
@@ -241,6 +317,35 @@
         confirmDelete: "Delete this prompt?",
         fillTitleContent: "Please fill in title and content",
         noConversations: "No conversations",
+        noSearchResults: "No matching results",
+        inbox: "Inbox",
+        untitledConversation: "Untitled conversation",
+        promptFolderName: "Enter folder name:",
+        moveToFolder: "Move to Folder",
+        confirm: "Confirm",
+        confirmDeleteConversation: 'Delete "{title}"?',
+        confirmDeleteConversations: "Delete {count} conversations?",
+        exportedConversations: "Exported {count} conversations",
+        openConversationFirst: "Open the conversation first: {title}",
+        addTag: "Add Tag",
+        tagPrompt: "Enter a tag name. Leave blank to remove tags:",
+        tagUpdated: "Tag updated",
+        exportInfoHeading: "Export Info",
+        conversationTitleLabel: "Conversation Title",
+        exportTimeLabel: "Export Time",
+        sourceLabel: "Source",
+        linkLabel: "Link",
+        userRole: "User",
+        historyLoading: "Loading history...",
+        scrollContainerMissing: "Scroll container not found",
+        historyLoadComplete: "History loaded",
+        pleaseWait: "Please wait...",
+        stop: "Stop",
+        formulaCopied: "Formula copied",
+        copyFailed: "Copy failed",
+        copyAsMarkdown: "Copy as Markdown",
+        tableCopied: "Table copied",
+        outlineNoContent: "No outline yet. Wait for the conversation to generate or refresh the page.",
         syncConversations: "Sync Conversations",
         newFolder: "New Folder",
         deleteFolder: "Delete folder",
@@ -281,6 +386,31 @@
         autoDetect: "Auto Detect",
         chinese: "简体中文",
         english: "English",
+        themeToggle: "Switch Theme",
+        newChatInTab: "Open Chat in New Tab",
+        dragToReorder: "Drag to reorder",
+        noAnchor: "No anchor",
+        noAnchorAutoHint: "No anchor yet. Click Top or Bottom to create one automatically.",
+        setAnchor: "Set Anchor",
+        clearAnchor: "Clear Anchor",
+        returnAnchor: "Return to Anchor",
+        returnPreviousPosition: "Return to Previous Position",
+        anchorSet: "Anchor set",
+        anchorSetFailed: "Failed to set anchor",
+        anchorCleared: "Anchor cleared",
+        returnedAnchor: "Returned to anchor",
+        returnedPreviousPosition: "Returned to previous position",
+        returnAnchorFailed: "Failed to return to anchor",
+        scrolledTop: "Scrolled to top",
+        scrolledBottom: "Scrolled to bottom",
+        panelWidthUpdated: "Panel width updated. Refresh the page to apply it.",
+        notificationPermissionDenied: "Notification permission was denied. Allow notifications in browser settings.",
+        notificationPermissionGranted: "Notification permission granted",
+        notificationPermissionRejected: "Notification permission denied",
+        notificationPermissionFailed: "Failed to request notification permission",
+        exportModuleLoadFailed: "Export module failed to load. Check whether the ChatGPT Exporter script is running.",
+        exportModuleMissing: "ChatGPT Exporter was not detected. Make sure the extension loaded correctly.",
+        operationFailed: "Operation failed",
         themeSettingsSection: "Theme Settings",
         openThemeSettings: "Open Theme Settings",
         themeDialogTitle: "Theme",
@@ -372,6 +502,8 @@
         outlineIntervalLabel: "Update Interval (seconds)",
         outlineSyncScrollLabel: "Sync Scroll",
         outlineMaxLevelLabel: "Max Heading Level",
+        outlineLevelOnlyH1: "H1 only",
+        outlineLevelAll: "H1-H6 (All)",
         tabAutoRenameLabel: "Auto Rename Tab",
         tabRenameIntervalLabel: "Rename Check Interval (seconds)",
         tabShowStatusLabel: "Show Generation Status",
@@ -405,6 +537,7 @@
         buttonTheme: "Theme",
         buttonManualAnchor: "Manual Anchor",
         buttonScrollBottom: "Bottom",
+        buttonBack: "Back",
         // Button actions
         moveUp: "Move Up",
         moveDown: "Move Down",
@@ -578,20 +711,23 @@
         privacyTitle: "ChatGPT"
       }
     };
-    const DEFAULT_PROMPTS = [
-      {
-        id: "default_1",
-        title: "代码审查",
-        content: "请帮我审查以下代码，指出潜在的问题和改进建议：",
-        category: "开发"
-      },
-      {
-        id: "default_2",
-        title: "翻译",
-        content: "请将以下内容翻译成中文：",
-        category: "工具"
-      }
-    ];
+    function createDefaultPrompts() {
+      return [
+        {
+          id: "default_1",
+          title: t("defaultPromptCodeReviewTitle"),
+          content: t("defaultPromptCodeReviewContent"),
+          category: t("defaultPromptCodeReviewCategory")
+        },
+        {
+          id: "default_2",
+          title: t("defaultPromptTranslateTitle"),
+          content: t("defaultPromptTranslateContent"),
+          category: t("defaultPromptTranslateCategory")
+        }
+      ];
+    }
+    const DEFAULT_PROMPTS = createDefaultPrompts();
     function createElement(tag, attrs = {}, text = "") {
       const el = document.createElement(tag);
       if (typeof attrs === "string") {
@@ -1263,6 +1399,7 @@
       DEFAULT_THEME_CONFIG,
       DEFAULT_SETTINGS,
       DEFAULT_PROMPTS,
+      createDefaultPrompts,
       createElement,
       getExtensionRuntime,
       getExtensionAssetUrl,
@@ -1595,6 +1732,15 @@
           this.data.folders.unshift({ id: "inbox", name: "📥 收件箱", icon: "📥", isDefault: true });
         }
       }
+      getFolderDisplayName(folder) {
+        if (!folder) return "";
+        if (folder.id === "inbox") return this.t("inbox");
+        return (folder.name || "").replace(folder.icon || "", "").trim() || folder.name || "";
+      }
+      getFolderOptionLabel(folder) {
+        const icon = folder?.icon || "";
+        return `${icon} ${this.getFolderDisplayName(folder)}`.trim();
+      }
       getTargetFolderId() {
         this.ensureInboxFolder();
         const folderIds = new Set(this.data.folders.map((folder) => folder && folder.id).filter(Boolean));
@@ -1671,7 +1817,7 @@
           className: "chatgpt-helper-folder-select"
         });
         this.data.folders.forEach((folder) => {
-          const option = createElement("option", { value: folder.id }, folder.name);
+          const option = createElement("option", { value: folder.id }, this.getFolderOptionLabel(folder));
           if (folder.id === this.data.lastUsedFolderId) option.selected = true;
           folderSelect.appendChild(option);
         });
@@ -1776,7 +1922,7 @@
         if (visibleEntries.length === 0) {
           this.listContainer.appendChild(createElement("div", {
             className: "chatgpt-helper-conversations-empty"
-          }, this.searchQuery ? "未找到匹配结果" : "暂无会话"));
+          }, this.searchQuery ? this.t("noSearchResults") : this.t("noConversations")));
           return;
         }
         visibleEntries.forEach((entry, visibleIndex) => {
@@ -1846,7 +1992,7 @@
         info.appendChild(icon);
         const name = createElement("span", {
           className: "chatgpt-helper-folder-name"
-        }, folder.name.replace(folder.icon || "", "").trim() || (folder.id === "inbox" ? "收件箱" : folder.name));
+        }, this.getFolderDisplayName(folder));
         info.appendChild(name);
         const countSpan = createElement("span", {
           className: "chatgpt-helper-folder-count"
@@ -1892,7 +2038,7 @@
         if (conversations.length === 0) {
           container.appendChild(createElement("div", {
             className: "chatgpt-helper-conversations-empty"
-          }, this.t("noConversations") || "该文件夹暂无会话"));
+          }, this.t("noConversations")));
           return;
         }
         conversations.sort((a, b) => {
@@ -1953,7 +2099,7 @@
               paddingRight: conv.pinned ? "20px" : "0",
               paddingLeft: this.batchMode ? "30px" : "0"
             }
-          }, conv.title || "未命名对话");
+          }, conv.title || this.t("untitledConversation"));
           item.appendChild(title);
           if (conv.tagIds && conv.tagIds.length > 0 && this.data.tags) {
             const tagsContainer = createElement("div", {
@@ -2025,7 +2171,7 @@
             conversations.forEach((item) => {
               if (!item || !item.id) return;
               const id = item.id;
-              const title = item.title || "未命名对话";
+              const title = item.title || this.t("untitledConversation");
               const url = item.url;
               const remoteCreatedAt = item.createdAt || null;
               const remoteUpdatedAt = item.updatedAt || remoteCreatedAt;
@@ -2092,7 +2238,7 @@
         return this.syncPromise;
       }
       showCreateFolderDialog() {
-        const name = prompt("请输入文件夹名称：");
+        const name = prompt(this.t("promptFolderName"));
         if (!name || !name.trim()) return;
         const folder = {
           id: "folder_" + Date.now(),
@@ -2145,7 +2291,7 @@
         if (this.batchToolbar) {
           const countEl = this.batchToolbar.querySelector("span");
           if (countEl) {
-            countEl.textContent = `已选择 ${this.selectedIds.size} 项`;
+            countEl.textContent = `${this.t("selected")} ${this.selectedIds.size} ${this.t("items")}`;
           }
         }
       }
@@ -2161,7 +2307,7 @@
           this.showToast(this.t("selectConversationsFirst") || "请先选择要删除的会话");
           return;
         }
-        if (!confirm(`确定要删除 ${this.selectedIds.size} 个会话吗？`)) return;
+        if (!confirm(this.t("confirmDeleteConversations").replace("{count}", this.selectedIds.size))) return;
         this.selectedIds.forEach((id) => {
           delete this.data.conversations[id];
         });
@@ -2169,14 +2315,14 @@
         this.saveData();
         this.renderConversationList();
         this.updateBatchToolbar();
-        this.showToast("已删除");
+        this.showToast(this.t("deleted"));
       }
       async batchExport() {
         if (this.selectedIds.size === 0) {
           this.showToast(this.t("selectConversationsFirst") || "请先选择要导出的会话");
           return;
         }
-        const format = prompt("选择导出格式：\n1. Markdown\n2. JSON\n3. TXT", "1");
+        const format = prompt(this.t("exportFormat"), "1");
         if (!format) return;
         const formatMap = { "1": "markdown", "2": "json", "3": "txt" };
         const selectedFormat = formatMap[format] || "markdown";
@@ -2186,11 +2332,11 @@
             await this.exportConversation(conv, selectedFormat);
           }
         }
-        this.showToast(`已导出 ${this.selectedIds.size} 个会话`);
+        this.showToast(this.t("exportedConversations").replace("{count}", this.selectedIds.size));
       }
       async exportConversation(conv, format = "markdown") {
         if (window.location.href !== conv.url) {
-          this.showToast(this.t("openFirst") || `请先打开会话: ${conv.title}`);
+          this.showToast(this.t("openConversationFirst").replace("{title}", conv.title || this.t("untitledConversation")));
           return;
         }
         const messages = this.extractMessages();
@@ -2199,7 +2345,7 @@
           return;
         }
         let content = "";
-        const filename = `${conv.title || "未命名"}_${Date.now()}`;
+        const filename = `${conv.title || this.t("untitledConversation")}_${Date.now()}`;
         switch (format) {
           case "markdown":
             content = this.formatToMarkdown(conv, messages);
@@ -2230,12 +2376,12 @@
       formatToMarkdown(conv, messages) {
         const lines = [];
         const now = (/* @__PURE__ */ new Date()).toLocaleString();
-        const userLabel = "用户";
-        lines.push(`# 📤 导出信息`);
-        lines.push(`- **会话标题**: ${conv.title || "未命名"}`);
-        lines.push(`- **导出时间**: ${now}`);
-        lines.push(`- **来源**: ChatGPT`);
-        lines.push(`- **链接**: ${window.location.href}`);
+        const userLabel = this.t("userRole");
+        lines.push(`# 📤 ${this.t("exportInfoHeading")}`);
+        lines.push(`- **${this.t("conversationTitleLabel")}**: ${conv.title || this.t("untitledConversation")}`);
+        lines.push(`- **${this.t("exportTimeLabel")}**: ${now}`);
+        lines.push(`- **${this.t("sourceLabel")}**: ChatGPT`);
+        lines.push(`- **${this.t("linkLabel")}**: ${window.location.href}`);
         lines.push("---");
         lines.push("");
         messages.forEach((msg) => {
@@ -2260,7 +2406,7 @@
       formatToJSON(conv, messages) {
         const data = {
           metadata: {
-            title: conv.title || "未命名",
+            title: conv.title || this.t("untitledConversation"),
             id: conv.id,
             url: window.location.href,
             exportTime: (/* @__PURE__ */ new Date()).toISOString(),
@@ -2276,11 +2422,11 @@
       formatToTXT(conv, messages) {
         const lines = [];
         const now = (/* @__PURE__ */ new Date()).toLocaleString();
-        const userLabel = "用户";
-        lines.push(`会话标题: ${conv.title || "未命名"}`);
-        lines.push(`导出时间: ${now}`);
-        lines.push(`来源: ChatGPT`);
-        lines.push(`链接: ${window.location.href}`);
+        const userLabel = this.t("userRole");
+        lines.push(`${this.t("conversationTitleLabel")}: ${conv.title || this.t("untitledConversation")}`);
+        lines.push(`${this.t("exportTimeLabel")}: ${now}`);
+        lines.push(`${this.t("sourceLabel")}: ChatGPT`);
+        lines.push(`${this.t("linkLabel")}: ${window.location.href}`);
         lines.push("");
         lines.push("=".repeat(50));
         lines.push("");
@@ -2317,16 +2463,16 @@
           className: "chatgpt-helper-prompt-dialog chatgpt-helper-compact-dialog",
           role: "dialog",
           "aria-modal": "true",
-          "aria-label": "移动到文件夹"
+          "aria-label": this.t("moveToFolder")
         });
         dialog.appendChild(createElement("div", {
           className: "chatgpt-helper-prompt-dialog-title"
-        }, "移动到文件夹"));
+        }, this.t("moveToFolder")));
         const folderSelect = createElement("select", {
           className: "chatgpt-helper-prompt-dialog-field"
         });
         this.data.folders.forEach((folder) => {
-          const option = createElement("option", { value: folder.id }, folder.name);
+          const option = createElement("option", { value: folder.id }, this.getFolderOptionLabel(folder));
           folderSelect.appendChild(option);
         });
         dialog.appendChild(folderSelect);
@@ -2336,12 +2482,12 @@
         const cancelBtn = createElement("button", {
           className: "chatgpt-helper-prompt-dialog-btn secondary",
           type: "button"
-        }, "取消");
+        }, this.t("cancel"));
         cancelBtn.addEventListener("click", () => overlay.remove());
         const confirmBtn = createElement("button", {
           className: "chatgpt-helper-prompt-dialog-btn primary",
           type: "button"
-        }, "确定");
+        }, this.t("confirm"));
         confirmBtn.addEventListener("click", () => {
           const folderId = folderSelect.value;
           if (isBatch) {
@@ -2353,12 +2499,12 @@
             this.saveData();
             this.renderConversationList();
             this.updateBatchToolbar();
-            this.showToast(`已移动 ${this.selectedIds.size} 个会话`);
+            this.showToast(`${this.t("moved")} ${this.selectedIds.size} ${this.t("updatedSessions")}`);
           } else if (conv) {
             conv.folderId = folderId;
             this.saveData();
             this.renderConversationList();
-            this.showToast("已移动");
+            this.showToast(this.t("moved"));
           }
           overlay.remove();
         });
@@ -2381,10 +2527,10 @@
           }
         });
         const items = [
-          { label: "置顶", iconName: "pin", action: () => this.togglePin(conv) },
-          { label: "移动到...", iconName: "folder", action: () => this.showMoveToFolderDialog(conv) },
-          { label: "添加标签", iconName: "tag", action: () => this.showTagDialog(conv) },
-          { label: "删除", iconName: "trash", danger: true, action: () => this.deleteConversation(conv) }
+          { label: conv.pinned ? this.t("unpinned") : this.t("pinned"), iconName: "pin", action: () => this.togglePin(conv) },
+          { label: this.t("move"), iconName: "folder", action: () => this.showMoveToFolderDialog(conv) },
+          { label: this.t("addTag"), iconName: "tag", action: () => this.showTagDialog(conv) },
+          { label: this.t("delete"), iconName: "trash", danger: true, action: () => this.deleteConversation(conv) }
         ];
         items.forEach((item) => {
           const menuItem = createElement("div", {
@@ -2410,17 +2556,18 @@
         conv.pinned = !conv.pinned;
         this.saveData();
         this.renderConversationList();
-        this.showToast(conv.pinned ? "已置顶" : "已取消置顶");
+        this.showToast(conv.pinned ? this.t("pinned") : this.t("unpinned"));
       }
       deleteConversation(conv) {
-        if (!confirm(`确定要删除 "${conv.title}" 吗？`)) return;
+        const title = conv.title || this.t("untitledConversation");
+        if (!confirm(this.t("confirmDeleteConversation").replace("{title}", title.replace(/"/g, "")))) return;
         delete this.data.conversations[conv.id];
         this.saveData();
         this.renderConversationList();
-        this.showToast("已删除");
+        this.showToast(this.t("deleted"));
       }
       showTagDialog(conv) {
-        const tagName = prompt("输入标签名称（留空删除标签）：");
+        const tagName = prompt(this.t("tagPrompt"));
         if (tagName === null) return;
         if (!this.data.tags) this.data.tags = [];
         if (tagName.trim()) {
@@ -2443,7 +2590,7 @@
         }
         this.saveData();
         this.renderConversationList();
-        this.showToast("标签已更新");
+        this.showToast(this.t("tagUpdated"));
       }
       showToast(message) {
         const existing = document.getElementById("chatgpt-helper-toast");
@@ -2741,22 +2888,23 @@
       }
     }
     class HistoryLoader {
-      constructor(scrollManager, showToastFunc) {
+      constructor(scrollManager, showToastFunc, i18n) {
         this.scrollManager = scrollManager;
         this.showToast = showToastFunc || (() => {
         });
+        this.t = i18n || ((key) => key);
         this.isLoading = false;
         this.aborted = false;
         this.overlay = null;
       }
       async loadAllAndScrollTop() {
         if (this.isLoading) {
-          this.showToast("正在加载历史...");
+          this.showToast(this.t("historyLoading"));
           return;
         }
         const container = this.scrollManager.container;
         if (!container) {
-          this.showToast("未找到滚动容器");
+          this.showToast(this.t("scrollContainerMissing"));
           return;
         }
         this.isLoading = true;
@@ -2790,7 +2938,7 @@
             if (currentHeight > lastHeight) {
               lastHeight = currentHeight;
               noChangeCount = 0;
-              this.updateOverlayText(`正在加载历史... (${Math.round(currentHeight / 1e3)}k)`);
+              this.updateOverlayText(`${this.t("historyLoading")} (${Math.round(currentHeight / 1e3)}k)`);
               loadLoop();
             } else {
               noChangeCount++;
@@ -2801,7 +2949,7 @@
               } else if (noChangeCount >= MAX_NO_CHANGE_ROUNDS) {
                 this.finish(true);
               } else {
-                this.updateOverlayText(`正在加载历史... (${noChangeCount}/${MAX_NO_CHANGE_ROUNDS})`);
+                this.updateOverlayText(`${this.t("historyLoading")} (${noChangeCount}/${MAX_NO_CHANGE_ROUNDS})`);
                 loadLoop();
               }
             }
@@ -2814,7 +2962,7 @@
         this.aborted = false;
         this.hideOverlay();
         if (success && !silent) {
-          this.showToast("历史加载完成");
+          this.showToast(this.t("historyLoadComplete"));
         }
       }
       abort() {
@@ -2830,14 +2978,14 @@
         const text = createElement("div", {
           id: "chatgpt-helper-loading-text",
           className: "chatgpt-helper-loading-text"
-        }, "正在加载历史...");
+        }, this.t("historyLoading"));
         const hint = createElement("div", {
           className: "chatgpt-helper-loading-hint"
-        }, "请稍候...");
+        }, this.t("pleaseWait"));
         const stopBtn = createElement("button", {
           className: "chatgpt-helper-loading-stop-btn",
           type: "button"
-        }, "停止");
+        }, this.t("stop"));
         stopBtn.addEventListener("click", () => this.abort());
         overlay.appendChild(spinner);
         overlay.appendChild(text);
@@ -4745,10 +4893,11 @@
       ChatGPTHelper
     } = H;
     class CopyManager {
-      constructor(settings, showToastFunc) {
+      constructor(settings, showToastFunc, i18n) {
         this.settings = settings;
         this.showToast = showToastFunc || (() => {
         });
+        this.t = i18n || ((key) => key);
         this.formulaCopyInitialized = false;
         this.tableCopyInitialized = false;
         this.formulaDblClickHandler = null;
@@ -4820,10 +4969,10 @@
             copyText = isBlock ? `$$${latex}$$` : `$${latex}$`;
           }
           navigator.clipboard.writeText(copyText).then(() => {
-            this.showToast("公式已复制");
+            this.showToast(this.t("formulaCopied"));
           }).catch((err) => {
             console.error("[FormulaCopy] Copy failed:", err);
-            this.showToast("复制失败");
+            this.showToast(this.t("copyFailed"));
           });
           e.preventDefault();
           e.stopPropagation();
@@ -4929,7 +5078,7 @@
           const btn = document.createElement("button");
           btn.className = "chatgpt-helper-table-copy-btn";
           btn.appendChild(createSvgIconNode("list", { size: 14 }));
-          btn.title = "复制为 Markdown";
+          btn.title = this.t("copyAsMarkdown");
           btn.addEventListener("mouseenter", () => {
             btn.style.opacity = "1";
           });
@@ -4941,14 +5090,14 @@
             e.stopPropagation();
             const markdown = this.tableToMarkdown(table);
             navigator.clipboard.writeText(markdown).then(() => {
-              this.showToast("表格已复制");
+              this.showToast(this.t("tableCopied"));
               setButtonIcon(btn, "check", { size: 14 });
               setTimeout(() => {
                 setButtonIcon(btn, "list", { size: 14 });
               }, 1e3);
             }).catch((err) => {
               console.error("[TableCopy] Copy failed:", err);
-              this.showToast("复制失败");
+              this.showToast(this.t("copyFailed"));
             });
           });
           container.appendChild(btn);
@@ -5777,7 +5926,7 @@
         }
         const createdAt = this.parseConversationTimestamp(item.create_time);
         const updatedAt = this.parseConversationTimestamp(item.update_time) || createdAt;
-        const title = (item.title || "").trim() || "未命名对话";
+        const title = (item.title || "").trim() || t("untitledConversation");
         const url = new URL(`/c/${item.id}`, window.location.origin).href;
         return {
           id: item.id,
@@ -5861,7 +6010,7 @@
           const id = idMatch[1];
           if (seenIds.has(id)) return;
           seenIds.add(id);
-          const title = (item.innerText || item.textContent || "").trim().replace(/\s+/g, " ") || "未命名对话";
+          const title = (item.innerText || item.textContent || "").trim().replace(/\s+/g, " ") || t("untitledConversation");
           const url = new URL(href, window.location.origin).href;
           const closest = typeof item.closest === "function" ? item.closest.bind(item) : () => null;
           const isPinned = closest('[class*="pinned"]') !== null || closest('[data-pinned="true"]') !== null || item.getAttribute("data-pinned") === "true";
@@ -5952,6 +6101,7 @@
       DEFAULT_THEME_CONFIG,
       DEFAULT_SETTINGS,
       DEFAULT_PROMPTS,
+      createDefaultPrompts,
       createElement,
       getExtensionRuntime,
       getExtensionAssetUrl,
@@ -6001,7 +6151,7 @@
             this.prompts = this.loadPrompts();
           } catch (e) {
             console.error("[ChatGPT Helper] loadPrompts 错误:", e);
-            this.prompts = DEFAULT_PROMPTS;
+            this.prompts = createDefaultPrompts();
           }
           try {
             this.settings = this.loadSettings();
@@ -6026,7 +6176,7 @@
             throw e;
           }
           try {
-            this.historyLoader = new HistoryLoader(this.scrollManager, (msg) => this.showToast(msg));
+            this.historyLoader = new HistoryLoader(this.scrollManager, (msg) => this.showToast(msg), this.t);
           } catch (e) {
             console.error("[ChatGPT Helper] HistoryLoader 创建错误:", e);
             this.historyLoader = null;
@@ -6062,7 +6212,7 @@
           }
           this.outlineManager = null;
           try {
-            this.copyManager = new CopyManager(this.settings, (msg) => this.showToast(msg));
+            this.copyManager = new CopyManager(this.settings, (msg) => this.showToast(msg), this.t);
           } catch (e) {
             console.error("[ChatGPT Helper] CopyManager 创建错误:", e);
             this.copyManager = null;
@@ -6140,6 +6290,7 @@
       DEFAULT_THEME_CONFIG,
       DEFAULT_SETTINGS,
       DEFAULT_PROMPTS,
+      createDefaultPrompts,
       createElement,
       getExtensionRuntime,
       getExtensionAssetUrl,
@@ -6184,7 +6335,7 @@
     Object.assign(ChatGPTHelper.prototype, {
       loadPrompts() {
         const saved = window.GM_getValue(SETTING_KEYS.PROMPTS, null);
-        return saved || DEFAULT_PROMPTS;
+        return saved || createDefaultPrompts();
       },
       savePrompts() {
         window.GM_setValue(SETTING_KEYS.PROMPTS, this.prompts);
@@ -6243,21 +6394,21 @@
           return true;
         }
         if (Notification.permission === "denied") {
-          this.showToast("通知权限已被拒绝，请在浏览器设置中允许通知");
+          this.showToast(this.t("notificationPermissionDenied"));
           return false;
         }
         try {
           const permission = await Notification.requestPermission();
           if (permission === "granted") {
-            this.showToast("通知权限已授予");
+            this.showToast(this.t("notificationPermissionGranted"));
             return true;
           } else {
-            this.showToast("通知权限被拒绝");
+            this.showToast(this.t("notificationPermissionRejected"));
             return false;
           }
         } catch (err) {
           console.error("[ChatGPT Helper] 请求通知权限失败:", err);
-          this.showToast("请求通知权限失败");
+          this.showToast(this.t("notificationPermissionFailed"));
           return false;
         }
       },
@@ -10841,16 +10992,22 @@
                 
                 /* 设置面板样式 */
                 .chatgpt-helper-setting-section {
+                    position: relative;
                     margin-bottom: 18px;
                     background:
                         linear-gradient(180deg, color-mix(in srgb, var(--gh-bg-secondary, #f9fafb), white 20%) 0%, var(--gh-bg-secondary, #f9fafb) 100%);
                     border-radius: 16px;
                     border: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 8%);
-                    overflow: hidden;
+                    overflow: visible;
                     box-shadow:
                         0 14px 30px rgba(15, 23, 42, 0.08),
                         inset 0 1px 0 rgba(255,255,255,0.45);
                     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+                }
+
+                .chatgpt-helper-setting-section:has(.chatgpt-helper-custom-select.open) {
+                    z-index: 30;
+                    overflow: visible !important;
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-setting-section {
@@ -10909,6 +11066,10 @@
                         0 8px 18px rgba(15, 23, 42, 0.04),
                         inset 0 1px 0 rgba(255,255,255,0.38);
                     transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+                }
+
+                .chatgpt-helper-setting-item:has(.chatgpt-helper-custom-select.open) {
+                    align-items: flex-start;
                 }
                 
                 body[data-gh-mode="dark"] .chatgpt-helper-setting-item {
@@ -12903,11 +13064,18 @@
                     background: var(--gh-input-bg) !important;
                     border: 1px solid var(--gh-input-border) !important;
                     color: var(--gh-text) !important;
+                    color-scheme: light;
                     box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff, transparent 78%) !important;
                     transition:
                         border-color 0.16s var(--gh-fast-ease),
                         box-shadow 0.16s var(--gh-fast-ease),
                         background 0.16s var(--gh-fast-ease);
+                }
+
+                #chatgpt-helper-right select option,
+                #chatgpt-helper-right select optgroup {
+                    background: var(--gh-bg, #ffffff) !important;
+                    color: var(--gh-text, #1f2937) !important;
                 }
 
                 body[data-gh-mode="dark"] .chatgpt-helper-search-input,
@@ -12917,7 +13085,121 @@
                 body[data-gh-mode="dark"] #chatgpt-helper-right input,
                 body[data-gh-mode="dark"] #chatgpt-helper-right textarea,
                 body[data-gh-mode="dark"] #chatgpt-helper-right select {
+                    color-scheme: dark;
                     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+                }
+
+                body[data-gh-mode="dark"] #chatgpt-helper-right select option,
+                body[data-gh-mode="dark"] #chatgpt-helper-right select optgroup,
+                :root[data-gh-mode="dark"] #chatgpt-helper-right select option,
+                :root[data-gh-mode="dark"] #chatgpt-helper-right select optgroup {
+                    background: var(--gh-input-bg, #0f172a) !important;
+                    color: var(--gh-text, #f8fafc) !important;
+                }
+
+                .chatgpt-helper-custom-select {
+                    position: relative;
+                    min-width: 150px;
+                    max-width: 240px;
+                    flex: 0 0 auto;
+                    font-size: 14px;
+                    color: var(--gh-text);
+                }
+
+                .chatgpt-helper-custom-select-trigger {
+                    width: 100%;
+                    min-height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 10px;
+                    padding: 6px 10px 6px 12px;
+                    border-radius: var(--gh-control-radius) !important;
+                    background: var(--gh-input-bg) !important;
+                    border: 1px solid var(--gh-input-border) !important;
+                    color: var(--gh-text) !important;
+                    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff, transparent 78%) !important;
+                    cursor: pointer;
+                    text-align: left;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-custom-select-trigger {
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+                }
+
+                .chatgpt-helper-custom-select-value {
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .chatgpt-helper-custom-select-icon {
+                    color: var(--gh-text-secondary);
+                    font-size: 12px;
+                    line-height: 1;
+                    transition: transform 0.16s var(--gh-fast-ease);
+                }
+
+                .chatgpt-helper-custom-select.open .chatgpt-helper-custom-select-icon {
+                    transform: rotate(180deg);
+                }
+
+                .chatgpt-helper-custom-select-menu {
+                    position: absolute;
+                    z-index: 10020;
+                    top: calc(100% + 6px);
+                    right: 0;
+                    width: 100%;
+                    max-height: 190px;
+                    overflow-y: auto;
+                    display: none;
+                    padding: 4px;
+                    border-radius: var(--gh-control-radius);
+                    background: var(--gh-bg) !important;
+                    border: 1px solid var(--gh-input-border);
+                    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.22);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-custom-select-menu,
+                :root[data-gh-mode="dark"] .chatgpt-helper-custom-select-menu {
+                    background: var(--gh-input-bg, #0f172a) !important;
+                    box-shadow: 0 18px 42px rgba(2, 6, 23, 0.62);
+                }
+
+                .chatgpt-helper-custom-select.open .chatgpt-helper-custom-select-menu {
+                    display: block;
+                    position: static;
+                    margin-top: 6px;
+                }
+
+                .chatgpt-helper-custom-select-option {
+                    width: 100%;
+                    min-height: 34px;
+                    display: block;
+                    padding: 7px 10px;
+                    border: 0;
+                    border-radius: calc(var(--gh-control-radius) - 2px);
+                    background: transparent;
+                    color: var(--gh-text);
+                    cursor: pointer;
+                    font: inherit;
+                    text-align: left;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .chatgpt-helper-custom-select-option:hover,
+                .chatgpt-helper-custom-select-option:focus {
+                    outline: none;
+                    background: var(--gh-hover);
+                }
+
+                .chatgpt-helper-custom-select-option.selected {
+                    background: color-mix(in srgb, var(--gh-primary), transparent 72%);
+                    color: var(--gh-text);
+                    font-weight: 700;
                 }
 
                 .chatgpt-helper-search-input:focus,
@@ -13125,7 +13407,7 @@
 
                 .chatgpt-helper-setting-section {
                     padding: 0 !important;
-                    overflow: hidden;
+                    overflow: visible;
                     margin-bottom: 12px !important;
                 }
 
@@ -14592,7 +14874,7 @@
       updateCollapseButtonState() {
         const collapseBtn = document.getElementById("chatgpt-helper-collapse-btn");
         if (!collapseBtn) return;
-        const nextTitle = this.isCollapsed ? this.t("expand") || "展开" : this.t("collapse");
+        const nextTitle = this.isCollapsed ? this.t("expand") : this.t("collapse");
         setButtonIcon(collapseBtn, this.isCollapsed ? "expand" : "collapse", { size: 16 });
         collapseBtn.title = nextTitle;
         collapseBtn.setAttribute("aria-label", nextTitle);
@@ -14611,11 +14893,11 @@
         const controls = createElement("div", { id: "chatgpt-helper-controls" });
         const themeBtn = createElement("button", {
           className: "chatgpt-helper-header-btn",
-          title: "切换主题",
+          title: this.t("themeToggle"),
           id: "chatgpt-helper-header-theme-btn",
           type: "button",
           // 明确指定按钮类型，避免表单提交等意外行为
-          "aria-label": "切换主题"
+          "aria-label": this.t("themeToggle")
         });
         const isDark = document.body.dataset.ghMode === "dark" || /\bdark\b/i.test(document.body.className);
         setButtonIcon(themeBtn, isDark ? "sun" : "moon", { size: 15 });
@@ -14628,10 +14910,10 @@
         });
         const newChatBtn = createElement("button", {
           className: "chatgpt-helper-header-btn",
-          title: "新标签页开启对话",
+          title: this.t("newChatInTab"),
           id: "chatgpt-helper-header-newchat-btn",
           type: "button",
-          "aria-label": "新标签页开启对话"
+          "aria-label": this.t("newChatInTab")
         });
         newChatBtn.appendChild(createSvgIconNode("plus", { size: 15 }));
         newChatBtn.addEventListener("click", () => {
@@ -14653,10 +14935,10 @@
         });
         const collapseBtn = createElement("button", {
           className: "chatgpt-helper-header-btn",
-          title: this.isCollapsed ? this.t("expand") || "展开" : this.t("collapse"),
+          title: this.isCollapsed ? this.t("expand") : this.t("collapse"),
           id: "chatgpt-helper-collapse-btn",
           type: "button",
-          "aria-label": this.isCollapsed ? this.t("expand") || "展开" : this.t("collapse")
+          "aria-label": this.isCollapsed ? this.t("expand") : this.t("collapse")
         });
         collapseBtn.appendChild(createSvgIconNode(this.isCollapsed ? "expand" : "collapse", { size: 16 }));
         collapseBtn.addEventListener("click", () => this.toggleCollapse());
@@ -14722,7 +15004,7 @@
             draggable: true
           });
           dragHandle.innerHTML = "⋮&nbsp;⋮";
-          dragHandle.setAttribute("title", "拖动改变顺序");
+          dragHandle.setAttribute("title", this.t("dragToReorder"));
           tab.appendChild(dragHandle);
           tab.appendChild(createSvgIconNode(def.iconName || "list", {
             size: 15,
@@ -14828,33 +15110,33 @@
         const navScrollTopBtn = createElement("button", {
           className: "scroll-nav-btn",
           id: "scroll-top-btn",
-          title: "滚动到顶部",
+          title: this.t("outlineScrollTop"),
           type: "button",
-          "aria-label": "滚动到顶部"
+          "aria-label": this.t("outlineScrollTop")
         });
         navScrollTopBtn.appendChild(createSvgIconNode("arrowUp", { size: 15 }));
-        navScrollTopBtn.appendChild(createElement("span", {}, "顶部"));
+        navScrollTopBtn.appendChild(createElement("span", {}, this.t("buttonScrollTop")));
         navScrollTopBtn.addEventListener("click", () => this.scrollToTop());
         const navAnchorBtn = createElement("button", {
           className: "scroll-nav-btn",
           id: "scroll-anchor-btn",
-          title: "暂无锚点",
+          title: this.t("noAnchor"),
           type: "button",
-          "aria-label": "返回跳转前位置",
+          "aria-label": this.t("returnPreviousPosition"),
           style: "opacity: 0.4; cursor: default;"
         });
         navAnchorBtn.appendChild(createSvgIconNode("anchor", { size: 15 }));
-        navAnchorBtn.appendChild(createElement("span", {}, "返回"));
+        navAnchorBtn.appendChild(createElement("span", {}, this.t("buttonBack")));
         navAnchorBtn.addEventListener("click", () => this.handleAnchorClick());
         const navScrollBottomBtn = createElement("button", {
           className: "scroll-nav-btn",
           id: "scroll-bottom-btn",
-          title: "滚动到底部",
+          title: this.t("outlineScrollBottom"),
           type: "button",
-          "aria-label": "滚动到底部"
+          "aria-label": this.t("outlineScrollBottom")
         });
         navScrollBottomBtn.appendChild(createSvgIconNode("arrowDown", { size: 15 }));
-        navScrollBottomBtn.appendChild(createElement("span", {}, "底部"));
+        navScrollBottomBtn.appendChild(createElement("span", {}, this.t("buttonScrollBottom")));
         navScrollBottomBtn.addEventListener("click", () => this.scrollToBottom());
         scrollNavContainer.appendChild(navScrollTopBtn);
         scrollNavContainer.appendChild(navAnchorBtn);
@@ -15037,7 +15319,7 @@
         addBtn.addEventListener("click", () => this.showAddPromptDialog());
         listContainer.appendChild(addBtn);
         let filteredPrompts = this.prompts;
-        if (this.selectedCategory && this.selectedCategory !== "全部") {
+        if (this.selectedCategory && this.selectedCategory !== this.t("allCategory")) {
           filteredPrompts = filteredPrompts.filter((p) => p.category === this.selectedCategory);
         }
         if (this.searchQuery) {
@@ -15049,7 +15331,7 @@
         if (filteredPrompts.length === 0) {
           listContainer.appendChild(createElement("div", {
             style: { textAlign: "center", color: "var(--gh-text-secondary)", padding: "20px", fontSize: "14px" }
-          }, "暂无提示词"));
+          }, this.t("noPrompts")));
           return;
         }
         filteredPrompts.forEach((prompt2, filteredIndex) => {
@@ -15082,7 +15364,7 @@
           if (prompt2.category) {
             const categoryBtn = createElement("button", {
               className: "category-btn",
-              title: `切换到分类: ${prompt2.category}`,
+              title: `${this.t("category")}: ${prompt2.category}`,
               type: "button"
               // 明确指定按钮类型
             });
@@ -15102,7 +15384,7 @@
           }
           const editBtn = createElement("button", {
             className: "edit-btn",
-            title: "编辑"
+            title: this.t("edit")
           });
           editBtn.appendChild(createSvgIconNode("edit", { size: 14 }));
           editBtn.addEventListener("click", (e) => {
@@ -15272,15 +15554,15 @@
           className: "chatgpt-helper-prompt-dialog",
           role: "dialog",
           "aria-modal": "true",
-          "aria-label": prompt2 ? "编辑提示词" : "添加提示词"
+          "aria-label": prompt2 ? this.t("editPrompt") : this.t("addPrompt")
         });
         const title = createElement("h3", {
           className: "chatgpt-helper-prompt-dialog-title"
-        }, prompt2 ? "编辑提示词" : "添加提示词");
+        }, prompt2 ? this.t("editPrompt") : this.t("addPrompt"));
         const titleInput = createElement("input", {
           className: "chatgpt-helper-prompt-dialog-field",
           type: "text",
-          placeholder: "提示词标题",
+          placeholder: this.t("title"),
           value: prompt2?.title || ""
         });
         const contentTextarea = createElement("textarea", {
@@ -15291,7 +15573,7 @@
         const categoryInput = createElement("input", {
           className: "chatgpt-helper-prompt-dialog-field",
           type: "text",
-          placeholder: this.t("category") + "（可选）",
+          placeholder: `${this.t("category")} (${this.t("optional")})`,
           value: prompt2?.category || ""
         });
         const buttons = createElement("div", {
@@ -15434,8 +15716,30 @@
       return;
     }
     Object.assign(ChatGPTHelper.prototype, {
+      syncExporterLanguage() {
+        const exporterLang = getCurrentLang() === "zh-CN" ? "zh-Hans" : "en-US";
+        try {
+          window.GM_setValue("exporter:language", JSON.stringify(exporterLang));
+        } catch (e) {
+          console.warn("[ChatGPT Helper] Failed to persist exporter language:", e);
+        }
+        const namespaceSync = window.__MY_EXT__?.ChatGPTExporterSetLanguage;
+        const windowSync = window.ChatGPTExporterSetLanguage;
+        if (typeof namespaceSync === "function") {
+          namespaceSync(exporterLang);
+        } else if (typeof windowSync === "function") {
+          windowSync(exporterLang);
+        }
+        try {
+          window.dispatchEvent(new CustomEvent("chatgpt-helper-language-changed", {
+            detail: { language: exporterLang }
+          }));
+        } catch (e) {
+        }
+      },
       renderExport(container) {
         container.classList.add("chatgpt-helper-export-panel");
+        this.syncExporterLanguage();
         const titleBar = createElement("div", {
           className: "chatgpt-helper-export-header",
           id: "chatgpt-helper-export-header"
@@ -15446,7 +15750,7 @@
         }));
         titleBar.appendChild(createElement("span", {
           className: "chatgpt-helper-export-header-title"
-        }, this.t("tabExport") || "导出"));
+        }, this.t("tabExport")));
         container.appendChild(titleBar);
         const exportContainer = createElement("div", {
           className: "chatgpt-helper-export-container",
@@ -15482,7 +15786,7 @@
               console.error("[ChatGPT Helper] 挂载 ChatGPT Exporter 失败:", e);
               exportContainer.appendChild(createElement("div", {
                 style: { padding: "12px", fontSize: "13px", color: "var(--gh-text-secondary)" }
-              }, "导出模块加载失败，请检查 ChatGPT Exporter 脚本是否正常运行。"));
+              }, this.t("exportModuleLoadFailed")));
             }
           } else if (retryCount < maxRetries) {
             retryCount++;
@@ -15498,7 +15802,7 @@
             });
             exportContainer.appendChild(createElement("div", {
               style: { padding: "12px", fontSize: "13px", color: "var(--gh-text-secondary)" }
-            }, "未检测到 ChatGPT Exporter，请确保扩展已正确加载。"));
+            }, this.t("exportModuleMissing")));
           }
         };
         setTimeout(tryMount, 200);
@@ -15534,6 +15838,7 @@
       DEFAULT_THEME_CONFIG,
       DEFAULT_SETTINGS,
       DEFAULT_PROMPTS,
+      createDefaultPrompts,
       createElement,
       getExtensionRuntime,
       getExtensionAssetUrl,
@@ -15609,7 +15914,7 @@
             background: "var(--gh-bg-secondary)",
             borderRadius: "16px",
             border: "1px solid var(--gh-border)",
-            overflow: "hidden"
+            overflow: "visible"
           }
         });
         const header = createElement("div", {
@@ -15741,29 +16046,50 @@
               e.stopPropagation();
             });
           } else if (item.type === "select") {
-            control = createElement("select", {
-              style: {
-                padding: "6px 12px",
-                border: "1px solid var(--gh-border)",
-                borderRadius: "6px",
-                background: "var(--gh-input-bg)",
-                color: "var(--gh-text)",
-                fontSize: "14px",
-                cursor: "pointer",
-                minWidth: "150px"
-              }
+            const options2 = item.options || [];
+            const selected = options2.find((opt) => String(opt.value) === String(item.value)) || options2[0];
+            control = createElement("div", {
+              className: "chatgpt-helper-custom-select",
+              "data-value": selected ? String(selected.value) : ""
             });
-            if (item.options) {
-              item.options.forEach((opt) => {
-                const option = createElement("option", { value: opt.value }, opt.label);
-                if (opt.value === item.value) option.selected = true;
-                control.appendChild(option);
-              });
-            }
-            control.addEventListener("change", (e) => {
-              e.stopPropagation();
-              const newValue = control.value;
+            const trigger = createElement("button", {
+              className: "chatgpt-helper-custom-select-trigger",
+              type: "button",
+              "aria-haspopup": "listbox",
+              "aria-expanded": "false"
+            });
+            const triggerText = createElement("span", {
+              className: "chatgpt-helper-custom-select-value"
+            }, selected ? selected.label : "");
+            const triggerIcon = createElement("span", {
+              className: "chatgpt-helper-custom-select-icon",
+              "aria-hidden": "true"
+            }, "▾");
+            trigger.appendChild(triggerText);
+            trigger.appendChild(triggerIcon);
+            const menu = createElement("div", {
+              className: "chatgpt-helper-custom-select-menu",
+              role: "listbox"
+            });
+            const closeMenu = () => {
+              control.classList.remove("open");
+              trigger.setAttribute("aria-expanded", "false");
+            };
+            const openMenu = () => {
+              control.classList.add("open");
+              trigger.setAttribute("aria-expanded", "true");
+            };
+            const chooseOption = (opt) => {
+              const newValue = opt.value;
               item.value = newValue;
+              control.dataset.value = String(newValue);
+              triggerText.textContent = opt.label;
+              menu.querySelectorAll(".chatgpt-helper-custom-select-option").forEach((optionEl) => {
+                const isSelected = optionEl.dataset.value === String(newValue);
+                optionEl.classList.toggle("selected", isSelected);
+                optionEl.setAttribute("aria-selected", isSelected ? "true" : "false");
+              });
+              closeMenu();
               if (item.onChange) {
                 try {
                   item.onChange(newValue);
@@ -15771,7 +16097,60 @@
                   console.error("[ChatGPT Helper] Select onChange error:", err);
                 }
               }
+            };
+            options2.forEach((opt) => {
+              const isSelected = String(opt.value) === String(item.value);
+              const option = createElement("button", {
+                className: `chatgpt-helper-custom-select-option${isSelected ? " selected" : ""}`,
+                type: "button",
+                role: "option",
+                "aria-selected": isSelected ? "true" : "false",
+                "data-value": String(opt.value)
+              }, opt.label);
+              option.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                chooseOption(opt);
+              });
+              menu.appendChild(option);
             });
+            trigger.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (control.classList.contains("open")) closeMenu();
+              else openMenu();
+            });
+            trigger.addEventListener("keydown", (e) => {
+              if (e.key === "Escape") {
+                closeMenu();
+              } else if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                openMenu();
+                const current = menu.querySelector(".chatgpt-helper-custom-select-option.selected") || menu.querySelector(".chatgpt-helper-custom-select-option");
+                if (current) current.focus();
+              }
+            });
+            menu.addEventListener("keydown", (e) => {
+              const optionEls = Array.from(menu.querySelectorAll(".chatgpt-helper-custom-select-option"));
+              const currentIndex = optionEls.indexOf(document.activeElement);
+              if (e.key === "Escape") {
+                closeMenu();
+                trigger.focus();
+              } else if (e.key === "ArrowDown") {
+                e.preventDefault();
+                const next = optionEls[Math.min(optionEls.length - 1, currentIndex + 1)] || optionEls[0];
+                if (next) next.focus();
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                const prev = optionEls[Math.max(0, currentIndex - 1)] || optionEls[optionEls.length - 1];
+                if (prev) prev.focus();
+              }
+            });
+            control.addEventListener("focusout", (e) => {
+              if (!control.contains(e.relatedTarget)) closeMenu();
+            });
+            control.appendChild(trigger);
+            control.appendChild(menu);
           } else if (item.type === "number") {
             const inputAttrs = {
               type: "number",
@@ -15923,7 +16302,7 @@
               this.settings.panelWidth = Math.max(200, Math.min(600, parseInt(val) || 320));
               this.saveSettings();
               this.adjustChatGPTLayout();
-              this.showToast("已更新面板宽度，刷新页面生效");
+              this.showToast(this.t("panelWidthUpdated"));
             }
           },
           {
@@ -15985,7 +16364,7 @@
                   console.warn("[ChatGPT Helper] 警告：状态不一致！");
                 }
               }, 100);
-              this.showToast(val ? "已启用防止自动滚动" : "已禁用防止自动滚动");
+              this.showToast(`${this.t(val ? "enabled" : "disabled")} ${this.t("preventAutoScrollLabel")}`);
             }
           },
           {
@@ -16040,7 +16419,7 @@
               if (this.widthStyleManager) {
                 this.widthStyleManager.updateConfig(this.settings.pageWidth);
               }
-              this.showToast(val ? "已启用页面宽度限制" : "已禁用页面宽度限制");
+              this.showToast(`${this.t(val ? "enabled" : "disabled")} ${this.t("limitPageWidthLabel")}`);
             }
           },
           {
@@ -16231,11 +16610,13 @@
             }
           }
         ]);
+        const savedLanguagePreference = window.GM_getValue(SETTING_KEYS.LANGUAGE, "auto");
+        const languageValue = savedLanguagePreference === "auto" || I18N[savedLanguagePreference] ? savedLanguagePreference : "auto";
         const languageSection = this.createSettingSection(t("languageSettings"), [
           {
             label: t("language"),
             type: "select",
-            value: this.lang || "auto",
+            value: languageValue,
             options: [
               { value: "auto", label: t("autoDetect") },
               { value: "zh-CN", label: t("chinese") },
@@ -16244,9 +16625,16 @@
             onChange: (val) => {
               window.GM_setValue(SETTING_KEYS.LANGUAGE, val);
               setCurrentLang(val === "auto" ? detectLanguage() : val);
-              this.lang = getCurrentLang();
+              if (this.syncExporterLanguage) {
+                this.syncExporterLanguage();
+              }
+              this.lang = val;
+              this.selectedCategory = this.t("allCategory");
+              if (!window.GM_getValue(SETTING_KEYS.PROMPTS, null)) {
+                this.prompts = createDefaultPrompts();
+              }
               this.createUI();
-              this.showToast(this.t("languageChanged") || "语言已更改");
+              this.showToast(this.t("languageChanged"));
             }
           }
         ]);
@@ -16262,7 +16650,7 @@
               if (val && this.readingProgressManager) {
                 this.readingProgressManager.startRecording();
               }
-              this.showToast(val ? "已启用阅读历史" : "已禁用阅读历史");
+              this.showToast(`${this.t(val ? "enabled" : "disabled")} ${this.t("readingHistory")}`);
             }
           },
           {
@@ -16273,7 +16661,7 @@
               if (!this.settings.readingHistory) this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
               this.settings.readingHistory.autoRestore = val;
               this.saveSettings();
-              this.showToast(val ? "已启用自动跳转" : "已禁用自动跳转");
+              this.showToast(`${this.t(val ? "enabled" : "disabled")} ${this.t("autoRestoreLabel")}`);
             }
           },
           {
@@ -16336,12 +16724,12 @@
             type: "select",
             value: this.settings.outline?.maxLevel || 6,
             options: [
-              { value: 1, label: "仅 H1" },
+              { value: 1, label: this.t("outlineLevelOnlyH1") },
               { value: 2, label: "H1-H2" },
               { value: 3, label: "H1-H3" },
               { value: 4, label: "H1-H4" },
               { value: 5, label: "H1-H5" },
-              { value: 6, label: "H1-H6（全部）" }
+              { value: 6, label: this.t("outlineLevelAll") }
             ],
             onChange: (val) => {
               if (!this.settings.outline) this.settings.outline = {};
@@ -16620,7 +17008,7 @@
               color: "var(--gh-text-secondary)",
               fontSize: "14px"
             }
-          }, "暂无大纲内容，请等待对话生成或刷新页面");
+          }, this.t("outlineNoContent"));
           container.appendChild(emptyMsg);
         }
       },
@@ -16865,10 +17253,10 @@
           if (btnConfig.id === "manualAnchor") {
             const setBtn = createElement("button", {
               className: "chatgpt-helper-quick-btn",
-              title: "设置锚点",
+              title: this.t("setAnchor"),
               id: "manual-anchor-set-btn",
               type: "button",
-              "aria-label": "设置锚点"
+              "aria-label": this.t("setAnchor")
             });
             setBtn.appendChild(createSvgIconNode("pin", { size: 18, className: "chatgpt-helper-quick-btn-icon" }));
             const handleSetClick = (e) => {
@@ -16886,10 +17274,10 @@
             }, { capture: true });
             const backBtn = createElement("button", {
               className: "chatgpt-helper-quick-btn" + (this.savedAnchorTop === null ? " disabled" : ""),
-              title: this.savedAnchorTop === null ? "暂无锚点" : "返回锚点",
+              title: this.savedAnchorTop === null ? this.t("noAnchor") : this.t("returnAnchor"),
               id: "manual-anchor-back-btn",
               type: "button",
-              "aria-label": this.savedAnchorTop === null ? "暂无锚点" : "返回锚点"
+              "aria-label": this.savedAnchorTop === null ? this.t("noAnchor") : this.t("returnAnchor")
             });
             backBtn.appendChild(createSvgIconNode("back", { size: 18, className: "chatgpt-helper-quick-btn-icon" }));
             const handleBackClick = (e) => {
@@ -16900,7 +17288,7 @@
               if (this.savedAnchorTop !== null) {
                 this.backToManualAnchor();
               } else {
-                this.showToast("暂无锚点");
+                this.showToast(this.t("noAnchor"));
               }
             };
             backBtn.addEventListener("click", handleBackClick, { capture: true, passive: false });
@@ -16911,10 +17299,10 @@
             }, { capture: true });
             const clearBtn = createElement("button", {
               className: "chatgpt-helper-quick-btn" + (this.savedAnchorTop === null ? " disabled" : ""),
-              title: "清除锚点",
+              title: this.t("clearAnchor"),
               id: "manual-anchor-clear-btn",
               type: "button",
-              "aria-label": "清除锚点"
+              "aria-label": this.t("clearAnchor")
             });
             clearBtn.appendChild(createSvgIconNode("close", { size: 18, className: "chatgpt-helper-quick-btn-icon" }));
             const handleClearClick = (e) => {
@@ -16925,7 +17313,7 @@
               if (this.savedAnchorTop !== null) {
                 this.clearAnchorManually();
               } else {
-                this.showToast("暂无锚点");
+                this.showToast(this.t("noAnchor"));
               }
             };
             clearBtn.addEventListener("click", handleClearClick, { capture: true, passive: false });
@@ -16984,7 +17372,7 @@
                 }
               } catch (error) {
                 console.error("[ChatGPT Helper] 按钮操作失败:", btnId, error, error.stack);
-                self.showToast("操作失败: " + error.message);
+                self.showToast(`${self.t("operationFailed")}: ${error.message}`);
               }
             };
             btn.addEventListener("mouseenter", () => {
@@ -17006,9 +17394,9 @@
               if (!self.hasAnchor) {
                 btn.style.opacity = "0.4";
                 btn.style.cursor = "default";
-                btn.title = "暂无锚点";
+                btn.title = self.t("noAnchor");
               } else {
-                btn.title = "返回跳转前位置";
+                btn.title = self.t("returnPreviousPosition");
               }
             } else if (btnConfig.id === "theme") {
               const isDark = document.body.dataset.ghMode === "dark" || document.documentElement.getAttribute("data-gh-mode") === "dark" || /\bdark\b/i.test(document.body.className);
@@ -17087,7 +17475,7 @@
                   }, 200);
                 }
                 console.log("[ChatGPT Helper] window 滚动到顶部完成，最终位置:", current, "尝试次数:", attempts);
-                this.showToast("已滚动到顶部");
+                this.showToast(this.t("scrolledTop"));
               } else if (current >= before && attempts > 10) {
                 console.log("[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView");
                 try {
@@ -17104,14 +17492,14 @@
                     this.scrollLockManager.setEnabled(true);
                   }, 200);
                 }
-                this.showToast("已滚动到顶部");
+                this.showToast(this.t("scrolledTop"));
               }
             }, 10);
           } else {
             window.__ghBypassLock = true;
             window.scrollTo({ top: 0, behavior: "instant" });
             setTimeout(() => delete window.__ghBypassLock, 100);
-            this.showToast("已滚动到顶部");
+            this.showToast(this.t("scrolledTop"));
           }
           return;
         }
@@ -17165,7 +17553,7 @@
                     this.scrollLockManager.setEnabled(true);
                   }, 200);
                 }
-                this.showToast("已滚动到顶部");
+                this.showToast(this.t("scrolledTop"));
               } else if (current >= before && attempts > 10) {
                 try {
                   const firstElement = document.body.firstElementChild || document.body.firstChild;
@@ -17181,14 +17569,14 @@
                     this.scrollLockManager.setEnabled(true);
                   }, 200);
                 }
-                this.showToast("已滚动到顶部");
+                this.showToast(this.t("scrolledTop"));
               }
             }, 10);
           } else {
             window.__ghBypassLock = true;
             window.scrollTo({ top: 0, behavior: "instant" });
             setTimeout(() => delete window.__ghBypassLock, 100);
-            this.showToast("已滚动到顶部");
+            this.showToast(this.t("scrolledTop"));
           }
           return;
         }
@@ -17297,7 +17685,7 @@
               clearInterval(scrollInterval);
               cleanup();
               console.log("[ChatGPT Helper] 滚动到顶部完成，最终位置:", current, "尝试次数:", attempts);
-              this.showToast("已滚动到顶部");
+              this.showToast(this.t("scrolledTop"));
             } else if (current >= before && attempts > 10) {
               console.log("[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView");
               try {
@@ -17310,7 +17698,7 @@
               }
               clearInterval(scrollInterval);
               cleanup();
-              this.showToast("已滚动到顶部");
+              this.showToast(this.t("scrolledTop"));
             }
           }, 10);
         } else {
@@ -17328,12 +17716,12 @@
             if (current <= 5 || attempts >= maxAttempts) {
               cleanup();
               console.log("[ChatGPT Helper] 滚动到顶部完成，最终位置:", current, "尝试次数:", attempts);
-              this.showToast("已滚动到顶部");
+              this.showToast(this.t("scrolledTop"));
             } else if (current < before) {
               requestAnimationFrame(scrollStep);
             } else {
               cleanup();
-              this.showToast("已滚动到顶部");
+              this.showToast(this.t("scrolledTop"));
             }
           };
           requestAnimationFrame(() => {
@@ -17354,7 +17742,7 @@
           window.__ghBypassLock = true;
           window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" });
           setTimeout(() => delete window.__ghBypassLock, 100);
-          this.showToast("已滚动到底部");
+          this.showToast(this.t("scrolledBottom"));
           return;
         }
         const targetTop = Math.max(0, container.scrollHeight - container.clientHeight);
@@ -17364,7 +17752,7 @@
           window.__ghBypassLock = true;
           window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" });
           setTimeout(() => delete window.__ghBypassLock, 100);
-          this.showToast("已滚动到底部");
+          this.showToast(this.t("scrolledBottom"));
           return;
         }
         const wasLockEnabled = this.scrollLockManager && this.scrollLockManager.enabled;
@@ -17424,7 +17812,7 @@
               }, 200);
             }
             console.log("[ChatGPT Helper] 滚动到底部完成，最终位置:", currentTop, "距离底部:", distanceToBottom, "尝试次数:", attempts);
-            this.showToast("已滚动到底部");
+            this.showToast(this.t("scrolledBottom"));
           } else if (currentTop > before) {
             requestAnimationFrame(scrollStep);
           } else {
@@ -17443,7 +17831,7 @@
                 this.scrollLockManager.setEnabled(true);
               }, 200);
             }
-            this.showToast("已滚动到底部");
+            this.showToast(this.t("scrolledBottom"));
           }
         };
         requestAnimationFrame(() => {
@@ -17460,15 +17848,15 @@
           }
           this.showAnchorMarker(this.savedAnchorTop);
           this.updateManualAnchorButtons();
-          this.showToast("已设置锚点");
+          this.showToast(this.t("anchorSet"));
         } catch (error) {
           console.error("[ChatGPT Helper] 设置锚点失败:", error);
-          this.showToast("设置锚点失败");
+          this.showToast(this.t("anchorSetFailed"));
         }
       },
       backToManualAnchor() {
         if (this.savedAnchorTop === null) {
-          this.showToast("暂无锚点");
+          this.showToast(this.t("noAnchor"));
           return;
         }
         try {
@@ -17525,7 +17913,7 @@
                       this.scrollLockManager.setEnabled(true);
                     }, 200);
                   }
-                  this.showToast("已返回锚点");
+                  this.showToast(this.t("returnedAnchor"));
                 } else if (attempts >= maxAttempts) {
                   clearInterval(scrollInterval);
                   if (wasLockEnabled2 && this.scrollLockManager) {
@@ -17533,7 +17921,7 @@
                       this.scrollLockManager.setEnabled(true);
                     }, 200);
                   }
-                  this.showToast("返回锚点失败");
+                  this.showToast(this.t("returnAnchorFailed"));
                 } else if (Math.abs(current - before) < 1 && attempts > 10) {
                   clearInterval(scrollInterval);
                   if (wasLockEnabled2 && this.scrollLockManager) {
@@ -17541,14 +17929,14 @@
                       this.scrollLockManager.setEnabled(true);
                     }, 200);
                   }
-                  this.showToast("返回锚点失败");
+                  this.showToast(this.t("returnAnchorFailed"));
                 }
               }, 10);
             } else {
               window.__ghBypassLock = true;
               window.scrollTo({ top: this.savedAnchorTop, behavior: "instant" });
               setTimeout(() => delete window.__ghBypassLock, 100);
-              this.showToast("已返回锚点");
+              this.showToast(this.t("returnedAnchor"));
             }
             return;
           }
@@ -17652,11 +18040,11 @@
               if (diff <= 5) {
                 clearInterval(scrollInterval);
                 cleanup();
-                this.showToast("已返回锚点");
+                this.showToast(this.t("returnedAnchor"));
               } else if (attempts >= maxAttempts) {
                 clearInterval(scrollInterval);
                 cleanup();
-                this.showToast("返回锚点失败");
+                this.showToast(this.t("returnAnchorFailed"));
               } else if (Math.abs(current - before) < 1 && attempts > 10) {
                 console.log("[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView");
                 try {
@@ -17673,16 +18061,16 @@
                     const finalCurrent = container.scrollTop;
                     const finalDiff = Math.abs(finalCurrent - this.savedAnchorTop);
                     if (finalDiff <= 5) {
-                      this.showToast("已返回锚点");
+                      this.showToast(this.t("returnedAnchor"));
                     } else {
-                      this.showToast("返回锚点失败");
+                      this.showToast(this.t("returnAnchorFailed"));
                     }
                   }, 100);
                 } catch (e) {
                   console.error("[ChatGPT Helper] scrollIntoView 失败:", e);
                   clearInterval(scrollInterval);
                   cleanup();
-                  this.showToast("返回锚点失败");
+                  this.showToast(this.t("returnAnchorFailed"));
                 }
                 clearInterval(scrollInterval);
                 cleanup();
@@ -17690,18 +18078,18 @@
             }, 10);
           } else {
             cleanup();
-            this.showToast("已返回锚点");
+            this.showToast(this.t("returnedAnchor"));
           }
         } catch (error) {
           console.error("[ChatGPT Helper] 返回锚点失败:", error);
-          this.showToast("返回锚点失败");
+          this.showToast(this.t("returnAnchorFailed"));
         }
       },
       clearAnchorManually() {
         this.savedAnchorTop = null;
         this.hideAnchorMarker();
         this.updateManualAnchorButtons();
-        this.showToast("已清除锚点");
+        this.showToast(this.t("anchorCleared"));
       },
       showAnchorMarker(scrollTop) {
         this.hideAnchorMarker();
@@ -17730,7 +18118,8 @@
         const hasAnchor = this.savedAnchorTop !== null;
         if (backBtn) {
           backBtn.classList.toggle("disabled", !hasAnchor);
-          backBtn.title = hasAnchor ? "返回锚点" : "暂无锚点";
+          backBtn.title = hasAnchor ? this.t("returnAnchor") : this.t("noAnchor");
+          backBtn.setAttribute("aria-label", backBtn.title);
         }
         if (clearBtn) {
           clearBtn.classList.toggle("disabled", !hasAnchor);
@@ -17738,7 +18127,7 @@
       },
       handleAnchorClick() {
         if (!this.anchorManager || !this.anchorManager.hasAnchor()) {
-          this.showToast("暂无锚点（点击顶部/底部按钮可自动生成）");
+          this.showToast(this.t("noAnchorAutoHint"));
           return;
         }
         try {
@@ -17747,7 +18136,7 @@
           if (!container || container === document.body) {
             const anchorTop2 = this.anchorManager.previousAnchor?.top;
             if (anchorTop2 === void 0) {
-              this.showToast("返回锚点失败");
+              this.showToast(this.t("returnAnchorFailed"));
               return;
             }
             if (isAtBottomWindow) {
@@ -17803,7 +18192,7 @@
                   const currentPos = this.anchorManager._captureCurrentPosition();
                   this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                   this.anchorManager.previousAnchor = currentPos;
-                  this.showToast("已返回跳转前位置");
+                  this.showToast(this.t("returnedPreviousPosition"));
                 } else if (attempts >= maxAttempts) {
                   clearInterval(scrollInterval);
                   if (wasLockEnabled2 && this.scrollLockManager) {
@@ -17811,7 +18200,7 @@
                       this.scrollLockManager.setEnabled(true);
                     }, 200);
                   }
-                  this.showToast("返回锚点失败");
+                  this.showToast(this.t("returnAnchorFailed"));
                 } else if (Math.abs(current - before) < 1 && attempts > 10) {
                   clearInterval(scrollInterval);
                   if (wasLockEnabled2 && this.scrollLockManager) {
@@ -17819,15 +18208,15 @@
                       this.scrollLockManager.setEnabled(true);
                     }, 200);
                   }
-                  this.showToast("返回锚点失败");
+                  this.showToast(this.t("returnAnchorFailed"));
                 }
               }, 10);
             } else {
               const success = this.anchorManager.backToAnchor();
               if (success) {
-                this.showToast("已返回跳转前位置");
+                this.showToast(this.t("returnedPreviousPosition"));
               } else {
-                this.showToast("返回锚点失败");
+                this.showToast(this.t("returnAnchorFailed"));
               }
             }
             return;
@@ -17836,7 +18225,7 @@
           console.log("[ChatGPT Helper] 返回锚点，是否在底部:", isAtBottomContainer);
           const anchorTop = this.anchorManager.previousAnchor?.top;
           if (anchorTop === void 0) {
-            this.showToast("返回锚点失败");
+            this.showToast(this.t("returnAnchorFailed"));
             return;
           }
           const wasLockEnabled = this.scrollLockManager && this.scrollLockManager.enabled;
@@ -17940,11 +18329,11 @@
                 const currentPos = this.anchorManager._captureCurrentPosition();
                 this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                 this.anchorManager.previousAnchor = currentPos;
-                this.showToast("已返回跳转前位置");
+                this.showToast(this.t("returnedPreviousPosition"));
               } else if (attempts >= maxAttempts) {
                 clearInterval(scrollInterval);
                 cleanup();
-                this.showToast("返回锚点失败");
+                this.showToast(this.t("returnAnchorFailed"));
               } else if (Math.abs(current - before) < 1 && attempts > 10) {
                 console.log("[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView");
                 try {
@@ -17964,16 +18353,16 @@
                       const currentPos = this.anchorManager._captureCurrentPosition();
                       this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                       this.anchorManager.previousAnchor = currentPos;
-                      this.showToast("已返回跳转前位置");
+                      this.showToast(this.t("returnedPreviousPosition"));
                     } else {
-                      this.showToast("返回锚点失败");
+                      this.showToast(this.t("returnAnchorFailed"));
                     }
                   }, 100);
                 } catch (e) {
                   console.error("[ChatGPT Helper] scrollIntoView 失败:", e);
                   clearInterval(scrollInterval);
                   cleanup();
-                  this.showToast("返回锚点失败");
+                  this.showToast(this.t("returnAnchorFailed"));
                 }
                 clearInterval(scrollInterval);
                 cleanup();
@@ -17986,14 +18375,14 @@
               const currentPos = this.anchorManager._captureCurrentPosition();
               this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
               this.anchorManager.previousAnchor = currentPos;
-              this.showToast("已返回跳转前位置");
+              this.showToast(this.t("returnedPreviousPosition"));
             } else {
-              this.showToast("返回锚点失败");
+              this.showToast(this.t("returnAnchorFailed"));
             }
           }
         } catch (error) {
           console.error("[ChatGPT Helper] 返回锚点失败:", error);
-          this.showToast("返回锚点失败");
+          this.showToast(this.t("returnAnchorFailed"));
         }
       },
       updateAnchorButton() {
@@ -18002,18 +18391,21 @@
         if (anchorBtn) {
           anchorBtn.style.opacity = hasAnchor ? "1" : "0.4";
           anchorBtn.style.cursor = hasAnchor ? "pointer" : "default";
-          anchorBtn.title = hasAnchor ? "返回跳转前位置" : "暂无锚点";
+          anchorBtn.title = hasAnchor ? this.t("returnPreviousPosition") : this.t("noAnchor");
+          anchorBtn.setAttribute("aria-label", anchorBtn.title);
         }
         const navAnchorBtn = document.getElementById("scroll-anchor-btn");
         if (navAnchorBtn) {
           if (hasAnchor) {
             navAnchorBtn.style.opacity = "1";
             navAnchorBtn.style.cursor = "pointer";
-            navAnchorBtn.title = "返回跳转前位置";
+            navAnchorBtn.title = this.t("returnPreviousPosition");
+            navAnchorBtn.setAttribute("aria-label", navAnchorBtn.title);
           } else {
             navAnchorBtn.style.opacity = "0.4";
             navAnchorBtn.style.cursor = "default";
-            navAnchorBtn.title = "暂无锚点";
+            navAnchorBtn.title = this.t("noAnchor");
+            navAnchorBtn.setAttribute("aria-label", navAnchorBtn.title);
           }
         }
       },

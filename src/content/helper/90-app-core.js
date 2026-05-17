@@ -30,6 +30,7 @@
         DEFAULT_THEME_CONFIG,
         DEFAULT_SETTINGS,
         DEFAULT_PROMPTS,
+        createDefaultPrompts,
         createElement,
         getExtensionRuntime,
         getExtensionAssetUrl,
@@ -82,7 +83,7 @@
                     this.prompts = this.loadPrompts();
                 } catch (e) {
                     console.error('[ChatGPT Helper] loadPrompts 错误:', e);
-                    this.prompts = DEFAULT_PROMPTS; // 使用默认值
+                    this.prompts = createDefaultPrompts(); // 使用默认值
                 }
                 
                 try {
@@ -114,7 +115,7 @@
                 }
                 
                 try {
-                    this.historyLoader = new HistoryLoader(this.scrollManager, (msg) => this.showToast(msg));
+                    this.historyLoader = new HistoryLoader(this.scrollManager, (msg) => this.showToast(msg), this.t);
                 } catch (e) {
                     console.error('[ChatGPT Helper] HistoryLoader 创建错误:', e);
                     this.historyLoader = null; // 非关键组件，允许为 null
@@ -158,7 +159,7 @@
 
                 // 阶段3：初始化复制管理器
                 try {
-                    this.copyManager = new CopyManager(this.settings, (msg) => this.showToast(msg));
+                    this.copyManager = new CopyManager(this.settings, (msg) => this.showToast(msg), this.t);
                 } catch (e) {
                     console.error('[ChatGPT Helper] CopyManager 创建错误:', e);
                     this.copyManager = null; // 非关键组件，允许为 null

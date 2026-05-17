@@ -178,6 +178,17 @@
             }
         }
 
+        getFolderDisplayName(folder) {
+            if (!folder) return '';
+            if (folder.id === 'inbox') return this.t('inbox');
+            return (folder.name || '').replace(folder.icon || '', '').trim() || folder.name || '';
+        }
+
+        getFolderOptionLabel(folder) {
+            const icon = folder?.icon || '';
+            return `${icon} ${this.getFolderDisplayName(folder)}`.trim();
+        }
+
         getTargetFolderId() {
             this.ensureInboxFolder();
             const folderIds = new Set(this.data.folders.map(folder => folder && folder.id).filter(Boolean));
@@ -272,7 +283,7 @@
                 className: 'chatgpt-helper-folder-select'
             });
             this.data.folders.forEach(folder => {
-                const option = createElement('option', { value: folder.id }, folder.name);
+                const option = createElement('option', { value: folder.id }, this.getFolderOptionLabel(folder));
                 if (folder.id === this.data.lastUsedFolderId) option.selected = true;
                 folderSelect.appendChild(option);
             });
@@ -405,7 +416,7 @@
             if (visibleEntries.length === 0) {
                 this.listContainer.appendChild(createElement('div', {
                     className: 'chatgpt-helper-conversations-empty'
-                }, this.searchQuery ? '未找到匹配结果' : '暂无会话'));
+                }, this.searchQuery ? this.t('noSearchResults') : this.t('noConversations')));
                 return;
             }
 
@@ -500,7 +511,7 @@
 
             const name = createElement('span', {
                 className: 'chatgpt-helper-folder-name'
-            }, folder.name.replace(folder.icon || '', '').trim() || (folder.id === 'inbox' ? '收件箱' : folder.name));
+            }, this.getFolderDisplayName(folder));
             info.appendChild(name);
 
             const countSpan = createElement('span', {
@@ -564,7 +575,7 @@
             if (conversations.length === 0) {
                 container.appendChild(createElement('div', {
                     className: 'chatgpt-helper-conversations-empty'
-                }, this.t('noConversations') || '该文件夹暂无会话'));
+                }, this.t('noConversations')));
                 return;
             }
 
@@ -634,7 +645,7 @@
                         paddingRight: conv.pinned ? '20px' : '0',
                         paddingLeft: this.batchMode ? '30px' : '0'
                     }
-                }, conv.title || '未命名对话');
+                }, conv.title || this.t('untitledConversation'));
                 item.appendChild(title);
 
                 // 标签显示
@@ -724,7 +735,7 @@
                     conversations.forEach(item => {
                         if (!item || !item.id) return;
                         const id = item.id;
-                        const title = item.title || '未命名对话';
+                        const title = item.title || this.t('untitledConversation');
                         const url = item.url;
                         const remoteCreatedAt = item.createdAt || null;
                         const remoteUpdatedAt = item.updatedAt || remoteCreatedAt;
@@ -805,7 +816,7 @@
         }
 
         showCreateFolderDialog() {
-            const name = prompt('请输入文件夹名称：');
+            const name = prompt(this.t('promptFolderName'));
             if (!name || !name.trim()) return;
 
             const folder = {
@@ -873,7 +884,7 @@
             if (this.batchToolbar) {
                 const countEl = this.batchToolbar.querySelector('span');
                 if (countEl) {
-                    countEl.textContent = `已选择 ${this.selectedIds.size} 项`;
+                    countEl.textContent = `${this.t('selected')} ${this.selectedIds.size} ${this.t('items')}`;
                 }
             }
         }
@@ -891,7 +902,7 @@
                 this.showToast(this.t('selectConversationsFirst') || '请先选择要删除的会话');
                 return;
             }
-            if (!confirm(`确定要删除 ${this.selectedIds.size} 个会话吗？`)) return;
+            if (!confirm(this.t('confirmDeleteConversations').replace('{count}', this.selectedIds.size))) return;
 
             this.selectedIds.forEach(id => {
                 delete this.data.conversations[id];
@@ -900,7 +911,7 @@
             this.saveData();
             this.renderConversationList();
             this.updateBatchToolbar();
-            this.showToast('已删除');
+            this.showToast(this.t('deleted'));
         }
 
         async batchExport() {
@@ -908,7 +919,7 @@
                 this.showToast(this.t('selectConversationsFirst') || '请先选择要导出的会话');
                 return;
             }
-            const format = prompt('选择导出格式：\n1. Markdown\n2. JSON\n3. TXT', '1');
+            const format = prompt(this.t('exportFormat'), '1');
             if (!format) return;
 
             const formatMap = { '1': 'markdown', '2': 'json', '3': 'txt' };
@@ -920,13 +931,13 @@
                     await this.exportConversation(conv, selectedFormat);
                 }
             }
-            this.showToast(`已导出 ${this.selectedIds.size} 个会话`);
+            this.showToast(this.t('exportedConversations').replace('{count}', this.selectedIds.size));
         }
 
         async exportConversation(conv, format = 'markdown') {
             // 需要打开会话才能导出内容
             if (window.location.href !== conv.url) {
-                this.showToast(this.t('openFirst') || `请先打开会话: ${conv.title}`);
+                this.showToast(this.t('openConversationFirst').replace('{title}', conv.title || this.t('untitledConversation')));
                 return;
             }
 
@@ -937,7 +948,7 @@
             }
 
             let content = '';
-            const filename = `${conv.title || '未命名'}_${Date.now()}`;
+            const filename = `${conv.title || this.t('untitledConversation')}_${Date.now()}`;
 
             switch (format) {
                 case 'markdown':
@@ -974,13 +985,13 @@
         formatToMarkdown(conv, messages) {
             const lines = [];
             const now = new Date().toLocaleString();
-            const userLabel = '用户';
+            const userLabel = this.t('userRole');
 
-            lines.push(`# 📤 导出信息`);
-            lines.push(`- **会话标题**: ${conv.title || '未命名'}`);
-            lines.push(`- **导出时间**: ${now}`);
-            lines.push(`- **来源**: ChatGPT`);
-            lines.push(`- **链接**: ${window.location.href}`);
+            lines.push(`# 📤 ${this.t('exportInfoHeading')}`);
+            lines.push(`- **${this.t('conversationTitleLabel')}**: ${conv.title || this.t('untitledConversation')}`);
+            lines.push(`- **${this.t('exportTimeLabel')}**: ${now}`);
+            lines.push(`- **${this.t('sourceLabel')}**: ChatGPT`);
+            lines.push(`- **${this.t('linkLabel')}**: ${window.location.href}`);
             lines.push('---');
             lines.push('');
 
@@ -1008,7 +1019,7 @@
         formatToJSON(conv, messages) {
             const data = {
                 metadata: {
-                    title: conv.title || '未命名',
+                    title: conv.title || this.t('untitledConversation'),
                     id: conv.id,
                     url: window.location.href,
                     exportTime: new Date().toISOString(),
@@ -1025,12 +1036,12 @@
         formatToTXT(conv, messages) {
             const lines = [];
             const now = new Date().toLocaleString();
-            const userLabel = '用户';
+            const userLabel = this.t('userRole');
 
-            lines.push(`会话标题: ${conv.title || '未命名'}`);
-            lines.push(`导出时间: ${now}`);
-            lines.push(`来源: ChatGPT`);
-            lines.push(`链接: ${window.location.href}`);
+            lines.push(`${this.t('conversationTitleLabel')}: ${conv.title || this.t('untitledConversation')}`);
+            lines.push(`${this.t('exportTimeLabel')}: ${now}`);
+            lines.push(`${this.t('sourceLabel')}: ChatGPT`);
+            lines.push(`${this.t('linkLabel')}: ${window.location.href}`);
             lines.push('');
             lines.push('='.repeat(50));
             lines.push('');
@@ -1072,19 +1083,19 @@
                 className: 'chatgpt-helper-prompt-dialog chatgpt-helper-compact-dialog',
                 role: 'dialog',
                 'aria-modal': 'true',
-                'aria-label': '移动到文件夹'
+                'aria-label': this.t('moveToFolder')
             });
 
             dialog.appendChild(createElement('div', {
                 className: 'chatgpt-helper-prompt-dialog-title'
-            }, '移动到文件夹'));
+            }, this.t('moveToFolder')));
 
             const folderSelect = createElement('select', {
                 className: 'chatgpt-helper-prompt-dialog-field'
             });
 
             this.data.folders.forEach(folder => {
-                const option = createElement('option', { value: folder.id }, folder.name);
+                const option = createElement('option', { value: folder.id }, this.getFolderOptionLabel(folder));
                 folderSelect.appendChild(option);
             });
 
@@ -1097,13 +1108,13 @@
             const cancelBtn = createElement('button', {
                 className: 'chatgpt-helper-prompt-dialog-btn secondary',
                 type: 'button'
-            }, '取消');
+            }, this.t('cancel'));
             cancelBtn.addEventListener('click', () => overlay.remove());
 
             const confirmBtn = createElement('button', {
                 className: 'chatgpt-helper-prompt-dialog-btn primary',
                 type: 'button'
-            }, '确定');
+            }, this.t('confirm'));
             confirmBtn.addEventListener('click', () => {
                 const folderId = folderSelect.value;
                 if (isBatch) {
@@ -1115,12 +1126,12 @@
                     this.saveData();
                     this.renderConversationList();
                     this.updateBatchToolbar();
-                    this.showToast(`已移动 ${this.selectedIds.size} 个会话`);
+                    this.showToast(`${this.t('moved')} ${this.selectedIds.size} ${this.t('updatedSessions')}`);
                 } else if (conv) {
                     conv.folderId = folderId;
                     this.saveData();
                     this.renderConversationList();
-                    this.showToast('已移动');
+                    this.showToast(this.t('moved'));
                 }
                 overlay.remove();
             });
@@ -1147,10 +1158,10 @@
             });
 
             const items = [
-                { label: '置顶', iconName: 'pin', action: () => this.togglePin(conv) },
-                { label: '移动到...', iconName: 'folder', action: () => this.showMoveToFolderDialog(conv) },
-                { label: '添加标签', iconName: 'tag', action: () => this.showTagDialog(conv) },
-                { label: '删除', iconName: 'trash', danger: true, action: () => this.deleteConversation(conv) }
+                { label: conv.pinned ? this.t('unpinned') : this.t('pinned'), iconName: 'pin', action: () => this.togglePin(conv) },
+                { label: this.t('move'), iconName: 'folder', action: () => this.showMoveToFolderDialog(conv) },
+                { label: this.t('addTag'), iconName: 'tag', action: () => this.showTagDialog(conv) },
+                { label: this.t('delete'), iconName: 'trash', danger: true, action: () => this.deleteConversation(conv) }
             ];
 
             items.forEach(item => {
@@ -1179,20 +1190,21 @@
             conv.pinned = !conv.pinned;
             this.saveData();
             this.renderConversationList();
-            this.showToast(conv.pinned ? '已置顶' : '已取消置顶');
+            this.showToast(conv.pinned ? this.t('pinned') : this.t('unpinned'));
         }
 
         deleteConversation(conv) {
-            if (!confirm(`确定要删除 "${conv.title}" 吗？`)) return;
+            const title = conv.title || this.t('untitledConversation');
+            if (!confirm(this.t('confirmDeleteConversation').replace('{title}', title.replace(/"/g, '')))) return;
             delete this.data.conversations[conv.id];
             this.saveData();
             this.renderConversationList();
-            this.showToast('已删除');
+            this.showToast(this.t('deleted'));
         }
 
         showTagDialog(conv) {
             // 简化的标签对话框
-            const tagName = prompt('输入标签名称（留空删除标签）：');
+            const tagName = prompt(this.t('tagPrompt'));
             if (tagName === null) return;
 
             if (!this.data.tags) this.data.tags = [];
@@ -1222,7 +1234,7 @@
 
             this.saveData();
             this.renderConversationList();
-            this.showToast('标签已更新');
+            this.showToast(this.t('tagUpdated'));
         }
 
         showToast(message) {

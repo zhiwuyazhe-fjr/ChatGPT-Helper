@@ -158,10 +158,10 @@
                     // 手动锚点按钮组
                     const setBtn = createElement('button', {
                         className: 'chatgpt-helper-quick-btn',
-                        title: '设置锚点',
+                        title: this.t('setAnchor'),
                         id: 'manual-anchor-set-btn',
                         type: 'button',
-                        'aria-label': '设置锚点'
+                        'aria-label': this.t('setAnchor')
                     });
                     setBtn.appendChild(createSvgIconNode('pin', { size: 18, className: 'chatgpt-helper-quick-btn-icon' }));
                     const handleSetClick = (e) => {
@@ -177,10 +177,10 @@
 
                     const backBtn = createElement('button', {
                         className: 'chatgpt-helper-quick-btn' + (this.savedAnchorTop === null ? ' disabled' : ''),
-                        title: this.savedAnchorTop === null ? '暂无锚点' : '返回锚点',
+                        title: this.savedAnchorTop === null ? this.t('noAnchor') : this.t('returnAnchor'),
                         id: 'manual-anchor-back-btn',
                         type: 'button',
-                        'aria-label': this.savedAnchorTop === null ? '暂无锚点' : '返回锚点'
+                        'aria-label': this.savedAnchorTop === null ? this.t('noAnchor') : this.t('returnAnchor')
                     });
                     backBtn.appendChild(createSvgIconNode('back', { size: 18, className: 'chatgpt-helper-quick-btn-icon' }));
                     const handleBackClick = (e) => {
@@ -191,7 +191,7 @@
                         if (this.savedAnchorTop !== null) {
                             this.backToManualAnchor();
                         } else {
-                            this.showToast('暂无锚点');
+                            this.showToast(this.t('noAnchor'));
                         }
                     };
                     backBtn.addEventListener('click', handleBackClick, { capture: true, passive: false });
@@ -200,10 +200,10 @@
 
                     const clearBtn = createElement('button', {
                         className: 'chatgpt-helper-quick-btn' + (this.savedAnchorTop === null ? ' disabled' : ''),
-                        title: '清除锚点',
+                        title: this.t('clearAnchor'),
                         id: 'manual-anchor-clear-btn',
                         type: 'button',
-                        'aria-label': '清除锚点'
+                        'aria-label': this.t('clearAnchor')
                     });
                     clearBtn.appendChild(createSvgIconNode('close', { size: 18, className: 'chatgpt-helper-quick-btn-icon' }));
                     const handleClearClick = (e) => {
@@ -214,7 +214,7 @@
                         if (this.savedAnchorTop !== null) {
                             this.clearAnchorManually();
                         } else {
-                            this.showToast('暂无锚点');
+                            this.showToast(this.t('noAnchor'));
                         }
                     };
                     clearBtn.addEventListener('click', handleClearClick, { capture: true, passive: false });
@@ -279,7 +279,7 @@
                             }
                         } catch (error) {
                             console.error('[ChatGPT Helper] 按钮操作失败:', btnId, error, error.stack);
-                            self.showToast('操作失败: ' + error.message);
+                            self.showToast(`${self.t('operationFailed')}: ${error.message}`);
                         }
                     };
 
@@ -315,9 +315,9 @@
                         if (!self.hasAnchor) {
                             btn.style.opacity = '0.4';
                             btn.style.cursor = 'default';
-                            btn.title = '暂无锚点';
+                            btn.title = self.t('noAnchor');
                         } else {
-                            btn.title = '返回跳转前位置';
+                            btn.title = self.t('returnPreviousPosition');
                         }
                     } else if (btnConfig.id === 'theme') {
                         // 根据当前主题设置图标
@@ -431,7 +431,7 @@
                                 }, 200);
                             }
                             console.log('[ChatGPT Helper] window 滚动到顶部完成，最终位置:', current, '尝试次数:', attempts);
-                            this.showToast('已滚动到顶部');
+                            this.showToast(this.t('scrolledTop'));
                         } else if (current >= before && attempts > 10) {
                             // 如果10次尝试后仍然没有变化，尝试使用 scrollIntoView
                             console.log('[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView');
@@ -449,14 +449,14 @@
                                     this.scrollLockManager.setEnabled(true);
                                 }, 200);
                             }
-                            this.showToast('已滚动到顶部');
+                            this.showToast(this.t('scrolledTop'));
                         }
                     }, 10);
                 } else {
                     window.__ghBypassLock = true;
                     window.scrollTo({ top: 0, behavior: 'instant' });
                     setTimeout(() => delete window.__ghBypassLock, 100);
-                    this.showToast('已滚动到顶部');
+                    this.showToast(this.t('scrolledTop'));
                 }
                 return;
             }
@@ -528,7 +528,7 @@
                                     this.scrollLockManager.setEnabled(true);
                                 }, 200);
                             }
-                            this.showToast('已滚动到顶部');
+                            this.showToast(this.t('scrolledTop'));
                         } else if (current >= before && attempts > 10) {
                             try {
                                 const firstElement = document.body.firstElementChild || document.body.firstChild;
@@ -544,14 +544,14 @@
                                     this.scrollLockManager.setEnabled(true);
                                 }, 200);
                             }
-                            this.showToast('已滚动到顶部');
+                            this.showToast(this.t('scrolledTop'));
                         }
                     }, 10);
                 } else {
                     window.__ghBypassLock = true;
                     window.scrollTo({ top: 0, behavior: 'instant' });
                     setTimeout(() => delete window.__ghBypassLock, 100);
-                    this.showToast('已滚动到顶部');
+                    this.showToast(this.t('scrolledTop'));
                 }
                 return;
             }
@@ -700,7 +700,7 @@
                         clearInterval(scrollInterval);
                         cleanup();
                         console.log('[ChatGPT Helper] 滚动到顶部完成，最终位置:', current, '尝试次数:', attempts);
-                        this.showToast('已滚动到顶部');
+                        this.showToast(this.t('scrolledTop'));
                     } else if (current >= before && attempts > 10) {
                         // 如果10次尝试后仍然没有变化，尝试其他方法
                         console.log('[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView');
@@ -714,7 +714,7 @@
                         }
                         clearInterval(scrollInterval);
                         cleanup();
-                        this.showToast('已滚动到顶部');
+                        this.showToast(this.t('scrolledTop'));
                     }
                 }, 10); // 每10ms执行一次
             } else {
@@ -736,12 +736,12 @@
                     if (current <= 5 || attempts >= maxAttempts) {
                         cleanup();
                         console.log('[ChatGPT Helper] 滚动到顶部完成，最终位置:', current, '尝试次数:', attempts);
-                        this.showToast('已滚动到顶部');
+                        this.showToast(this.t('scrolledTop'));
                     } else if (current < before) {
                         requestAnimationFrame(scrollStep);
                     } else {
                         cleanup();
-                        this.showToast('已滚动到顶部');
+                        this.showToast(this.t('scrolledTop'));
                     }
                 };
 
@@ -769,7 +769,7 @@
                 window.__ghBypassLock = true;
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
                 setTimeout(() => delete window.__ghBypassLock, 100);
-                this.showToast('已滚动到底部');
+                this.showToast(this.t('scrolledBottom'));
                 return;
             }
 
@@ -782,7 +782,7 @@
                 window.__ghBypassLock = true;
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' });
                 setTimeout(() => delete window.__ghBypassLock, 100);
-                this.showToast('已滚动到底部');
+                this.showToast(this.t('scrolledBottom'));
                 return;
             }
 
@@ -866,7 +866,7 @@
                         }, 200);
                     }
                     console.log('[ChatGPT Helper] 滚动到底部完成，最终位置:', currentTop, '距离底部:', distanceToBottom, '尝试次数:', attempts);
-                    this.showToast('已滚动到底部');
+                    this.showToast(this.t('scrolledBottom'));
                 } else if (currentTop > before) {
                     // 还在滚动中，继续
                     requestAnimationFrame(scrollStep);
@@ -888,7 +888,7 @@
                             this.scrollLockManager.setEnabled(true);
                         }, 200);
                     }
-                    this.showToast('已滚动到底部');
+                    this.showToast(this.t('scrolledBottom'));
                 }
             };
 
@@ -909,16 +909,16 @@
                 // 显示锚点图标
                 this.showAnchorMarker(this.savedAnchorTop);
                 this.updateManualAnchorButtons();
-                this.showToast('已设置锚点');
+                this.showToast(this.t('anchorSet'));
             } catch (error) {
                 console.error('[ChatGPT Helper] 设置锚点失败:', error);
-                this.showToast('设置锚点失败');
+                this.showToast(this.t('anchorSetFailed'));
             }
         },
 
         backToManualAnchor() {
             if (this.savedAnchorTop === null) {
-                this.showToast('暂无锚点');
+                this.showToast(this.t('noAnchor'));
                 return;
             }
 
@@ -988,7 +988,7 @@
                                         this.scrollLockManager.setEnabled(true);
                                     }, 200);
                                 }
-                                this.showToast('已返回锚点');
+                                this.showToast(this.t('returnedAnchor'));
                             } else if (attempts >= maxAttempts) {
                                 // 达到最大尝试次数，但未到达目标位置
                                 clearInterval(scrollInterval);
@@ -997,7 +997,7 @@
                                         this.scrollLockManager.setEnabled(true);
                                     }, 200);
                                 }
-                                this.showToast('返回锚点失败');
+                                this.showToast(this.t('returnAnchorFailed'));
                             } else if (Math.abs(current - before) < 1 && attempts > 10) {
                                 // 滚动被拦截，无法继续
                                 clearInterval(scrollInterval);
@@ -1006,14 +1006,14 @@
                                         this.scrollLockManager.setEnabled(true);
                                     }, 200);
                                 }
-                                this.showToast('返回锚点失败');
+                                this.showToast(this.t('returnAnchorFailed'));
                             }
                         }, 10);
                     } else {
                         window.__ghBypassLock = true;
                         window.scrollTo({ top: this.savedAnchorTop, behavior: 'instant' });
                         setTimeout(() => delete window.__ghBypassLock, 100);
-                        this.showToast('已返回锚点');
+                        this.showToast(this.t('returnedAnchor'));
                     }
                     return;
                 }
@@ -1146,12 +1146,12 @@
                             // 真正到达目标位置
                             clearInterval(scrollInterval);
                             cleanup();
-                            this.showToast('已返回锚点');
+                            this.showToast(this.t('returnedAnchor'));
                         } else if (attempts >= maxAttempts) {
                             // 达到最大尝试次数，但未到达目标位置
                             clearInterval(scrollInterval);
                             cleanup();
-                            this.showToast('返回锚点失败');
+                            this.showToast(this.t('returnAnchorFailed'));
                         } else if (Math.abs(current - before) < 1 && attempts > 10) {
                             // 如果10次尝试后仍然没有变化，尝试其他方法
                             console.log('[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView');
@@ -1170,16 +1170,16 @@
                                     const finalCurrent = container.scrollTop;
                                     const finalDiff = Math.abs(finalCurrent - this.savedAnchorTop);
                                     if (finalDiff <= 5) {
-                                        this.showToast('已返回锚点');
+                                        this.showToast(this.t('returnedAnchor'));
                                     } else {
-                                        this.showToast('返回锚点失败');
+                                        this.showToast(this.t('returnAnchorFailed'));
                                     }
                                 }, 100);
                             } catch (e) {
                                 console.error('[ChatGPT Helper] scrollIntoView 失败:', e);
                                 clearInterval(scrollInterval);
                                 cleanup();
-                                this.showToast('返回锚点失败');
+                                this.showToast(this.t('returnAnchorFailed'));
                             }
                             clearInterval(scrollInterval);
                             cleanup();
@@ -1188,11 +1188,11 @@
                 } else {
                     // 不在底部，正常滚动即可
                     cleanup();
-                    this.showToast('已返回锚点');
+                    this.showToast(this.t('returnedAnchor'));
                 }
             } catch (error) {
                 console.error('[ChatGPT Helper] 返回锚点失败:', error);
-                this.showToast('返回锚点失败');
+                this.showToast(this.t('returnAnchorFailed'));
             }
         },
 
@@ -1201,7 +1201,7 @@
             // 隐藏锚点图标
             this.hideAnchorMarker();
             this.updateManualAnchorButtons();
-            this.showToast('已清除锚点');
+            this.showToast(this.t('anchorCleared'));
         },
 
         showAnchorMarker(scrollTop) {
@@ -1240,7 +1240,8 @@
 
             if (backBtn) {
                 backBtn.classList.toggle('disabled', !hasAnchor);
-                backBtn.title = hasAnchor ? '返回锚点' : '暂无锚点';
+                backBtn.title = hasAnchor ? this.t('returnAnchor') : this.t('noAnchor');
+                backBtn.setAttribute('aria-label', backBtn.title);
             }
             if (clearBtn) {
                 clearBtn.classList.toggle('disabled', !hasAnchor);
@@ -1249,7 +1250,7 @@
 
         handleAnchorClick() {
             if (!this.anchorManager || !this.anchorManager.hasAnchor()) {
-                this.showToast('暂无锚点（点击顶部/底部按钮可自动生成）');
+                this.showToast(this.t('noAnchorAutoHint'));
                 return;
             }
 
@@ -1263,7 +1264,7 @@
                     // 获取锚点位置
                     const anchorTop = this.anchorManager.previousAnchor?.top;
                     if (anchorTop === undefined) {
-                        this.showToast('返回锚点失败');
+                        this.showToast(this.t('returnAnchorFailed'));
                         return;
                     }
 
@@ -1331,7 +1332,7 @@
                                 const currentPos = this.anchorManager._captureCurrentPosition();
                                 this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                                 this.anchorManager.previousAnchor = currentPos;
-                                this.showToast('已返回跳转前位置');
+                                this.showToast(this.t('returnedPreviousPosition'));
                             } else if (attempts >= maxAttempts) {
                                 // 达到最大尝试次数，但未到达目标位置
                                 clearInterval(scrollInterval);
@@ -1340,7 +1341,7 @@
                                         this.scrollLockManager.setEnabled(true);
                                     }, 200);
                                 }
-                                this.showToast('返回锚点失败');
+                                this.showToast(this.t('returnAnchorFailed'));
                             } else if (Math.abs(current - before) < 1 && attempts > 10) {
                                 // 滚动被拦截，无法继续
                                 clearInterval(scrollInterval);
@@ -1349,15 +1350,15 @@
                                         this.scrollLockManager.setEnabled(true);
                                     }, 200);
                                 }
-                                this.showToast('返回锚点失败');
+                                this.showToast(this.t('returnAnchorFailed'));
                             }
                         }, 10);
                     } else {
                         const success = this.anchorManager.backToAnchor();
                         if (success) {
-                            this.showToast('已返回跳转前位置');
+                            this.showToast(this.t('returnedPreviousPosition'));
                         } else {
-                            this.showToast('返回锚点失败');
+                            this.showToast(this.t('returnAnchorFailed'));
                         }
                     }
                     return;
@@ -1370,7 +1371,7 @@
                 // 获取锚点位置
                 const anchorTop = this.anchorManager.previousAnchor?.top;
                 if (anchorTop === undefined) {
-                    this.showToast('返回锚点失败');
+                    this.showToast(this.t('returnAnchorFailed'));
                     return;
                 }
 
@@ -1502,12 +1503,12 @@
                             const currentPos = this.anchorManager._captureCurrentPosition();
                             this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                             this.anchorManager.previousAnchor = currentPos;
-                            this.showToast('已返回跳转前位置');
+                            this.showToast(this.t('returnedPreviousPosition'));
                         } else if (attempts >= maxAttempts) {
                             // 达到最大尝试次数，但未到达目标位置
                             clearInterval(scrollInterval);
                             cleanup();
-                            this.showToast('返回锚点失败');
+                            this.showToast(this.t('returnAnchorFailed'));
                         } else if (Math.abs(current - before) < 1 && attempts > 10) {
                             // 如果10次尝试后仍然没有变化，尝试其他方法
                             console.log('[ChatGPT Helper] 滚动被拦截，尝试 scrollIntoView');
@@ -1530,16 +1531,16 @@
                                         const currentPos = this.anchorManager._captureCurrentPosition();
                                         this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                                         this.anchorManager.previousAnchor = currentPos;
-                                        this.showToast('已返回跳转前位置');
+                                        this.showToast(this.t('returnedPreviousPosition'));
                                     } else {
-                                        this.showToast('返回锚点失败');
+                                        this.showToast(this.t('returnAnchorFailed'));
                                     }
                                 }, 100);
                             } catch (e) {
                                 console.error('[ChatGPT Helper] scrollIntoView 失败:', e);
                                 clearInterval(scrollInterval);
                                 cleanup();
-                                this.showToast('返回锚点失败');
+                                this.showToast(this.t('returnAnchorFailed'));
                             }
                             clearInterval(scrollInterval);
                             cleanup();
@@ -1554,14 +1555,14 @@
                         const currentPos = this.anchorManager._captureCurrentPosition();
                         this.anchorManager.currentAnchor = this.anchorManager.previousAnchor;
                         this.anchorManager.previousAnchor = currentPos;
-                        this.showToast('已返回跳转前位置');
+                        this.showToast(this.t('returnedPreviousPosition'));
                     } else {
-                        this.showToast('返回锚点失败');
+                        this.showToast(this.t('returnAnchorFailed'));
                     }
                 }
             } catch (error) {
                 console.error('[ChatGPT Helper] 返回锚点失败:', error);
-                this.showToast('返回锚点失败');
+                this.showToast(this.t('returnAnchorFailed'));
             }
         },
 
@@ -1573,7 +1574,8 @@
             if (anchorBtn) {
                 anchorBtn.style.opacity = hasAnchor ? '1' : '0.4';
                 anchorBtn.style.cursor = hasAnchor ? 'pointer' : 'default';
-                anchorBtn.title = hasAnchor ? '返回跳转前位置' : '暂无锚点';
+                anchorBtn.title = hasAnchor ? this.t('returnPreviousPosition') : this.t('noAnchor');
+                anchorBtn.setAttribute('aria-label', anchorBtn.title);
             }
 
             // 更新底部导航按钮
@@ -1582,11 +1584,13 @@
                 if (hasAnchor) {
                     navAnchorBtn.style.opacity = '1';
                     navAnchorBtn.style.cursor = 'pointer';
-                    navAnchorBtn.title = '返回跳转前位置';
+                    navAnchorBtn.title = this.t('returnPreviousPosition');
+                    navAnchorBtn.setAttribute('aria-label', navAnchorBtn.title);
                 } else {
                     navAnchorBtn.style.opacity = '0.4';
                     navAnchorBtn.style.cursor = 'default';
-                    navAnchorBtn.title = '暂无锚点';
+                    navAnchorBtn.title = this.t('noAnchor');
+                    navAnchorBtn.setAttribute('aria-label', navAnchorBtn.title);
                 }
             }
         },

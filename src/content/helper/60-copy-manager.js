@@ -74,9 +74,10 @@
      * 负责公式双击复制、表格 Markdown 复制等功能
      */
     class CopyManager {
-        constructor(settings, showToastFunc) {
+        constructor(settings, showToastFunc, i18n) {
             this.settings = settings;
             this.showToast = showToastFunc || (() => { });
+            this.t = i18n || ((key) => key);
             this.formulaCopyInitialized = false;
             this.tableCopyInitialized = false;
             this.formulaDblClickHandler = null;
@@ -179,11 +180,11 @@
                 navigator.clipboard
                     .writeText(copyText)
                     .then(() => {
-                        this.showToast('公式已复制');
+                        this.showToast(this.t('formulaCopied'));
                     })
                     .catch((err) => {
                         console.error('[FormulaCopy] Copy failed:', err);
-                        this.showToast('复制失败');
+                        this.showToast(this.t('copyFailed'));
                     });
 
                 e.preventDefault();
@@ -313,7 +314,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'chatgpt-helper-table-copy-btn';
                 btn.appendChild(createSvgIconNode('list', { size: 14 }));
-                btn.title = '复制为 Markdown';
+                btn.title = this.t('copyAsMarkdown');
 
                 btn.addEventListener('mouseenter', () => {
                     btn.style.opacity = '1';
@@ -330,7 +331,7 @@
                     navigator.clipboard
                         .writeText(markdown)
                         .then(() => {
-                            this.showToast('表格已复制');
+                            this.showToast(this.t('tableCopied'));
                             setButtonIcon(btn, 'check', { size: 14 });
                             setTimeout(() => {
                                 setButtonIcon(btn, 'list', { size: 14 });
@@ -338,7 +339,7 @@
                         })
                         .catch((err) => {
                             console.error('[TableCopy] Copy failed:', err);
-                            this.showToast('复制失败');
+                            this.showToast(this.t('copyFailed'));
                         });
                 });
 

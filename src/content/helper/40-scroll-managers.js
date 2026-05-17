@@ -347,9 +347,10 @@
      * 负责加载全部历史记录并滚动到真正顶部
      */
     class HistoryLoader {
-        constructor(scrollManager, showToastFunc) {
+        constructor(scrollManager, showToastFunc, i18n) {
             this.scrollManager = scrollManager;
             this.showToast = showToastFunc || (() => { });
+            this.t = i18n || ((key) => key);
             this.isLoading = false;
             this.aborted = false;
             this.overlay = null;
@@ -357,13 +358,13 @@
 
         async loadAllAndScrollTop() {
             if (this.isLoading) {
-                this.showToast('正在加载历史...');
+                this.showToast(this.t('historyLoading'));
                 return;
             }
 
             const container = this.scrollManager.container;
             if (!container) {
-                this.showToast('未找到滚动容器');
+                this.showToast(this.t('scrollContainerMissing'));
                 return;
             }
 
@@ -406,7 +407,7 @@
                     if (currentHeight > lastHeight) {
                         lastHeight = currentHeight;
                         noChangeCount = 0;
-                        this.updateOverlayText(`正在加载历史... (${Math.round(currentHeight / 1000)}k)`);
+                        this.updateOverlayText(`${this.t('historyLoading')} (${Math.round(currentHeight / 1000)}k)`);
                         loadLoop();
                     } else {
                         noChangeCount++;
@@ -418,7 +419,7 @@
                         } else if (noChangeCount >= MAX_NO_CHANGE_ROUNDS) {
                             this.finish(true);
                         } else {
-                            this.updateOverlayText(`正在加载历史... (${noChangeCount}/${MAX_NO_CHANGE_ROUNDS})`);
+                            this.updateOverlayText(`${this.t('historyLoading')} (${noChangeCount}/${MAX_NO_CHANGE_ROUNDS})`);
                             loadLoop();
                         }
                     }
@@ -433,7 +434,7 @@
             this.aborted = false;
             this.hideOverlay();
             if (success && !silent) {
-                this.showToast('历史加载完成');
+                this.showToast(this.t('historyLoadComplete'));
             }
         }
 
@@ -452,14 +453,14 @@
             const text = createElement('div', {
                 id: 'chatgpt-helper-loading-text',
                 className: 'chatgpt-helper-loading-text'
-            }, '正在加载历史...');
+            }, this.t('historyLoading'));
             const hint = createElement('div', {
                 className: 'chatgpt-helper-loading-hint'
-            }, '请稍候...');
+            }, this.t('pleaseWait'));
             const stopBtn = createElement('button', {
                 className: 'chatgpt-helper-loading-stop-btn',
                 type: 'button'
-            }, '停止');
+            }, this.t('stop'));
             stopBtn.addEventListener('click', () => this.abort());
 
             overlay.appendChild(spinner);

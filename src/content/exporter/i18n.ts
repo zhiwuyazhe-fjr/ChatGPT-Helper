@@ -12,6 +12,13 @@ import zh_Hans from './locales/zh-Hans.json'
 import zh_Hant from './locales/zh-Hant.json'
 import { ScriptStorage } from './utils/storage'
 
+declare global {
+    interface Window {
+        __MY_EXT__?: Record<string, any>
+        ChatGPTExporterSetLanguage?: (language?: string | null) => string
+    }
+}
+
 declare module 'i18next' {
     // Refs: https://www.i18next.com/overview/typescript#argument-of-type-defaulttfuncreturn-is-not-assignable-to-parameter-of-type-xyz
     interface CustomTypeOptions {
@@ -136,7 +143,25 @@ const resources = LOCALES.reduce<Record<string, { translation: Record<string, st
     return acc
 }, {})
 
-function standardizeLanguage(language: string | null) {
+const KEY_HELPER_LANGUAGE = 'chatgpt_language'
+const HELPER_LANGUAGE_CHANGED_EVENT = 'chatgpt-helper-language-changed'
+
+function unwrapStoredLanguage(language: unknown) {
+    if (typeof language !== 'string') return null
+    if (!language) return null
+
+    try {
+        const parsed = JSON.parse(language)
+        if (typeof parsed === 'string') return parsed
+    }
+    catch {
+        // Helper language values are usually stored as raw strings.
+    }
+
+    return language.replace(/^"(.*)"$/, '$1')
+}
+
+function standardizeLanguage(language: string | null | undefined) {
     if (!language) return null
 
     if (language in LanguageMapping) return LanguageMapping[language]
@@ -163,12 +188,25 @@ function getOaiLanguage() {
     return storedLanguage?.replace(/^"(.*)"$/, '$1') ?? null
 }
 
+function getHelperLanguage() {
+    try {
+        const storedLanguage = unwrapStoredLanguage(window.GM_getValue?.(KEY_HELPER_LANGUAGE, ''))
+        if (!storedLanguage || storedLanguage === 'auto') return null
+        return storedLanguage
+    }
+    catch {
+        return null
+    }
+}
+
 function getDefaultLanguage() {
+    const helperLanguage = getHelperLanguage()
     const storedLanguage = ScriptStorage.get<string>(KEY_LANGUAGE)
     const oaiLanguage = getOaiLanguage()
     const browserLanguage = getNavigatorLanguage()
 
-    return standardizeLanguage(storedLanguage)
+    return standardizeLanguage(helperLanguage)
+        ?? standardizeLanguage(storedLanguage)
         ?? standardizeLanguage(oaiLanguage)
         ?? standardizeLanguage(browserLanguage)
         ?? EN_US.code
@@ -189,5 +227,34 @@ i18n
 i18n.on('languageChanged', (lng) => {
     ScriptStorage.set(KEY_LANGUAGE, lng)
 })
+
+export function syncLanguageFromHelper(language?: string | null) {
+    const resolvedLanguage = standardizeLanguage(unwrapStoredLanguage(language))
+        ?? getDefaultLanguage()
+
+    ScriptStorage.set(KEY_LANGUAGE, resolvedLanguage)
+
+    if (i18n.language !== resolvedLanguage) {
+        void i18n.changeLanguage(resolvedLanguage)
+    }
+
+    return resolvedLanguage
+}
+
+function installHelperLanguageSync() {
+    const namespace = window.__MY_EXT__ = window.__MY_EXT__ || {}
+    const sync = (language?: string | null) => syncLanguageFromHelper(language)
+
+    window.ChatGPTExporterSetLanguage = sync
+    namespace.ChatGPTExporterSetLanguage = sync
+
+    window.addEventListener(HELPER_LANGUAGE_CHANGED_EVENT, (event) => {
+        const detail = (event as CustomEvent).detail
+        const language = typeof detail === 'string' ? detail : detail?.language
+        sync(language)
+    })
+}
+
+installHelperLanguageSync()
 
 export default i18n

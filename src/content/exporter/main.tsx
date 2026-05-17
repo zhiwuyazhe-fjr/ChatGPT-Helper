@@ -5,13 +5,14 @@ import { getChatIdFromUrl } from './page'
 import { DirectMenu } from './ui/DirectMenu'
 import { onloadSafe } from './utils/utils'
 
-import './i18n'
+import { syncLanguageFromHelper } from './i18n'
 import './styles/missing-tailwind.css'
 
 declare global {
     interface Window {
         __MY_EXT__?: Record<string, any>
         ChatGPTExporterMount?: (targetElement: Element) => Element | null
+        ChatGPTExporterSetLanguage?: (language?: string | null) => string
     }
 }
 
@@ -133,6 +134,7 @@ function defineExporterMount() {
     const mount = (targetElement: Element) => {
         if (!targetElement) return null
         ensureCompactStyle()
+        syncLanguageFromHelper()
 
         const container = document.createElement('div')
         container.style.width = '100%'

@@ -522,7 +522,7 @@
 
             const createdAt = this.parseConversationTimestamp(item.create_time);
             const updatedAt = this.parseConversationTimestamp(item.update_time) || createdAt;
-            const title = (item.title || '').trim() || '未命名对话';
+            const title = (item.title || '').trim() || t('untitledConversation');
             const url = new URL(`/c/${item.id}`, window.location.origin).href;
 
             return {
@@ -624,7 +624,7 @@
                 if (seenIds.has(id)) return;
                 seenIds.add(id);
                 // 使用innerText避免乱码
-                const title = (item.innerText || item.textContent || '').trim().replace(/\s+/g, ' ') || '未命名对话';
+                const title = (item.innerText || item.textContent || '').trim().replace(/\s+/g, ' ') || t('untitledConversation');
                 const url = new URL(href, window.location.origin).href;
 
                 // 检查是否置顶

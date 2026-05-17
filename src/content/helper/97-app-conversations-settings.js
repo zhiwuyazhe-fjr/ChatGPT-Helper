@@ -30,6 +30,7 @@
         DEFAULT_THEME_CONFIG,
         DEFAULT_SETTINGS,
         DEFAULT_PROMPTS,
+        createDefaultPrompts,
         createElement,
         getExtensionRuntime,
         getExtensionAssetUrl,
@@ -113,7 +114,7 @@
                     background: 'var(--gh-bg-secondary)',
                     borderRadius: '16px',
                     border: '1px solid var(--gh-border)',
-                    overflow: 'hidden'
+                    overflow: 'visible'
                 }
             });
 
@@ -266,29 +267,52 @@
                         e.stopPropagation();
                     });
                 } else if (item.type === 'select') {
-                    control = createElement('select', {
-                        style: {
-                            padding: '6px 12px',
-                            border: '1px solid var(--gh-border)',
-                            borderRadius: '6px',
-                            background: 'var(--gh-input-bg)',
-                            color: 'var(--gh-text)',
-                            fontSize: '14px',
-                            cursor: 'pointer',
-                            minWidth: '150px'
-                        }
+                    const options = item.options || [];
+                    const selected = options.find(opt => String(opt.value) === String(item.value)) || options[0];
+                    control = createElement('div', {
+                        className: 'chatgpt-helper-custom-select',
+                        'data-value': selected ? String(selected.value) : ''
                     });
-                    if (item.options) {
-                        item.options.forEach(opt => {
-                            const option = createElement('option', { value: opt.value }, opt.label);
-                            if (opt.value === item.value) option.selected = true;
-                            control.appendChild(option);
-                        });
-                    }
-                    control.addEventListener('change', (e) => {
-                        e.stopPropagation();
-                        const newValue = control.value;
+                    const trigger = createElement('button', {
+                        className: 'chatgpt-helper-custom-select-trigger',
+                        type: 'button',
+                        'aria-haspopup': 'listbox',
+                        'aria-expanded': 'false'
+                    });
+                    const triggerText = createElement('span', {
+                        className: 'chatgpt-helper-custom-select-value'
+                    }, selected ? selected.label : '');
+                    const triggerIcon = createElement('span', {
+                        className: 'chatgpt-helper-custom-select-icon',
+                        'aria-hidden': 'true'
+                    }, '▾');
+                    trigger.appendChild(triggerText);
+                    trigger.appendChild(triggerIcon);
+
+                    const menu = createElement('div', {
+                        className: 'chatgpt-helper-custom-select-menu',
+                        role: 'listbox'
+                    });
+
+                    const closeMenu = () => {
+                        control.classList.remove('open');
+                        trigger.setAttribute('aria-expanded', 'false');
+                    };
+                    const openMenu = () => {
+                        control.classList.add('open');
+                        trigger.setAttribute('aria-expanded', 'true');
+                    };
+                    const chooseOption = (opt) => {
+                        const newValue = opt.value;
                         item.value = newValue;
+                        control.dataset.value = String(newValue);
+                        triggerText.textContent = opt.label;
+                        menu.querySelectorAll('.chatgpt-helper-custom-select-option').forEach(optionEl => {
+                            const isSelected = optionEl.dataset.value === String(newValue);
+                            optionEl.classList.toggle('selected', isSelected);
+                            optionEl.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                        });
+                        closeMenu();
                         if (item.onChange) {
                             try {
                                 item.onChange(newValue);
@@ -296,7 +320,63 @@
                                 console.error('[ChatGPT Helper] Select onChange error:', err);
                             }
                         }
+                    };
+
+                    options.forEach(opt => {
+                        const isSelected = String(opt.value) === String(item.value);
+                        const option = createElement('button', {
+                            className: `chatgpt-helper-custom-select-option${isSelected ? ' selected' : ''}`,
+                            type: 'button',
+                            role: 'option',
+                            'aria-selected': isSelected ? 'true' : 'false',
+                            'data-value': String(opt.value)
+                        }, opt.label);
+                        option.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            chooseOption(opt);
+                        });
+                        menu.appendChild(option);
                     });
+
+                    trigger.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (control.classList.contains('open')) closeMenu();
+                        else openMenu();
+                    });
+                    trigger.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') {
+                            closeMenu();
+                        } else if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            openMenu();
+                            const current = menu.querySelector('.chatgpt-helper-custom-select-option.selected')
+                                || menu.querySelector('.chatgpt-helper-custom-select-option');
+                            if (current) current.focus();
+                        }
+                    });
+                    menu.addEventListener('keydown', (e) => {
+                        const optionEls = Array.from(menu.querySelectorAll('.chatgpt-helper-custom-select-option'));
+                        const currentIndex = optionEls.indexOf(document.activeElement);
+                        if (e.key === 'Escape') {
+                            closeMenu();
+                            trigger.focus();
+                        } else if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            const next = optionEls[Math.min(optionEls.length - 1, currentIndex + 1)] || optionEls[0];
+                            if (next) next.focus();
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            const prev = optionEls[Math.max(0, currentIndex - 1)] || optionEls[optionEls.length - 1];
+                            if (prev) prev.focus();
+                        }
+                    });
+                    control.addEventListener('focusout', (e) => {
+                        if (!control.contains(e.relatedTarget)) closeMenu();
+                    });
+                    control.appendChild(trigger);
+                    control.appendChild(menu);
                 } else if (item.type === 'number') {
                     const inputAttrs = {
                         type: 'number',
@@ -455,7 +535,7 @@
                         this.settings.panelWidth = Math.max(200, Math.min(600, parseInt(val) || 320));
                         this.saveSettings();
                         this.adjustChatGPTLayout();
-                        this.showToast('已更新面板宽度，刷新页面生效');
+                        this.showToast(this.t('panelWidthUpdated'));
                     }
                 },
                 {
@@ -521,7 +601,7 @@
                                 console.warn('[ChatGPT Helper] 警告：状态不一致！');
                             }
                         }, 100);
-                        this.showToast(val ? '已启用防止自动滚动' : '已禁用防止自动滚动');
+                        this.showToast(`${this.t(val ? 'enabled' : 'disabled')} ${this.t('preventAutoScrollLabel')}`);
                     }
                 },
                 {
@@ -578,7 +658,7 @@
                         if (this.widthStyleManager) {
                             this.widthStyleManager.updateConfig(this.settings.pageWidth);
                         }
-                        this.showToast(val ? '已启用页面宽度限制' : '已禁用页面宽度限制');
+                        this.showToast(`${this.t(val ? 'enabled' : 'disabled')} ${this.t('limitPageWidthLabel')}`);
                     }
                 },
                 {
@@ -789,12 +869,17 @@
                 }
             ]);
 
+            const savedLanguagePreference = window.GM_getValue(SETTING_KEYS.LANGUAGE, 'auto');
+            const languageValue = savedLanguagePreference === 'auto' || I18N[savedLanguagePreference]
+                ? savedLanguagePreference
+                : 'auto';
+
             // 语言设置（可折叠）
             const languageSection = this.createSettingSection(t('languageSettings'), [
                 {
                     label: t('language'),
                     type: 'select',
-                    value: this.lang || 'auto',
+                    value: languageValue,
                     options: [
                         { value: 'auto', label: t('autoDetect') },
                         { value: 'zh-CN', label: t('chinese') },
@@ -803,10 +888,17 @@
                     onChange: (val) => {
                         window.GM_setValue(SETTING_KEYS.LANGUAGE, val);
                         setCurrentLang(val === 'auto' ? detectLanguage() : val);
-                        this.lang = getCurrentLang();
+                        if (this.syncExporterLanguage) {
+                            this.syncExporterLanguage();
+                        }
+                        this.lang = val;
+                        this.selectedCategory = this.t('allCategory');
+                        if (!window.GM_getValue(SETTING_KEYS.PROMPTS, null)) {
+                            this.prompts = createDefaultPrompts();
+                        }
                         // 重新渲染UI以应用新语言
                         this.createUI();
-                        this.showToast(this.t('languageChanged') || '语言已更改');
+                        this.showToast(this.t('languageChanged'));
                     }
                 }
             ]);
@@ -824,7 +916,7 @@
                         if (val && this.readingProgressManager) {
                             this.readingProgressManager.startRecording();
                         }
-                        this.showToast(val ? '已启用阅读历史' : '已禁用阅读历史');
+                        this.showToast(`${this.t(val ? 'enabled' : 'disabled')} ${this.t('readingHistory')}`);
                     }
                 },
                 {
@@ -835,7 +927,7 @@
                         if (!this.settings.readingHistory) this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
                         this.settings.readingHistory.autoRestore = val;
                         this.saveSettings();
-                        this.showToast(val ? '已启用自动跳转' : '已禁用自动跳转');
+                        this.showToast(`${this.t(val ? 'enabled' : 'disabled')} ${this.t('autoRestoreLabel')}`);
                     }
                 },
                 {
@@ -900,12 +992,12 @@
                     type: 'select',
                     value: this.settings.outline?.maxLevel || 6,
                     options: [
-                        { value: 1, label: '仅 H1' },
+                        { value: 1, label: this.t('outlineLevelOnlyH1') },
                         { value: 2, label: 'H1-H2' },
                         { value: 3, label: 'H1-H3' },
                         { value: 4, label: 'H1-H4' },
                         { value: 5, label: 'H1-H5' },
-                        { value: 6, label: 'H1-H6（全部）' }
+                        { value: 6, label: this.t('outlineLevelAll') }
                     ],
                     onChange: (val) => {
                         if (!this.settings.outline) this.settings.outline = {};
