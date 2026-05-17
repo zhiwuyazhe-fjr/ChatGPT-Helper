@@ -75,13 +75,15 @@ body[data-time-format="24"] span[data-time-format="24"] {
     padding: 0 0 0 0.5rem;
     width: 7.5rem;
     border-radius: 4px;
-    box-shadow: 0 0 0 1px #6f6e77;
+    border: 1px solid var(--gh-control-border, #d2d9d0);
+    box-shadow: none;
 }
 
 .dark .Select {
-    background-color: #2f2f2f;
-    color: #fff;
-    box-shadow: 0 0 0 1px #6f6e77;
+    background-color: var(--gh-control-bg, #20251f);
+    color: var(--gh-text, #f2f5ef);
+    border-color: var(--gh-control-border, #3c443b);
+    box-shadow: none;
 }
 
 html {
@@ -147,7 +149,7 @@ html {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0,0,0,.5);
+    background-color: color-mix(in srgb, #020617, transparent 44%);
     animation-name: pointerFadeIn;
     animation-duration: .3s;
 }
@@ -264,25 +266,25 @@ html {
     line-height: 1;
     height: 35px;
 }
-.Button.green {
-    background-color: #e8f5ed;
-    color:rgb(107, 188, 152);
+.Button:is(.green) {
+    background-color: var(--gh-primary, #2f7f6e);
+    color: #ffffff;
 }
-.Button.red {
-    background-color: #f9d9d9;
-    color: #a71d2a;
+.Button:is(.red) {
+    background-color: color-mix(in srgb, var(--gh-danger, #b42318), transparent 90%);
+    color: var(--gh-danger, #b42318);
 }
-.Button.green:hover {
-    background-color: #d9f0e3;
+.Button:is(.green):hover {
+    background-color: var(--gh-primary-hover, var(--gh-primary, #2f7f6e));
 }
 .Button:disabled {
     opacity: 0.5;
-    color: #6f6e77;
-    background-color: #e0e0e0;
+    color: var(--gh-text-secondary, #677268);
+    background-color: var(--gh-control-bg, #f7f8f4);
     cursor: not-allowed;
 }
 .Button:disabled:hover {
-    background-color: #e0e0e0;
+    background-color: var(--gh-control-bg, #f7f8f4);
 }
 
 .IconButton {
@@ -293,7 +295,7 @@ html {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #6f6e77;
+    color: var(--gh-text-secondary, #677268);
 }
 .IconButton:hover {
     background-color: rgba(0, 0, 0, 0.06);
@@ -335,15 +337,17 @@ html {
     line-height: 1;
     color: #000;
     background-color: #fafafa;
-    box-shadow: 0 0 0 1px #6f6e77;
+    border: 1px solid var(--gh-control-border, #d2d9d0);
+    box-shadow: none;
     height: 35px;
     outline: none;
 }
 
 .dark .Input {
-    background-color: #2f2f2f;
-    color: #fff;
-    box-shadow: 0 0 0 1px #6f6e77;
+    background-color: var(--gh-control-bg, #20251f);
+    color: var(--gh-text, #f2f5ef);
+    border-color: var(--gh-control-border, #3c443b);
+    box-shadow: none;
 }
 
 .Description {
@@ -362,7 +366,7 @@ html {
     align-items: center;
     padding: 12px 16px;
     border-radius: 4px 4px 0 0;
-    border: 1px solid #6f6e77;
+    border: 1px solid var(--gh-panel-line, #d6ddd4);
     border-bottom: none;
 }
 
@@ -373,7 +377,7 @@ html {
     padding: 12px 16px;
     overflow-x: hidden;
     overflow-y: auto;
-    border: 1px solid #6f6e77;
+    border: 1px solid var(--gh-panel-line, #d6ddd4);
     border-radius: 0 0 4px 4px;
     white-space: nowrap;
 }
@@ -417,10 +421,6 @@ html {
     background-color: hsla(0, 0%, 61%, .1)
 }
 
-.border-\\[\\#6f6e77\\] {
-    border-color: #6f6e77;
-}
-
 .cursor-help {
     cursor: help;
 }
@@ -435,10 +435,6 @@ html {
 
 .dark .dark\\:text-gray-300 {
     color: rgb(209 213 219 / 1);
-}
-
-.dark .dark\\:border-gray-\\[\\#86858d\\] {
-    border-color: #86858d;
 }
 
 .gap-x-1 {
@@ -578,6 +574,333 @@ html {
 
 .toggle-switch-label:hover {
     color: rgb(71 85 105);
+}
+
+/* ChatGPT Helper tokenized exporter shell */
+.DialogOverlay {
+    background: color-mix(in srgb, #020617, transparent 24%) !important;
+    backdrop-filter: blur(8px) saturate(1.02);
+    -webkit-backdrop-filter: blur(8px) saturate(1.02);
+}
+
+.DialogContent {
+    width: min(620px, calc(100vw - 32px)) !important;
+    max-height: min(760px, calc(100vh - 32px)) !important;
+    padding: 14px !important;
+    border-radius: 14px !important;
+    border: 1px solid var(--gh-panel-line, #d6ddd4) !important;
+    background: var(--gh-panel-surface, #f7f8f4) !important;
+    color: var(--gh-text, #20251f) !important;
+    box-shadow: 0 26px 72px color-mix(in srgb, #020617, transparent 54%) !important;
+    overflow-x: hidden !important;
+}
+
+.DialogTitle {
+    margin: 0 36px 12px 0 !important;
+    color: var(--gh-text, #20251f) !important;
+    font-size: 15px !important;
+    font-weight: 750 !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0 !important;
+}
+
+.DialogContent :is(.text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900, .dark\\:text-gray-200, .dark\\:text-gray-300, .dark\\:text-white),
+.DialogContent [class*="text-gray-"] {
+    color: var(--gh-text-secondary, #677268) !important;
+}
+
+.DialogContent :is(dt, .font-medium, .font-bold) {
+    color: var(--gh-text, #20251f) !important;
+}
+
+.DialogContent :is(.bg-white, .dark\\:bg-white\\/5),
+.DialogContent .relative.flex {
+    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), transparent 4%) !important;
+    border: 1px solid var(--gh-panel-line, #d6ddd4) !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+}
+
+.DialogContent .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 10px !important;
+}
+
+.DialogContent .border-b-\\[1px\\],
+.DialogContent :is(.SelectToolbar, .SelectList) {
+    border-color: var(--gh-panel-line, #d6ddd4) !important;
+}
+
+.DialogContent :is(.Input, .Select, input, select, textarea) {
+    border-radius: var(--gh-control-radius, 8px) !important;
+}
+
+.DialogContent :is(.Input, .Select),
+.Input,
+.Select {
+    min-height: 34px !important;
+    border: 1px solid var(--gh-control-border, #d2d9d0) !important;
+    background: var(--gh-control-bg, #ffffff) !important;
+    color: var(--gh-text, #20251f) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.DialogContent :is(.Input, .Select):focus,
+.DialogContent :is(input, select, textarea):focus-visible {
+    border-color: color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 28%) !important;
+    box-shadow: 0 0 0 3px var(--gh-focus-ring, color-mix(in srgb, #2f7f6e, transparent 72%)) !important;
+}
+
+.DialogContent input[type="range"] {
+    min-height: auto !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    accent-color: var(--gh-primary, #2f7f6e) !important;
+}
+
+.DialogContent input[type="file"].hidden,
+.DialogContent .hidden {
+    display: none !important;
+}
+
+.DialogContent .bg-gray-200,
+.DialogContent .dark\\:bg-gray-700 {
+    background: color-mix(in srgb, var(--gh-border, #d2d9d0), transparent 36%) !important;
+}
+
+.DialogContent .bg-blue-600,
+.bg-blue-600 {
+    background: var(--gh-primary, #2f7f6e) !important;
+}
+
+.Button {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 0 12px !important;
+    border-radius: var(--gh-control-radius, 8px) !important;
+    border: 1px solid var(--gh-control-border, #d2d9d0) !important;
+    background: var(--gh-control-bg, #ffffff) !important;
+    color: var(--gh-text, #20251f) !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    transition: background 0.16s cubic-bezier(0.2, 0, 0, 1), border-color 0.16s cubic-bezier(0.2, 0, 0, 1), color 0.16s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.16s cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+.Button:hover {
+    background: var(--gh-control-bg-hover, #eef3ed) !important;
+    border-color: color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 44%) !important;
+}
+
+.Button:is(.green) {
+    background: color-mix(in srgb, var(--gh-primary, #2f7f6e), var(--gh-panel-card, #ffffff) 12%) !important;
+    border-color: color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 36%) !important;
+    color: #ffffff !important;
+}
+
+.Button:is(.red) {
+    background: color-mix(in srgb, var(--gh-danger, #b42318), transparent 90%) !important;
+    border-color: color-mix(in srgb, var(--gh-danger, #b42318), transparent 52%) !important;
+    color: color-mix(in srgb, var(--gh-danger, #b42318), var(--gh-text, #20251f) 12%) !important;
+}
+
+.Button:disabled,
+.Button:disabled:hover {
+    opacity: 0.42 !important;
+    background: var(--gh-control-bg, #ffffff) !important;
+    border-color: var(--gh-control-border, #d2d9d0) !important;
+    color: var(--gh-text-secondary, #677268) !important;
+    cursor: not-allowed !important;
+}
+
+.chatgpt-helper-export-add-meta {
+    width: 100% !important;
+}
+
+.IconButton,
+.CloseButton {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: var(--gh-control-radius, 8px) !important;
+    border: 1px solid var(--gh-control-border, #d2d9d0) !important;
+    background: var(--gh-control-bg, #ffffff) !important;
+    color: var(--gh-text-secondary, #677268) !important;
+}
+
+.IconButton:hover,
+.CloseButton:hover {
+    background: var(--gh-control-bg-hover, #eef3ed) !important;
+    color: var(--gh-text, #20251f) !important;
+}
+
+.CloseButton {
+    top: 10px !important;
+    right: 10px !important;
+}
+
+.Fieldset {
+    gap: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+.Label,
+.Description {
+    color: var(--gh-text-secondary, #677268) !important;
+}
+
+.SelectToolbar {
+    padding: 10px 12px !important;
+    border-radius: 10px 10px 0 0 !important;
+    background: var(--gh-panel-subtle, #f0f3ee) !important;
+}
+
+.SelectList {
+    height: min(270px, 38vh) !important;
+    padding: 8px !important;
+    border-radius: 0 0 10px 10px !important;
+    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), transparent 4%) !important;
+}
+
+.SelectItem {
+    min-height: 30px;
+    padding: 4px 6px;
+    border-radius: 7px;
+    color: var(--gh-text, #20251f) !important;
+}
+
+.SelectItem:hover {
+    background: var(--gh-control-bg-hover, #eef3ed) !important;
+}
+
+.CheckBoxLabel {
+    align-items: center !important;
+    color: var(--gh-text, #20251f) !important;
+    font-size: 13px !important;
+}
+
+.CheckBoxLabel .LabelText {
+    color: var(--gh-text-secondary, #677268) !important;
+    font-size: 13px !important;
+}
+
+.CheckBoxLabel input:checked ~ svg {
+    color: var(--gh-primary, #2f7f6e) !important;
+}
+
+.toggle-switch {
+    width: 40px !important;
+    height: 22px !important;
+    border: 1px solid var(--gh-control-border, #d2d9d0) !important;
+    background: color-mix(in srgb, var(--gh-border, #d2d9d0), transparent 28%) !important;
+}
+
+.toggle-switch[data-state="checked"] {
+    background: var(--gh-primary, #2f7f6e) !important;
+    border-color: color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 10%) !important;
+}
+
+.toggle-switch-handle {
+    width: 16px !important;
+    height: 16px !important;
+    transform: translateX(2px) !important;
+    background: color-mix(in srgb, #ffffff, var(--gh-theme-light, #ffffff) 10%) !important;
+    box-shadow: 0 1px 3px color-mix(in srgb, #020617, transparent 74%) !important;
+}
+
+.toggle-switch-handle[data-state="checked"] {
+    transform: translateX(20px) !important;
+}
+
+.toggle-switch-label {
+    color: var(--gh-text-secondary, #677268) !important;
+    font-size: 13px !important;
+}
+
+.DialogContent button:focus-visible,
+.DialogContent input:focus-visible,
+.DialogContent select:focus-visible,
+.DialogContent textarea:focus-visible,
+.chatgpt-helper-export-grid .menu-item:focus-visible {
+    outline: 2px solid var(--gh-focus-ring, color-mix(in srgb, #2f7f6e, transparent 72%)) !important;
+    outline-offset: 2px;
+}
+
+.chatgpt-helper-export-grid {
+    padding: 12px 14px 18px !important;
+    gap: 7px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-content: start !important;
+    grid-auto-rows: minmax(50px, auto);
+}
+
+.chatgpt-helper-export-grid > :is(.row-full, .row-half):not(.menu-item) {
+    display: contents !important;
+    grid-column: auto !important;
+}
+
+.chatgpt-helper-export-grid .menu-item {
+    min-height: 50px !important;
+    height: auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 0 13px !important;
+    gap: 11px !important;
+    margin: 0 !important;
+    border-radius: 9px !important;
+    border: 1px solid color-mix(in srgb, var(--gh-panel-line, #d6ddd4), transparent 20%) !important;
+    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), transparent 18%) !important;
+    color: var(--gh-text, #20251f) !important;
+    box-shadow: none !important;
+    text-align: left !important;
+    overflow: hidden;
+    box-sizing: border-box !important;
+    transition: background 0.16s cubic-bezier(0.2, 0, 0, 1), border-color 0.16s cubic-bezier(0.2, 0, 0, 1), color 0.16s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.16s cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+.chatgpt-helper-export-grid .menu-item:hover {
+    background: color-mix(in srgb, var(--gh-panel-card-hover, #eef3ed), transparent 12%) !important;
+    border-color: color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 54%) !important;
+    transform: none !important;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 82%) !important;
+}
+
+.chatgpt-helper-export-grid .menu-item-icon {
+    width: 24px;
+    height: 24px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 24px;
+    color: color-mix(in srgb, var(--gh-primary, #2f7f6e), var(--gh-text-secondary, #677268) 34%) !important;
+}
+
+.chatgpt-helper-export-grid .menu-item-icon svg,
+.chatgpt-helper-export-grid .menu-item > svg {
+    width: 17px !important;
+    height: 17px !important;
+    color: currentColor !important;
+    flex: 0 0 auto !important;
+}
+
+.chatgpt-helper-export-grid .menu-item-label {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--gh-text, #20251f);
+    font-size: 14px;
+    font-weight: 680;
+    line-height: 1.25;
+}
+
+.chatgpt-helper-export-grid .menu-item[disabled] {
+    opacity: 0.42 !important;
+    cursor: not-allowed !important;
+    filter: none !important;
 } `);
 
 (function (JSZip, html2canvas) {
@@ -9038,12 +9361,12 @@ html {
         :root {
             --page-text: #0d0d0d;
             --page-bg: #fff;
-            --td-borders: #374151;
-            --th-borders: #4b5563;
+            --td-borders: color-mix(in srgb, var(--page-text), transparent 70%);
+            --th-borders: color-mix(in srgb, var(--page-text), transparent 62%);
             --tw-prose-code: var(--page-text);
             --tw-prose-counters: #9b9b9b;
             --tw-prose-headings: var(--page-text);
-            --tw-prose-hr: rgba(0,0,0,.25);
+            --tw-prose-hr: color-mix(in srgb, var(--page-text), transparent 75%);
             --tw-prose-links: var(--page-text);
             --tw-prose-quotes: var(--page-text);
             --meta-title: #616c77;
@@ -9184,7 +9507,7 @@ html {
         }
 
         .metadata_item:hover {
-            background-color: rgba(0,0,0,.1);
+            background-color: color-mix(in srgb, var(--page-text), transparent 90%);
         }
 
         .metadata_item > div:first-child {
@@ -9446,13 +9769,13 @@ html {
             display: flex;
             position: relative;
             padding: 1rem;
-            border-left: 1px solid rgba(0,0,0,.1);
-            border-right: 1px solid rgba(0,0,0,.1);
-            border-bottom: 1px solid rgba(0,0,0,.1);
+            border-left: 1px solid color-mix(in srgb, var(--page-text), transparent 90%);
+            border-right: 1px solid color-mix(in srgb, var(--page-text), transparent 90%);
+            border-bottom: 1px solid color-mix(in srgb, var(--page-text), transparent 90%);
         }
 
         .conversation-item:first-of-type {
-            border-top: 1px solid rgba(0,0,0,.1);
+            border-top: 1px solid color-mix(in srgb, var(--page-text), transparent 90%);
         }
 
         .author {
@@ -22387,8 +22710,8 @@ ${content2}`;
         title: title2,
         children: loading ? /* @__PURE__ */ o$8("div", { className: "flex justify-center items-center w-full h-full", children: /* @__PURE__ */ o$8(IconLoading, { className: "w-4 h-4" }) }) : /* @__PURE__ */ o$8(k$3, {
           children: [
-            Icon && /* @__PURE__ */ o$8(Icon, {}),
-            succeed && successText ? successText : text2
+            Icon && /* @__PURE__ */ o$8("span", { className: "menu-item-icon", children: /* @__PURE__ */ o$8(Icon, {}) }),
+            /* @__PURE__ */ o$8("span", { className: "menu-item-label", children: succeed && successText ? successText : text2 })
           ]
         })
       }
@@ -22833,7 +23156,7 @@ ${content2}`;
                 /* @__PURE__ */ o$8("div", {
                 className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ o$8("div", {
                   children: [
-                  /* @__PURE__ */ o$8("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: `${t2("Language")} 🌐` }),
+                  /* @__PURE__ */ o$8("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Language") }),
                   /* @__PURE__ */ o$8("dd", {
                     children: /* @__PURE__ */ o$8(
                       "select",
@@ -23062,7 +23385,7 @@ ${content2}`;
                             className: "flex justify-center items-center mt-2 pr-8", children: /* @__PURE__ */ o$8(
                               "button",
                               {
-                                className: "w-full border border-[#6f6e77] dark:border-gray-[#86858d] rounded-md py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition ease-in-out duration-150",
+                                className: "Button chatgpt-helper-export-add-meta",
                                 "aria-label": "Add",
                                 onClick: () => setExportMetaList([...exportMetaList, { name: "", value: "" }]),
                                 children: "+"
@@ -23505,11 +23828,11 @@ ${content2}`;
       container.style.height = "100%";
       container.style.position = "relative";
       container.style.overflow = "auto";
-      // 添加样式，使按钮直接显示为卡片式布局
-      container.style.padding = "16px";
+      // 添加样式，使按钮直接显示为紧凑命令列表
+      container.style.padding = "12px 14px 18px";
       container.style.display = "grid";
-      container.style.gridTemplateColumns = "repeat(2, 1fr)";
-      container.style.gap = "12px";
+      container.style.gridTemplateColumns = "minmax(0, 1fr)";
+      container.style.gap = "7px";
       container.style.alignContent = "start";
       container.style.overflowY = "auto";
       container.style.background = "transparent";
@@ -23517,70 +23840,106 @@ ${content2}`;
       container.setAttribute("data-gh-exporter-host", "true");
       targetElement.appendChild(container);
       
-      // 添加卡片式按钮样式
+      // 添加紧凑命令按钮样式
       const style = doc.createElement("style");
       style.textContent = `
+        .chatgpt-helper-export-grid {
+          padding: 12px 14px 18px !important;
+          gap: 7px !important;
+          grid-template-columns: minmax(0, 1fr) !important;
+          align-content: start !important;
+          grid-auto-rows: minmax(50px, auto) !important;
+        }
+        .chatgpt-helper-export-grid > .row-full,
+        .chatgpt-helper-export-grid > .row-half {
+          grid-column: auto !important;
+        }
+        .chatgpt-helper-export-grid > .row-full:not(.menu-item),
+        .chatgpt-helper-export-grid > .row-half:not(.menu-item) {
+          display: contents !important;
+          grid-column: auto !important;
+        }
         .chatgpt-helper-export-grid .menu-item {
-          flex-direction: column !important;
+          flex-direction: row !important;
           align-items: center !important;
-          justify-content: center !important;
-          padding: 20px 12px !important;
-          min-height: 90px !important;
-          border-radius: 12px !important;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+          justify-content: flex-start !important;
+          padding: 0 13px !important;
+          min-height: 50px !important;
+          height: auto !important;
+          margin: 0 !important;
+          gap: 11px !important;
+          border-radius: 9px !important;
+          box-shadow: none !important;
           transition: all 0.2s ease !important;
-          background: var(--gh-bg, #ffffff) !important;
-          border: 1px solid var(--gh-border, #e5e7eb) !important;
-          text-align: center !important;
+          background: color-mix(in srgb, var(--gh-panel-card, #ffffff), transparent 18%) !important;
+          border: 1px solid color-mix(in srgb, var(--gh-panel-line, #d6ddd4), transparent 20%) !important;
+          color: var(--gh-text, #20251f) !important;
+          text-align: left !important;
+          overflow: hidden !important;
+          box-sizing: border-box !important;
         }
         .chatgpt-helper-export-grid .menu-item:hover {
-          transform: translateY(-2px) !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-          border-color: var(--gh-primary, #10a37f) !important;
+          transform: none !important;
+          background: color-mix(in srgb, var(--gh-panel-card-hover, #eef3ed), transparent 12%) !important;
+          box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 82%) !important;
+          border-color: color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 54%) !important;
         }
-        .chatgpt-helper-export-grid .menu-item > div {
+        .chatgpt-helper-export-grid .menu-item-icon {
+          width: 24px !important;
+          height: 24px !important;
           display: flex !important;
-          flex-direction: column !important;
           align-items: center !important;
           justify-content: center !important;
-          gap: 8px !important;
-          width: 100% !important;
+          flex: 0 0 24px !important;
+          color: color-mix(in srgb, var(--gh-primary, #2f7f6e), var(--gh-text-secondary, #677268) 34%) !important;
         }
-        .chatgpt-helper-export-grid .menu-item svg {
-          width: 24px !important;
-          height: 24px !important;
+        .chatgpt-helper-export-grid .menu-item-icon svg,
+        .chatgpt-helper-export-grid .menu-item > svg {
+          width: 17px !important;
+          height: 17px !important;
+          color: currentColor !important;
           flex-shrink: 0 !important;
         }
+        .chatgpt-helper-export-grid .menu-item-label {
+          min-width: 0 !important;
+          flex: 1 1 auto !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+          white-space: nowrap !important;
+          color: var(--gh-text, #20251f) !important;
+          font-size: 14px !important;
+          font-weight: 680 !important;
+          line-height: 1.25 !important;
+        }
         .chatgpt-helper-export-grid .menu-item [class*="icon"] {
-          font-size: 24px !important;
-          width: 24px !important;
-          height: 24px !important;
+          font-size: 17px !important;
+          width: 17px !important;
+          height: 17px !important;
           display: flex !important;
           align-items: center !important;
           justify-content: center !important;
         }
         body[data-gh-mode="dark"] .chatgpt-helper-export-grid .menu-item {
-          background: var(--gh-bg, #1f2937) !important;
-          border-color: var(--gh-border, #374151) !important;
+          background: color-mix(in srgb, var(--gh-panel-card, #20251f), transparent 5%) !important;
+          border-color: var(--gh-panel-line, #3c443b) !important;
         }
         :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid {
           background: transparent !important;
         }
         :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid .menu-item {
-          background: var(--gh-panel-card-bg, rgba(255,255,255,0.14)) !important;
-          border-color: var(--gh-panel-card-border, rgba(255,255,255,0.28)) !important;
-          backdrop-filter: blur(var(--gh-panel-blur, 14px)) saturate(1.02) !important;
-          -webkit-backdrop-filter: blur(var(--gh-panel-blur, 14px)) saturate(1.02) !important;
-          box-shadow: inset 0 0 0 1px var(--gh-panel-card-border, rgba(255,255,255,0.28)), 0 12px 24px rgba(15, 23, 42, 0.08) !important;
+          background: var(--gh-panel-card-bg, var(--gh-panel-card, #ffffff)) !important;
+          border-color: var(--gh-panel-card-border, var(--gh-panel-line, #d6ddd4)) !important;
+          backdrop-filter: blur(var(--gh-panel-blur, 12px)) saturate(1.02) !important;
+          -webkit-backdrop-filter: blur(var(--gh-panel-blur, 12px)) saturate(1.02) !important;
         }
         :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid .menu-item:hover {
-          background: color-mix(in srgb, var(--gh-panel-card-bg, rgba(255,255,255,0.14)), transparent 8%) !important;
-          border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 28%) !important;
-          box-shadow: inset 0 0 0 1px var(--gh-panel-card-border, rgba(255,255,255,0.28)), 0 16px 28px rgba(15, 23, 42, 0.12) !important;
+          background: color-mix(in srgb, var(--gh-panel-card-bg, var(--gh-panel-card, #ffffff)), transparent 8%) !important;
+          border-color: color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 28%) !important;
         }
         .chatgpt-helper-export-grid .menu-item[disabled] {
           opacity: 0.5 !important;
           cursor: not-allowed !important;
+          filter: none !important;
         }
       `;
       doc.head.appendChild(style);
