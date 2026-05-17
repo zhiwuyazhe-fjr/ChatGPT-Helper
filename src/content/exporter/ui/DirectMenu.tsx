@@ -2,12 +2,11 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks'
 import { useTranslation } from 'react-i18next'
 import { exportToHtml } from '../exporter/html'
-import { exportToPng } from '../exporter/image'
 import { exportToJson, exportToOoba, exportToTavern } from '../exporter/json'
 import { exportToMarkdown } from '../exporter/markdown'
 import { exportToText } from '../exporter/text'
 import { ExportDialog } from './ExportDialog'
-import { FileCode, IconCamera, IconCopy, IconJSON, IconMarkdown, IconSetting, IconZip } from './Icons'
+import { FileCode, IconCopy, IconJSON, IconMarkdown, IconSetting, IconZip } from './Icons'
 import { MenuItem } from './MenuItem'
 import { SettingProvider, useSettingContext } from './SettingContext'
 import { SettingDialog } from './SettingDialog'
@@ -42,7 +41,6 @@ function DirectMenuInner({ container: _container }: { container: HTMLDivElement 
     const metaList = useMemo(() => enableMeta ? exportMetaList : [], [enableMeta, exportMetaList])
 
     const onClickText = useCallback(() => exportToText(), [])
-    const onClickPng = useCallback(() => exportToPng(format), [format])
     const onClickMarkdown = useCallback(() => exportToMarkdown(format, metaList), [format, metaList])
     const onClickHtml = useCallback(() => exportToHtml(format, metaList), [format, metaList])
     const onClickJSON = useCallback(() => {
@@ -70,12 +68,6 @@ function DirectMenuInner({ container: _container }: { container: HTMLDivElement 
                 icon={IconCopy}
                 className="row-full"
                 onClick={onClickText}
-            />
-            <MenuItem
-                text={t('Screenshot')}
-                icon={IconCamera}
-                className="row-half"
-                onClick={onClickPng}
             />
             <MenuItem
                 text={t('Markdown')}

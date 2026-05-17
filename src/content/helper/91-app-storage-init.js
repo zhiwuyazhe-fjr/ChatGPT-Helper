@@ -76,8 +76,30 @@
     }
     Object.assign(ChatGPTHelper.prototype, {
         loadPrompts() {
+            const promptLibraryVersion = 3;
+            const removedDefaultPromptIds = new Set(['default_1', 'default_2']);
             const saved = window.GM_getValue(SETTING_KEYS.PROMPTS, null);
-            return saved || createDefaultPrompts();
+            if (!Array.isArray(saved)) {
+                window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, promptLibraryVersion);
+                return createDefaultPrompts();
+            }
+
+            const savedVersion = Number(window.GM_getValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, 1)) || 1;
+            if (savedVersion >= promptLibraryVersion) {
+                return saved;
+            }
+
+            const retainedPrompts = saved.filter(prompt => !removedDefaultPromptIds.has(prompt?.id));
+            const existingIds = new Set(retainedPrompts.map(prompt => prompt?.id).filter(Boolean));
+            const missingDefaults = createDefaultPrompts().filter(prompt => prompt.id && !existingIds.has(prompt.id));
+            const prompts = missingDefaults.length > 0 ? [...retainedPrompts, ...missingDefaults] : retainedPrompts;
+
+            window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, promptLibraryVersion);
+            if (missingDefaults.length > 0 || retainedPrompts.length !== saved.length) {
+                window.GM_setValue(SETTING_KEYS.PROMPTS, prompts);
+            }
+
+            return prompts;
         },
 
         savePrompts() {

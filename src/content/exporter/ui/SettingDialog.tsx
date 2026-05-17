@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import sanitize from 'sanitize-filename'
 import { baseUrl } from '../constants'
 import { useTitle } from '../hooks/useTitle'
-import { LOCALES } from '../i18n'
 import { getChatIdFromUrl } from '../page'
 import { getFileNameWithFormat } from '../utils/download'
 import { timestamp as _timestamp, dateStr, unixTimestampToISOString } from '../utils/utils'
@@ -39,7 +38,7 @@ export const SettingDialog: FC<SettingDialogProps> = ({
         exportAllLimit, setExportAllLimit,
         /* eslint-enable pionxzh/consistent-list-newline */
     } = useSettingContext()
-    const { t, i18n } = useTranslation()
+    const { t } = useTranslation()
     const _title = useTitle()
     const date = dateStr()
     const timestamp = _timestamp()
@@ -66,24 +65,6 @@ export const SettingDialog: FC<SettingDialogProps> = ({
                     <Dialog.Title className="DialogTitle">{t('Exporter Settings')}</Dialog.Title>
                     <div className="DialogBody">
                         <dl className="space-y-6">
-                            <div className="relative flex bg-white dark:bg-white/5 rounded p-4">
-                                <div>
-                                    <dt className="text-md font-medium text-gray-800 dark:text-white">
-                                        {`${t('Language')} 🌐`}
-                                    </dt>
-                                    <dd>
-                                        <select
-                                            className="Select mt-3"
-                                            value={i18n.language}
-                                            onChange={e => i18n.changeLanguage(e.currentTarget.value)}
-                                        >
-                                            {LOCALES.map(({ name, code }) => (
-                                                <option key={code} value={code}>{name}</option>
-                                            ))}
-                                        </select>
-                                    </dd>
-                                </div>
-                            </div>
                             <div className="relative flex bg-white dark:bg-white/5 rounded p-4">
                                 <div>
                                     <dt className="text-md font-medium text-gray-800 dark:text-white">

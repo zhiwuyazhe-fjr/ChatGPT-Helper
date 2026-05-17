@@ -6,6 +6,7 @@
     const SETTING_KEYS = {
       PROMPTS: "chatgpt_prompts",
       SETTINGS: "chatgpt_settings",
+      PROMPT_LIBRARY_VERSION: "chatgpt_prompts_version",
       DEFAULT_PANEL_STATE: "chatgpt_default_panel_state",
       PANEL_WIDTH: "chatgpt_panel_width",
       LANGUAGE: "chatgpt_language"
@@ -22,13 +23,24 @@
         addPrompt: "添加新提示词",
         editPrompt: "编辑提示词",
         noPrompts: "暂无提示词",
+        promptEmptyHint: "添加常用工作流，让高频任务一键进入输入框。",
+        promptSearchEmptyHint: "换个关键词，或新建一个更贴近当前任务的提示词。",
         optional: "可选",
-        defaultPromptCodeReviewTitle: "代码审查",
-        defaultPromptCodeReviewContent: "请帮我审查以下代码，指出潜在的问题和改进建议：",
-        defaultPromptCodeReviewCategory: "开发",
-        defaultPromptTranslateTitle: "翻译",
-        defaultPromptTranslateContent: "请将以下内容翻译成中文：",
-        defaultPromptTranslateCategory: "工具",
+        defaultPromptResearchTitle: "资料精读与洞察提炼",
+        defaultPromptResearchContent: "请作为严谨的研究助理，精读以下材料，并按这个结构输出：\n1. 核心结论（3-5条）\n2. 关键证据与来源位置\n3. 隐含假设或争议点\n4. 可执行建议\n5. 还需要补充确认的问题\n\n材料：",
+        defaultPromptResearchCategory: "研究",
+        defaultPromptPlanningTitle: "任务拆解与执行计划",
+        defaultPromptPlanningContent: "请把下面目标拆解成可执行计划。先确认目标、约束和成功标准，再输出：\n1. 里程碑\n2. 具体任务清单\n3. 优先级与依赖关系\n4. 主要风险与应对方案\n5. 今天就能开始的下一步\n\n目标：",
+        defaultPromptPlanningCategory: "效率",
+        defaultPromptWritingTitle: "写作润色与结构优化",
+        defaultPromptWritingContent: "请作为资深编辑，优化下面文字。要求：\n1. 保留原意和事实\n2. 提升结构、逻辑和可读性\n3. 标出关键修改理由\n4. 给出一个更简洁版本和一个更有说服力版本\n\n原文：",
+        defaultPromptWritingCategory: "写作",
+        defaultPromptDebugTitle: "Bug 定位与修复方案",
+        defaultPromptDebugContent: "请作为高级工程师协助定位问题。请先根据现象列出最可能的原因，再给出验证步骤、最小修复方案、潜在副作用和建议补充的测试。\n\n现象 / 报错 / 相关代码：",
+        defaultPromptDebugCategory: "开发",
+        defaultPromptDecisionTitle: "方案对比与决策建议",
+        defaultPromptDecisionContent: "请帮我对比下面几个方案，并用决策表输出：目标匹配度、成本、风险、可维护性、长期影响。最后给出推荐方案、推荐理由和什么情况下应该改选其他方案。\n\n背景与方案：",
+        defaultPromptDecisionCategory: "决策",
         allCategory: "全部",
         refresh: "刷新",
         expand: "展开",
@@ -289,13 +301,24 @@
         addPrompt: "Add New Prompt",
         editPrompt: "Edit Prompt",
         noPrompts: "No prompts",
+        promptEmptyHint: "Add reusable workflows so frequent tasks are one click away.",
+        promptSearchEmptyHint: "Try another keyword, or create a prompt for this task.",
         optional: "optional",
-        defaultPromptCodeReviewTitle: "Code Review",
-        defaultPromptCodeReviewContent: "Please review the following code and point out potential issues and improvements:",
-        defaultPromptCodeReviewCategory: "Development",
-        defaultPromptTranslateTitle: "Translate",
-        defaultPromptTranslateContent: "Please translate the following content into English:",
-        defaultPromptTranslateCategory: "Tools",
+        defaultPromptResearchTitle: "Deep Reading and Insight Extraction",
+        defaultPromptResearchContent: "Act as a rigorous research assistant. Read the material carefully and respond with:\n1. Core takeaways (3-5 bullets)\n2. Key evidence and where it appears\n3. Hidden assumptions or disputed points\n4. Actionable recommendations\n5. Questions that still need confirmation\n\nMaterial:",
+        defaultPromptResearchCategory: "Research",
+        defaultPromptPlanningTitle: "Task Breakdown and Execution Plan",
+        defaultPromptPlanningContent: "Break the goal below into an executable plan. First clarify the objective, constraints, and success criteria, then provide:\n1. Milestones\n2. Concrete tasks\n3. Priorities and dependencies\n4. Key risks and mitigations\n5. The next step I can start today\n\nGoal:",
+        defaultPromptPlanningCategory: "Productivity",
+        defaultPromptWritingTitle: "Writing Polish and Structure",
+        defaultPromptWritingContent: "Act as a senior editor and improve the text below. Requirements:\n1. Preserve the original meaning and facts\n2. Improve structure, logic, and readability\n3. Explain the most important changes\n4. Provide one concise version and one more persuasive version\n\nDraft:",
+        defaultPromptWritingCategory: "Writing",
+        defaultPromptDebugTitle: "Bug Diagnosis and Fix Plan",
+        defaultPromptDebugContent: "Act as a senior engineer and help diagnose this issue. Start with the most likely causes, then provide validation steps, a minimal fix, possible side effects, and tests that should be added.\n\nSymptoms / error / relevant code:",
+        defaultPromptDebugCategory: "Development",
+        defaultPromptDecisionTitle: "Option Comparison and Decision",
+        defaultPromptDecisionContent: "Compare the options below and output a decision table covering goal fit, cost, risk, maintainability, and long-term impact. End with the recommended option, why it wins, and when another option would be better.\n\nContext and options:",
+        defaultPromptDecisionCategory: "Decision",
         allCategory: "All",
         refresh: "Refresh",
         expand: "Expand",
@@ -714,16 +737,34 @@
     function createDefaultPrompts() {
       return [
         {
-          id: "default_1",
-          title: t("defaultPromptCodeReviewTitle"),
-          content: t("defaultPromptCodeReviewContent"),
-          category: t("defaultPromptCodeReviewCategory")
+          id: "default_3",
+          title: t("defaultPromptResearchTitle"),
+          content: t("defaultPromptResearchContent"),
+          category: t("defaultPromptResearchCategory")
         },
         {
-          id: "default_2",
-          title: t("defaultPromptTranslateTitle"),
-          content: t("defaultPromptTranslateContent"),
-          category: t("defaultPromptTranslateCategory")
+          id: "default_4",
+          title: t("defaultPromptPlanningTitle"),
+          content: t("defaultPromptPlanningContent"),
+          category: t("defaultPromptPlanningCategory")
+        },
+        {
+          id: "default_5",
+          title: t("defaultPromptWritingTitle"),
+          content: t("defaultPromptWritingContent"),
+          category: t("defaultPromptWritingCategory")
+        },
+        {
+          id: "default_6",
+          title: t("defaultPromptDebugTitle"),
+          content: t("defaultPromptDebugContent"),
+          category: t("defaultPromptDebugCategory")
+        },
+        {
+          id: "default_7",
+          title: t("defaultPromptDecisionTitle"),
+          content: t("defaultPromptDecisionContent"),
+          category: t("defaultPromptDecisionCategory")
         }
       ];
     }
@@ -899,6 +940,10 @@
       plus: [
         ["path", { d: "M12 5v14" }],
         ["path", { d: "M5 12h14" }]
+      ],
+      search: [
+        ["circle", { cx: "11", cy: "11", r: "7" }],
+        ["path", { d: "m21 21-4.3-4.3" }]
       ],
       refresh: [
         ["path", { d: "M21 12a9 9 0 0 1-15.2 6.5" }],
@@ -6334,8 +6379,26 @@
     }
     Object.assign(ChatGPTHelper.prototype, {
       loadPrompts() {
+        const promptLibraryVersion = 3;
+        const removedDefaultPromptIds = /* @__PURE__ */ new Set(["default_1", "default_2"]);
         const saved = window.GM_getValue(SETTING_KEYS.PROMPTS, null);
-        return saved || createDefaultPrompts();
+        if (!Array.isArray(saved)) {
+          window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, promptLibraryVersion);
+          return createDefaultPrompts();
+        }
+        const savedVersion = Number(window.GM_getValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, 1)) || 1;
+        if (savedVersion >= promptLibraryVersion) {
+          return saved;
+        }
+        const retainedPrompts = saved.filter((prompt2) => !removedDefaultPromptIds.has(prompt2?.id));
+        const existingIds = new Set(retainedPrompts.map((prompt2) => prompt2?.id).filter(Boolean));
+        const missingDefaults = createDefaultPrompts().filter((prompt2) => prompt2.id && !existingIds.has(prompt2.id));
+        const prompts = missingDefaults.length > 0 ? [...retainedPrompts, ...missingDefaults] : retainedPrompts;
+        window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, promptLibraryVersion);
+        if (missingDefaults.length > 0 || retainedPrompts.length !== saved.length) {
+          window.GM_setValue(SETTING_KEYS.PROMPTS, prompts);
+        }
+        return prompts;
       },
       savePrompts() {
         window.GM_setValue(SETTING_KEYS.PROMPTS, this.prompts);
@@ -14473,6 +14536,290 @@
                     background: color-mix(in srgb, var(--gh-danger), transparent 90%) !important;
                 }
 
+                .chatgpt-helper-prompt-toolbar {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 10px 12px 9px;
+                    background: var(--gh-panel-subtle) !important;
+                    border-bottom: 1px solid var(--gh-panel-line) !important;
+                    box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--gh-panel-line), transparent 58%);
+                    flex: 0 0 auto;
+                }
+
+                :root[data-gh-bg-enabled="true"] .chatgpt-helper-prompt-toolbar {
+                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
+                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
+                }
+
+                .chatgpt-helper-prompt-search-bar {
+                    position: relative;
+                    flex: 1 1 auto;
+                    min-width: 0;
+                    padding: 0 !important;
+                    border: 0 !important;
+                    background: transparent !important;
+                    box-shadow: none !important;
+                }
+
+                .chatgpt-helper-prompt-search-icon {
+                    position: absolute;
+                    left: 12px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: var(--gh-text-secondary);
+                    pointer-events: none;
+                    opacity: 0.72;
+                    z-index: 1;
+                }
+
+                .chatgpt-helper-prompt-search-bar .chatgpt-helper-search-input {
+                    padding-left: 34px !important;
+                    padding-right: 10px !important;
+                    min-height: 36px !important;
+                    font-size: 13px !important;
+                }
+
+                .chatgpt-helper-add-btn-compact {
+                    width: auto !important;
+                    min-width: 38px;
+                    max-width: 124px;
+                    min-height: 36px !important;
+                    margin: 0 !important;
+                    padding: 0 11px !important;
+                    flex: 0 0 auto;
+                    border-radius: var(--gh-control-radius) !important;
+                    gap: 6px;
+                    overflow: hidden;
+                    font-size: 12.5px !important;
+                    font-weight: 720 !important;
+                }
+
+                .chatgpt-helper-add-btn-compact span {
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .chatgpt-helper-prompt-categories {
+                    padding: 7px 12px 8px !important;
+                    gap: 5px !important;
+                    align-items: center;
+                    flex-wrap: nowrap !important;
+                    overflow-x: auto;
+                    overflow-y: hidden;
+                    scrollbar-width: none;
+                }
+
+                .chatgpt-helper-prompt-categories::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .chatgpt-helper-category-tag {
+                    font: inherit;
+                    appearance: none;
+                    -webkit-appearance: none;
+                    text-align: center;
+                    white-space: nowrap;
+                    flex: 0 0 auto;
+                }
+
+                .chatgpt-helper-prompt-categories .chatgpt-helper-category-tag {
+                    min-height: 23px !important;
+                    padding: 0 8px !important;
+                    border-radius: 999px !important;
+                    font-size: 11.5px !important;
+                    font-weight: 650 !important;
+                    line-height: 1 !important;
+                    letter-spacing: 0 !important;
+                    box-shadow: none !important;
+                }
+
+                .chatgpt-helper-prompt-categories .chatgpt-helper-category-tag.active,
+                body[data-gh-mode="dark"] .chatgpt-helper-prompt-categories .chatgpt-helper-category-tag.active {
+                    box-shadow: 0 3px 10px color-mix(in srgb, var(--gh-primary), transparent 84%) !important;
+                }
+
+                .chatgpt-helper-prompt-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 7px;
+                    padding: 9px 10px 16px !important;
+                }
+
+                .chatgpt-helper-prompt-item {
+                    min-height: 68px;
+                    margin-bottom: 0 !important;
+                    padding: 10px 10px 10px 34px !important;
+                    overflow: hidden;
+                    isolation: isolate;
+                }
+
+                .chatgpt-helper-prompt-item::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 10px;
+                    bottom: 10px;
+                    width: 3px;
+                    border-radius: 0 999px 999px 0;
+                    background: transparent;
+                    transition: background 0.16s var(--gh-fast-ease), opacity 0.16s var(--gh-fast-ease);
+                    opacity: 0;
+                }
+
+                .chatgpt-helper-prompt-item:hover::before {
+                    background: color-mix(in srgb, var(--gh-primary), transparent 46%);
+                    opacity: 1;
+                }
+
+                .chatgpt-helper-prompt-item.selected::before {
+                    background: var(--gh-primary);
+                    opacity: 1;
+                }
+
+                .chatgpt-helper-prompt-content-wrapper {
+                    min-width: 0;
+                    margin-left: 0 !important;
+                    padding-right: 56px !important;
+                    position: relative;
+                }
+
+                .chatgpt-helper-prompt-item-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 7px;
+                    min-width: 0;
+                    margin-bottom: 4px;
+                }
+
+                .chatgpt-helper-prompt-title {
+                    flex: 1 1 auto;
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    font-size: 13px !important;
+                    font-weight: 710 !important;
+                    line-height: 1.3;
+                }
+
+                .chatgpt-helper-prompt-category-pill {
+                    max-width: 104px;
+                    min-height: 20px;
+                    padding: 0 6px;
+                    border-radius: 999px;
+                    border: 1px solid color-mix(in srgb, var(--gh-primary), transparent 70%);
+                    background: color-mix(in srgb, var(--gh-primary), transparent 90%);
+                    color: color-mix(in srgb, var(--gh-primary), var(--gh-text) 28%);
+                    font: inherit;
+                    font-size: 10.5px;
+                    font-weight: 700;
+                    line-height: 1;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    cursor: pointer;
+                    flex: 0 1 auto;
+                }
+
+                .chatgpt-helper-prompt-category-pill:hover {
+                    background: color-mix(in srgb, var(--gh-primary), transparent 82%);
+                    border-color: color-mix(in srgb, var(--gh-primary), transparent 48%);
+                }
+
+                .chatgpt-helper-prompt-content {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    white-space: normal !important;
+                    text-overflow: clip !important;
+                    font-size: 12px !important;
+                    line-height: 1.42 !important;
+                }
+
+                .chatgpt-helper-prompt-actions {
+                    top: -1px !important;
+                    right: 0 !important;
+                    gap: 5px !important;
+                    opacity: 0.72;
+                    transition: opacity 0.16s var(--gh-fast-ease), transform 0.16s var(--gh-fast-ease);
+                }
+
+                .chatgpt-helper-prompt-item:hover .chatgpt-helper-prompt-actions,
+                .chatgpt-helper-prompt-item:focus-within .chatgpt-helper-prompt-actions {
+                    opacity: 1;
+                    transform: translateY(-1px);
+                }
+
+                .chatgpt-helper-prompt-actions button {
+                    width: 26px !important;
+                    height: 26px !important;
+                    border-radius: 7px !important;
+                    background: color-mix(in srgb, var(--gh-panel-card), transparent 10%) !important;
+                    border: 1px solid var(--gh-panel-line) !important;
+                    color: var(--gh-text-secondary) !important;
+                    box-shadow: none !important;
+                }
+
+                .chatgpt-helper-prompt-actions .edit-btn:hover {
+                    color: var(--gh-primary) !important;
+                    border-color: color-mix(in srgb, var(--gh-primary), transparent 38%) !important;
+                    background: color-mix(in srgb, var(--gh-primary), transparent 90%) !important;
+                }
+
+                .chatgpt-helper-prompt-drag-handle {
+                    left: 8px !important;
+                    width: 18px !important;
+                    opacity: 0.28;
+                }
+
+                .chatgpt-helper-prompt-item:hover .chatgpt-helper-prompt-drag-handle,
+                .chatgpt-helper-prompt-item:focus-within .chatgpt-helper-prompt-drag-handle {
+                    opacity: 0.86;
+                }
+
+                .chatgpt-helper-prompt-empty {
+                    margin: 6px 0;
+                    padding: 28px 18px !important;
+                    min-height: 210px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 9px;
+                    text-align: center;
+                }
+
+                .chatgpt-helper-prompt-empty-icon {
+                    color: color-mix(in srgb, var(--gh-primary), var(--gh-text-secondary) 34%);
+                    opacity: 0.86;
+                }
+
+                .chatgpt-helper-prompt-empty-title {
+                    color: var(--gh-text);
+                    font-size: 14px;
+                    font-weight: 750;
+                    line-height: 1.3;
+                }
+
+                .chatgpt-helper-prompt-empty-desc {
+                    max-width: 220px;
+                    color: var(--gh-text-secondary);
+                    font-size: 12.5px;
+                    line-height: 1.45;
+                }
+
+                .chatgpt-helper-empty-add-btn {
+                    width: auto !important;
+                    min-height: 34px !important;
+                    margin: 6px 0 0 !important;
+                    padding: 0 12px !important;
+                    border-radius: var(--gh-control-radius) !important;
+                }
+
                 #chatgpt-helper-right button:focus-visible,
                 #chatgpt-helper-right input:focus-visible,
                 #chatgpt-helper-right textarea:focus-visible,
@@ -15261,11 +15608,24 @@
       return;
     }
     Object.assign(ChatGPTHelper.prototype, {
+      selectPromptCategory(category) {
+        this.selectedCategory = category;
+        this.updateCategoryBar();
+        setTimeout(() => {
+          this.refreshPromptList();
+        }, 0);
+      },
       renderPrompts(container) {
-        const searchBar = createElement("div", { className: "chatgpt-helper-search-bar" });
+        const toolbar = createElement("div", { className: "chatgpt-helper-prompt-toolbar" });
+        const searchBar = createElement("div", { className: "chatgpt-helper-search-bar chatgpt-helper-prompt-search-bar" });
+        searchBar.appendChild(createSvgIconNode("search", {
+          size: 15,
+          className: "chatgpt-helper-prompt-search-icon"
+        }));
         const searchInput = createElement("input", {
           className: "chatgpt-helper-search-input",
           type: "text",
+          "aria-label": this.t("searchPlaceholder"),
           placeholder: this.t("searchPlaceholder"),
           value: this.searchQuery || ""
         });
@@ -15274,32 +15634,33 @@
           this.refreshPromptList();
         });
         searchBar.appendChild(searchInput);
-        container.appendChild(searchBar);
-        const categories = this.getCategories();
-        const categoryBar = createElement("div", { className: "chatgpt-helper-categories" });
-        const allCategoryText = this.t("allCategory");
-        const allTag = createElement("div", {
-          className: `chatgpt-helper-category-tag ${this.selectedCategory === allCategoryText ? "active" : ""}`
-        }, allCategoryText);
-        allTag.addEventListener("click", () => {
-          this.selectedCategory = allCategoryText;
-          this.updateCategoryBar();
-          setTimeout(() => {
-            this.refreshPromptList();
-          }, 0);
+        toolbar.appendChild(searchBar);
+        const addBtn = createElement("button", {
+          className: "chatgpt-helper-add-btn chatgpt-helper-add-btn-compact",
+          type: "button",
+          title: this.t("addPrompt"),
+          "aria-label": this.t("addPrompt")
         });
+        addBtn.appendChild(createSvgIconNode("plus", { size: 16 }));
+        addBtn.appendChild(createElement("span", {}, this.t("addPrompt")));
+        addBtn.addEventListener("click", () => this.showAddPromptDialog());
+        toolbar.appendChild(addBtn);
+        container.appendChild(toolbar);
+        const categories = this.getCategories();
+        const categoryBar = createElement("div", { className: "chatgpt-helper-categories chatgpt-helper-prompt-categories" });
+        const allCategoryText = this.t("allCategory");
+        const allTag = createElement("button", {
+          className: `chatgpt-helper-category-tag ${this.selectedCategory === allCategoryText ? "active" : ""}`,
+          type: "button"
+        }, allCategoryText);
+        allTag.addEventListener("click", () => this.selectPromptCategory(allCategoryText));
         categoryBar.appendChild(allTag);
         categories.forEach((cat) => {
-          const tag = createElement("div", {
-            className: `chatgpt-helper-category-tag ${this.selectedCategory === cat ? "active" : ""}`
+          const tag = createElement("button", {
+            className: `chatgpt-helper-category-tag ${this.selectedCategory === cat ? "active" : ""}`,
+            type: "button"
           }, cat);
-          tag.addEventListener("click", () => {
-            this.selectedCategory = cat;
-            this.updateCategoryBar();
-            setTimeout(() => {
-              this.refreshPromptList();
-            }, 0);
-          });
+          tag.addEventListener("click", () => this.selectPromptCategory(cat));
           categoryBar.appendChild(tag);
         });
         container.appendChild(categoryBar);
@@ -15311,13 +15672,6 @@
         const listContainer = this.panel.querySelector("#prompt-list");
         if (!listContainer) return;
         clearElement(listContainer);
-        const addBtn = createElement("button", {
-          className: "chatgpt-helper-add-btn"
-        });
-        addBtn.appendChild(createElement("span", {}, "+"));
-        addBtn.appendChild(createElement("span", {}, this.t("addPrompt")));
-        addBtn.addEventListener("click", () => this.showAddPromptDialog());
-        listContainer.appendChild(addBtn);
         let filteredPrompts = this.prompts;
         if (this.selectedCategory && this.selectedCategory !== this.t("allCategory")) {
           filteredPrompts = filteredPrompts.filter((p) => p.category === this.selectedCategory);
@@ -15329,9 +15683,26 @@
           );
         }
         if (filteredPrompts.length === 0) {
-          listContainer.appendChild(createElement("div", {
-            style: { textAlign: "center", color: "var(--gh-text-secondary)", padding: "20px", fontSize: "14px" }
-          }, this.t("noPrompts")));
+          const emptyState = createElement("div", {
+            className: "chatgpt-helper-empty-state chatgpt-helper-prompt-empty"
+          });
+          emptyState.appendChild(createSvgIconNode("edit", {
+            size: 22,
+            className: "chatgpt-helper-prompt-empty-icon"
+          }));
+          emptyState.appendChild(createElement("div", {
+            className: "chatgpt-helper-prompt-empty-title"
+          }, this.searchQuery ? this.t("noSearchResults") : this.t("noPrompts")));
+          emptyState.appendChild(createElement("div", {
+            className: "chatgpt-helper-prompt-empty-desc"
+          }, this.searchQuery ? this.t("promptSearchEmptyHint") : this.t("promptEmptyHint")));
+          const emptyAddBtn = createElement("button", {
+            className: "chatgpt-helper-add-btn chatgpt-helper-empty-add-btn",
+            type: "button"
+          }, this.t("addPrompt"));
+          emptyAddBtn.addEventListener("click", () => this.showAddPromptDialog());
+          emptyState.appendChild(emptyAddBtn);
+          listContainer.appendChild(emptyState);
           return;
         }
         filteredPrompts.forEach((prompt2, filteredIndex) => {
@@ -15346,45 +15717,35 @@
           });
           item.appendChild(dragHandle);
           const contentWrapper = createElement("div", {
-            className: "chatgpt-helper-prompt-content-wrapper",
-            style: {
-              marginLeft: "28px",
-              position: "relative",
-              paddingRight: "60px"
-              // 为按钮留出空间
-            }
+            className: "chatgpt-helper-prompt-content-wrapper"
           });
+          const header = createElement("div", { className: "chatgpt-helper-prompt-item-header" });
           const title = createElement("div", { className: "chatgpt-helper-prompt-title" }, prompt2.title);
+          header.appendChild(title);
+          if (prompt2.category) {
+            const categoryPill = createElement("button", {
+              className: "chatgpt-helper-prompt-category-pill",
+              title: `${this.t("category")}: ${prompt2.category}`,
+              type: "button"
+            }, prompt2.category);
+            categoryPill.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.selectPromptCategory(prompt2.category);
+            });
+            header.appendChild(categoryPill);
+          }
           const content = createElement("div", { className: "chatgpt-helper-prompt-content" }, prompt2.content);
-          contentWrapper.appendChild(title);
+          contentWrapper.appendChild(header);
           contentWrapper.appendChild(content);
           const actions = createElement("div", {
             className: "chatgpt-helper-prompt-actions"
           });
-          if (prompt2.category) {
-            const categoryBtn = createElement("button", {
-              className: "category-btn",
-              title: `${this.t("category")}: ${prompt2.category}`,
-              type: "button"
-              // 明确指定按钮类型
-            });
-            categoryBtn.appendChild(createSvgIconNode("tag", { size: 14 }));
-            categoryBtn.addEventListener("click", (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              e.stopImmediatePropagation();
-              this.selectedCategory = prompt2.category;
-              this.updateCategoryBar();
-              setTimeout(() => {
-                this.refreshPromptList();
-              }, 0);
-              return false;
-            });
-            actions.appendChild(categoryBtn);
-          }
           const editBtn = createElement("button", {
             className: "edit-btn",
-            title: this.t("edit")
+            title: this.t("edit"),
+            "aria-label": this.t("edit"),
+            type: "button"
           });
           editBtn.appendChild(createSvgIconNode("edit", { size: 14 }));
           editBtn.addEventListener("click", (e) => {
@@ -15393,7 +15754,9 @@
           });
           const deleteBtn = createElement("button", {
             className: "delete-btn",
-            title: this.t("delete")
+            title: this.t("delete"),
+            "aria-label": this.t("delete"),
+            type: "button"
           });
           deleteBtn.appendChild(createSvgIconNode("trash", { size: 14 }));
           deleteBtn.addEventListener("click", (e) => {
@@ -15514,28 +15877,18 @@
         const categories = this.getCategories();
         const allCategoryText = this.t("allCategory");
         clearElement(categoryBar);
-        const newAllTag = createElement("div", {
-          className: `chatgpt-helper-category-tag ${currentCategory === allCategoryText ? "active" : ""}`
+        const newAllTag = createElement("button", {
+          className: `chatgpt-helper-category-tag ${currentCategory === allCategoryText ? "active" : ""}`,
+          type: "button"
         }, allCategoryText);
-        newAllTag.addEventListener("click", () => {
-          this.selectedCategory = allCategoryText;
-          this.updateCategoryBar();
-          setTimeout(() => {
-            this.refreshPromptList();
-          }, 0);
-        });
+        newAllTag.addEventListener("click", () => this.selectPromptCategory(allCategoryText));
         categoryBar.appendChild(newAllTag);
         categories.forEach((cat) => {
-          const tag = createElement("div", {
-            className: `chatgpt-helper-category-tag ${currentCategory === cat ? "active" : ""}`
+          const tag = createElement("button", {
+            className: `chatgpt-helper-category-tag ${currentCategory === cat ? "active" : ""}`,
+            type: "button"
           }, cat);
-          tag.addEventListener("click", () => {
-            this.selectedCategory = cat;
-            this.updateCategoryBar();
-            setTimeout(() => {
-              this.refreshPromptList();
-            }, 0);
-          });
+          tag.addEventListener("click", () => this.selectPromptCategory(cat));
           categoryBar.appendChild(tag);
         });
       },

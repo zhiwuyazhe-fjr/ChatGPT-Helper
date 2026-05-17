@@ -74,12 +74,26 @@
         return;
     }
     Object.assign(ChatGPTHelper.prototype, {
+        selectPromptCategory(category) {
+            this.selectedCategory = category;
+            this.updateCategoryBar();
+            setTimeout(() => {
+                this.refreshPromptList();
+            }, 0);
+        },
+
         renderPrompts(container) {
-            // 搜索栏
-            const searchBar = createElement('div', { className: 'chatgpt-helper-search-bar' });
+            const toolbar = createElement('div', { className: 'chatgpt-helper-prompt-toolbar' });
+
+            const searchBar = createElement('div', { className: 'chatgpt-helper-search-bar chatgpt-helper-prompt-search-bar' });
+            searchBar.appendChild(createSvgIconNode('search', {
+                size: 15,
+                className: 'chatgpt-helper-prompt-search-icon'
+            }));
             const searchInput = createElement('input', {
                 className: 'chatgpt-helper-search-input',
                 type: 'text',
+                'aria-label': this.t('searchPlaceholder'),
                 placeholder: this.t('searchPlaceholder'),
                 value: this.searchQuery || ''
             });
@@ -88,39 +102,38 @@
                 this.refreshPromptList();
             });
             searchBar.appendChild(searchInput);
-            container.appendChild(searchBar);
+            toolbar.appendChild(searchBar);
+
+            const addBtn = createElement('button', {
+                className: 'chatgpt-helper-add-btn chatgpt-helper-add-btn-compact',
+                type: 'button',
+                title: this.t('addPrompt'),
+                'aria-label': this.t('addPrompt')
+            });
+            addBtn.appendChild(createSvgIconNode('plus', { size: 16 }));
+            addBtn.appendChild(createElement('span', {}, this.t('addPrompt')));
+            addBtn.addEventListener('click', () => this.showAddPromptDialog());
+            toolbar.appendChild(addBtn);
+
+            container.appendChild(toolbar);
 
             // 分类标签
             const categories = this.getCategories();
-            const categoryBar = createElement('div', { className: 'chatgpt-helper-categories' });
+            const categoryBar = createElement('div', { className: 'chatgpt-helper-categories chatgpt-helper-prompt-categories' });
             const allCategoryText = this.t('allCategory');
-            const allTag = createElement('div', {
-                className: `chatgpt-helper-category-tag ${this.selectedCategory === allCategoryText ? 'active' : ''}`
+            const allTag = createElement('button', {
+                className: `chatgpt-helper-category-tag ${this.selectedCategory === allCategoryText ? 'active' : ''}`,
+                type: 'button'
             }, allCategoryText);
-            allTag.addEventListener('click', () => {
-                this.selectedCategory = allCategoryText;
-                // 先更新分类栏高亮状态，再刷新列表
-                this.updateCategoryBar();
-                // 使用 setTimeout 确保分类栏更新完成后再刷新列表
-                setTimeout(() => {
-                    this.refreshPromptList();
-                }, 0);
-            });
+            allTag.addEventListener('click', () => this.selectPromptCategory(allCategoryText));
             categoryBar.appendChild(allTag);
 
             categories.forEach(cat => {
-                const tag = createElement('div', {
-                    className: `chatgpt-helper-category-tag ${this.selectedCategory === cat ? 'active' : ''}`
+                const tag = createElement('button', {
+                    className: `chatgpt-helper-category-tag ${this.selectedCategory === cat ? 'active' : ''}`,
+                    type: 'button'
                 }, cat);
-                tag.addEventListener('click', () => {
-                    this.selectedCategory = cat;
-                    // 先更新分类栏高亮状态，再刷新列表
-                    this.updateCategoryBar();
-                    // 使用 setTimeout 确保分类栏更新完成后再刷新列表
-                    setTimeout(() => {
-                        this.refreshPromptList();
-                    }, 0);
-                });
+                tag.addEventListener('click', () => this.selectPromptCategory(cat));
                 categoryBar.appendChild(tag);
             });
             container.appendChild(categoryBar);
@@ -138,15 +151,6 @@
 
             clearElement(listContainer);
 
-            // 添加提示词按钮
-            const addBtn = createElement('button', {
-                className: 'chatgpt-helper-add-btn'
-            });
-            addBtn.appendChild(createElement('span', {}, '+'));
-            addBtn.appendChild(createElement('span', {}, this.t('addPrompt')));
-            addBtn.addEventListener('click', () => this.showAddPromptDialog());
-            listContainer.appendChild(addBtn);
-
             // 过滤提示词
             let filteredPrompts = this.prompts;
             if (this.selectedCategory && this.selectedCategory !== this.t('allCategory')) {
@@ -161,9 +165,26 @@
             }
 
             if (filteredPrompts.length === 0) {
-                listContainer.appendChild(createElement('div', {
-                    style: { textAlign: 'center', color: 'var(--gh-text-secondary)', padding: '20px', fontSize: '14px' }
-                }, this.t('noPrompts')));
+                const emptyState = createElement('div', {
+                    className: 'chatgpt-helper-empty-state chatgpt-helper-prompt-empty'
+                });
+                emptyState.appendChild(createSvgIconNode('edit', {
+                    size: 22,
+                    className: 'chatgpt-helper-prompt-empty-icon'
+                }));
+                emptyState.appendChild(createElement('div', {
+                    className: 'chatgpt-helper-prompt-empty-title'
+                }, this.searchQuery ? this.t('noSearchResults') : this.t('noPrompts')));
+                emptyState.appendChild(createElement('div', {
+                    className: 'chatgpt-helper-prompt-empty-desc'
+                }, this.searchQuery ? this.t('promptSearchEmptyHint') : this.t('promptEmptyHint')));
+                const emptyAddBtn = createElement('button', {
+                    className: 'chatgpt-helper-add-btn chatgpt-helper-empty-add-btn',
+                    type: 'button'
+                }, this.t('addPrompt'));
+                emptyAddBtn.addEventListener('click', () => this.showAddPromptDialog());
+                emptyState.appendChild(emptyAddBtn);
+                listContainer.appendChild(emptyState);
                 return;
             }
 
@@ -185,54 +206,42 @@
                 });
                 item.appendChild(dragHandle);
 
-                // 设置内容区域左边距，为拖动手柄留出空间
                 const contentWrapper = createElement('div', {
-                    className: 'chatgpt-helper-prompt-content-wrapper',
-                    style: {
-                        marginLeft: '28px',
-                        position: 'relative',
-                        paddingRight: '60px' // 为按钮留出空间
-                    }
+                    className: 'chatgpt-helper-prompt-content-wrapper'
                 });
 
+                const header = createElement('div', { className: 'chatgpt-helper-prompt-item-header' });
                 const title = createElement('div', { className: 'chatgpt-helper-prompt-title' }, prompt.title);
+                header.appendChild(title);
+
+                if (prompt.category) {
+                    const categoryPill = createElement('button', {
+                        className: 'chatgpt-helper-prompt-category-pill',
+                        title: `${this.t('category')}: ${prompt.category}`,
+                        type: 'button'
+                    }, prompt.category);
+                    categoryPill.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.selectPromptCategory(prompt.category);
+                    });
+                    header.appendChild(categoryPill);
+                }
+
                 const content = createElement('div', { className: 'chatgpt-helper-prompt-content' }, prompt.content);
                 
-                contentWrapper.appendChild(title);
+                contentWrapper.appendChild(header);
                 contentWrapper.appendChild(content);
 
-                // 操作按钮 - 放到右侧偏上
                 const actions = createElement('div', {
                     className: 'chatgpt-helper-prompt-actions'
                 });
-                
-                // 如果有分类，添加分类按钮
-                if (prompt.category) {
-                    const categoryBtn = createElement('button', {
-                        className: 'category-btn',
-                        title: `${this.t('category')}: ${prompt.category}`,
-                        type: 'button' // 明确指定按钮类型
-                    });
-                    categoryBtn.appendChild(createSvgIconNode('tag', { size: 14 }));
-                    categoryBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation(); // 阻止同一元素上的其他事件监听器
-                        this.selectedCategory = prompt.category;
-                        // 先更新分类栏高亮状态，再刷新列表
-                        this.updateCategoryBar();
-                        // 使用 setTimeout 确保分类栏更新完成后再刷新列表
-                        setTimeout(() => {
-                            this.refreshPromptList();
-                        }, 0);
-                        return false; // 额外确保阻止默认行为
-                    });
-                    actions.appendChild(categoryBtn);
-                }
-                
+
                 const editBtn = createElement('button', {
                     className: 'edit-btn',
-                    title: this.t('edit')
+                    title: this.t('edit'),
+                    'aria-label': this.t('edit'),
+                    type: 'button'
                 });
                 editBtn.appendChild(createSvgIconNode('edit', { size: 14 }));
                 editBtn.addEventListener('click', (e) => {
@@ -242,7 +251,9 @@
                 
                 const deleteBtn = createElement('button', {
                     className: 'delete-btn',
-                    title: this.t('delete')
+                    title: this.t('delete'),
+                    'aria-label': this.t('delete'),
+                    type: 'button'
                 });
                 deleteBtn.appendChild(createSvgIconNode('trash', { size: 14 }));
                 deleteBtn.addEventListener('click', (e) => {
@@ -423,34 +434,20 @@
             clearElement(categoryBar);
             
             // 重新添加"全部"标签
-            const newAllTag = createElement('div', {
-                className: `chatgpt-helper-category-tag ${currentCategory === allCategoryText ? 'active' : ''}`
+            const newAllTag = createElement('button', {
+                className: `chatgpt-helper-category-tag ${currentCategory === allCategoryText ? 'active' : ''}`,
+                type: 'button'
             }, allCategoryText);
-            newAllTag.addEventListener('click', () => {
-                this.selectedCategory = allCategoryText;
-                // 先更新分类栏高亮状态，再刷新列表
-                this.updateCategoryBar();
-                // 使用 setTimeout 确保分类栏更新完成后再刷新列表
-                setTimeout(() => {
-                    this.refreshPromptList();
-                }, 0);
-            });
+            newAllTag.addEventListener('click', () => this.selectPromptCategory(allCategoryText));
             categoryBar.appendChild(newAllTag);
             
             // 添加所有分类标签
             categories.forEach(cat => {
-                const tag = createElement('div', {
-                    className: `chatgpt-helper-category-tag ${currentCategory === cat ? 'active' : ''}`
+                const tag = createElement('button', {
+                    className: `chatgpt-helper-category-tag ${currentCategory === cat ? 'active' : ''}`,
+                    type: 'button'
                 }, cat);
-                tag.addEventListener('click', () => {
-                    this.selectedCategory = cat;
-                    // 先更新分类栏高亮状态，再刷新列表
-                    this.updateCategoryBar();
-                    // 使用 setTimeout 确保分类栏更新完成后再刷新列表
-                    setTimeout(() => {
-                        this.refreshPromptList();
-                    }, 0);
-                });
+                tag.addEventListener('click', () => this.selectPromptCategory(cat));
                 categoryBar.appendChild(tag);
             });
         },

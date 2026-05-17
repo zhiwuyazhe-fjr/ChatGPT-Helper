@@ -13,7 +13,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-(function(JSZip2, html2canvas2) {
+(function(JSZip2) {
   "use strict";
   var n, l$4, u$6, i$4, r$3, o$6, e$2, f$3, c$1, s$5, a$1, h$3, p$5, v$3, y$2, d$4 = {}, w$3 = [], _$1 = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, g$2 = Array.isArray;
   function m$2(n2, l2) {
@@ -8406,14 +8406,6 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   function downloadFile(filename, type, content2) {
     const blob = content2 instanceof Blob ? content2 : new Blob([content2], { type });
     const url = URL.createObjectURL(blob);
-    const a2 = document.createElement("a");
-    a2.href = url;
-    a2.download = filename;
-    document.body.appendChild(a2);
-    a2.click();
-    document.body.removeChild(a2);
-  }
-  function downloadUrl(filename, url) {
     const a2 = document.createElement("a");
     a2.href = url;
     a2.download = filename;
@@ -19929,145 +19921,6 @@ ${content2.text}
   function escapeHtml(html2) {
     return html2.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
-  class Effect {
-    constructor() {
-      __publicField(this, "_sideEffects", []);
-      __publicField(this, "_cleanupFns", []);
-      __publicField(this, "_isDisposed", false);
-    }
-    /**
-     * Adds a side effect to the effect, with a cleanup function.
-     */
-    add(sideEffect) {
-      if (this._isDisposed) return;
-      this._sideEffects.push(sideEffect);
-    }
-    /**
-     * Executes all the side effects.
-     */
-    run() {
-      if (this._isDisposed) return;
-      this._sideEffects.forEach((fn2) => {
-        const cleanupFn = fn2();
-        if (cleanupFn) this._cleanupFns.push(cleanupFn);
-      });
-      this._sideEffects = [];
-    }
-    /**
-     * Executes all the cleanup functions.
-     * This method should be called when the effect is no longer needed.
-     * After this method is called, the effect is considered disposed.
-     * Any subsequent call to `add` or `run` will be ignored.
-     */
-    dispose() {
-      if (this._isDisposed) return;
-      this._cleanupFns.forEach((fn2) => fn2());
-      this._cleanupFns = [];
-      this._isDisposed = true;
-    }
-  }
-  function fnIgnoreElements(el) {
-    return typeof el.shadowRoot === "object" && el.shadowRoot !== null;
-  }
-  async function exportToPng(fileNameFormat) {
-    if (!checkIfConversationStarted()) {
-      alert(instance.t("Please start a conversation first"));
-      return false;
-    }
-    const effect = new Effect();
-    const thread = document.querySelector('#thread div:has(> [data-testid="conversation-turn-1"]');
-    if (!thread || thread.children.length === 0 || thread.scrollHeight < 50) {
-      alert(instance.t("Failed to export to PNG. Failed to find the element node."));
-      return false;
-    }
-    const isDarkMode = document.documentElement.classList.contains("dark");
-    effect.add(() => {
-      const style = document.createElement("style");
-      style.textContent = `
-            #thread div:has(> [data-testid="conversation-turn-1"]),
-            #thread [data-testid^="conversation-turn-"] {
-                color: ${isDarkMode ? "#ececec" : "#0d0d0d"};
-                background-color: ${isDarkMode ? "#212121" : "#fff"};
-            }
-
-            /* https://github.com/niklasvh/html2canvas/issues/2775#issuecomment-1204988157 */
-            img {
-                display: initial !important;
-            }
-
-            pre {
-                margin-top: 8px !important;
-            }
-
-            pre > div > div > span {
-                margin-top: -12px;
-                padding-bottom: 2px;
-            }
-
-            #page-header,
-            #thread-bottom-container,
-            /* any other elements that are not conversation turns */
-            #thread div:has(> [data-testid="conversation-turn-1"]) > :not([data-testid^="conversation-turn-"]),
-            /* hide back to top button */
-            button.absolute,
-            /* question button */
-            .group.absolute > button {
-                display: none;
-            }
-
-            /* conversation action bar */
-            .group\\/conversation-turn > div > div.absolute,
-            /* code block buttons */
-            #thread pre button {
-                visibility: hidden;
-            }
-            `;
-      thread.appendChild(style);
-      return () => style.remove();
-    });
-    const threadEl = thread;
-    effect.run();
-    await sleep(100);
-    const passLimit = 10;
-    const takeScreenshot = async (width, height, additionalScale = 1, currentPass = 1) => {
-      const ratio = window.devicePixelRatio || 1;
-      const scale = ratio * 2 * additionalScale;
-      let canvas = null;
-      try {
-        canvas = await html2canvas2(threadEl, {
-          scale,
-          useCORS: true,
-          scrollX: -window.scrollX,
-          scrollY: -window.scrollY,
-          windowWidth: width,
-          windowHeight: height,
-          ignoreElements: fnIgnoreElements
-        });
-      } catch (error) {
-        console.log(`ChatGPT Exporter:takeScreenshot with height=${height} width=${width} scale=${scale}`);
-        console.error("Failed to take screenshot", error);
-      }
-      const context = canvas?.getContext("2d");
-      if (context) context.imageSmoothingEnabled = false;
-      const dataUrl2 = canvas?.toDataURL("image/png", 1).replace(/^data:image\/[^;]/, "data:application/octet-stream");
-      if (!canvas || !dataUrl2 || dataUrl2 === "data:,") {
-        if (currentPass > passLimit) return null;
-        return takeScreenshot(width, height, additionalScale / 1.4, currentPass + 1);
-      }
-      return dataUrl2;
-    };
-    const dataUrl = await takeScreenshot(thread.scrollWidth, thread.scrollHeight);
-    effect.dispose();
-    if (!dataUrl) {
-      alert("Failed to export to PNG. This might be caused by the size of the conversation. Please try to export a smaller conversation.");
-      return false;
-    }
-    const chatId = getChatIdFromUrl() || void 0;
-    const fileName = getFileNameWithFormat(fileNameFormat, "png", { chatId });
-    downloadUrl(fileName, dataUrl);
-    window.URL.revokeObjectURL(dataUrl);
-    return true;
-  }
   function convertMessageToTavern(node2) {
     if (!node2.message || shouldSkipMessageInExport(node2.message) || node2.message.content.content_type !== "text") {
       return null;
@@ -20752,9 +20605,6 @@ ${content2}`;
   }
   function FileCode() {
     return /* @__PURE__ */ u$5("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 384 512", className: "w-4 h-4 shrink-0", fill: "currentColor", children: /* @__PURE__ */ u$5("path", { d: "M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM153 289l-31 31 31 31c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L71 337c-9.4-9.4-9.4-24.6 0-33.9l48-48c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM265 255l48 48c9.4 9.4 9.4 24.6 0 33.9l-48 48c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l31-31-31-31c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z" }) });
-  }
-  function IconCamera() {
-    return /* @__PURE__ */ u$5("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 512 512", className: "w-4 h-4 shrink-0", fill: "currentColor", children: /* @__PURE__ */ u$5("path", { d: "M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 384c-53 0-96-43-96-96s43-96 96-96s96 43 96 96s-43 96-96 96z" }) });
   }
   function IconMarkdown() {
     return /* @__PURE__ */ u$5("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 640 512", className: "w-4 h-4 shrink-0", fill: "currentColor", children: /* @__PURE__ */ u$5("path", { d: "M593.8 59.1H46.2C20.7 59.1 0 79.8 0 105.2v301.5c0 25.5 20.7 46.2 46.2 46.2h547.7c25.5 0 46.2-20.7 46.1-46.1V105.2c0-25.4-20.7-46.1-46.2-46.1zM338.5 360.6H277v-120l-61.5 76.9-61.5-76.9v120H92.3V151.4h61.5l61.5 76.9 61.5-76.9h61.5v209.2zm135.3 3.1L381.5 256H443V151.4h61.5V256H566z" }) });
@@ -22166,7 +22016,7 @@ ${content2}`;
       setExportAllLimit
       /* eslint-enable pionxzh/consistent-list-newline */
     } = useSettingContext();
-    const { t: t2, i18n } = useTranslation();
+    const { t: t2 } = useTranslation();
     const _title = useTitle();
     const date = dateStr();
     const timestamp$1 = timestamp();
@@ -22190,18 +22040,6 @@ ${content2}`;
               /* @__PURE__ */ u$5(Title, { className: "DialogTitle", children: t2("Exporter Settings") }),
               /* @__PURE__ */ u$5("div", { className: "DialogBody", children: [
                 /* @__PURE__ */ u$5("dl", { className: "space-y-6", children: [
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ u$5("div", { children: [
-                    /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: `${t2("Language")} 🌐` }),
-                    /* @__PURE__ */ u$5("dd", { children: /* @__PURE__ */ u$5(
-                      "select",
-                      {
-                        className: "Select mt-3",
-                        value: i18n.language,
-                        onChange: (e2) => i18n.changeLanguage(e2.currentTarget.value),
-                        children: LOCALES.map(({ name, code: code2 }) => /* @__PURE__ */ u$5("option", { value: code2, children: name }, code2))
-                      }
-                    ) })
-                  ] }) }),
                   /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ u$5("div", { children: [
                     /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("File Name") }),
                     /* @__PURE__ */ u$5("dd", { children: [
@@ -22422,7 +22260,6 @@ ${content2}`;
     }, [enableTimestamp, timeStamp24H]);
     const metaList = T$3(() => enableMeta ? exportMetaList : [], [enableMeta, exportMetaList]);
     const onClickText = q$1(() => exportToText(), []);
-    const onClickPng = q$1(() => exportToPng(format), [format]);
     const onClickMarkdown = q$1(() => exportToMarkdown(format, metaList), [format, metaList]);
     const onClickHtml = q$1(() => exportToHtml(format, metaList), [format, metaList]);
     const onClickJSON = q$1(() => {
@@ -22449,15 +22286,6 @@ ${content2}`;
           icon: IconCopy,
           className: "row-full",
           onClick: onClickText
-        }
-      ),
-      /* @__PURE__ */ u$5(
-        MenuItem,
-        {
-          text: t2("Screenshot"),
-          icon: IconCamera,
-          className: "row-half",
-          onClick: onClickPng
         }
       ),
       /* @__PURE__ */ u$5(
@@ -22727,4 +22555,4 @@ ${content2}`;
   }
   defineExporterMount();
   startTimestampObserver();
-})(JSZip, html2canvas);
+})(JSZip);
