@@ -118,15 +118,12 @@
         noContent: "未找到对话内容",
         openFirst: "请先打开会话",
         settingsTitle: "设置",
-        panelSettings: "面板设置",
-        featureSettings: "功能设置",
         readingHistory: "阅读历史",
-        anchorSettings: "锚点设置",
-        copySettings: "复制功能",
-        tabFunctionSettings: "tab栏功能",
-        tabOrderSettings: "tab栏功能",
-        tabPageSettings: "标签页设置",
-        languageSettings: "语言设置",
+        settingsGroupGeneral: "通用",
+        settingsGroupReadingNavigation: "阅读与导航",
+        settingsGroupContentProcessing: "内容处理",
+        settingsGroupTabPrivacy: "标签页与隐私",
+        settingsGroupQuickButtons: "快捷按钮",
         language: "界面语言",
         autoDetect: "自动检测",
         chinese: "简体中文",
@@ -149,15 +146,9 @@
         returnAnchorFailed: "返回锚点失败",
         scrolledTop: "已滚动到顶部",
         scrolledBottom: "已滚动到底部",
-        panelWidthUpdated: "已更新面板宽度，刷新页面生效",
-        notificationPermissionDenied: "通知权限已被拒绝，请在浏览器设置中允许通知",
-        notificationPermissionGranted: "通知权限已授予",
-        notificationPermissionRejected: "通知权限被拒绝",
-        notificationPermissionFailed: "请求通知权限失败",
         exportModuleLoadFailed: "导出模块加载失败，请检查 ChatGPT Exporter 脚本是否正常运行。",
         exportModuleMissing: "未检测到 ChatGPT Exporter，请确保扩展已正确加载。",
         operationFailed: "操作失败",
-        themeSettingsSection: "主题设置",
         openThemeSettings: "打开主题设置",
         themeDialogTitle: "主题",
         themeAppearance: "外观",
@@ -191,19 +182,19 @@
         aboutButton: "关于",
         aboutTopEntryTitle: "关于",
         aboutDialogTitle: "关于 ChatGPT Helper",
-        aboutTagline: "为重度 ChatGPT 使用者打造的高效增强工作台",
-        aboutMotivationTitle: "😘 开发动机",
-        aboutMotivationContent: "这不仅仅是一个插件，更是一位 TJU 计算机学生对极致体验的追求。作为 ChatGPT 的重度使用者，我亲手打造了这个工具包，只为消除那些恼人的小摩擦。愿它能陪你翻过琐碎的深山，去看见真正重要的奇思妙想。",
-        aboutFeedbackTitle: "💬 反馈",
+        aboutTagline: "贴近 ChatGPT 的轻量效率面板",
+        aboutMotivationTitle: "开发动机",
+        aboutMotivationContent: "作为长期使用 ChatGPT 的 TJU 计算机学生，我把常用的提示词、导航、整理和导出需求做成一个轻量工具。它来自真实使用中的反复打磨，目标是减少切换和整理成本，让注意力留在对话本身。",
+        aboutFeedbackTitle: "反馈",
         aboutFeatureRequest: "功能建议",
-        aboutBugSupport: "问题反馈 / 支持",
-        aboutOpenSourceTitle: "🌱 开源项目",
-        aboutSupportTitle: "💕 支持项目",
-        aboutSupportContent: "ChatGPT Helper的成长，离不开你的每一次高效交互。如果它曾为你节省过一分钟，或带来过一次惊喜，请考虑支持它的未来。每一份认可，都是我继续敲下下一行代码的动力💕",
+        aboutBugSupport: "提交反馈",
+        aboutOpenSourceTitle: "项目信息",
+        aboutSupportTitle: "分享项目",
+        aboutSupportContent: "如果 ChatGPT Helper 对你的工作流有帮助，可以把仓库分享给需要的人，或在 GitHub 上留下建议。",
         aboutShare: "分享给朋友",
-        aboutAuthorTitle: "👨‍💻 关于作者",
-        aboutAuthorBio: "📍 TJU | CS 在读\n🚀 AI 探索者 | 预备役创业者\n✨ Elon Musk 信徒",
-        aboutFooterNote: "多平台兼容 · 本地解析零上传 · 重度 ChatGPT 玩家的效率工具包",
+        aboutAuthorTitle: "关于作者",
+        aboutAuthorBio: "TJU | CS 在读\nAI 工具探索者\n长期 ChatGPT 使用者",
+        aboutFooterNote: "兼容 chatgpt.com 与 chat.openai.com · 本地设置与解析 · 面向高频工作流",
         aboutRepoButton: "GitHub 仓库",
         aboutRepoLabel: "项目仓库",
         aboutAuthorGithub: "作者 GitHub",
@@ -214,7 +205,7 @@
         aboutVersionLabel: "版本",
         aboutAuthorLabel: "作者",
         aboutLicenseLabel: "许可证",
-        aboutPoweredBy: "为专注的 ChatGPT 工作流打造❤️",
+        aboutPoweredBy: "为专注的 ChatGPT 工作流打造",
         aboutIntroTitle: "项目简介",
         aboutIntro: "ChatGPT Helper 通过右侧功能面板为 ChatGPT 提供提示词管理、对话大纲、会话整理、导出与阅读定位等增强能力，尽量保持原页面结构不被打断。",
         aboutFeaturesTitle: "核心能力",
@@ -222,46 +213,34 @@
         aboutFeatureOutline: "自动生成对话大纲与导航",
         aboutFeatureConversations: "历史会话整理与批量管理",
         aboutFeatureExport: "多格式导出与阅读定位增强",
+        aboutSitesLabel: "站点",
         aboutSupportSites: "支持 chatgpt.com、chat.openai.com 与 new.oaifree.com",
         aboutPrivacyTitle: "隐私与权限",
-        aboutPrivacy: "所有设置与数据处理均在本地浏览器完成；扩展使用 storage 保存配置，notifications 仅用于完成提醒，不会上传对话内容。",
-        pageSettings: "页面设置",
-        outlineSettings: "大纲设置",
+        aboutPrivacy: "所有设置与数据处理均在本地浏览器完成；扩展使用 storage 保存本地配置，不会上传对话内容。",
         searchConversations: "搜索会话...",
         selectConversationsFirst: "请先选择要操作的会话",
-        panelWidthLabel: "面板宽度",
         defaultPanelOpenLabel: "默认展开面板",
         enablePromptsLabel: "启用提示词",
         enableOutlineLabel: "启用大纲",
         showUserMessagesLabel: "显示用户消息",
         enableConversationsLabel: "启用会话管理",
         preventAutoScrollLabel: "防止自动滚动",
-        limitPageWidthLabel: "限制页面宽度",
-        pageWidthValueLabel: "页面宽度值",
-        pageWidthUnitLabel: "宽度单位",
-        collapsedButtonsDesc: "调整折叠面板按钮的显示顺序",
-        collapsedButtonsTitle: "折叠按钮",
+        preventAutoScrollDesc: "阅读前文时，不让页面跳到最新回复",
         enableReadingHistoryLabel: "启用阅读历史",
+        enableReadingHistoryDesc: "记住每个会话上次读到的位置",
         autoRestoreLabel: "自动跳转",
-        historyDaysLabel: "历史保留时间（天）",
-        autoUpdateOutlineLabel: "对话期间自动更新大纲",
-        outlineIntervalLabel: "更新检测间隔（秒）",
-        outlineSyncScrollLabel: "同步滚动",
-        outlineMaxLevelLabel: "最大标题层级",
-        outlineLevelOnlyH1: "仅 H1",
-        outlineLevelAll: "H1-H6（全部）",
+        autoRestoreDesc: "打开会话时回到上次阅读位置",
+        outlineSyncScrollLabel: "大纲跟随阅读位置",
+        outlineSyncScrollDesc: "滚动正文时，高亮对应的大纲条目",
+        showUserMessagesDesc: "在大纲中把你的提问也作为节点",
+        tabVisibilityLabel: "Tab 显示",
         tabAutoRenameLabel: "自动重命名标签页",
-        tabRenameIntervalLabel: "重命名检测间隔（秒）",
         tabShowStatusLabel: "显示生成状态",
-        tabDesktopNotifyLabel: "发送桌面通知",
         tabPlaySoundLabel: "播放通知声音",
-        tabVolumeLabel: "通知音量（0.1-1.0）",
-        tabNotifyWhenFocusedLabel: "前台时也通知",
-        tabAutoFocusLabel: "自动聚焦窗口",
+        tabVolumeLabel: "通知音量",
         tabPrivacyModeLabel: "隐私模式",
         tabPrivacyTitleLabel: "隐私模式标题",
         enableFormulaCopyLabel: "启用公式复制",
-        formulaDelimiterLabel: "公式使用 LaTeX 分隔符（$ / $$）",
         enableTableCopyLabel: "启用表格复制",
         // 大纲相关文案
         outlineEmpty: "暂无大纲",
@@ -396,15 +375,12 @@
         noContent: "No conversation content found",
         openFirst: "Please open the conversation first",
         settingsTitle: "Settings",
-        panelSettings: "Panel Settings",
-        featureSettings: "Feature Settings",
         readingHistory: "Reading History",
-        anchorSettings: "Anchor Settings",
-        copySettings: "Copy Features",
-        tabFunctionSettings: "Tab Settings",
-        tabOrderSettings: "Tab Functions",
-        tabPageSettings: "Tab Settings",
-        languageSettings: "Language Settings",
+        settingsGroupGeneral: "General",
+        settingsGroupReadingNavigation: "Reading & Navigation",
+        settingsGroupContentProcessing: "Content Processing",
+        settingsGroupTabPrivacy: "Tabs & Privacy",
+        settingsGroupQuickButtons: "Quick Buttons",
         language: "Interface Language",
         autoDetect: "Auto Detect",
         chinese: "简体中文",
@@ -426,15 +402,9 @@
         returnAnchorFailed: "Failed to return to anchor",
         scrolledTop: "Scrolled to top",
         scrolledBottom: "Scrolled to bottom",
-        panelWidthUpdated: "Panel width updated. Refresh the page to apply it.",
-        notificationPermissionDenied: "Notification permission was denied. Allow notifications in browser settings.",
-        notificationPermissionGranted: "Notification permission granted",
-        notificationPermissionRejected: "Notification permission denied",
-        notificationPermissionFailed: "Failed to request notification permission",
         exportModuleLoadFailed: "Export module failed to load. Check whether the ChatGPT Exporter script is running.",
         exportModuleMissing: "ChatGPT Exporter was not detected. Make sure the extension loaded correctly.",
         operationFailed: "Operation failed",
-        themeSettingsSection: "Theme Settings",
         openThemeSettings: "Open Theme Settings",
         themeDialogTitle: "Theme",
         themeAppearance: "Appearance",
@@ -469,17 +439,17 @@
         aboutTopEntryTitle: "About",
         aboutDialogTitle: "About ChatGPT Helper",
         aboutTagline: "A focused productivity layer designed for heavy ChatGPT users",
-        aboutMotivationTitle: "😘 Motivation",
-        aboutMotivationContent: "😘This is more than just an extension. It is one TJU computer science student's pursuit of a smoother, more delightful ChatGPT experience. As a heavy ChatGPT user, I built this toolkit by hand to remove the tiny frictions that keep interrupting real thinking. I hope it helps you get past the busy clutter and spend more time on ideas that truly matter.",
-        aboutFeedbackTitle: "💬 Feedback",
+        aboutMotivationTitle: "Motivation",
+        aboutMotivationContent: "I built ChatGPT Helper as a TJU computer science student and long-time ChatGPT user. It gathers the prompt, navigation, organization, export, and reading-position tools I kept needing in daily work, with the goal of reducing switching costs and keeping attention on the conversation.",
+        aboutFeedbackTitle: "Feedback",
         aboutFeatureRequest: "Feature Request",
-        aboutBugSupport: "Bug Report / Support",
-        aboutOpenSourceTitle: "🌱 Open Source",
-        aboutSupportTitle: "💕 Support the Project",
-        aboutSupportContent: "The growth of ChatGPT Helper comes from every efficient interaction you have with it. If it has ever saved you a minute or brought you a small surprise, please consider supporting its future. Every bit of recognition is fuel for the next line of code. 💕",
+        aboutBugSupport: "Submit Feedback",
+        aboutOpenSourceTitle: "Project Info",
+        aboutSupportTitle: "Share the Project",
+        aboutSupportContent: "If ChatGPT Helper fits your workflow, share the repository with someone who may need it, or leave feedback on GitHub.",
         aboutShare: "Share with Friends",
-        aboutAuthorTitle: "👨‍💻 About the Author",
-        aboutAuthorBio: "📍 TJU | CS 在读\n🚀 AI 探索者 | 预备役创业者\n✨ Elon Musk 信徒",
+        aboutAuthorTitle: "About the Author",
+        aboutAuthorBio: "TJU | Computer Science student\nAI tool builder\nLong-time ChatGPT user",
         aboutFooterNote: "Works on chatgpt.com, chat.openai.com, and new.oaifree.com · Local-first, no conversation uploads",
         aboutRepoButton: "GitHub Repository",
         aboutRepoLabel: "Repository",
@@ -499,46 +469,34 @@
         aboutFeatureOutline: "Automatic outline generation and navigation",
         aboutFeatureConversations: "Conversation organization and batch actions",
         aboutFeatureExport: "Multi-format export and reading-position tools",
+        aboutSitesLabel: "Sites",
         aboutSupportSites: "Works on chatgpt.com, chat.openai.com, and new.oaifree.com",
         aboutPrivacyTitle: "Privacy & Permissions",
-        aboutPrivacy: "All settings and data processing stay in your browser. The extension uses storage for local preferences and notifications only for completion alerts.",
-        pageSettings: "Page Settings",
-        outlineSettings: "Outline Settings",
+        aboutPrivacy: "All settings and data processing stay in your browser. The extension uses storage for local preferences and does not upload conversation content.",
         searchConversations: "Search conversations...",
         selectConversationsFirst: "Please select conversations first",
-        panelWidthLabel: "Panel Width",
         defaultPanelOpenLabel: "Open Panel by Default",
         enablePromptsLabel: "Prompts",
         enableOutlineLabel: "Outline",
         showUserMessagesLabel: "Show User Messages",
         enableConversationsLabel: "Conversation Manager",
         preventAutoScrollLabel: "Prevent Auto Scroll",
-        limitPageWidthLabel: "Limit Page Width",
-        pageWidthValueLabel: "Page Width Value",
-        pageWidthUnitLabel: "Width Unit",
-        collapsedButtonsDesc: "Adjust the order of collapsed panel buttons",
-        collapsedButtonsTitle: "Collapsed Buttons",
+        preventAutoScrollDesc: "Stop the page from jumping to the newest reply while you read earlier content",
         enableReadingHistoryLabel: "Reading History",
+        enableReadingHistoryDesc: "Remember the last reading position in each conversation",
         autoRestoreLabel: "Auto Restore Position",
-        historyDaysLabel: "History Retention Days",
-        autoUpdateOutlineLabel: "Auto Update Outline During Conversation",
-        outlineIntervalLabel: "Update Interval (seconds)",
-        outlineSyncScrollLabel: "Sync Scroll",
-        outlineMaxLevelLabel: "Max Heading Level",
-        outlineLevelOnlyH1: "H1 only",
-        outlineLevelAll: "H1-H6 (All)",
+        autoRestoreDesc: "Open conversations at the last remembered reading position",
+        outlineSyncScrollLabel: "Outline Follows Reading Position",
+        outlineSyncScrollDesc: "Highlight the matching outline item while you scroll the conversation",
+        showUserMessagesDesc: "Include your questions as outline nodes",
+        tabVisibilityLabel: "Tab Visibility",
         tabAutoRenameLabel: "Auto Rename Tab",
-        tabRenameIntervalLabel: "Rename Check Interval (seconds)",
         tabShowStatusLabel: "Show Generation Status",
-        tabDesktopNotifyLabel: "Desktop Notification",
         tabPlaySoundLabel: "Play Notification Sound",
-        tabVolumeLabel: "Notification Volume (0.1–1.0)",
-        tabNotifyWhenFocusedLabel: "Notify Even When Tab is Focused",
-        tabAutoFocusLabel: "Auto Focus Window",
+        tabVolumeLabel: "Notification Volume",
         tabPrivacyModeLabel: "Privacy Mode",
         tabPrivacyTitleLabel: "Privacy Mode Title",
         enableFormulaCopyLabel: "Formula Copy",
-        formulaDelimiterLabel: "Use LaTeX Delimiters ($ / $$)",
         enableTableCopyLabel: "Table Copy",
         languageChanged: "Language changed",
         // Outline related
@@ -660,6 +618,10 @@
     const ISSUE_URL = "https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper/issues/new";
     const REPO_URL = "https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper";
     const AUTHOR_GITHUB_URL = "https://github.com/zhiwuyazhe-fjr";
+    const EXTENSION_NAME = "ChatGPT Helper";
+    const EXTENSION_VERSION = "2.4.0";
+    const EXTENSION_AUTHOR = "zhiwuyazhe_fjr";
+    const EXTENSION_LICENSE = "MIT";
     const THEME_HOST_ATTRS = [
       "data-gh-theme-host-sidebar-shell",
       "data-gh-theme-host-sidebar",
@@ -687,7 +649,14 @@
       defaultPanelState: true,
       // true = 展开, false = 折叠
       prompts: { enabled: true },
-      outline: { enabled: true, showUserQueries: true },
+      outline: {
+        enabled: true,
+        showUserQueries: true,
+        autoUpdate: true,
+        syncScroll: true,
+        updateInterval: 2,
+        maxLevel: 6
+      },
       conversations: { enabled: true },
       tabOrder: ["prompts", "outline", "conversations", "export"],
       collapsedButtonsOrder: DEFAULT_COLLAPSED_BUTTONS_ORDER,
@@ -699,22 +668,14 @@
       manualAnchorEnabled: true,
       // 滚动锁定设置
       preventAutoScroll: false,
-      // 页面宽度设置
-      pageWidth: {
-        enabled: false,
-        value: 1200,
-        unit: "px"
-      },
       // 阶段1：阅读历史设置
       readingHistory: {
         persistence: true,
-        autoRestore: false,
-        cleanupDays: 30
+        autoRestore: false
       },
       // 阶段3：复制功能设置
       formulaCopy: {
-        enabled: true,
-        delimiterEnabled: true
+        enabled: true
       },
       tableCopy: {
         enabled: true
@@ -722,14 +683,10 @@
       // 阶段4：标签页设置
       tabSettings: {
         enabled: true,
-        renameInterval: 3,
         showStatus: true,
-        titleFormat: "{status}{title}",
-        showNotification: false,
         notificationSound: false,
         notificationVolume: 0.5,
-        notifyWhenFocused: false,
-        autoFocus: false,
+        titleFormat: "{status}{title}",
         privacyMode: false,
         privacyTitle: "ChatGPT"
       }
@@ -804,10 +761,17 @@
     }
     function getExtensionManifestMeta() {
       const runtime = getExtensionRuntime();
+      const fallback = {
+        name: EXTENSION_NAME,
+        version: EXTENSION_VERSION,
+        author: EXTENSION_AUTHOR,
+        license: EXTENSION_LICENSE
+      };
       try {
-        return runtime && typeof runtime.getManifest === "function" ? runtime.getManifest() : null;
+        const manifest = runtime && typeof runtime.getManifest === "function" ? runtime.getManifest() : null;
+        return manifest ? { ...fallback, ...manifest } : fallback;
       } catch (e) {
-        return null;
+        return fallback;
       }
     }
     function openExternalLink(url) {
@@ -852,6 +816,43 @@
         return false;
       }
     }
+    function createHelperLogoSvg() {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", "0 0 48 48");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("aria-hidden", "true");
+      svg.style.width = "100%";
+      svg.style.height = "100%";
+      svg.style.display = "block";
+      const outer = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      outer.setAttribute("cx", "24");
+      outer.setAttribute("cy", "24");
+      outer.setAttribute("r", "21");
+      outer.setAttribute("fill", "#ffffff");
+      outer.setAttribute("stroke", "#111827");
+      outer.setAttribute("stroke-width", "3");
+      svg.appendChild(outer);
+      const knot = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      knot.setAttribute("d", "M18.5 15.5 24 12l5.5 3.5v6.3L35 25.1v6.2L24 38l-11-6.7v-6.2l5.5-3.3v-6.3Z M18.5 21.8 24 25l5.5-3.2 M18.5 28.2 24 31.5l5.5-3.3");
+      knot.setAttribute("stroke", "#111827");
+      knot.setAttribute("stroke-width", "3");
+      knot.setAttribute("stroke-linecap", "round");
+      knot.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(knot);
+      const plusV = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      plusV.setAttribute("d", "M35.5 8v12");
+      plusV.setAttribute("stroke", "#facc15");
+      plusV.setAttribute("stroke-width", "4.5");
+      plusV.setAttribute("stroke-linecap", "round");
+      svg.appendChild(plusV);
+      const plusH = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      plusH.setAttribute("d", "M29.5 14h12");
+      plusH.setAttribute("stroke", "#facc15");
+      plusH.setAttribute("stroke-width", "4.5");
+      plusH.setAttribute("stroke-linecap", "round");
+      svg.appendChild(plusH);
+      return svg;
+    }
     function createHelperLogoNode(options = {}) {
       const {
         size = 18,
@@ -859,21 +860,40 @@
         alt = "ChatGPT Helper",
         title = ""
       } = options;
-      const img = createElement("img", {
+      const wrap = createElement("span", {
         className,
-        alt,
         title,
-        src: getExtensionAssetUrl("icons/logo.svg"),
-        draggable: false
+        role: "img",
+        "aria-label": alt
       });
-      img.width = size;
-      img.height = size;
-      img.style.width = `${size}px`;
-      img.style.height = `${size}px`;
-      img.style.display = "block";
-      img.style.objectFit = "contain";
-      img.style.flexShrink = "0";
-      return img;
+      wrap.style.width = `${size}px`;
+      wrap.style.height = `${size}px`;
+      wrap.style.display = "inline-flex";
+      wrap.style.alignItems = "center";
+      wrap.style.justifyContent = "center";
+      wrap.style.flexShrink = "0";
+      wrap.style.lineHeight = "0";
+      wrap.style.position = "relative";
+      wrap.style.overflow = "hidden";
+      const fallbackSvg = createHelperLogoSvg();
+      fallbackSvg.classList.add("chatgpt-helper-logo-fallback-svg");
+      const svgImg = createElement("img", {
+        className: "chatgpt-helper-logo-svg",
+        alt: "",
+        draggable: false,
+        "aria-hidden": "true"
+      });
+      svgImg.addEventListener("load", () => {
+        svgImg.dataset.loaded = "true";
+      });
+      svgImg.addEventListener("error", () => {
+        svgImg.style.display = "none";
+        fallbackSvg.dataset.active = "true";
+      });
+      svgImg.src = getExtensionAssetUrl("icons/logo.svg");
+      wrap.appendChild(fallbackSvg);
+      wrap.appendChild(svgImg);
+      return wrap;
     }
     const SVG_ICON_DEFS = {
       edit: [
@@ -890,6 +910,35 @@
       ],
       message: [
         ["path", { d: "M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z" }]
+      ],
+      info: [
+        ["circle", { cx: "12", cy: "12", r: "10" }],
+        ["path", { d: "M12 16v-4" }],
+        ["path", { d: "M12 8h.01" }]
+      ],
+      user: [
+        ["path", { d: "M19 21a7 7 0 0 0-14 0" }],
+        ["circle", { cx: "12", cy: "8", r: "4" }]
+      ],
+      shield: [
+        ["path", { d: "M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3Z" }],
+        ["path", { d: "m9 12 2 2 4-4" }]
+      ],
+      github: [
+        ["path", { d: "M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5a10.5 10.5 0 0 0-6 0C8 2 7 2 7 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 6 9c0 3.5 3 5.5 6 5.5a4.8 4.8 0 0 0-1 3.5v4" }],
+        ["path", { d: "M9 18c-4.5 2-5-2-7-2" }]
+      ],
+      external: [
+        ["path", { d: "M15 3h6v6" }],
+        ["path", { d: "M10 14 21 3" }],
+        ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }]
+      ],
+      share: [
+        ["circle", { cx: "18", cy: "5", r: "3" }],
+        ["circle", { cx: "6", cy: "12", r: "3" }],
+        ["circle", { cx: "18", cy: "19", r: "3" }],
+        ["path", { d: "m8.6 13.5 6.8 4" }],
+        ["path", { d: "m15.4 6.5-6.8 4" }]
       ],
       export: [
         ["path", { d: "M12 3v12" }],
@@ -1087,17 +1136,17 @@
       const secondary = preset.secondary || "#94a3b8";
       const accent = preset.accent || primary;
       const light = preset.light || "#f8fafc";
-      const darkPanelTop = `color-mix(in srgb, #070b12, ${primary} ${hasWallpaper ? 22 : 18}%)`;
-      const darkPanelBottom = `color-mix(in srgb, #05070b, ${secondary} ${hasWallpaper ? 15 : 11}%)`;
-      const lightPanelTop = `color-mix(in srgb, #ffffff, ${light} ${hasWallpaper ? 68 : 78}%)`;
-      const lightPanelBottom = `color-mix(in srgb, #f4f5f2, ${primary} ${hasWallpaper ? 12 : 8}%)`;
+      const darkPanelTop = hasWallpaper ? "rgba(32, 33, 35, 0.74)" : "#202123";
+      const darkPanelBottom = hasWallpaper ? "rgba(23, 23, 23, 0.66)" : "#171717";
+      const lightPanelTop = hasWallpaper ? `color-mix(in srgb, #ffffff, ${light} 68%)` : "#f9f9f9";
+      const lightPanelBottom = hasWallpaper ? `color-mix(in srgb, #f4f5f2, ${primary} 12%)` : "#f9f9f9";
       const surfaceTop = isDark ? darkPanelTop : lightPanelTop;
       const surfaceBottom = isDark ? darkPanelBottom : lightPanelBottom;
-      const neutralText = isDark ? "rgba(248, 250, 252, 0.96)" : "rgba(18, 23, 20, 0.94)";
-      const mutedText = isDark ? "rgba(204, 213, 205, 0.76)" : "rgba(85, 97, 89, 0.78)";
-      const panelLine = isDark ? `color-mix(in srgb, ${primary}, rgba(255,255,255,0.16) ${hasWallpaper ? 52 : 40}%)` : `color-mix(in srgb, ${primary}, rgba(12,18,16,0.14) ${hasWallpaper ? 44 : 58}%)`;
-      const cardShadow = isDark ? "0 1px 0 rgba(255, 255, 255, 0.025), 0 10px 24px rgba(0, 0, 0, 0.18)" : "0 1px 0 rgba(255, 255, 255, 0.72), 0 8px 22px rgba(18, 23, 20, 0.07)";
-      const elevatedShadow = isDark ? `0 14px 34px color-mix(in srgb, #000000, ${primary} 16%)` : `0 12px 30px color-mix(in srgb, rgba(18,23,20,0.12), ${primary} 18%)`;
+      const neutralText = isDark ? "rgba(236, 236, 241, 0.96)" : "rgba(18, 23, 20, 0.94)";
+      const mutedText = isDark ? "rgba(197, 197, 210, 0.74)" : "rgba(85, 97, 89, 0.78)";
+      const panelLine = isDark ? hasWallpaper ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.12)" : hasWallpaper ? `color-mix(in srgb, ${primary}, rgba(12,18,16,0.14) 44%)` : "rgba(0, 0, 0, 0.10)";
+      const cardShadow = isDark ? "0 1px 0 rgba(255, 255, 255, 0.035)" : hasWallpaper ? "0 1px 0 rgba(255, 255, 255, 0.72), 0 8px 22px rgba(18, 23, 20, 0.07)" : "0 1px 0 rgba(0, 0, 0, 0.025)";
+      const elevatedShadow = isDark ? hasWallpaper ? "0 8px 20px rgba(0, 0, 0, 0.20)" : "0 0 0 0 rgba(0, 0, 0, 0)" : hasWallpaper ? `0 12px 30px color-mix(in srgb, rgba(18,23,20,0.12), ${primary} 18%)` : "0 0 0 0 rgba(0, 0, 0, 0)";
       return {
         ...vars,
         "--gh-theme-primary": primary,
@@ -1113,17 +1162,17 @@
         "--gh-text": vars["--gh-text"] || neutralText,
         "--gh-text-secondary": vars["--gh-text-secondary"] || mutedText,
         "--gh-panel-surface": `linear-gradient(180deg, ${surfaceTop} 0%, ${surfaceBottom} 100%)`,
-        "--gh-panel-subtle": isDark ? `color-mix(in srgb, ${surfaceBottom}, ${primary} 10%)` : `color-mix(in srgb, ${surfaceTop}, ${primary} 4%)`,
-        "--gh-panel-card": vars["--gh-panel-card-bg"] || (isDark ? `color-mix(in srgb, ${surfaceTop}, #ffffff 6%)` : `color-mix(in srgb, ${surfaceTop}, #ffffff 52%)`),
-        "--gh-panel-card-hover": isDark ? `color-mix(in srgb, ${surfaceTop}, ${primary} 18%)` : `color-mix(in srgb, ${surfaceTop}, ${primary} 9%)`,
+        "--gh-panel-subtle": isDark ? hasWallpaper ? "rgba(255, 255, 255, 0.045)" : "color-mix(in srgb, #202123, #ffffff 2%)" : hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, ${primary} 4%)` : "#f3f3f3",
+        "--gh-panel-card": vars["--gh-panel-card-bg"] || (isDark ? hasWallpaper ? "rgba(255, 255, 255, 0.060)" : "color-mix(in srgb, #202123, #ffffff 5%)" : hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, #ffffff 52%)` : "#ffffff"),
+        "--gh-panel-card-hover": isDark ? hasWallpaper ? "rgba(255, 255, 255, 0.090)" : "color-mix(in srgb, #202123, #ffffff 9%)" : hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, ${primary} 9%)` : "#ececec",
         "--gh-panel-line": panelLine,
         "--gh-panel-muted-line": `color-mix(in srgb, ${panelLine}, transparent 42%)`,
         "--gh-panel-elevated-shadow": elevatedShadow,
         "--gh-panel-card-shadow": cardShadow,
-        "--gh-header-quiet-bg": isDark ? `linear-gradient(180deg, color-mix(in srgb, ${surfaceTop}, ${primary} 22%) 0%, ${surfaceTop} 100%)` : `linear-gradient(180deg, color-mix(in srgb, ${surfaceTop}, ${primary} 8%) 0%, ${surfaceTop} 100%)`,
+        "--gh-header-quiet-bg": isDark ? "var(--gh-panel-surface)" : hasWallpaper ? `linear-gradient(180deg, color-mix(in srgb, ${surfaceTop}, ${primary} 8%) 0%, ${surfaceTop} 100%)` : "var(--gh-panel-surface)",
         "--gh-focus-ring": `color-mix(in srgb, ${primary}, transparent ${isDark ? 56 : 68}%)`,
-        "--gh-control-bg": isDark ? `color-mix(in srgb, ${surfaceTop}, #ffffff 6%)` : `color-mix(in srgb, ${surfaceTop}, #ffffff 48%)`,
-        "--gh-control-bg-hover": isDark ? `color-mix(in srgb, ${surfaceTop}, ${primary} 18%)` : `color-mix(in srgb, ${surfaceTop}, ${primary} 8%)`,
+        "--gh-control-bg": isDark ? hasWallpaper ? "rgba(255, 255, 255, 0.055)" : "color-mix(in srgb, #202123, #ffffff 5%)" : hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, #ffffff 48%)` : "#ffffff",
+        "--gh-control-bg-hover": isDark ? hasWallpaper ? "rgba(255, 255, 255, 0.090)" : "color-mix(in srgb, #202123, #ffffff 9%)" : hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, ${primary} 8%)` : "#ececec",
         "--gh-control-border": `color-mix(in srgb, ${panelLine}, transparent 8%)`,
         "--gh-control-radius": "8px",
         "--gh-card-radius": "8px",
@@ -1150,56 +1199,56 @@
       if (isOriginal) {
         if (isDark) {
           return withProductivitySurfaceVars({
-            "--gh-bg": hasWallpaper ? "rgba(15, 23, 42, 0.160)" : "#1e293b",
-            "--gh-bg-secondary": hasWallpaper ? "rgba(15, 23, 42, 0.110)" : "#0f172a",
-            "--gh-text": "#f1f5f9",
-            "--gh-text-secondary": "#cbd5e1",
-            "--gh-border": hasWallpaper ? "rgba(226, 232, 240, 0.180)" : "#475569",
-            "--gh-hover": hasWallpaper ? "rgba(30, 41, 59, 0.160)" : "#334155",
-            "--gh-shadow": hasWallpaper ? "0 14px 32px rgba(2, 6, 23, 0.200)" : "0 10px 40px rgba(0,0,0,0.4)",
-            "--gh-input-bg": hasWallpaper ? "linear-gradient(135deg, rgba(15, 23, 42, 0.620) 0%, rgba(15, 23, 42, 0.520) 100%)" : "#334155",
-            "--gh-input-border": hasWallpaper ? "rgba(148, 163, 184, 0.420)" : "#64748b",
-            "--gh-active-bg": hasWallpaper ? "rgba(59, 130, 246, 0.220)" : "rgba(59, 130, 246, 0.300)",
-            "--gh-right-overlay": hasWallpaper ? "linear-gradient(180deg, rgba(15, 23, 42, 0.560) 0%, rgba(15, 23, 42, 0.420) 100%)" : "#1e293b",
-            "--gh-panel-card-bg": hasWallpaper ? "rgba(15, 23, 42, 0.420)" : "#0f172a",
-            "--gh-panel-card-border": hasWallpaper ? "rgba(255, 255, 255, 0.220)" : "#475569",
-            "--gh-sidebar-button-bg": hasWallpaper ? "rgba(15, 23, 42, 0.320)" : "#334155",
-            "--gh-msg-user-bg": hasWallpaper ? "linear-gradient(135deg, rgba(15, 23, 42, 0.240) 0%, rgba(30, 41, 59, 0.140) 100%)" : "rgba(51, 65, 85, 0.940)",
-            "--gh-msg-assistant-bg": hasWallpaper ? "linear-gradient(135deg, rgba(15, 23, 42, 0.180) 0%, rgba(15, 23, 42, 0.100) 100%)" : "transparent",
-            "--gh-msg-border": hasWallpaper ? "rgba(255, 255, 255, 0.180)" : "rgba(100, 116, 139, 0.360)",
-            "--gh-msg-shadow": hasWallpaper ? "0 14px 32px rgba(2, 6, 23, 0.120)" : "none",
+            "--gh-bg": hasWallpaper ? "rgba(32, 33, 35, 0.180)" : "#202123",
+            "--gh-bg-secondary": hasWallpaper ? "rgba(23, 23, 23, 0.140)" : "#171717",
+            "--gh-text": "#ececf1",
+            "--gh-text-secondary": "rgba(236, 236, 241, 0.72)",
+            "--gh-border": hasWallpaper ? "rgba(255, 255, 255, 0.150)" : "rgba(255, 255, 255, 0.120)",
+            "--gh-hover": hasWallpaper ? "rgba(255, 255, 255, 0.080)" : "#2a2b2d",
+            "--gh-shadow": hasWallpaper ? "0 8px 20px rgba(0, 0, 0, 0.180)" : "0 0 0 0 rgba(0, 0, 0, 0)",
+            "--gh-input-bg": hasWallpaper ? "rgba(255, 255, 255, 0.060)" : "#2a2b2d",
+            "--gh-input-border": hasWallpaper ? "rgba(255, 255, 255, 0.150)" : "rgba(255, 255, 255, 0.120)",
+            "--gh-active-bg": hasWallpaper ? "rgba(255, 255, 255, 0.100)" : "#343541",
+            "--gh-right-overlay": hasWallpaper ? "linear-gradient(180deg, rgba(32, 33, 35, 0.700) 0%, rgba(23, 23, 23, 0.600) 100%)" : "linear-gradient(180deg, #202123 0%, #171717 100%)",
+            "--gh-panel-card-bg": hasWallpaper ? "rgba(255, 255, 255, 0.060)" : "#2a2b2d",
+            "--gh-panel-card-border": hasWallpaper ? "rgba(255, 255, 255, 0.150)" : "rgba(255, 255, 255, 0.120)",
+            "--gh-sidebar-button-bg": hasWallpaper ? "rgba(255, 255, 255, 0.060)" : "#2a2b2d",
+            "--gh-msg-user-bg": hasWallpaper ? "linear-gradient(135deg, rgba(32, 33, 35, 0.220) 0%, rgba(52, 53, 65, 0.120) 100%)" : "rgba(52, 53, 65, 0.940)",
+            "--gh-msg-assistant-bg": hasWallpaper ? "linear-gradient(135deg, rgba(32, 33, 35, 0.160) 0%, rgba(23, 23, 23, 0.090) 100%)" : "transparent",
+            "--gh-msg-border": hasWallpaper ? "rgba(255, 255, 255, 0.150)" : "rgba(255, 255, 255, 0.120)",
+            "--gh-msg-shadow": hasWallpaper ? "0 8px 20px rgba(0, 0, 0, 0.120)" : "none",
             "--gh-msg-blur": messageBlur,
             "--gh-panel-blur": panelBlur,
             "--gh-composer-blur": composerBlur,
-            "--gh-composer-shadow": hasWallpaper ? "0 10px 24px rgba(2, 6, 23, 0.140)" : "none",
+            "--gh-composer-shadow": hasWallpaper ? "0 8px 20px rgba(0, 0, 0, 0.120)" : "none",
             "--gh-page-sidebar-bg-light": "color-mix(in srgb, #ffffff, transparent 84%)",
             "--gh-page-chat-bg-light": "transparent",
             "--gh-page-composer-bg-light": "color-mix(in srgb, #ffffff, transparent 78%)",
-            "--gh-page-sidebar-bg-dark": hasWallpaper ? "linear-gradient(180deg, rgba(2, 6, 23, 0.360) 0%, rgba(2, 6, 23, 0.240) 100%)" : "transparent",
+            "--gh-page-sidebar-bg-dark": hasWallpaper ? "linear-gradient(180deg, rgba(32, 33, 35, 0.320) 0%, rgba(23, 23, 23, 0.220) 100%)" : "transparent",
             "--gh-page-chat-bg-dark": "transparent",
-            "--gh-page-composer-bg-dark": hasWallpaper ? "linear-gradient(135deg, rgba(8, 17, 29, 0.860) 0%, rgba(15, 23, 42, 0.760) 100%)" : "transparent",
-            "--gh-page-accent-soft": "rgba(59, 130, 246, 0.120)",
-            "--gh-page-accent-soft-dark": hasWallpaper ? "rgba(59, 130, 246, 0.220)" : "rgba(59, 130, 246, 0.260)",
+            "--gh-page-composer-bg-dark": hasWallpaper ? "linear-gradient(135deg, rgba(32, 33, 35, 0.800) 0%, rgba(23, 23, 23, 0.720) 100%)" : "transparent",
+            "--gh-page-accent-soft": "rgba(59, 130, 246, 0.100)",
+            "--gh-page-accent-soft-dark": hasWallpaper ? "rgba(255, 255, 255, 0.100)" : "rgba(255, 255, 255, 0.080)",
             "--gh-page-accent-strong": "#2563eb",
             "--gh-page-link": "#2563eb",
             "--gh-page-selection": "rgba(59, 130, 246, 0.180)"
           }, preset, options);
         }
         return withProductivitySurfaceVars({
-          "--gh-bg": "#ffffff",
-          "--gh-bg-secondary": "#f9fafb",
-          "--gh-text": "#1f2937",
-          "--gh-text-secondary": "#6b7280",
-          "--gh-border": "#e5e7eb",
-          "--gh-hover": "#f3f4f6",
-          "--gh-shadow": "0 10px 40px rgba(0,0,0,0.15)",
+          "--gh-bg": "#f9f9f9",
+          "--gh-bg-secondary": "#f3f3f3",
+          "--gh-text": "#0d0d0d",
+          "--gh-text-secondary": "rgba(13, 13, 13, 0.64)",
+          "--gh-border": "rgba(0, 0, 0, 0.10)",
+          "--gh-hover": "#ececec",
+          "--gh-shadow": hasWallpaper ? "0 8px 20px rgba(0, 0, 0, 0.080)" : "0 0 0 0 rgba(0,0,0,0)",
           "--gh-input-bg": hasWallpaper ? "linear-gradient(135deg, rgba(255, 255, 255, 0.860) 0%, rgba(248, 250, 252, 0.760) 100%)" : "#ffffff",
-          "--gh-input-border": hasWallpaper ? "rgba(226, 232, 240, 0.860)" : "#d1d5db",
-          "--gh-active-bg": "#e5e7eb",
-          "--gh-right-overlay": hasWallpaper ? "linear-gradient(180deg, rgba(255, 255, 255, 0.560) 0%, rgba(248, 250, 252, 0.420) 100%)" : "#ffffff",
-          "--gh-panel-card-bg": hasWallpaper ? "rgba(255, 255, 255, 0.540)" : "#f9fafb",
-          "--gh-panel-card-border": hasWallpaper ? "rgba(255, 255, 255, 0.460)" : "#e5e7eb",
-          "--gh-sidebar-button-bg": hasWallpaper ? "rgba(255, 255, 255, 0.420)" : "#f3f4f6",
+          "--gh-input-border": hasWallpaper ? "rgba(226, 232, 240, 0.860)" : "rgba(0, 0, 0, 0.10)",
+          "--gh-active-bg": "#ececec",
+          "--gh-right-overlay": hasWallpaper ? "linear-gradient(180deg, rgba(255, 255, 255, 0.560) 0%, rgba(248, 250, 252, 0.420) 100%)" : "#f9f9f9",
+          "--gh-panel-card-bg": hasWallpaper ? "rgba(255, 255, 255, 0.540)" : "#ffffff",
+          "--gh-panel-card-border": hasWallpaper ? "rgba(255, 255, 255, 0.460)" : "rgba(0, 0, 0, 0.10)",
+          "--gh-sidebar-button-bg": hasWallpaper ? "rgba(255, 255, 255, 0.420)" : "#ececec",
           "--gh-msg-user-bg": hasWallpaper ? "linear-gradient(135deg, rgba(255, 255, 255, 0.340) 0%, rgba(248, 250, 252, 0.240) 100%)" : "rgba(255, 255, 255, 0.920)",
           "--gh-msg-assistant-bg": hasWallpaper ? "linear-gradient(135deg, rgba(255, 255, 255, 0.280) 0%, rgba(248, 250, 252, 0.180) 100%)" : "transparent",
           "--gh-msg-border": hasWallpaper ? "rgba(255, 255, 255, 0.420)" : "rgba(209, 213, 219, 0.580)",
@@ -1208,7 +1257,7 @@
           "--gh-panel-blur": panelBlur,
           "--gh-composer-blur": composerBlur,
           "--gh-composer-shadow": hasWallpaper ? "0 10px 24px rgba(15, 23, 42, 0.100)" : "none",
-          "--gh-page-sidebar-bg-light": hasWallpaper ? "linear-gradient(180deg, rgba(255, 255, 255, 0.360) 0%, rgba(248, 250, 252, 0.220) 100%)" : "transparent",
+          "--gh-page-sidebar-bg-light": hasWallpaper ? "linear-gradient(180deg, rgba(255, 255, 255, 0.360) 0%, rgba(248, 250, 252, 0.220) 100%)" : "#f9f9f9",
           "--gh-page-chat-bg-light": "transparent",
           "--gh-page-composer-bg-light": hasWallpaper ? "linear-gradient(135deg, rgba(255, 255, 255, 0.900) 0%, rgba(248, 250, 252, 0.800) 100%)" : "transparent",
           "--gh-page-sidebar-bg-dark": "linear-gradient(180deg, rgba(2, 6, 23, 0.260) 0%, rgba(2, 6, 23, 0.160) 100%)",
@@ -1222,37 +1271,33 @@
         }, preset, options);
       }
       if (isDark) {
-        const sidebarTop2 = hasWallpaper ? blendRgbColors("#020617", preset.primary, 0.12 + panelUnit * 0.18) : blendRgbColors("#070711", preset.primary, 0.4 + panelUnit * 0.18);
-        const sidebarBottom2 = hasWallpaper ? blendRgbColors("#020617", preset.secondary, 0.08 + panelUnit * 0.16) : blendRgbColors("#06070f", preset.secondary, 0.28 + panelUnit * 0.14);
-        const panelTop2 = hasWallpaper ? blendRgbColors("#07111f", preset.primary, 0.14 + panelUnit * 0.18) : blendRgbColors("#111324", preset.primary, 0.32 + panelUnit * 0.16);
-        const panelBottom2 = hasWallpaper ? blendRgbColors("#07111f", preset.secondary, 0.1 + panelUnit * 0.16) : blendRgbColors("#0d1323", preset.secondary, 0.24 + panelUnit * 0.14);
-        const cardTop2 = hasWallpaper ? blendRgbColors("#091220", preset.primary, 0.16 + panelUnit * 0.14) : blendRgbColors("#171932", preset.primary, 0.28 + panelUnit * 0.16);
-        const cardBottom2 = hasWallpaper ? blendRgbColors("#08111c", preset.secondary, 0.1 + panelUnit * 0.12) : blendRgbColors("#111729", preset.secondary, 0.2 + panelUnit * 0.12);
-        const messageTop = hasWallpaper ? blendRgbColors("#0b1324", preset.light, 0.14 + messageUnit * 0.16) : blendRgbColors("#17192c", preset.light, 0.08 + messageUnit * 0.08);
-        const messageAccent = hasWallpaper ? blendRgbColors("#09111f", preset.primary, 0.18 + messageUnit * 0.18) : blendRgbColors("#17192c", preset.primary, 0.38 + messageUnit * 0.16);
-        const userAccent = hasWallpaper ? blendRgbColors("#08111d", preset.secondary, 0.14 + messageUnit * 0.16) : blendRgbColors("#121a2f", preset.secondary, 0.3 + messageUnit * 0.14);
-        const panelBorder2 = hasWallpaper ? blendRgbColors("#dbeafe", preset.primary, 0.16) : blendRgbColors("#64748b", preset.primary, 0.2);
-        const messageBorder2 = hasWallpaper ? blendRgbColors("#f8fafc", preset.primary, 0.18) : blendRgbColors("#94a3b8", preset.primary, 0.16);
-        const activeTint2 = blendRgbColors("#0b1324", preset.primary, hasWallpaper ? 0.74 : 0.78);
-        const shadowTint2 = hasWallpaper ? blendRgbColors("#020617", preset.primary, 0.28) : blendRgbColors("#030712", preset.primary, 0.18);
-        const composerTop2 = hasWallpaper ? blendRgbColors("#09111f", preset.light, 0.12 + composerUnit * 0.14) : blendRgbColors("#14172a", preset.light, 0.08 + composerUnit * 0.08);
-        const composerBottom2 = hasWallpaper ? blendRgbColors("#08111d", preset.primary, 0.16 + composerUnit * 0.16) : blendRgbColors("#101628", preset.primary, 0.34 + composerUnit * 0.16);
-        hasWallpaper ? blendRgbColors("#060b18", preset.primary, 0.08 + panelUnit * 0.1) : blendRgbColors("#090814", preset.primary, 0.3 + panelUnit * 0.14);
-        hasWallpaper ? blendRgbColors("#050913", preset.secondary, 0.06 + panelUnit * 0.08) : blendRgbColors("#06070f", preset.secondary, 0.18 + panelUnit * 0.1);
+        const sidebarTop2 = hasWallpaper ? blendRgbColors("#202123", preset.primary, 0.04 + panelUnit * 0.04) : blendRgbColors("#202123", preset.primary, 0.06 + panelUnit * 0.04);
+        const sidebarBottom2 = hasWallpaper ? blendRgbColors("#171717", preset.secondary, 0.03 + panelUnit * 0.04) : blendRgbColors("#171717", preset.secondary, 0.04 + panelUnit * 0.03);
+        const panelTop2 = hasWallpaper ? blendRgbColors("#202123", preset.primary, 0.04 + panelUnit * 0.05) : blendRgbColors("#202123", preset.primary, 0.06 + panelUnit * 0.04);
+        const panelBottom2 = hasWallpaper ? blendRgbColors("#171717", preset.secondary, 0.03 + panelUnit * 0.05) : blendRgbColors("#171717", preset.secondary, 0.04 + panelUnit * 0.03);
+        const cardTop2 = hasWallpaper ? blendRgbColors("#2a2b2d", preset.primary, 0.04 + panelUnit * 0.05) : blendRgbColors("#2a2b2d", preset.primary, 0.05 + panelUnit * 0.04);
+        const cardBottom2 = hasWallpaper ? blendRgbColors("#202123", preset.secondary, 0.03 + panelUnit * 0.04) : blendRgbColors("#202123", preset.secondary, 0.04 + panelUnit * 0.03);
+        const messageTop = hasWallpaper ? blendRgbColors("#202123", preset.light, 0.04 + messageUnit * 0.05) : blendRgbColors("#202123", preset.light, 0.03 + messageUnit * 0.03);
+        const messageAccent = hasWallpaper ? blendRgbColors("#202123", preset.primary, 0.06 + messageUnit * 0.06) : blendRgbColors("#202123", preset.primary, 0.08 + messageUnit * 0.04);
+        const userAccent = hasWallpaper ? blendRgbColors("#252628", preset.secondary, 0.05 + messageUnit * 0.05) : blendRgbColors("#252628", preset.secondary, 0.07 + messageUnit * 0.04);
+        const activeTint2 = blendRgbColors("#343541", preset.primary, 0.12 + panelUnit * 0.06);
+        const shadowTint2 = hasWallpaper ? blendRgbColors("#000000", preset.primary, 0.04) : "#000000";
+        const composerTop2 = hasWallpaper ? blendRgbColors("#2a2b2d", preset.light, 0.04 + composerUnit * 0.05) : blendRgbColors("#2a2b2d", preset.light, 0.03 + composerUnit * 0.03);
+        const composerBottom2 = hasWallpaper ? blendRgbColors("#202123", preset.primary, 0.06 + composerUnit * 0.06) : blendRgbColors("#202123", preset.primary, 0.08 + composerUnit * 0.04);
         return withProductivitySurfaceVars({
           "--gh-bg": rgbaFromColor(cardTop2, hasWallpaper ? 0.28 + panelUnit * 0.14 : 0.98),
           "--gh-bg-secondary": rgbaFromColor(cardBottom2, hasWallpaper ? 0.22 + panelUnit * 0.12 : 0.96),
-          "--gh-text": "rgba(248, 250, 252, 0.96)",
-          "--gh-text-secondary": "rgba(203, 213, 225, 0.78)",
-          "--gh-border": rgbaFromColor(panelBorder2, hasWallpaper ? 0.1 + panelUnit * 0.08 : 0.22 + panelUnit * 0.08),
-          "--gh-hover": rgbaFromColor(panelBottom2, hasWallpaper ? 0.09 + panelUnit * 0.07 : 0.42 + panelUnit * 0.1),
-          "--gh-shadow": `-14px 0 34px ${rgbaFromColor(shadowTint2, hasWallpaper ? 0.14 + panelUnit * 0.08 : 0.18 + panelUnit * 0.06)}`,
+          "--gh-text": "#ececf1",
+          "--gh-text-secondary": "rgba(236, 236, 241, 0.72)",
+          "--gh-border": hasWallpaper ? "rgba(255, 255, 255, 0.150)" : "rgba(255, 255, 255, 0.120)",
+          "--gh-hover": hasWallpaper ? "rgba(255, 255, 255, 0.080)" : "#2a2b2d",
+          "--gh-shadow": hasWallpaper ? `0 8px 20px ${rgbaFromColor(shadowTint2, 0.14 + panelUnit * 0.04)}` : "0 0 0 0 rgba(0, 0, 0, 0)",
           "--gh-input-bg": buildLinearGradient("135deg", [
             `${rgbaFromColor(composerTop2, hasWallpaper ? 0.46 + composerUnit * 0.16 : 0.94)} 0%`,
             `${rgbaFromColor(composerBottom2, hasWallpaper ? 0.36 + composerUnit * 0.14 : 0.96)} 100%`
           ]),
-          "--gh-input-border": rgbaFromColor(messageBorder2, hasWallpaper ? 0.22 + composerUnit * 0.12 : 0.24 + composerUnit * 0.1),
-          "--gh-active-bg": rgbaFromColor(activeTint2, hasWallpaper ? 0.18 + panelUnit * 0.06 : 0.88),
+          "--gh-input-border": hasWallpaper ? "rgba(255, 255, 255, 0.150)" : "rgba(255, 255, 255, 0.120)",
+          "--gh-active-bg": rgbaFromColor(activeTint2, hasWallpaper ? 0.18 + panelUnit * 0.06 : 0.9),
           "--gh-right-overlay": buildLinearGradient("180deg", [
             `${rgbaFromColor(panelTop2, hasWallpaper ? 0.48 + panelUnit * 0.12 : 0.99)} 0%`,
             `${rgbaFromColor(panelBottom2, hasWallpaper ? 0.36 + panelUnit * 0.1 : 0.97)} 100%`
@@ -1261,7 +1306,7 @@
             `${rgbaFromColor(cardTop2, hasWallpaper ? 0.42 + panelUnit * 0.14 : 0.98)} 0%`,
             `${rgbaFromColor(cardBottom2, hasWallpaper ? 0.32 + panelUnit * 0.12 : 0.96)} 100%`
           ]),
-          "--gh-panel-card-border": rgbaFromColor(panelBorder2, hasWallpaper ? 0.18 + panelUnit * 0.1 : 0.2 + panelUnit * 0.1),
+          "--gh-panel-card-border": hasWallpaper ? "rgba(255, 255, 255, 0.150)" : "rgba(255, 255, 255, 0.120)",
           "--gh-sidebar-button-bg": rgbaFromColor(activeTint2, hasWallpaper ? 0.3 + panelUnit * 0.12 : 0.82),
           "--gh-msg-user-bg": buildLinearGradient("135deg", [
             `${rgbaFromColor(messageTop, hasWallpaper ? 0.18 + messageUnit * 0.12 : 0.98)} 0%`,
@@ -1271,12 +1316,12 @@
             `${rgbaFromColor(messageTop, 0.16 + messageUnit * 0.12)} 0%`,
             `${rgbaFromColor(messageAccent, 0.08 + messageUnit * 0.08)} 100%`
           ]) : "transparent",
-          "--gh-msg-border": rgbaFromColor(messageBorder2, hasWallpaper ? 0.08 + messageUnit * 0.08 : 0.18 + messageUnit * 0.08),
-          "--gh-msg-shadow": `0 16px 34px ${rgbaFromColor(shadowTint2, hasWallpaper ? 0.12 + messageUnit * 0.08 : 0.16 + messageUnit * 0.08)}`,
+          "--gh-msg-border": hasWallpaper ? "rgba(255, 255, 255, 0.140)" : "rgba(255, 255, 255, 0.110)",
+          "--gh-msg-shadow": hasWallpaper ? `0 8px 20px ${rgbaFromColor(shadowTint2, 0.1 + messageUnit * 0.05)}` : "none",
           "--gh-msg-blur": messageBlur,
           "--gh-panel-blur": panelBlur,
           "--gh-composer-blur": composerBlur,
-          "--gh-composer-shadow": `0 12px 28px ${rgbaFromColor(shadowTint2, hasWallpaper ? 0.1 + composerUnit * 0.07 : 0.16 + composerUnit * 0.08)}`,
+          "--gh-composer-shadow": hasWallpaper ? `0 8px 20px ${rgbaFromColor(shadowTint2, 0.1 + composerUnit * 0.04)}` : "none",
           "--gh-page-sidebar-bg-light": buildLinearGradient("180deg", [
             `${rgbaFromColor(blendRgbColors("#ffffff", preset.light, 0.7), 0.18)} 0%`,
             `${rgbaFromColor(blendRgbColors("#ffffff", preset.primary, 0.16), 0.08)} 100%`
@@ -1327,23 +1372,23 @@
         "--gh-text-secondary": "rgba(51, 65, 85, 0.78)",
         "--gh-border": rgbaFromColor(panelBorder, hasWallpaper ? 0.2 + panelUnit * 0.1 : 0.34 + panelUnit * 0.08),
         "--gh-hover": rgbaFromColor(panelBottom, hasWallpaper ? 0.1 + panelUnit * 0.08 : 0.6 + panelUnit * 0.1),
-        "--gh-shadow": `-14px 0 34px ${rgbaFromColor(shadowTint, hasWallpaper ? 0.1 + panelUnit * 0.06 : 0.14 + panelUnit * 0.05)}`,
+        "--gh-shadow": hasWallpaper ? `0 8px 20px ${rgbaFromColor(shadowTint, 0.1 + panelUnit * 0.06)}` : "0 0 0 0 rgba(0, 0, 0, 0)",
         "--gh-input-bg": buildLinearGradient("135deg", [
           `${rgbaFromColor(composerTop, hasWallpaper ? 0.72 + composerUnit * 0.16 : 0.96)} 0%`,
           `${rgbaFromColor(composerBottom, hasWallpaper ? 0.62 + composerUnit * 0.14 : 0.9)} 100%`
         ]),
         "--gh-input-border": rgbaFromColor(messageBorder, hasWallpaper ? 0.38 + composerUnit * 0.12 : 0.38 + composerUnit * 0.08),
         "--gh-active-bg": rgbaFromColor(activeTint, hasWallpaper ? 0.18 + panelUnit * 0.08 : 0.34 + panelUnit * 0.1),
-        "--gh-right-overlay": buildLinearGradient("180deg", [
-          `${rgbaFromColor(panelTop, hasWallpaper ? 0.56 + panelUnit * 0.16 : 0.98)} 0%`,
-          `${rgbaFromColor(panelBottom, hasWallpaper ? 0.42 + panelUnit * 0.14 : 0.94)} 100%`
-        ]),
-        "--gh-panel-card-bg": buildLinearGradient("135deg", [
-          `${rgbaFromColor(cardTop, hasWallpaper ? 0.48 + panelUnit * 0.16 : 0.96)} 0%`,
-          `${rgbaFromColor(cardBottom, hasWallpaper ? 0.36 + panelUnit * 0.14 : 0.92)} 100%`
-        ]),
-        "--gh-panel-card-border": rgbaFromColor(panelBorder, hasWallpaper ? 0.32 + panelUnit * 0.12 : 0.36 + panelUnit * 0.08),
-        "--gh-sidebar-button-bg": rgbaFromColor(activeTint, hasWallpaper ? 0.32 + panelUnit * 0.12 : 0.32 + panelUnit * 0.1),
+        "--gh-right-overlay": hasWallpaper ? buildLinearGradient("180deg", [
+          `${rgbaFromColor(panelTop, 0.56 + panelUnit * 0.16)} 0%`,
+          `${rgbaFromColor(panelBottom, 0.42 + panelUnit * 0.14)} 100%`
+        ]) : "#f9f9f9",
+        "--gh-panel-card-bg": hasWallpaper ? buildLinearGradient("135deg", [
+          `${rgbaFromColor(cardTop, 0.48 + panelUnit * 0.16)} 0%`,
+          `${rgbaFromColor(cardBottom, 0.36 + panelUnit * 0.14)} 100%`
+        ]) : "#ffffff",
+        "--gh-panel-card-border": hasWallpaper ? rgbaFromColor(panelBorder, 0.32 + panelUnit * 0.12) : "rgba(0, 0, 0, 0.10)",
+        "--gh-sidebar-button-bg": hasWallpaper ? rgbaFromColor(activeTint, 0.32 + panelUnit * 0.12) : "#ececec",
         "--gh-msg-user-bg": buildLinearGradient("135deg", [
           `${rgbaFromColor(userTop, hasWallpaper ? 0.26 + messageUnit * 0.18 : 0.96)} 0%`,
           `${rgbaFromColor(userBottom, hasWallpaper ? 0.1 + messageUnit * 0.1 : 0.88)} 100%`
@@ -1353,15 +1398,15 @@
           `${rgbaFromColor(assistantBottom, 0.12 + messageUnit * 0.12)} 100%`
         ]) : "transparent",
         "--gh-msg-border": rgbaFromColor(messageBorder, hasWallpaper ? 0.24 + messageUnit * 0.12 : 0.38 + messageUnit * 0.1),
-        "--gh-msg-shadow": `0 14px 32px ${rgbaFromColor(shadowTint, hasWallpaper ? 0.08 + messageUnit * 0.08 : 0.1 + messageUnit * 0.06)}`,
+        "--gh-msg-shadow": hasWallpaper ? `0 14px 32px ${rgbaFromColor(shadowTint, 0.08 + messageUnit * 0.08)}` : "none",
         "--gh-msg-blur": messageBlur,
         "--gh-panel-blur": panelBlur,
         "--gh-composer-blur": composerBlur,
-        "--gh-composer-shadow": `0 10px 24px ${rgbaFromColor(shadowTint, hasWallpaper ? 0.08 + composerUnit * 0.08 : 0.1 + composerUnit * 0.06)}`,
-        "--gh-page-sidebar-bg-light": buildLinearGradient("180deg", [
-          `${rgbaFromColor(sidebarTop, hasWallpaper ? 0.3 + panelUnit * 0.14 : 0.98)} 0%`,
-          `${rgbaFromColor(sidebarBottom, hasWallpaper ? 0.18 + panelUnit * 0.12 : 0.94)} 100%`
-        ]),
+        "--gh-composer-shadow": hasWallpaper ? `0 10px 24px ${rgbaFromColor(shadowTint, 0.08 + composerUnit * 0.08)}` : "none",
+        "--gh-page-sidebar-bg-light": hasWallpaper ? buildLinearGradient("180deg", [
+          `${rgbaFromColor(sidebarTop, 0.3 + panelUnit * 0.14)} 0%`,
+          `${rgbaFromColor(sidebarBottom, 0.18 + panelUnit * 0.12)} 100%`
+        ]) : "#f9f9f9",
         "--gh-page-chat-bg-light": "transparent",
         "--gh-page-composer-bg-light": buildLinearGradient("135deg", [
           `${rgbaFromColor(composerTop, hasWallpaper ? 0.8 + composerUnit * 0.14 : 0.97)} 0%`,
@@ -1440,6 +1485,10 @@
       ISSUE_URL,
       REPO_URL,
       AUTHOR_GITHUB_URL,
+      EXTENSION_NAME,
+      EXTENSION_VERSION,
+      EXTENSION_AUTHOR,
+      EXTENSION_LICENSE,
       THEME_HOST_ATTRS,
       DEFAULT_THEME_CONFIG,
       DEFAULT_SETTINGS,
@@ -4799,10 +4848,6 @@
       // 设置层级
       setLevel(level) {
         this.state.expandLevel = level;
-        if (this.settings.outline) {
-          this.settings.outline.maxLevel = level;
-          if (this.onSettingsChange) this.onSettingsChange();
-        }
         if (this.state.tree) {
           this.clearForceExpandedState(this.state.tree, level);
         }
@@ -5008,11 +5053,8 @@
             return;
           }
           latex = latex.trim().replace(/^\\\(|\\\)$/g, "").replace(/^\\\[|\\\]$/g, "");
-          let copyText = latex;
-          if (this.settings.formulaCopy?.delimiterEnabled !== false) {
-            const isBlock = mathEl.classList.contains("katex-display") || mathEl.offsetHeight > 40 || mathEl.closest('[class*="block"]');
-            copyText = isBlock ? `$$${latex}$$` : `$${latex}$`;
-          }
+          const isBlock = mathEl.classList.contains("katex-display") || mathEl.offsetHeight > 40 || mathEl.closest('[class*="block"]');
+          const copyText = isBlock ? `$$${latex}$$` : `$${latex}$`;
           navigator.clipboard.writeText(copyText).then(() => {
             this.showToast(this.t("formulaCopied"));
           }).catch((err) => {
@@ -5304,23 +5346,19 @@
         this.isRunning = false;
         this.aiState = "idle";
         this.lastAiState = "idle";
-        this.userSawCompletion = false;
         this.notificationAudioContext = null;
         this.notificationAudioUnlocked = false;
         this.pendingNotificationTone = false;
         this.notificationUnlockHandler = null;
-        this.visibilityChangeHandler = null;
       }
       start() {
         if (this.isRunning) return;
         this.isRunning = true;
         this.updateTabName();
-        this.ensureNotificationAudioUnlock();
-        if (!this.visibilityChangeHandler) {
-          this.visibilityChangeHandler = () => this.onVisibilityChange();
+        if (this.settings.tabSettings?.notificationSound) {
+          this.ensureNotificationAudioUnlock();
         }
-        document.addEventListener("visibilitychange", this.visibilityChangeHandler);
-        const intervalMs = (this.settings.tabSettings?.renameInterval || 3) * 1e3;
+        const intervalMs = 3e3;
         this.intervalId = setInterval(() => this.updateTabName(), intervalMs);
         this.startGenerationObserver();
       }
@@ -5335,15 +5373,12 @@
           this.generationObserver.disconnect();
           this.generationObserver = null;
         }
-        if (this.visibilityChangeHandler) {
-          document.removeEventListener("visibilitychange", this.visibilityChangeHandler);
-        }
         this.teardownNotificationAudioUnlock();
       }
       restartInterval() {
         if (this.isRunning && this.intervalId) {
           clearInterval(this.intervalId);
-          const intervalMs = (this.settings.tabSettings?.renameInterval || 3) * 1e3;
+          const intervalMs = 3e3;
           this.intervalId = setInterval(() => this.updateTabName(), intervalMs);
         }
       }
@@ -5367,18 +5402,12 @@
           });
         }
       }
-      onVisibilityChange() {
-        if (this.aiState === "generating" && !this.adapter.isGenerating()) {
-          this.userSawCompletion = true;
-        }
-      }
       onAiComplete() {
         const wasGenerating = this.aiState === "generating";
         this.aiState = "completed";
         if (wasGenerating) {
           this.sendCompletionNotification();
         }
-        this.userSawCompletion = false;
         this.updateTabName(true);
       }
       sendCompletionNotification() {
@@ -5386,37 +5415,14 @@
         if (tabSettings.notificationSound) {
           void this.playNotificationSound(tabSettings.notificationVolume || 0.5);
         }
-        if (tabSettings.autoFocus) {
-          try {
-            if (window.focus) {
-              window.focus();
-            }
-            setTimeout(() => {
-              try {
-                if (window.focus) {
-                  window.focus();
-                }
-              } catch (e) {
-              }
-            }, 100);
-            if (window.top && window.top !== window && window.top.focus) {
-              try {
-                window.top.focus();
-              } catch (e) {
-              }
-            }
-          } catch (e) {
-          }
-        }
       }
       ensureNotificationAudioUnlock() {
         if (this.notificationUnlockHandler) return;
         this.notificationUnlockHandler = () => {
           void this.unlockNotificationAudio().then((unlocked) => {
             if (unlocked && this.pendingNotificationTone) {
-              const volume = this.settings.tabSettings?.notificationVolume || 0.5;
               this.pendingNotificationTone = false;
-              void this.playNotificationSound(volume);
+              void this.playNotificationSound(this.settings.tabSettings?.notificationVolume || 0.5);
             }
           });
         };
@@ -5439,7 +5445,7 @@
           this.notificationAudioContext = new AudioCtx();
           return this.notificationAudioContext;
         } catch (e) {
-          console.warn("[ChatGPT Helper] 创建 AudioContext 失败:", e);
+          console.warn("[ChatGPT Helper] Failed to create AudioContext:", e);
           return null;
         }
       }
@@ -5466,7 +5472,7 @@
           }
           return this.notificationAudioUnlocked;
         } catch (e) {
-          console.warn("[ChatGPT Helper] 解锁通知音失败:", e);
+          console.warn("[ChatGPT Helper] Failed to unlock notification sound:", e);
           return false;
         }
       }
@@ -5505,7 +5511,7 @@
           this.pendingNotificationTone = false;
           return true;
         } catch (e) {
-          console.warn("[ChatGPT Helper] 播放通知音失败:", e);
+          console.warn("[ChatGPT Helper] Failed to play notification sound:", e);
           this.pendingNotificationTone = true;
           return false;
         }
@@ -5527,7 +5533,7 @@
         const isGenerating = this.isGenerating();
         const statusPrefix = tabSettings.showStatus !== false ? isGenerating ? "⏳ " : "✅ " : "";
         const format = tabSettings.titleFormat || "{status}{title}";
-        const modelName = format.includes("{model}") ? this.adapter.getModelName ? this.adapter.getModelName() : "" : "";
+        const modelName = format.includes("{model}") && this.adapter.getModelName ? this.adapter.getModelName() : "";
         let finalTitle = format.replace("{status}", statusPrefix).replace("{title}", sessionName || "ChatGPT").replace("{model}", modelName ? `[${modelName}] ` : "").replace(/\s+/g, " ").trim();
         if (finalTitle && (force || finalTitle !== document.title)) {
           document.title = finalTitle;
@@ -5541,6 +5547,7 @@
         let sessionName = this.adapter.getSessionName ? this.adapter.getSessionName() : null;
         const isPolluted = (name) => {
           if (!name) return false;
+          if (/^(?:\u23f3|\u2705)\s*/u.test(name)) return true;
           if (/^[⏳✅]/.test(name)) return true;
           if (/\[[\w\s.]+\]/.test(name)) return true;
           if (name === (tabSettings.privacyTitle || "ChatGPT")) return true;
@@ -6377,6 +6384,21 @@
       console.error("[ChatGPT Helper] ChatGPTHelper is not loaded; skipping App Storage And Init module");
       return;
     }
+    const MAIN_TAB_ORDER = ["prompts", "outline", "conversations", "export"];
+    const FIXED_PAGE_WIDTH_CONFIG = { enabled: false, value: 1200, unit: "px" };
+    const normalizeMainTabOrder = (value) => {
+      const ordered = Array.isArray(value) ? value.filter((tabId) => MAIN_TAB_ORDER.includes(tabId)) : [];
+      const unique = Array.from(new Set(ordered));
+      return unique.length > 0 ? unique : [...MAIN_TAB_ORDER];
+    };
+    const normalizeCollapsedButtonsOrder = (value) => {
+      const source = Array.isArray(value) ? value : [];
+      const orderedIds = Array.from(new Set(source.map((item) => item?.id).filter((id) => COLLAPSED_BUTTON_DEFS[id])));
+      DEFAULT_COLLAPSED_BUTTONS_ORDER.forEach((item) => {
+        if (!orderedIds.includes(item.id)) orderedIds.push(item.id);
+      });
+      return orderedIds.map((id) => ({ id, enabled: true }));
+    };
     Object.assign(ChatGPTHelper.prototype, {
       loadPrompts() {
         const promptLibraryVersion = 3;
@@ -6403,77 +6425,104 @@
       savePrompts() {
         window.GM_setValue(SETTING_KEYS.PROMPTS, this.prompts);
       },
-      loadSettings() {
-        const saved = window.GM_getValue(SETTING_KEYS.SETTINGS, null);
-        const source = saved && typeof saved === "object" ? saved : {};
+      normalizeRuntimeSettings(source = {}) {
+        const saved = source && typeof source === "object" ? source : {};
         const settings = {
           ...DEFAULT_SETTINGS,
-          ...source,
-          prompts: { ...DEFAULT_SETTINGS.prompts, ...source.prompts || {} },
-          outline: { ...DEFAULT_SETTINGS.outline, ...source.outline || {} },
-          conversations: { ...DEFAULT_SETTINGS.conversations, ...source.conversations || {} },
-          pageWidth: { ...DEFAULT_SETTINGS.pageWidth, ...source.pageWidth || {} },
-          readingHistory: { ...DEFAULT_SETTINGS.readingHistory, ...source.readingHistory || {} },
-          formulaCopy: { ...DEFAULT_SETTINGS.formulaCopy, ...source.formulaCopy || {} },
-          tableCopy: { ...DEFAULT_SETTINGS.tableCopy, ...source.tableCopy || {} },
-          tabSettings: { ...DEFAULT_SETTINGS.tabSettings, ...source.tabSettings || {} }
-        };
-        settings.themeConfig = normalizeThemeConfig(source.themeConfig, source.themeMode);
-        settings.themeMode = null;
-        if (!Array.isArray(settings.tabOrder)) {
-          settings.tabOrder = ["prompts", "outline", "conversations", "export"];
-        }
-        if (!Array.isArray(settings.collapsedButtonsOrder)) {
-          settings.collapsedButtonsOrder = DEFAULT_COLLAPSED_BUTTONS_ORDER.map((item) => ({ ...item }));
-        } else {
-          settings.collapsedButtonsOrder = settings.collapsedButtonsOrder.filter((item) => item && COLLAPSED_BUTTON_DEFS[item.id]).map((item) => ({
-            id: item.id,
-            enabled: item.enabled !== false
-          }));
-          if (settings.collapsedButtonsOrder.length === 0) {
-            settings.collapsedButtonsOrder = DEFAULT_COLLAPSED_BUTTONS_ORDER.map((item) => ({ ...item }));
+          panelWidth: Math.max(200, Math.min(600, parseInt(saved.panelWidth) || DEFAULT_SETTINGS.panelWidth)),
+          defaultPanelState: saved.defaultPanelState !== void 0 ? Boolean(saved.defaultPanelState) : DEFAULT_SETTINGS.defaultPanelState,
+          preventAutoScroll: Boolean(saved.preventAutoScroll),
+          prompts: { enabled: true },
+          outline: {
+            enabled: true,
+            showUserQueries: saved.outline?.showUserQueries !== false,
+            autoUpdate: true,
+            syncScroll: saved.outline?.syncScroll !== false,
+            updateInterval: 2,
+            maxLevel: 6
+          },
+          conversations: { enabled: true },
+          pageWidth: { ...FIXED_PAGE_WIDTH_CONFIG },
+          tabOrder: normalizeMainTabOrder(saved.tabOrder),
+          collapsedButtonsOrder: normalizeCollapsedButtonsOrder(saved.collapsedButtonsOrder),
+          anchorEnabled: true,
+          themeEnabled: true,
+          manualAnchorEnabled: true,
+          readingHistory: {
+            persistence: saved.readingHistory?.persistence !== false,
+            autoRestore: Boolean(saved.readingHistory?.autoRestore),
+            cleanupDays: 30
+          },
+          formulaCopy: {
+            enabled: saved.formulaCopy?.enabled !== false
+          },
+          tableCopy: {
+            enabled: saved.tableCopy?.enabled !== false
+          },
+          tabSettings: {
+            enabled: saved.tabSettings?.enabled !== false,
+            showStatus: saved.tabSettings?.showStatus !== false,
+            notificationSound: Boolean(saved.tabSettings?.notificationSound),
+            notificationVolume: Math.max(0.1, Math.min(1, Number(saved.tabSettings?.notificationVolume) || 0.5)),
+            titleFormat: saved.tabSettings?.titleFormat || "{status}{title}",
+            privacyMode: Boolean(saved.tabSettings?.privacyMode),
+            privacyTitle: saved.tabSettings?.privacyTitle || "ChatGPT"
           }
-        }
-        if (settings.tabOrder && !settings.tabOrder.includes("export")) {
-          settings.tabOrder.push("export");
-        } else if (!settings.tabOrder) {
-          settings.tabOrder = ["prompts", "outline", "conversations", "export"];
-        }
+        };
+        settings.themeConfig = normalizeThemeConfig(saved.themeConfig, saved.themeMode);
+        settings.themeMode = null;
         return settings;
       },
-      saveSettings() {
-        this.settings.themeConfig = normalizeThemeConfig(this.settings.themeConfig, this.settings.themeMode);
-        window.GM_setValue(SETTING_KEYS.SETTINGS, this.settings);
-      },
-      async requestNotificationPermission() {
-        if (typeof window.GM_notification !== "undefined") {
-          return true;
-        }
-        if (typeof Notification === "undefined") {
-          console.warn("[ChatGPT Helper] Notification API 不可用");
-          return false;
-        }
-        if (Notification.permission === "granted") {
-          return true;
-        }
-        if (Notification.permission === "denied") {
-          this.showToast(this.t("notificationPermissionDenied"));
-          return false;
-        }
-        try {
-          const permission = await Notification.requestPermission();
-          if (permission === "granted") {
-            this.showToast(this.t("notificationPermissionGranted"));
-            return true;
-          } else {
-            this.showToast(this.t("notificationPermissionRejected"));
-            return false;
+      serializeSettingsForStorage(settings = this.settings) {
+        const normalized = this.normalizeRuntimeSettings(settings || {});
+        return {
+          panelWidth: normalized.panelWidth,
+          defaultPanelState: normalized.defaultPanelState,
+          prompts: { enabled: true },
+          outline: {
+            enabled: true,
+            showUserQueries: normalized.outline.showUserQueries,
+            syncScroll: normalized.outline.syncScroll
+          },
+          conversations: { enabled: true },
+          tabOrder: [...normalized.tabOrder],
+          collapsedButtonsOrder: normalized.collapsedButtonsOrder.map((item) => ({ ...item, enabled: true })),
+          themeMode: null,
+          themeConfig: normalized.themeConfig,
+          anchorEnabled: true,
+          themeEnabled: true,
+          manualAnchorEnabled: true,
+          preventAutoScroll: normalized.preventAutoScroll,
+          readingHistory: {
+            persistence: normalized.readingHistory.persistence,
+            autoRestore: normalized.readingHistory.autoRestore
+          },
+          formulaCopy: {
+            enabled: normalized.formulaCopy.enabled
+          },
+          tableCopy: {
+            enabled: normalized.tableCopy.enabled
+          },
+          tabSettings: {
+            enabled: normalized.tabSettings.enabled,
+            showStatus: normalized.tabSettings.showStatus,
+            notificationSound: normalized.tabSettings.notificationSound,
+            notificationVolume: normalized.tabSettings.notificationVolume,
+            titleFormat: normalized.tabSettings.titleFormat,
+            privacyMode: normalized.tabSettings.privacyMode,
+            privacyTitle: normalized.tabSettings.privacyTitle
           }
-        } catch (err) {
-          console.error("[ChatGPT Helper] 请求通知权限失败:", err);
-          this.showToast(this.t("notificationPermissionFailed"));
-          return false;
-        }
+        };
+      },
+      loadSettings() {
+        const saved = window.GM_getValue(SETTING_KEYS.SETTINGS, null);
+        return this.normalizeRuntimeSettings(saved);
+      },
+      saveSettings() {
+        const normalized = this.normalizeRuntimeSettings(this.settings);
+        Object.keys(this.settings).forEach((key) => delete this.settings[key]);
+        Object.assign(this.settings, normalized);
+        window.GM_setValue(SETTING_KEYS.SETTINGS, this.serializeSettingsForStorage(this.settings));
       },
       init() {
         try {
@@ -6654,10 +6703,10 @@
       THEME_BACKGROUND_STORE,
       THEME_BACKGROUND_MAX_SIZE,
       THEME_BACKGROUND_ALLOWED_TYPES,
-      FEATURE_REQUEST_URL,
       ISSUE_URL,
       REPO_URL,
       AUTHOR_GITHUB_URL,
+      EXTENSION_VERSION,
       THEME_HOST_ATTRS,
       DEFAULT_THEME_CONFIG,
       DEFAULT_SETTINGS,
@@ -6667,7 +6716,6 @@
       getExtensionAssetUrl,
       getExtensionManifestMeta,
       openExternalLink,
-      copyTextToClipboard,
       createHelperLogoNode,
       SVG_ICON_DEFS,
       createSvgIconNode,
@@ -6983,16 +7031,16 @@
           root2.style.setProperty("--gh-header-bg", gradient);
           root2.style.setProperty("--gh-theme-surface-light-base", rgbaFromColor(blendRgbColors("#ffffff", preset.light, 0.64), 1));
           root2.style.setProperty("--gh-theme-surface-light-accent", rgbaFromColor(blendRgbColors("#ffffff", preset.primary, 0.18), 1));
-          root2.style.setProperty("--gh-theme-surface-dark-base", rgbaFromColor(blendRgbColors("#020617", preset.primary, 0.18), 1));
-          root2.style.setProperty("--gh-theme-surface-dark-accent", rgbaFromColor(blendRgbColors("#020617", preset.secondary, 0.16), 1));
+          root2.style.setProperty("--gh-theme-surface-dark-base", rgbaFromColor(blendRgbColors("#202123", preset.primary, 0.06), 1));
+          root2.style.setProperty("--gh-theme-surface-dark-accent", rgbaFromColor(blendRgbColors("#171717", preset.secondary, 0.04), 1));
           root2.style.setProperty("--gh-page-sidebar-bg-light", "linear-gradient(180deg, rgba(255, 255, 255, 0.360), rgba(248, 250, 252, 0.220))");
           root2.style.setProperty("--gh-page-chat-bg-light", "transparent");
           root2.style.setProperty("--gh-page-composer-bg-light", "linear-gradient(135deg, rgba(255, 255, 255, 0.900), rgba(248, 250, 252, 0.800))");
-          root2.style.setProperty("--gh-page-sidebar-bg-dark", "linear-gradient(180deg, rgba(2, 6, 23, 0.360), rgba(2, 6, 23, 0.240))");
+          root2.style.setProperty("--gh-page-sidebar-bg-dark", "linear-gradient(180deg, rgba(32, 33, 35, 0.320), rgba(23, 23, 23, 0.220))");
           root2.style.setProperty("--gh-page-chat-bg-dark", "transparent");
-          root2.style.setProperty("--gh-page-composer-bg-dark", "linear-gradient(135deg, rgba(8, 17, 29, 0.860), rgba(15, 23, 42, 0.760))");
+          root2.style.setProperty("--gh-page-composer-bg-dark", "linear-gradient(135deg, rgba(32, 33, 35, 0.800), rgba(23, 23, 23, 0.720))");
           root2.style.setProperty("--gh-page-accent-soft", `color-mix(in srgb, ${preset.primary}, transparent 84%)`);
-          root2.style.setProperty("--gh-page-accent-soft-dark", `color-mix(in srgb, ${preset.primary}, transparent 74%)`);
+          root2.style.setProperty("--gh-page-accent-soft-dark", `color-mix(in srgb, ${preset.primary}, transparent 88%)`);
           root2.style.setProperty("--gh-page-accent-strong", preset.accent);
           root2.style.setProperty("--gh-page-link", preset.accent);
           root2.style.setProperty("--gh-page-selection", `color-mix(in srgb, ${preset.primary}, transparent 82%)`);
@@ -7198,21 +7246,21 @@
                     --gh-bg-blur: 5px;
                     --gh-sidebar-enhance-alpha: 0.2;
                     --gh-bg-overlay-light: rgba(12, 18, 32, 0.18);
-                    --gh-bg-overlay-dark: rgba(2, 6, 23, 0.48);
+                    --gh-bg-overlay-dark: rgba(23, 23, 23, 0.48);
                     --gh-panel-blur: 14px;
                     --gh-composer-blur: 16px;
-                    --gh-page-sidebar-bg-light: linear-gradient(180deg, rgba(255, 255, 255, 0.360), rgba(248, 250, 252, 0.220));
+                    --gh-page-sidebar-bg-light: #f9f9f9;
                     --gh-page-chat-bg-light: transparent;
                     --gh-page-composer-bg-light: linear-gradient(135deg, rgba(255, 255, 255, 0.900), rgba(248, 250, 252, 0.800));
-                    --gh-page-sidebar-bg-dark: linear-gradient(180deg, rgba(2, 6, 23, 0.360), rgba(2, 6, 23, 0.240));
+                    --gh-page-sidebar-bg-dark: linear-gradient(180deg, rgba(32, 33, 35, 0.320), rgba(23, 23, 23, 0.220));
                     --gh-page-chat-bg-dark: transparent;
-                    --gh-page-composer-bg-dark: linear-gradient(135deg, rgba(8, 17, 29, 0.860), rgba(15, 23, 42, 0.760));
+                    --gh-page-composer-bg-dark: linear-gradient(135deg, rgba(32, 33, 35, 0.800), rgba(23, 23, 23, 0.720));
                     --gh-page-accent-soft: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 84%);
-                    --gh-page-accent-soft-dark: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 74%);
+                    --gh-page-accent-soft-dark: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 88%);
                     --gh-page-accent-strong: var(--gh-theme-accent, #2563eb);
                     --gh-page-link: var(--gh-theme-accent, #2563eb);
                     --gh-page-selection: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 82%);
-                    --gh-right-overlay: linear-gradient(180deg, rgba(255,255,255,0.56), rgba(248,250,252,0.42));
+                    --gh-right-overlay: #f9f9f9;
                     --gh-panel-card-bg: rgba(255,255,255,0.54);
                     --gh-panel-card-border: rgba(255,255,255,0.46);
                     --gh-sidebar-button-bg: rgba(255,255,255,0.42);
@@ -7284,7 +7332,7 @@
                     background: var(--gh-right-overlay) !important;
                     backdrop-filter: blur(calc(var(--gh-panel-blur) + 2px)) saturate(1.03);
                     -webkit-backdrop-filter: blur(calc(var(--gh-panel-blur) + 2px)) saturate(1.03);
-                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border);
+                    box-shadow: inset 1px 0 0 var(--gh-panel-line);
                 }
 
                 :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar > div,
@@ -7508,6 +7556,11 @@
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"],
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="聊天历史"] {
+                    --sidebar-mask-bg: var(--gh-page-sidebar-bg-dark);
+                    --sidebar-surface-primary: var(--gh-page-sidebar-bg-dark);
+                    --sidebar-surface-secondary: var(--gh-panel-subtle);
+                    --sidebar-surface-tertiary: var(--gh-panel-card);
+                    --bg-elevated-secondary: var(--gh-panel-card);
                     background: var(--gh-page-sidebar-bg-dark) !important;
                 }
 
@@ -7806,13 +7859,13 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] aside[aria-label*="Chat history"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] aside[aria-label*="聊天历史"] {
-                    --sidebar-mask-bg: transparent;
-                    --sidebar-surface-primary: transparent;
-                    --sidebar-surface-secondary: transparent;
-                    --sidebar-surface-tertiary: transparent;
-                    --bg-elevated-secondary: transparent;
+                    --sidebar-mask-bg: var(--gh-page-sidebar-bg-light);
+                    --sidebar-surface-primary: var(--gh-page-sidebar-bg-light);
+                    --sidebar-surface-secondary: var(--gh-panel-subtle);
+                    --sidebar-surface-tertiary: var(--gh-panel-card);
+                    --bg-elevated-secondary: var(--gh-panel-card);
                     background: var(--gh-page-sidebar-bg-light) !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                    box-shadow: inset -1px 0 0 var(--gh-panel-line);
                 }
 
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
@@ -7820,6 +7873,11 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="聊天历史"] {
+                    --sidebar-mask-bg: var(--gh-page-sidebar-bg-dark);
+                    --sidebar-surface-primary: var(--gh-page-sidebar-bg-dark);
+                    --sidebar-surface-secondary: var(--gh-panel-subtle);
+                    --sidebar-surface-tertiary: var(--gh-panel-card);
+                    --bg-elevated-secondary: var(--gh-panel-card);
                     background: var(--gh-page-sidebar-bg-dark) !important;
                 }
 
@@ -7851,7 +7909,7 @@
 
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-right {
                     background: var(--gh-right-overlay) !important;
-                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border);
+                    box-shadow: inset 1px 0 0 var(--gh-panel-line);
                 }
 
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-content {
@@ -7862,8 +7920,8 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-search-bar,
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-categories,
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .outline-fixed-toolbar {
-                    background: color-mix(in srgb, var(--gh-bg-secondary), transparent 2%) !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                    background: var(--gh-panel-surface) !important;
+                    box-shadow: none !important;
                 }
 
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-search-input,
@@ -7907,7 +7965,7 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] {
-                    background: transparent !important;
+                    background: var(--gh-page-sidebar-bg-light) !important;
                     box-shadow: none !important;
                 }
 
@@ -7927,7 +7985,40 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] > div,
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"] > div > div,
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] > div > div {
-                    background: transparent !important;
+                    background: var(--gh-page-sidebar-bg-light) !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"]::before,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"]::after,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"]::before,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"]::after,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"] > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"] > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"] > div > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"] > div > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"]::before,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"]::after,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"]::before,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"]::after,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"] > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"] > div > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] > div > div {
+                    background: var(--gh-page-sidebar-bg-dark) !important;
                     background-image: none !important;
                     box-shadow: none !important;
                 }
@@ -8114,9 +8205,17 @@
                 :root[data-gh-page-theme="true"] [data-gh-theme-host-chat-list="true"],
                 :root[data-gh-page-theme="true"] #chatgpt-helper-center,
                 :root[data-gh-page-theme="true"] main,
-                :root[data-gh-page-theme="true"] [role="main"],
-                :root[data-gh-page-theme="true"] header,
-                :root[data-gh-page-theme="true"] [role="banner"] {
+                :root[data-gh-page-theme="true"] [role="main"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-page-theme="true"] header,
+                :root[data-gh-bg-enabled="true"][data-gh-page-theme="true"] [role="banner"] {
                     background: transparent !important;
                     background-color: transparent !important;
                     background-image: none !important;
@@ -8424,50 +8523,74 @@
         refs.previewInput.style.backdropFilter = canRenderBackground && previewVars ? `blur(${previewVars["--gh-composer-blur"]})` : "none";
         refs.previewInput.style.boxShadow = canRenderBackground && previewVars ? `inset 0 0 0 1px ${previewMessageBorder}` : "none";
       },
-      openAboutModal() {
+      openAboutModal(triggerElement = null) {
+        if (triggerElement && typeof triggerElement.focus === "function") {
+          this.aboutModalTrigger = triggerElement;
+        }
         if (this.aboutModal && this.aboutModal.isConnected) {
-          requestAnimationFrame(() => this.aboutModal.classList.add("open"));
+          requestAnimationFrame(() => {
+            this.aboutModal.classList.add("open");
+            const closeControl = this.aboutModal.querySelector(".chatgpt-helper-about-close");
+            if (closeControl && typeof closeControl.focus === "function") {
+              try {
+                closeControl.focus({ preventScroll: true });
+              } catch (e) {
+                closeControl.focus();
+              }
+            }
+          });
           return;
         }
         const manifest = getExtensionManifestMeta() || {};
         const productName = manifest.name || "ChatGPT Helper";
-        const version = manifest.version || "2.1.0";
-        const author = typeof manifest.author === "string" ? manifest.author : manifest.author && typeof manifest.author.name === "string" ? manifest.author.name : "zhiwuyazhe_fjr";
+        const version = manifest.version || EXTENSION_VERSION || "0.0.0";
+        const titleId = "chatgpt-helper-about-title";
+        const descriptionId = "chatgpt-helper-about-description";
         const overlay = createElement("div", { id: "chatgpt-helper-about-modal" });
         const dialog = createElement("div", { className: "chatgpt-helper-about-dialog" });
         dialog.setAttribute("role", "dialog");
         dialog.setAttribute("aria-modal", "true");
-        dialog.setAttribute("aria-label", this.t("aboutDialogTitle") || "About ChatGPT Helper");
+        dialog.setAttribute("aria-labelledby", titleId);
+        dialog.setAttribute("aria-describedby", descriptionId);
         const header = createElement("div", { className: "chatgpt-helper-about-header" });
         const titleWrap = createElement("div", { className: "chatgpt-helper-about-title-wrap" });
         titleWrap.appendChild(createHelperLogoNode({
-          size: 64,
+          size: 44,
           className: "chatgpt-helper-about-logo",
           title: productName
         }));
         const titleText = createElement("div", { className: "chatgpt-helper-about-title-text" });
         const nameRow = createElement("div", { className: "chatgpt-helper-about-name-row" });
-        nameRow.appendChild(createElement("div", { className: "chatgpt-helper-about-name" }, productName));
+        nameRow.appendChild(createElement("h2", { className: "chatgpt-helper-about-name", id: titleId }, productName));
         nameRow.appendChild(createElement("div", { className: "chatgpt-helper-about-badge" }, `v${version}`));
         titleText.appendChild(nameRow);
-        titleText.appendChild(createElement("div", { className: "chatgpt-helper-about-tagline" }, this.t("aboutTagline") || "A focused productivity layer designed for heavy ChatGPT users"));
+        titleText.appendChild(createElement("p", { className: "chatgpt-helper-about-tagline", id: descriptionId }, this.t("aboutTagline") || "A focused productivity layer designed for heavy ChatGPT users"));
         titleWrap.appendChild(titleText);
         const closeBtn = createElement("button", {
           className: "chatgpt-helper-about-close",
           type: "button",
-          title: this.t("aboutClose") || "Close"
-        }, "×");
+          title: this.t("aboutClose") || "Close",
+          "aria-label": this.t("aboutClose") || "Close"
+        });
+        closeBtn.appendChild(createSvgIconNode("close", { size: 16 }));
         header.appendChild(titleWrap);
         header.appendChild(closeBtn);
         const body = createElement("div", { className: "chatgpt-helper-about-body" });
         const shell = createElement("div", { className: "chatgpt-helper-about-shell" });
         const createSection = (title, options = {}) => {
           const section = createElement("section", {
-            className: `chatgpt-helper-about-section${options.soft ? " soft" : ""}${options.tight ? " tight" : ""}`
+            className: `chatgpt-helper-about-section${options.compact ? " compact" : ""}${options.featured ? " featured" : ""}`
           });
-          section.appendChild(createElement("div", { className: "chatgpt-helper-about-section-title" }, title));
+          const sectionHeader = createElement("div", { className: "chatgpt-helper-about-section-head" });
+          if (options.icon) {
+            const iconWrap = createElement("span", { className: "chatgpt-helper-about-section-icon" });
+            iconWrap.appendChild(createSvgIconNode(options.icon, { size: 15, strokeWidth: "2.2" }));
+            sectionHeader.appendChild(iconWrap);
+          }
+          sectionHeader.appendChild(createElement("h3", { className: "chatgpt-helper-about-section-title" }, title));
+          section.appendChild(sectionHeader);
           if (options.text) {
-            section.appendChild(createElement("div", { className: "chatgpt-helper-about-section-text" }, options.text));
+            section.appendChild(createElement("p", { className: "chatgpt-helper-about-section-text" }, options.text));
           }
           if (options.bodyNode) {
             section.appendChild(options.bodyNode);
@@ -8483,104 +8606,109 @@
             className: `chatgpt-helper-about-link-btn ${options.variant || "ghost"}${options.disabled ? " disabled" : ""}`,
             type: "button",
             disabled: !!options.disabled,
-            title: options.title || ""
-          }, label);
+            title: options.title || label
+          });
+          if (options.icon) {
+            button.appendChild(createSvgIconNode(options.icon, { size: 15, strokeWidth: "2.2" }));
+          }
+          button.appendChild(createElement("span", {}, label));
           if (options.onClick && !options.disabled) {
             button.addEventListener("click", options.onClick);
           }
           return button;
         };
+        const storyBody = createElement("div", { className: "chatgpt-helper-about-story" });
+        storyBody.appendChild(createElement("p", {
+          className: "chatgpt-helper-about-section-lead"
+        }, this.t("aboutIntro") || "ChatGPT Helper adds a focused side panel for ChatGPT workflows."));
+        storyBody.appendChild(createElement("p", {
+          className: "chatgpt-helper-about-section-text"
+        }, this.t("aboutMotivationContent") || "This is more than just an extension."));
         const motivationSection = createSection(
-          this.t("aboutMotivationTitle") || "😘 Motivation",
+          this.t("aboutMotivationTitle") || "Motivation",
           {
-            text: this.t("aboutMotivationContent") || "This is more than just an extension."
+            bodyNode: storyBody,
+            icon: "info",
+            featured: true
           }
         );
-        const feedbackActions = createActionRow();
-        feedbackActions.appendChild(createActionButton(
-          this.t("aboutFeatureRequest") || "Feature Request",
+        const featureList = createElement("ul", { className: "chatgpt-helper-about-feature-list" });
+        [
+          this.t("aboutFeaturePrompts") || "Prompt management and quick insertion",
+          this.t("aboutFeatureOutline") || "Automatic outline generation and navigation",
+          this.t("aboutFeatureConversations") || "Conversation organization and batch actions",
+          this.t("aboutFeatureExport") || "Multi-format export and reading-position tools"
+        ].forEach((feature, index) => {
+          const item = createElement("li", { className: "chatgpt-helper-about-feature-item" });
+          item.appendChild(createElement("span", { className: "chatgpt-helper-about-feature-index" }, String(index + 1).padStart(2, "0")));
+          item.appendChild(createElement("span", {}, feature));
+          featureList.appendChild(item);
+        });
+        const featuresSection = createSection(
+          this.t("aboutFeaturesTitle") || "Core Features",
           {
-            variant: "ghost",
-            disabled: !FEATURE_REQUEST_URL,
-            title: FEATURE_REQUEST_URL ? "" : this.t("disabled") || "Disabled"
-          }
-        ));
-        feedbackActions.appendChild(createActionButton(
-          this.t("aboutBugSupport") || "Bug Report / Support",
-          {
-            variant: "ghost",
-            onClick: () => openExternalLink(ISSUE_URL)
-          }
-        ));
-        const feedbackSection = createSection(
-          this.t("aboutFeedbackTitle") || "💬 Feedback",
-          { actions: feedbackActions, tight: true }
-        );
-        const openSourceInfo = createElement("div", { className: "chatgpt-helper-about-inline-meta" });
-        openSourceInfo.appendChild(createElement("span", { className: "chatgpt-helper-about-inline-label" }, `${this.t("aboutRepoLabel") || "Repository"}:`));
-        openSourceInfo.appendChild(createElement("span", { className: "chatgpt-helper-about-inline-value" }, REPO_URL.replace(/^https?:\/\//, "")));
-        const openSourceActions = createActionRow();
-        openSourceActions.appendChild(createActionButton(
-          this.t("aboutRepoButton") || "GitHub Repository",
-          {
-            variant: "ghost",
-            onClick: () => openExternalLink(REPO_URL)
-          }
-        ));
-        const openSourceSection = createSection(
-          this.t("aboutOpenSourceTitle") || "🌱 Open Source",
-          {
-            bodyNode: openSourceInfo,
-            actions: openSourceActions,
-            tight: true
+            bodyNode: featureList,
+            icon: "list",
+            compact: true
           }
         );
-        const supportActions = createActionRow();
-        supportActions.appendChild(createActionButton(
-          this.t("aboutShare") || "Share with Friends",
+        const privacySection = createSection(
+          this.t("aboutPrivacyTitle") || "Privacy & Permissions",
           {
-            variant: "soft",
-            onClick: async () => {
-              const copied = await copyTextToClipboard(REPO_URL);
-              this.showToast(copied ? this.t("aboutCopyRepoSuccess") || "Repository link copied" : this.t("aboutCopyRepoFailed") || "Copy failed");
-            }
-          }
-        ));
-        const supportSection = createSection(
-          this.t("aboutSupportTitle") || "💕 Support the Project",
-          {
-            text: this.t("aboutSupportContent") || "Every bit of recognition is fuel for the next line of code.",
-            actions: supportActions
+            text: this.t("aboutPrivacy") || "All settings and data processing stay in your browser.",
+            icon: "shield",
+            compact: true
           }
         );
         const authorBody = createElement("div", { className: "chatgpt-helper-about-author-block" });
-        authorBody.appendChild(createElement("div", { className: "chatgpt-helper-about-author-name" }, author || "zhiwuyazhe_fjr"));
-        authorBody.appendChild(createElement("div", { className: "chatgpt-helper-about-section-text chatgpt-helper-about-author-bio" }, this.t("aboutAuthorBio") || "Author bio coming soon"));
+        authorBody.appendChild(createElement("p", { className: "chatgpt-helper-about-section-text chatgpt-helper-about-author-bio" }, this.t("aboutAuthorBio") || "Author bio coming soon"));
         const authorActions = createActionRow();
         authorActions.appendChild(createActionButton(
           this.t("aboutAuthorGithub") || "Author GitHub",
           {
             variant: "ghost",
+            icon: "user",
             onClick: () => openExternalLink(AUTHOR_GITHUB_URL)
           }
         ));
         const authorSection = createSection(
-          this.t("aboutAuthorTitle") || "👨‍💻 About the Author",
+          this.t("aboutAuthorTitle") || "About the Author",
           {
             bodyNode: authorBody,
             actions: authorActions,
-            tight: true
+            compact: true,
+            icon: "user"
           }
         );
-        shell.appendChild(motivationSection);
-        shell.appendChild(feedbackSection);
-        shell.appendChild(openSourceSection);
-        shell.appendChild(supportSection);
-        shell.appendChild(authorSection);
+        const mainStack = createElement("div", { className: "chatgpt-helper-about-main-stack" });
+        const sideStack = createElement("div", { className: "chatgpt-helper-about-side-stack" });
+        mainStack.appendChild(motivationSection);
+        mainStack.appendChild(featuresSection);
+        sideStack.appendChild(privacySection);
+        sideStack.appendChild(authorSection);
+        shell.appendChild(mainStack);
+        shell.appendChild(sideStack);
         body.appendChild(shell);
         const footer = createElement("div", { className: "chatgpt-helper-about-footer" });
         footer.appendChild(createElement("div", { className: "chatgpt-helper-about-footer-note" }, this.t("aboutFooterNote") || "Works on chatgpt.com, chat.openai.com, and new.oaifree.com · Local-first, no conversation uploads"));
-        footer.appendChild(createElement("div", { className: "chatgpt-helper-about-footer-text" }, this.t("aboutPoweredBy") || "Built for focused ChatGPT workflows"));
+        const footerActions = createElement("div", { className: "chatgpt-helper-about-footer-actions" });
+        footerActions.appendChild(createActionButton(
+          this.t("aboutRepoButton") || "GitHub Repository",
+          {
+            variant: "primary",
+            icon: "github",
+            onClick: () => openExternalLink(REPO_URL)
+          }
+        ));
+        footerActions.appendChild(createActionButton(
+          this.t("aboutBugSupport") || "Submit Feedback",
+          {
+            variant: "ghost",
+            icon: "message",
+            onClick: () => openExternalLink(ISSUE_URL)
+          }
+        ));
+        footer.appendChild(footerActions);
         dialog.appendChild(header);
         dialog.appendChild(body);
         dialog.appendChild(footer);
@@ -8602,12 +8730,20 @@
         };
         document.addEventListener("keydown", this.aboutModalEscHandler, true);
         this.aboutModal = overlay;
-        requestAnimationFrame(() => overlay.classList.add("open"));
+        requestAnimationFrame(() => {
+          overlay.classList.add("open");
+          try {
+            closeBtn.focus({ preventScroll: true });
+          } catch (e) {
+            closeBtn.focus();
+          }
+        });
       },
       closeAboutModal() {
         if (!this.aboutModal) return;
         this.aboutModal.classList.remove("open");
         const modalToRemove = this.aboutModal;
+        const triggerToFocus = this.aboutModalTrigger;
         setTimeout(() => {
           if (modalToRemove && modalToRemove.parentNode) {
             modalToRemove.parentNode.removeChild(modalToRemove);
@@ -8620,8 +8756,18 @@
           document.removeEventListener("keydown", this.aboutModalEscHandler, true);
         }
         this.aboutModal = null;
+        this.aboutModalTrigger = null;
         this.aboutModalBackdropHandler = null;
         this.aboutModalEscHandler = null;
+        if (triggerToFocus && triggerToFocus.isConnected && typeof triggerToFocus.focus === "function") {
+          setTimeout(() => {
+            try {
+              triggerToFocus.focus({ preventScroll: true });
+            } catch (e) {
+              triggerToFocus.focus();
+            }
+          }, 0);
+        }
       },
       openThemeSettingsModal() {
         if (this.themeModal && this.themeModal.isConnected) {
@@ -9098,21 +9244,34 @@
             light: "#f8fafc"
           };
           const gradient = `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`;
+          const fallbackFontFamily = 'ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+          const pageFontFamily = (() => {
+            try {
+              const source = document.body || document.documentElement;
+              const computedFont = source ? getComputedStyle(source).fontFamily : "";
+              const fontFamily = typeof computedFont === "string" ? computedFont.trim() : "";
+              return fontFamily && !/[;{}]/.test(fontFamily) ? fontFamily : fallbackFontFamily;
+            } catch (e) {
+              return fallbackFontFamily;
+            }
+          })();
+          document.documentElement.style.setProperty("--gh-font-family", pageFontFamily);
           const style = document.createElement("style");
           style.id = "chatgpt-helper-styles";
           style.textContent = `
                 /* CSS Variables */
                 :root {
-                    --gh-bg: #ffffff;
-                    --gh-bg-secondary: #f9fafb;
-                    --gh-text: #1f2937;
-                    --gh-text-secondary: #6b7280;
-                    --gh-border: #e5e7eb;
-                    --gh-hover: #f3f4f6;
-                    --gh-shadow: 0 10px 40px rgba(0,0,0,0.15);
+                    --gh-font-family: ${pageFontFamily};
+                    --gh-bg: #f9f9f9;
+                    --gh-bg-secondary: #f3f3f3;
+                    --gh-text: #0d0d0d;
+                    --gh-text-secondary: rgba(13, 13, 13, 0.64);
+                    --gh-border: rgba(0, 0, 0, 0.10);
+                    --gh-hover: #ececec;
+                    --gh-shadow: 0 0 0 0 rgba(0,0,0,0);
                     --gh-input-bg: #ffffff;
-                    --gh-input-border: #d1d5db;
-                    --gh-active-bg: #e5e7eb;
+                    --gh-input-border: rgba(0, 0, 0, 0.10);
+                    --gh-active-bg: #ececec;
                     --gh-danger: #ef4444;
                     --gh-gradient: ${gradient};
                     --gh-header-bg: ${gradient};
@@ -9147,22 +9306,18 @@
                 }
 
                 :root:not([data-gh-theme-active="true"]) body[data-gh-mode="dark"] {
-                    --gh-bg: #1e293b;
-                    --gh-bg-secondary: #0f172a;
-                    --gh-text: #f1f5f9;
-                    --gh-text-secondary: #cbd5e1;
-                    --gh-border: #475569;
-                    --gh-hover: #334155;
-                    --gh-shadow: 0 10px 40px rgba(0,0,0,0.4);
-                    --gh-input-bg: #334155;
-                    --gh-input-border: #64748b;
-                    --gh-active-bg: #3b82f6;
-                    --gh-header-bg: linear-gradient(
-                        135deg,
-                        color-mix(in srgb, var(--gh-theme-primary, #4285f4), #020617 80%),
-                        color-mix(in srgb, var(--gh-theme-secondary, #60a5fa), #020617 84%)
-                    );
-                    --gh-tag-active-bg: rgba(59, 130, 246, 0.3);
+                    --gh-bg: #202123;
+                    --gh-bg-secondary: #171717;
+                    --gh-text: #ececf1;
+                    --gh-text-secondary: rgba(236, 236, 241, 0.72);
+                    --gh-border: rgba(255, 255, 255, 0.12);
+                    --gh-hover: #2a2b2d;
+                    --gh-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+                    --gh-input-bg: #2a2b2d;
+                    --gh-input-border: rgba(255, 255, 255, 0.12);
+                    --gh-active-bg: #343541;
+                    --gh-header-bg: linear-gradient(180deg, #202123 0%, #171717 100%);
+                    --gh-tag-active-bg: rgba(255, 255, 255, 0.1);
                     --gh-primary-hover: var(--gh-theme-accent-dark, #2563eb);
                 }
 
@@ -9206,7 +9361,7 @@
                     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
                     overflow: hidden;
                     isolation: isolate;
-                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                    font-family: var(--gh-font-family, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
                     border-radius: 0;
                 }
                 
@@ -9272,7 +9427,7 @@
                 :root[data-gh-bg-enabled="true"] body[data-gh-mode="light"] #chatgpt-helper-right,
                 :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] #chatgpt-helper-right {
                     background: var(--gh-right-overlay) !important;
-                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border) !important;
+                    box-shadow: inset 1px 0 0 var(--gh-panel-line) !important;
                 }
 
                 :root[data-gh-bg-enabled="true"] body[data-gh-mode="light"] #chatgpt-helper-content,
@@ -9286,7 +9441,7 @@
                 :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] .chatgpt-helper-search-bar,
                 :root[data-gh-bg-enabled="true"] body[data-gh-mode="light"] .chatgpt-helper-categories,
                 :root[data-gh-bg-enabled="true"] body[data-gh-mode="dark"] .chatgpt-helper-categories {
-                    background: var(--gh-panel-card-bg) !important;
+                    background: var(--gh-panel-surface) !important;
                 }
                 
                 body[data-gh-mode="dark"] #chatgpt-helper-right {
@@ -11185,8 +11340,185 @@
                     line-height: 1.4;
                 }
 
+                .chatgpt-helper-setting-subheading {
+                    margin: 10px 4px 2px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    line-height: 1.2;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: color-mix(in srgb, var(--gh-text-secondary, #6b7280), var(--gh-text, #111827) 22%);
+                }
+
+                .chatgpt-helper-setting-subheading:first-child {
+                    margin-top: 2px;
+                }
+
+                .chatgpt-helper-setting-custom-block {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+
+                .chatgpt-helper-setting-custom-block .chatgpt-helper-setting-item {
+                    margin: 0;
+                }
+
                 .chatgpt-helper-settings-scroll {
                     scrollbar-width: thin;
+                }
+
+                .chatgpt-helper-settings-compact {
+                    flex: 1;
+                    min-height: 0;
+                    overflow-y: auto;
+                    padding: 10px 12px 16px;
+                    box-sizing: border-box;
+                }
+
+                .chatgpt-helper-settings-compact-section {
+                    margin: 0 0 14px;
+                }
+
+                .chatgpt-helper-settings-compact-section:last-of-type {
+                    margin-bottom: 8px;
+                }
+
+                .chatgpt-helper-settings-compact-title {
+                    padding: 6px 2px 5px;
+                    font-size: 11px;
+                    line-height: 1.2;
+                    font-weight: 700;
+                    color: color-mix(in srgb, var(--gh-text-secondary, #6b7280), var(--gh-text, #111827) 20%);
+                    letter-spacing: 0.04em;
+                    text-transform: uppercase;
+                }
+
+                .chatgpt-helper-settings-compact-list {
+                    border-top: 1px solid var(--gh-border, #e5e7eb);
+                }
+
+                .chatgpt-helper-settings-compact-row {
+                    min-height: 38px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    padding: 4px 2px;
+                    border-bottom: 1px solid color-mix(in srgb, var(--gh-border, #e5e7eb), transparent 18%);
+                    box-sizing: border-box;
+                }
+
+                .chatgpt-helper-settings-compact-row:hover {
+                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 58%);
+                }
+
+                .chatgpt-helper-settings-compact-label {
+                    min-width: 0;
+                    flex: 1;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    font-size: 13px;
+                    font-weight: 500;
+                    line-height: 1.35;
+                    color: var(--gh-text, #374151);
+                }
+
+                .chatgpt-helper-settings-compact-label.has-desc {
+                    white-space: normal;
+                }
+
+                .chatgpt-helper-settings-compact-label-text {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .chatgpt-helper-settings-compact-desc {
+                    margin-top: 2px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    font-size: 11px;
+                    font-weight: 400;
+                    line-height: 1.25;
+                    color: var(--gh-text-secondary, #6b7280);
+                }
+
+                .chatgpt-helper-settings-icon-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .chatgpt-helper-settings-icon-label .chatgpt-helper-inline-icon-wrap {
+                    width: 24px;
+                    min-width: 24px;
+                    height: 24px;
+                    margin-right: 0;
+                    border-radius: 6px;
+                }
+
+                .chatgpt-helper-settings-compact-controls {
+                    min-width: 92px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                    flex-shrink: 0;
+                }
+
+                .chatgpt-helper-settings-compact-input {
+                    width: 96px;
+                    height: 28px;
+                    padding: 4px 8px;
+                    border: 1px solid var(--gh-border, #e5e7eb);
+                    border-radius: 6px;
+                    background: var(--gh-input-bg, #ffffff);
+                    color: var(--gh-text, #374151);
+                    font-size: 13px;
+                    box-sizing: border-box;
+                }
+
+                .chatgpt-helper-settings-compact-text {
+                    width: 156px;
+                }
+
+                .chatgpt-helper-settings-compact-select .chatgpt-helper-custom-select-trigger {
+                    min-height: 28px;
+                    padding: 4px 8px;
+                    border-radius: 6px;
+                    font-size: 13px;
+                }
+
+                .chatgpt-helper-settings-compact-button {
+                    min-height: 28px;
+                    padding: 4px 10px;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    box-shadow: none;
+                }
+
+                .chatgpt-helper-settings-compact .chatgpt-helper-toggle {
+                    transform: scale(0.86);
+                    transform-origin: right center;
+                }
+
+                .chatgpt-helper-settings-compact .chatgpt-helper-order-btn {
+                    width: 28px;
+                    height: 26px;
+                    min-width: 28px;
+                    padding: 0;
+                }
+
+                .chatgpt-helper-settings-compact .chatgpt-helper-order-btn:disabled {
+                    opacity: 0.35;
+                    cursor: not-allowed;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-settings-compact-row:hover {
+                    background: color-mix(in srgb, var(--gh-hover, #1f2937), transparent 45%);
                 }
 
                 .chatgpt-helper-setting-section-title {
@@ -11368,15 +11700,13 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    padding: 18px;
-                    background:
-                        radial-gradient(980px 420px at 10% 0%, rgba(249, 115, 22, 0.10), transparent 58%),
-                        radial-gradient(1100px 540px at 100% 100%, rgba(99, 102, 241, 0.12), transparent 64%),
-                        rgba(2, 6, 23, 0.70);
-                    backdrop-filter: blur(12px);
+                    padding: 16px;
+                    background: rgba(15, 23, 42, 0.46);
+                    backdrop-filter: blur(6px);
+                    -webkit-backdrop-filter: blur(6px);
                     opacity: 0;
                     pointer-events: none;
-                    transition: opacity 0.24s ease;
+                    transition: opacity 0.18s var(--gh-fast-ease, ease);
                 }
 
                 #chatgpt-helper-about-modal.open {
@@ -11385,29 +11715,22 @@
                 }
 
                 .chatgpt-helper-about-dialog {
-                    width: min(720px, 94vw);
-                    max-height: min(860px, 92vh);
+                    width: min(820px, calc(100vw - 32px));
+                    max-height: min(760px, calc(100vh - 32px));
                     display: flex;
                     flex-direction: column;
                     overflow: hidden;
-                    border-radius: 28px;
-                    border: 1px solid rgba(226, 232, 240, 0.72);
-                    background:
-                        linear-gradient(180deg, #fffaf5 0%, #fffdfa 28%, #f8fafc 100%);
-                    color: #0f172a;
-                    box-shadow:
-                        0 36px 92px rgba(15, 23, 42, 0.34),
-                        inset 0 1px 0 rgba(255,255,255,0.58);
+                    border-radius: 14px;
+                    border: 1px solid var(--gh-panel-line, rgba(226, 232, 240, 0.9));
+                    background: var(--gh-panel-surface, #ffffff);
+                    color: var(--gh-text, #0f172a);
+                    box-shadow: 0 22px 58px rgba(15, 23, 42, 0.26), inset 0 1px 0 rgba(255,255,255,0.7);
+                    transform: translateY(8px) scale(0.99);
+                    transition: transform 0.22s var(--gh-fast-ease, ease), box-shadow 0.22s var(--gh-fast-ease, ease);
                 }
 
-                body[data-gh-mode="dark"] .chatgpt-helper-about-dialog {
-                    background:
-                        linear-gradient(180deg, #101016 0%, #0c0d12 100%);
-                    border-color: rgba(71, 85, 105, 0.34);
-                    color: #edf2ff;
-                    box-shadow:
-                        0 44px 100px rgba(2, 6, 23, 0.56),
-                        inset 0 1px 0 rgba(255,255,255,0.05);
+                #chatgpt-helper-about-modal.open .chatgpt-helper-about-dialog {
+                    transform: translateY(0) scale(1);
                 }
 
                 .chatgpt-helper-about-header {
@@ -11415,26 +11738,43 @@
                     display: flex;
                     align-items: center;
                     justify-content: flex-start;
-                    gap: 16px;
-                    padding: 28px 30px 18px;
-                    border-bottom: 1px solid rgba(226, 232, 240, 0.72);
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-header {
-                    border-bottom-color: rgba(71, 85, 105, 0.34);
+                    gap: 12px;
+                    padding: 15px 18px 14px;
+                    border-bottom: 1px solid var(--gh-panel-line, rgba(226, 232, 240, 0.9));
+                    background: var(--gh-panel-subtle, #f8fafc);
                 }
 
                 .chatgpt-helper-about-title-wrap {
                     display: flex;
                     align-items: flex-start;
-                    gap: 18px;
+                    gap: 12px;
                     min-width: 0;
-                    padding-right: 52px;
+                    padding-right: 46px;
                 }
 
                 .chatgpt-helper-about-logo {
-                    border-radius: 14px;
-                    filter: drop-shadow(0 8px 18px rgba(15, 23, 42, 0.10));
+                    border-radius: 999px;
+                    background: #ffffff;
+                    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08), 0 6px 16px rgba(15, 23, 42, 0.08);
+                }
+
+                .chatgpt-helper-logo-fallback-svg,
+                .chatgpt-helper-logo-svg {
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: block;
+                }
+
+                .chatgpt-helper-logo-svg {
+                    object-fit: contain;
+                    opacity: 0;
+                    transition: opacity 0.16s var(--gh-fast-ease, ease);
+                }
+
+                .chatgpt-helper-logo-svg[data-loaded="true"] {
+                    opacity: 1;
                 }
 
                 .chatgpt-helper-about-title-text {
@@ -11449,178 +11789,244 @@
                 }
 
                 .chatgpt-helper-about-name {
-                    font-size: 30px;
-                    font-weight: 800;
-                    color: #0f172a;
+                    margin: 0;
+                    font-size: 23px;
+                    font-weight: 700;
+                    line-height: 1.18;
+                    color: var(--gh-text, #0f172a);
                     letter-spacing: 0;
                 }
 
                 .chatgpt-helper-about-tagline {
-                    margin-top: 8px;
-                    font-size: 14px;
-                    line-height: 1.75;
-                    color: #475569;
+                    margin: 4px 0 0;
+                    font-size: 12.5px;
+                    line-height: 1.38;
+                    color: var(--gh-text-secondary, #475569);
                     max-width: 520px;
                 }
 
-                body[data-gh-mode="dark"] .chatgpt-helper-about-name {
-                    color: #f8fbff;
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-tagline {
-                    color: #b7c4d9;
-                }
-
                 .chatgpt-helper-about-badge {
-                    padding: 6px 11px;
-                    border-radius: 999px;
-                    border: 1px solid rgba(203, 213, 225, 0.8);
-                    background: rgba(255,255,255,0.88);
-                    font-size: 12px;
-                    font-weight: 700;
-                    letter-spacing: 0.04em;
-                    color: #0f172a;
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-badge {
-                    background: rgba(15, 23, 42, 0.72);
-                    border-color: rgba(148, 163, 184, 0.24);
-                    color: #e5eefb;
+                    padding: 3px 8px;
+                    border-radius: 7px;
+                    border: 1px solid color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 72%);
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 90%);
+                    font-size: 11.5px;
+                    font-weight: 650;
+                    line-height: 1.2;
+                    letter-spacing: 0;
+                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 38%);
                 }
 
                 .chatgpt-helper-about-close {
                     position: absolute;
-                    top: 20px;
-                    right: 20px;
-                    width: 38px;
-                    height: 38px;
-                    border-radius: 12px;
-                    border: 1px solid rgba(203, 213, 225, 0.8);
-                    background: rgba(255,255,255,0.84);
-                    color: #0f172a;
+                    top: 14px;
+                    right: 14px;
+                    width: 32px;
+                    height: 32px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
                     cursor: pointer;
-                    font-size: 20px;
-                    transition: all 0.2s ease;
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-close {
-                    background: rgba(15, 23, 42, 0.72);
-                    border-color: rgba(148, 163, 184, 0.24);
-                    color: #e5eefb;
-                }
-
-                .chatgpt-helper-about-close:hover {
-                    transform: translateY(-1px);
-                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 26%);
                 }
 
                 .chatgpt-helper-about-body {
                     flex: 1;
                     overflow: auto;
-                    padding: 0 30px;
+                    padding: 0 18px;
                 }
 
                 .chatgpt-helper-about-shell {
                     width: 100%;
-                    max-width: 620px;
+                    max-width: none;
                     margin: 0 auto;
-                    padding: 24px 0 18px;
+                    padding: 14px 0;
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr) 300px;
+                    gap: 13px;
+                }
+
+                .chatgpt-helper-about-main-stack,
+                .chatgpt-helper-about-side-stack {
+                    display: grid;
+                    align-content: start;
+                    gap: 12px;
                 }
 
                 .chatgpt-helper-about-section {
-                    padding: 0;
+                    position: relative;
+                    padding: 12px 13px;
+                    border: 1px solid var(--gh-panel-line, rgba(226, 232, 240, 0.9));
+                    border-radius: 10px;
+                    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), var(--gh-panel-subtle, #f8fafc) 24%);
+                    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff, transparent 64%);
                 }
 
-                .chatgpt-helper-about-section + .chatgpt-helper-about-section {
-                    margin-top: 24px;
-                    padding-top: 24px;
-                    border-top: 1px solid rgba(226, 232, 240, 0.72);
+                .chatgpt-helper-about-section.compact {
+                    padding-bottom: 12px;
                 }
 
-                body[data-gh-mode="dark"] .chatgpt-helper-about-section + .chatgpt-helper-about-section {
-                    border-top-color: rgba(71, 85, 105, 0.34);
+                .chatgpt-helper-about-section.featured {
+                    border-left: 3px solid color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 12%);
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-panel-card, #ffffff) 94%);
+                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-panel-line, #e2e8f0) 70%);
+                    border-left-color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 12%);
                 }
 
-                .chatgpt-helper-about-section.soft {
-                    padding: 18px 20px;
-                    border-radius: 20px;
-                    border: 1px solid rgba(226, 232, 240, 0.72);
-                    background:
-                        linear-gradient(180deg, rgba(255,255,255,0.86) 0%, rgba(248,250,252,0.92) 100%);
-                    box-shadow:
-                        inset 0 1px 0 rgba(255,255,255,0.56),
-                        0 18px 32px rgba(15, 23, 42, 0.06);
+                .chatgpt-helper-about-section-head {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 7px;
                 }
 
-                body[data-gh-mode="dark"] .chatgpt-helper-about-section.soft {
-                    border-color: rgba(71, 85, 105, 0.34);
-                    background:
-                        linear-gradient(180deg, rgba(20, 24, 34, 0.96) 0%, rgba(12, 14, 20, 0.98) 100%);
-                    box-shadow:
-                        inset 0 1px 0 rgba(255,255,255,0.04),
-                        0 18px 34px rgba(2, 6, 23, 0.28);
-                }
-
-                .chatgpt-helper-about-section.tight .chatgpt-helper-about-actions {
-                    margin-top: 14px;
+                .chatgpt-helper-about-section-icon {
+                    width: 20px;
+                    height: 20px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 6px;
+                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 18%);
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 91%);
+                    border: 1px solid color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 78%);
                 }
 
                 .chatgpt-helper-about-section-title {
-                    font-size: 18px;
-                    font-weight: 800;
+                    margin: 0;
+                    font-size: 13.5px;
+                    font-weight: 700;
                     line-height: 1.35;
-                    color: #0f172a;
+                    color: var(--gh-text, #0f172a);
                     letter-spacing: 0;
-                    margin-bottom: 10px;
                 }
 
                 .chatgpt-helper-about-section-text {
-                    font-size: 14px;
-                    line-height: 1.85;
-                    color: #334155;
+                    font-size: 12.5px;
+                    line-height: 1.56;
+                    color: var(--gh-text-secondary, #334155);
                     white-space: pre-wrap;
+                    margin: 0;
                 }
 
-                body[data-gh-mode="dark"] .chatgpt-helper-about-section-title {
-                    color: #f8fbff;
+                .chatgpt-helper-about-story {
+                    display: grid;
+                    gap: 8px;
                 }
 
-                body[data-gh-mode="dark"] .chatgpt-helper-about-section-text {
-                    color: #c8d5ea;
+                .chatgpt-helper-about-section-lead {
+                    margin: 0;
+                    color: var(--gh-text, #0f172a);
+                    font-size: 12.8px;
+                    line-height: 1.55;
+                    font-weight: 560;
+                }
+
+                .chatgpt-helper-about-feature-list {
+                    list-style: none;
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 7px;
+                    padding: 0;
+                    margin: 0;
+                }
+
+                .chatgpt-helper-about-feature-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 8px;
+                    min-width: 0;
+                    color: var(--gh-text-secondary, #334155);
+                    font-size: 12.5px;
+                    line-height: 1.42;
+                    padding: 8px 9px;
+                    min-height: 42px;
+                    border-radius: 8px;
+                    border: 1px solid color-mix(in srgb, var(--gh-panel-line, #e2e8f0), transparent 18%);
+                    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), var(--gh-panel-subtle, #f8fafc) 34%);
+                }
+
+                .chatgpt-helper-about-feature-index {
+                    flex: 0 0 auto;
+                    width: 22px;
+                    margin-top: 1px;
+                    font-size: 10.5px;
+                    line-height: 1.35;
+                    font-weight: 760;
+                    font-variant-numeric: tabular-nums;
+                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 16%);
+                }
+
+                .chatgpt-helper-about-feature-item > span:last-child {
+                    min-width: 0;
                 }
 
                 .chatgpt-helper-about-actions {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
-                    margin-top: 16px;
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 7px;
+                    margin-top: 10px;
+                }
+
+                .chatgpt-helper-about-link-btn:first-child,
+                .chatgpt-helper-about-link-btn:only-child {
+                    grid-column: 1 / -1;
                 }
 
                 .chatgpt-helper-about-link-btn {
-                    min-height: 40px;
-                    padding: 0 15px;
-                    border-radius: 999px;
-                    border: 1px solid rgba(203, 213, 225, 0.74);
+                    min-height: 31px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    min-width: 0;
+                    padding: 0 9px;
+                    border-radius: 8px;
+                    border: 1px solid var(--gh-control-border, rgba(203, 213, 225, 0.9));
                     cursor: pointer;
-                    font-size: 13px;
-                    font-weight: 700;
-                    letter-spacing: 0.01em;
-                    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-                    color: #0f172a;
-                    background: rgba(255,255,255,0.84);
-                    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+                    font-size: 11.8px;
+                    font-weight: 650;
+                    letter-spacing: 0;
+                    transition:
+                        transform 0.16s var(--gh-fast-ease, ease),
+                        box-shadow 0.16s var(--gh-fast-ease, ease),
+                        border-color 0.16s var(--gh-fast-ease, ease),
+                        background 0.16s var(--gh-fast-ease, ease),
+                        color 0.16s var(--gh-fast-ease, ease);
+                    color: var(--gh-text, #0f172a);
+                    background: var(--gh-control-bg, rgba(255,255,255,0.86));
+                    box-shadow: none;
+                }
+
+                .chatgpt-helper-about-link-btn svg {
+                    flex: 0 0 auto;
+                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 14%);
+                }
+
+                .chatgpt-helper-about-link-btn span {
+                    min-width: 0;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
 
                 .chatgpt-helper-about-link-btn:hover {
+                    background: var(--gh-control-bg-hover, rgba(248,250,252,0.96));
+                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 48%);
                     transform: translateY(-1px);
                 }
 
-                .chatgpt-helper-about-link-btn.soft {
-                    background:
-                        linear-gradient(135deg, color-mix(in srgb, var(--gh-primary, #3b82f6), white 82%) 0%, color-mix(in srgb, var(--gh-primary, #3b82f6), white 72%) 100%);
-                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 72%);
-                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), #0f172a 42%);
-                    box-shadow: 0 10px 24px rgba(59, 130, 246, 0.14);
+                .chatgpt-helper-about-link-btn.primary {
+                    color: #ffffff;
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), #1f2937 10%);
+                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 36%);
+                }
+
+                .chatgpt-helper-about-link-btn.primary svg {
+                    color: currentColor;
+                }
+
+                .chatgpt-helper-about-link-btn.primary:hover {
+                    background: color-mix(in srgb, var(--gh-primary-hover, #2563eb), var(--gh-primary, #3b82f6) 56%);
                 }
 
                 .chatgpt-helper-about-link-btn.disabled,
@@ -11631,120 +12037,144 @@
                     transform: none;
                 }
 
-                body[data-gh-mode="dark"] .chatgpt-helper-about-link-btn {
-                    background: rgba(15, 23, 42, 0.72);
-                    color: #e5eefb;
-                    border-color: rgba(148, 163, 184, 0.22);
-                    box-shadow: 0 16px 26px rgba(2, 6, 23, 0.24);
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-link-btn.soft {
-                    background:
-                        linear-gradient(135deg, color-mix(in srgb, var(--gh-primary, #60a5fa), #0f172a 80%) 0%, color-mix(in srgb, var(--gh-primary, #60a5fa), #0b1220 74%) 100%);
-                    color: #ecf4ff;
-                    border-color: color-mix(in srgb, var(--gh-primary, #60a5fa), transparent 70%);
-                    box-shadow: 0 16px 32px rgba(2, 6, 23, 0.32);
-                }
-
                 .chatgpt-helper-about-author-block {
                     display: flex;
                     flex-direction: column;
-                    gap: 10px;
-                }
-
-                .chatgpt-helper-about-author-name {
-                    font-size: 18px;
-                    font-weight: 800;
-                    color: #0f172a;
-                    letter-spacing: 0;
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-author-name {
-                    color: #f8fbff;
+                    gap: 6px;
                 }
 
                 .chatgpt-helper-about-author-bio {
                     margin-bottom: 0;
                 }
 
-                .chatgpt-helper-about-inline-meta {
+                .chatgpt-helper-about-footer {
                     display: flex;
                     align-items: center;
-                    gap: 8px;
-                    flex-wrap: wrap;
-                    margin-top: 6px;
-                    font-size: 12px;
-                    line-height: 1.75;
-                }
-
-                .chatgpt-helper-about-inline-label {
-                    font-weight: 700;
-                    color: #475569;
-                }
-
-                .chatgpt-helper-about-inline-value {
-                    color: #334155;
-                    word-break: break-all;
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-inline-label {
-                    color: #a8bbd6;
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-inline-value {
-                    color: #dbe7f6;
-                }
-
-                .chatgpt-helper-about-footer {
-                    padding: 16px 30px 24px;
-                    text-align: center;
-                    border-top: 1px solid rgba(226, 232, 240, 0.72);
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-footer {
-                    border-top-color: rgba(71, 85, 105, 0.34);
+                    justify-content: space-between;
+                    gap: 14px;
+                    padding: 10px 18px 12px;
+                    text-align: left;
+                    border-top: 1px solid var(--gh-panel-line, rgba(226, 232, 240, 0.9));
+                    background: var(--gh-panel-subtle, #f8fafc);
                 }
 
                 .chatgpt-helper-about-footer-note {
-                    font-size: 12px;
-                    line-height: 1.7;
-                    color: #475569;
-                    margin-bottom: 6px;
+                    font-size: 11.8px;
+                    line-height: 1.45;
+                    color: var(--gh-text-secondary, #475569);
+                    margin: 0;
+                }
+
+                .chatgpt-helper-about-footer-actions {
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                    gap: 7px;
+                    flex: 0 0 auto;
+                }
+
+                .chatgpt-helper-about-footer-actions .chatgpt-helper-about-link-btn {
+                    min-height: 30px;
+                    padding: 0 10px;
                 }
 
                 .chatgpt-helper-about-footer-text {
-                    font-size: 12px;
-                    color: #475569;
+                    font-size: 11.8px;
+                    color: var(--gh-text-secondary, #475569);
+                    white-space: nowrap;
                 }
 
-                body[data-gh-mode="dark"] .chatgpt-helper-about-footer-note,
-                body[data-gh-mode="dark"] .chatgpt-helper-about-footer-text {
-                    color: #9fb2cd;
+                .chatgpt-helper-about-link-btn:focus-visible,
+                .chatgpt-helper-about-close:focus-visible {
+                    outline: 2px solid var(--gh-focus-ring, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 66%)) !important;
+                    outline-offset: 2px;
                 }
 
                 @media (max-width: 640px) {
+                    #chatgpt-helper-about-modal {
+                        align-items: stretch;
+                        padding: 10px;
+                    }
+
+                    .chatgpt-helper-about-dialog {
+                        width: 100%;
+                        max-height: calc(100vh - 20px);
+                    }
+
                     .chatgpt-helper-about-header {
-                        padding: 24px 22px 16px;
+                        padding: 16px 16px 14px;
                     }
 
                     .chatgpt-helper-about-body {
-                        padding: 0 22px;
+                        padding: 0 16px;
                     }
 
                     .chatgpt-helper-about-shell {
-                        padding: 22px 0 16px;
+                        padding: 12px 0;
+                        grid-template-columns: 1fr;
+                        gap: 12px;
+                    }
+
+                    .chatgpt-helper-about-main-stack,
+                    .chatgpt-helper-about-side-stack {
+                        gap: 12px;
                     }
 
                     .chatgpt-helper-about-title-wrap {
-                        gap: 14px;
+                        gap: 12px;
+                        padding-right: 42px;
+                    }
+
+                    .chatgpt-helper-about-logo {
+                        width: 40px !important;
+                        height: 40px !important;
                     }
 
                     .chatgpt-helper-about-name {
-                        font-size: 26px;
+                        font-size: 21px;
                     }
 
-                    .chatgpt-helper-about-section.soft {
-                        padding: 16px 16px;
+                    .chatgpt-helper-about-feature-list {
+                        grid-template-columns: 1fr;
+                    }
+
+                    .chatgpt-helper-about-actions {
+                        grid-template-columns: 1fr;
+                    }
+
+                    .chatgpt-helper-about-link-btn {
+                        width: 100%;
+                    }
+
+                    .chatgpt-helper-about-footer {
+                        align-items: flex-start;
+                        flex-direction: column;
+                        gap: 4px;
+                    }
+
+                    .chatgpt-helper-about-footer-actions {
+                        width: 100%;
+                        display: grid;
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                        gap: 7px;
+                    }
+
+                    .chatgpt-helper-about-footer-text {
+                        white-space: normal;
+                    }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    #chatgpt-helper-about-modal,
+                    .chatgpt-helper-about-dialog,
+                    .chatgpt-helper-about-link-btn {
+                        transition-duration: 0.01ms !important;
+                        animation-duration: 0.01ms !important;
+                    }
+
+                    .chatgpt-helper-about-dialog,
+                    #chatgpt-helper-about-modal.open .chatgpt-helper-about-dialog {
+                        transform: none !important;
                     }
                 }
                 
@@ -12153,65 +12583,57 @@
 
                 /* Quiet efficiency sidebar refresh */
                 :root {
-                    --gh-bg: #fbfbfa;
-                    --gh-bg-secondary: #f4f5f2;
-                    --gh-text: #1f2420;
-                    --gh-text-secondary: #66716a;
-                    --gh-border: #dde2dc;
-                    --gh-hover: #edf2ed;
-                    --gh-shadow: -14px 0 32px rgba(31, 36, 32, 0.10), -2px 0 8px rgba(31, 36, 32, 0.06);
+                    --gh-bg: #f9f9f9;
+                    --gh-bg-secondary: #f3f3f3;
+                    --gh-text: #0d0d0d;
+                    --gh-text-secondary: rgba(13, 13, 13, 0.64);
+                    --gh-border: rgba(0, 0, 0, 0.10);
+                    --gh-hover: #ececec;
+                    --gh-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
                     --gh-input-bg: #ffffff;
-                    --gh-input-border: #d7ddd6;
-                    --gh-active-bg: color-mix(in srgb, var(--gh-theme-primary, #4285f4), #ffffff 88%);
-                    --gh-panel-surface: linear-gradient(180deg, #fbfbfa 0%, #f6f7f4 100%);
-                    --gh-panel-subtle: color-mix(in srgb, var(--gh-bg-secondary), #ffffff 38%);
-                    --gh-panel-card: color-mix(in srgb, var(--gh-bg), #ffffff 58%);
-                    --gh-panel-card-hover: color-mix(in srgb, var(--gh-hover), #ffffff 34%);
-                    --gh-panel-line: color-mix(in srgb, var(--gh-border), transparent 10%);
-                    --gh-panel-muted-line: color-mix(in srgb, var(--gh-border), transparent 40%);
-                    --gh-panel-elevated-shadow: 0 8px 22px rgba(31, 36, 32, 0.08);
-                    --gh-panel-card-shadow: 0 1px 1px rgba(31, 36, 32, 0.03);
-                    --gh-header-quiet-bg: linear-gradient(
-                        180deg,
-                        color-mix(in srgb, var(--gh-theme-primary, #4285f4), #ffffff 88%) 0%,
-                        color-mix(in srgb, var(--gh-bg), #ffffff 28%) 100%
-                    );
+                    --gh-input-border: rgba(0, 0, 0, 0.10);
+                    --gh-active-bg: #ececec;
+                    --gh-panel-surface: linear-gradient(180deg, #f9f9f9 0%, #f9f9f9 100%);
+                    --gh-panel-subtle: #f3f3f3;
+                    --gh-panel-card: #ffffff;
+                    --gh-panel-card-hover: #ececec;
+                    --gh-panel-line: rgba(0, 0, 0, 0.10);
+                    --gh-panel-muted-line: rgba(0, 0, 0, 0.06);
+                    --gh-panel-elevated-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+                    --gh-panel-card-shadow: 0 1px 0 rgba(0, 0, 0, 0.025);
+                    --gh-header-quiet-bg: var(--gh-panel-surface);
                     --gh-focus-ring: color-mix(in srgb, var(--gh-primary, #4285f4), transparent 72%);
-                    --gh-control-bg: color-mix(in srgb, var(--gh-bg), #ffffff 44%);
-                    --gh-control-bg-hover: color-mix(in srgb, var(--gh-hover), #ffffff 20%);
-                    --gh-control-border: color-mix(in srgb, var(--gh-border), transparent 8%);
+                    --gh-control-bg: #ffffff;
+                    --gh-control-bg-hover: #ececec;
+                    --gh-control-border: rgba(0, 0, 0, 0.10);
                     --gh-control-radius: 8px;
                     --gh-card-radius: 8px;
                 }
 
                 :root:not([data-gh-theme-active="true"]) body[data-gh-mode="dark"] {
-                    --gh-bg: #191c1a;
-                    --gh-bg-secondary: #111412;
-                    --gh-text: #f2f3ef;
-                    --gh-text-secondary: #a9b1aa;
-                    --gh-border: #30362f;
-                    --gh-hover: #242a25;
-                    --gh-shadow: -16px 0 34px rgba(0, 0, 0, 0.34), -2px 0 10px rgba(0, 0, 0, 0.28);
-                    --gh-input-bg: #202520;
-                    --gh-input-border: #384038;
-                    --gh-active-bg: color-mix(in srgb, var(--gh-theme-primary, #4285f4), #1b211c 78%);
-                    --gh-panel-surface: linear-gradient(180deg, #1b1f1c 0%, #151815 100%);
-                    --gh-panel-subtle: color-mix(in srgb, var(--gh-bg-secondary), #242a25 34%);
-                    --gh-panel-card: color-mix(in srgb, var(--gh-bg), #262c27 42%);
-                    --gh-panel-card-hover: color-mix(in srgb, var(--gh-hover), #313832 26%);
-                    --gh-panel-line: color-mix(in srgb, var(--gh-border), transparent 6%);
-                    --gh-panel-muted-line: color-mix(in srgb, var(--gh-border), transparent 36%);
-                    --gh-panel-elevated-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
-                    --gh-panel-card-shadow: 0 1px 1px rgba(0, 0, 0, 0.22);
-                    --gh-header-quiet-bg: linear-gradient(
-                        180deg,
-                        color-mix(in srgb, var(--gh-theme-primary, #4285f4), #1d221f 80%) 0%,
-                        color-mix(in srgb, var(--gh-bg), #242a25 22%) 100%
-                    );
+                    --gh-bg: #202123;
+                    --gh-bg-secondary: #171717;
+                    --gh-text: #ececf1;
+                    --gh-text-secondary: rgba(236, 236, 241, 0.72);
+                    --gh-border: rgba(255, 255, 255, 0.12);
+                    --gh-hover: #2a2b2d;
+                    --gh-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+                    --gh-input-bg: #2a2b2d;
+                    --gh-input-border: rgba(255, 255, 255, 0.12);
+                    --gh-active-bg: #343541;
+                    --gh-panel-surface: linear-gradient(180deg, #202123 0%, #171717 100%);
+                    --gh-panel-subtle: color-mix(in srgb, #202123, #ffffff 2%);
+                    --gh-panel-card: color-mix(in srgb, #202123, #ffffff 5%);
+                    --gh-panel-card-hover: color-mix(in srgb, #202123, #ffffff 9%);
+                    --gh-panel-line: rgba(255, 255, 255, 0.12);
+                    --gh-panel-muted-line: rgba(255, 255, 255, 0.07);
+                    --gh-panel-elevated-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+                    --gh-panel-card-shadow: 0 1px 0 rgba(255, 255, 255, 0.035);
+                    --gh-header-quiet-bg: var(--gh-panel-surface);
                     --gh-focus-ring: color-mix(in srgb, var(--gh-primary, #60a5fa), transparent 60%);
-                    --gh-control-bg: color-mix(in srgb, var(--gh-bg), #2a302b 36%);
-                    --gh-control-bg-hover: color-mix(in srgb, var(--gh-hover), #353d36 24%);
-                    --gh-control-border: color-mix(in srgb, var(--gh-border), transparent 8%);
+                    --gh-control-bg: color-mix(in srgb, #202123, #ffffff 5%);
+                    --gh-control-bg-hover: color-mix(in srgb, #202123, #ffffff 9%);
+                    --gh-control-border: rgba(255, 255, 255, 0.12);
                 }
 
                 #chatgpt-helper-right,
@@ -12736,17 +13158,10 @@
                 }
 
                 :root[data-gh-bg-enabled="true"] #chatgpt-helper-header {
-                    background:
-                        linear-gradient(
-                            135deg,
-                            color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 82%) 0%,
-                            color-mix(in srgb, var(--gh-theme-secondary, #60a5fa), transparent 88%) 100%
-                        ) !important;
+                    background: var(--gh-panel-surface) !important;
                     backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.06);
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.06);
-                    box-shadow:
-                        inset 0 0 0 1px color-mix(in srgb, var(--gh-panel-card-border), transparent 10%),
-                        0 10px 24px rgba(15, 23, 42, 0.10);
+                    box-shadow: none !important;
                 }
 
                 :root[data-gh-bg-enabled="true"] #chatgpt-helper-tabs,
@@ -12828,19 +13243,12 @@
 
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #chatgpt-helper-right {
                     background: var(--gh-right-overlay) !important;
-                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border) !important;
+                    box-shadow: inset 1px 0 0 var(--gh-panel-line) !important;
                 }
 
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #chatgpt-helper-header {
-                    background:
-                        linear-gradient(
-                            135deg,
-                            color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 92%) 0%,
-                            color-mix(in srgb, var(--gh-theme-secondary, #60a5fa), transparent 96%) 100%
-                        ) !important;
-                    box-shadow:
-                        inset 0 0 0 1px color-mix(in srgb, var(--gh-panel-card-border), transparent 12%),
-                        0 10px 24px rgba(2, 6, 23, 0.18) !important;
+                    background: var(--gh-panel-surface) !important;
+                    box-shadow: none !important;
                 }
 
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #chatgpt-helper-tabs,
@@ -12852,8 +13260,8 @@
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-batch-toolbar,
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .scroll-nav-container,
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-export-header {
-                    background: var(--gh-panel-card-bg) !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border) !important;
+                    background: var(--gh-panel-surface) !important;
+                    box-shadow: none !important;
                 }
 
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-search-input,
@@ -12894,13 +13302,23 @@
                     border-left: 1px solid var(--gh-panel-line) !important;
                     box-shadow: var(--gh-shadow) !important;
                     color: var(--gh-text) !important;
-                    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                    font-family: var(--gh-font-family, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+                }
+
+                #chatgpt-helper-right,
+                #chatgpt-helper-right button,
+                #chatgpt-helper-right input,
+                #chatgpt-helper-right textarea,
+                #chatgpt-helper-right select,
+                #chatgpt-helper-right option,
+                #chatgpt-helper-right optgroup {
+                    font-family: var(--gh-font-family, inherit) !important;
                 }
 
                 :root[data-gh-bg-enabled="true"] #chatgpt-helper-right {
                     backdrop-filter: blur(calc(var(--gh-panel-blur) + 2px)) saturate(1.03);
                     -webkit-backdrop-filter: blur(calc(var(--gh-panel-blur) + 2px)) saturate(1.03);
-                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border) !important;
+                    box-shadow: inset 1px 0 0 var(--gh-panel-line) !important;
                 }
 
                 #chatgpt-helper-header,
@@ -12908,7 +13326,7 @@
                 body[data-gh-mode="dark"] #chatgpt-helper-header {
                     min-height: 48px;
                     padding: var(--gh-header-padding-v, 9px) var(--gh-header-padding-h, 12px);
-                    background: var(--gh-header-quiet-bg) !important;
+                    background: var(--gh-panel-surface) !important;
                     color: var(--gh-text) !important;
                     border-bottom: 1px solid var(--gh-panel-line);
                     box-shadow: none !important;
@@ -13014,9 +13432,9 @@
                 :root[data-gh-page-theme="true"] #chatgpt-helper-tabs {
                     gap: 4px;
                     padding: 8px 10px 7px;
-                    background: var(--gh-panel-subtle) !important;
+                    background: var(--gh-panel-surface) !important;
                     border-bottom: 1px solid var(--gh-panel-line);
-                    box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--gh-panel-line), transparent 42%) !important;
+                    box-shadow: none !important;
                     --tab-padding-h: 8px;
                     --tab-padding-v: 7px;
                     --tab-gap: 5px;
@@ -13049,17 +13467,15 @@
 
                 .chatgpt-helper-tab.active,
                 body[data-gh-mode="dark"] .chatgpt-helper-tab.active {
-                    background: var(--gh-panel-card) !important;
-                    border-color: color-mix(in srgb, var(--gh-primary), transparent 48%) !important;
+                    background: var(--gh-control-bg-hover) !important;
+                    border-color: var(--gh-control-border) !important;
                     color: var(--gh-text) !important;
-                    font-weight: 700;
-                    box-shadow:
-                        inset 0 -2px 0 color-mix(in srgb, var(--gh-primary), transparent 16%),
-                        var(--gh-panel-card-shadow) !important;
+                    font-weight: 650;
+                    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gh-panel-line), transparent 45%) !important;
                 }
 
                 .chatgpt-helper-tab-icon {
-                    color: color-mix(in srgb, var(--gh-primary), var(--gh-text-secondary) 34%);
+                    color: color-mix(in srgb, var(--gh-primary), var(--gh-text-secondary) 62%);
                 }
 
                 .chatgpt-helper-tab-drag-handle {
@@ -13534,9 +13950,7 @@
                 }
 
                 .chatgpt-helper-theme-modal-dialog,
-                body[data-gh-mode="dark"] .chatgpt-helper-theme-modal-dialog,
-                .chatgpt-helper-about-dialog,
-                body[data-gh-mode="dark"] .chatgpt-helper-about-dialog {
+                body[data-gh-mode="dark"] .chatgpt-helper-theme-modal-dialog {
                     background: var(--gh-panel-surface) !important;
                     color: var(--gh-text) !important;
                     border: 1px solid var(--gh-panel-line) !important;
@@ -13795,9 +14209,7 @@
                 .chatgpt-helper-theme-preset-grid,
                 .chatgpt-helper-theme-upload,
                 .chatgpt-helper-theme-row,
-                .chatgpt-helper-theme-preview,
-                .chatgpt-helper-about-section,
-                .chatgpt-helper-about-section.soft {
+                .chatgpt-helper-theme-preview {
                     background: var(--gh-panel-card) !important;
                     border-color: var(--gh-panel-line) !important;
                     border-radius: var(--gh-card-radius) !important;
@@ -14481,7 +14893,7 @@
                 body[data-gh-mode="dark"] .scroll-nav-container {
                     gap: 8px;
                     padding: 10px 12px;
-                    background: var(--gh-panel-subtle) !important;
+                    background: var(--gh-panel-surface) !important;
                     border-top: 1px solid var(--gh-panel-line) !important;
                 }
 
@@ -15309,7 +15721,8 @@
           className: "chatgpt-helper-header-btn chatgpt-helper-header-about-btn",
           title: this.t("aboutTopEntryTitle") || this.t("aboutButton") || "About",
           id: "chatgpt-helper-header-about-btn",
-          type: "button"
+          type: "button",
+          "aria-label": this.t("aboutTopEntryTitle") || this.t("aboutButton") || "About"
         });
         const aboutIcon = createElement("span", { className: "chatgpt-helper-about-entry-icon" }, "i");
         aboutIcon.setAttribute("aria-hidden", "true");
@@ -15317,7 +15730,7 @@
         aboutBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          this.openAboutModal();
+          this.openAboutModal(e.currentTarget);
         });
         controls.appendChild(themeBtn);
         controls.appendChild(newChatBtn);
@@ -15332,7 +15745,11 @@
         this.initHeaderResponsiveSpacing(header);
         const tabs = createElement("div", { id: "chatgpt-helper-tabs" });
         tabs.setAttribute("role", "tablist");
-        const tabOrder = this.settings.tabOrder || ["prompts", "outline", "conversations", "export"];
+        const defaultTabOrder = ["prompts", "outline", "conversations", "export"];
+        const tabOrder = Array.isArray(this.settings.tabOrder) && this.settings.tabOrder.length > 0 ? this.settings.tabOrder.filter((tabId) => defaultTabOrder.includes(tabId)) : [...defaultTabOrder];
+        if (!tabOrder.includes(this.currentTab) && this.currentTab !== "settings") {
+          this.currentTab = tabOrder[0] || "prompts";
+        }
         tabOrder.forEach((tabId) => {
           if (tabId === "settings") return;
           const def = TAB_DEFINITIONS[tabId];
@@ -16258,158 +16675,80 @@
           console.log("[ChatGPT Helper] 当前没有保存的会话，这是正常的（新安装或未同步）");
         }
       },
-      createCollapsibleSection(title, content, options = {}) {
-        const { defaultExpanded = false } = options;
-        const section = createElement("div", {
-          className: "chatgpt-helper-setting-section",
-          style: {
-            marginBottom: "18px",
-            background: "var(--gh-bg-secondary)",
-            borderRadius: "16px",
-            border: "1px solid var(--gh-border)",
-            overflow: "visible"
-          }
+      renderSettings(container) {
+        const settingsContent = createElement("div", {
+          className: "chatgpt-helper-settings-scroll chatgpt-helper-settings-compact"
         });
-        const header = createElement("div", {
-          className: "chatgpt-helper-setting-section-header",
-          style: {
-            cursor: "pointer",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            userSelect: "none",
-            padding: "16px 18px",
-            fontSize: "14px",
-            fontWeight: "700",
-            color: "var(--gh-text)",
-            transition: "background 0.2s, border-color 0.2s",
-            textAlign: "center",
-            position: "relative"
-          }
-        });
-        const headerLeft = createElement("div", {
-          className: "chatgpt-helper-setting-section-header-inner",
-          style: "display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;"
-        });
-        const arrow = createElement("span", {
-          style: "font-size: 12px; color: var(--gh-text-secondary); transition: transform 0.2s; display: inline-block; position: absolute; right: 2px;",
-          className: "collapse-arrow"
-        }, "▶");
-        const headerTitle = createElement("span", {
-          className: "chatgpt-helper-setting-section-title"
-        }, title);
-        headerLeft.appendChild(arrow);
-        headerLeft.appendChild(headerTitle);
-        header.appendChild(headerLeft);
-        section.appendChild(header);
-        const contentContainer = createElement("div", {
-          className: "chatgpt-helper-setting-section-content",
-          style: `display: ${defaultExpanded ? "block" : "none"}; padding: 0 16px 16px 16px;`
-        });
-        contentContainer.appendChild(content);
-        let isExpanded = defaultExpanded;
-        const updateState = () => {
-          contentContainer.style.display = isExpanded ? "block" : "none";
-          arrow.style.transform = isExpanded ? "rotate(90deg)" : "rotate(0deg)";
-          header.style.background = isExpanded ? "var(--gh-hover)" : "transparent";
+        const rerenderSettings = () => {
+          const panel = this.panel?.querySelector("#settings-content");
+          if (!panel) return;
+          clearElement(panel);
+          this.renderSettings(panel);
         };
-        if (defaultExpanded) {
-          arrow.style.transform = "rotate(90deg)";
-          header.style.background = "var(--gh-hover)";
-        }
-        header.addEventListener("click", () => {
-          isExpanded = !isExpanded;
-          updateState();
-        });
-        header.addEventListener("mouseenter", () => {
-          if (!isExpanded) {
-            header.style.background = "var(--gh-hover)";
+        const ensureReadingHistory = () => {
+          if (!this.settings.readingHistory) {
+            this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
           }
-        });
-        header.addEventListener("mouseleave", () => {
-          if (!isExpanded) {
-            header.style.background = "transparent";
-          }
-        });
-        section.appendChild(contentContainer);
-        return section;
-      },
-      createSettingSection(title, items, options = {}) {
-        const { collapsible = true, defaultExpanded = false } = options;
-        const content = createElement("div", {
-          style: {
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px"
-          }
-        });
-        items.forEach((item) => {
-          const itemEl = createElement("div", {
-            className: "chatgpt-helper-setting-item",
-            style: {
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "14px 16px",
-              borderBottom: "none"
-            }
-          });
-          const label = createElement("div", {
-            className: "chatgpt-helper-setting-item-label",
-            style: {
-              fontSize: "14px",
-              color: "var(--gh-text)",
-              flex: 1,
-              paddingLeft: "2px",
-              textAlign: "left"
-            }
-          }, item.label);
-          itemEl.appendChild(label);
-          let control;
+          return this.settings.readingHistory;
+        };
+        const ensureOutline = () => {
+          if (!this.settings.outline) this.settings.outline = {};
+          return this.settings.outline;
+        };
+        const ensureTabSettings = () => {
+          if (!this.settings.tabSettings) this.settings.tabSettings = {};
+          return this.settings.tabSettings;
+        };
+        const ensureFormulaCopy = () => {
+          if (!this.settings.formulaCopy) this.settings.formulaCopy = { enabled: true };
+          return this.settings.formulaCopy;
+        };
+        const ensureTableCopy = () => {
+          if (!this.settings.tableCopy) this.settings.tableCopy = { enabled: true };
+          return this.settings.tableCopy;
+        };
+        const savedLanguagePreference = window.GM_getValue(SETTING_KEYS.LANGUAGE, "auto");
+        const languageValue = savedLanguagePreference === "auto" || I18N[savedLanguagePreference] ? savedLanguagePreference : "auto";
+        const tabSettings = ensureTabSettings();
+        const createCompactControl = (item) => {
+          let control = null;
           if (item.type === "toggle") {
             control = createElement("button", {
-              className: `chatgpt-helper-toggle${item.value ? " active" : ""}`,
+              className: "chatgpt-helper-toggle" + (item.value ? " active" : ""),
               type: "button",
+              "aria-label": item.label,
               "aria-pressed": item.value ? "true" : "false"
             });
-            const toggleCircle = createElement("div", {
-              className: "chatgpt-helper-toggle-knob"
-            });
-            control.appendChild(toggleCircle);
-            const handleToggle = (e) => {
-              if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-              }
+            control.appendChild(createElement("div", { className: "chatgpt-helper-toggle-knob" }));
+            control.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
               const newValue = !item.value;
               item.value = newValue;
               control.classList.toggle("active", newValue);
               control.setAttribute("aria-pressed", newValue ? "true" : "false");
               if (item.onChange) {
-                try {
-                  item.onChange(newValue);
-                } catch (err) {
-                  console.error("[ChatGPT Helper] Toggle onChange error:", err);
+                const result = item.onChange(newValue);
+                if (result === false) {
+                  item.value = !newValue;
+                  control.classList.toggle("active", !newValue);
+                  control.setAttribute("aria-pressed", !newValue ? "true" : "false");
                 }
               }
-            };
-            control.addEventListener("click", handleToggle);
-            control.addEventListener("mousedown", (e) => {
-              e.preventDefault();
-              e.stopPropagation();
             });
           } else if (item.type === "select") {
-            const options2 = item.options || [];
-            const selected = options2.find((opt) => String(opt.value) === String(item.value)) || options2[0];
+            const options = item.options || [];
+            const selected = options.find((opt) => String(opt.value) === String(item.value)) || options[0];
             control = createElement("div", {
-              className: "chatgpt-helper-custom-select",
+              className: "chatgpt-helper-custom-select chatgpt-helper-settings-compact-select",
               "data-value": selected ? String(selected.value) : ""
             });
             const trigger = createElement("button", {
               className: "chatgpt-helper-custom-select-trigger",
               type: "button",
               "aria-haspopup": "listbox",
-              "aria-expanded": "false"
+              "aria-expanded": "false",
+              "aria-label": item.label
             });
             const triggerText = createElement("span", {
               className: "chatgpt-helper-custom-select-value"
@@ -16443,18 +16782,12 @@
                 optionEl.setAttribute("aria-selected", isSelected ? "true" : "false");
               });
               closeMenu();
-              if (item.onChange) {
-                try {
-                  item.onChange(newValue);
-                } catch (err) {
-                  console.error("[ChatGPT Helper] Select onChange error:", err);
-                }
-              }
+              if (item.onChange) item.onChange(newValue);
             };
-            options2.forEach((opt) => {
+            options.forEach((opt) => {
               const isSelected = String(opt.value) === String(item.value);
               const option = createElement("button", {
-                className: `chatgpt-helper-custom-select-option${isSelected ? " selected" : ""}`,
+                className: "chatgpt-helper-custom-select-option" + (isSelected ? " selected" : ""),
                 type: "button",
                 role: "option",
                 "aria-selected": isSelected ? "true" : "false",
@@ -16470,34 +16803,7 @@
             trigger.addEventListener("click", (e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (control.classList.contains("open")) closeMenu();
-              else openMenu();
-            });
-            trigger.addEventListener("keydown", (e) => {
-              if (e.key === "Escape") {
-                closeMenu();
-              } else if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                openMenu();
-                const current = menu.querySelector(".chatgpt-helper-custom-select-option.selected") || menu.querySelector(".chatgpt-helper-custom-select-option");
-                if (current) current.focus();
-              }
-            });
-            menu.addEventListener("keydown", (e) => {
-              const optionEls = Array.from(menu.querySelectorAll(".chatgpt-helper-custom-select-option"));
-              const currentIndex = optionEls.indexOf(document.activeElement);
-              if (e.key === "Escape") {
-                closeMenu();
-                trigger.focus();
-              } else if (e.key === "ArrowDown") {
-                e.preventDefault();
-                const next = optionEls[Math.min(optionEls.length - 1, currentIndex + 1)] || optionEls[0];
-                if (next) next.focus();
-              } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                const prev = optionEls[Math.max(0, currentIndex - 1)] || optionEls[optionEls.length - 1];
-                if (prev) prev.focus();
-              }
+              control.classList.contains("open") ? closeMenu() : openMenu();
             });
             control.addEventListener("focusout", (e) => {
               if (!control.contains(e.relatedTarget)) closeMenu();
@@ -16505,717 +16811,412 @@
             control.appendChild(trigger);
             control.appendChild(menu);
           } else if (item.type === "number") {
-            const inputAttrs = {
+            control = createElement("input", {
+              className: "chatgpt-helper-settings-compact-input",
               type: "number",
               value: item.value,
               min: item.min !== void 0 ? item.min : 200,
               max: item.max !== void 0 ? item.max : 600,
-              style: {
-                width: "100px",
-                padding: "6px 8px",
-                border: "1px solid var(--gh-border)",
-                borderRadius: "6px",
-                background: "var(--gh-input-bg)",
-                color: "var(--gh-text)",
-                fontSize: "14px"
-              }
+              step: item.step !== void 0 ? item.step : 1,
+              "aria-label": item.label
+            });
+            const commit = () => {
+              if (item.onChange) item.onChange(control.value);
             };
-            if (item.step !== void 0) {
-              inputAttrs.step = item.step;
-            }
-            control = createElement("input", inputAttrs);
-            const handleNumberChange = () => {
-              if (item.onChange) {
-                try {
-                  item.onChange(control.value);
-                } catch (err) {
-                  console.error("[ChatGPT Helper] Number onChange error:", err);
-                }
-              }
-            };
-            control.addEventListener("change", handleNumberChange);
-            control.addEventListener("blur", handleNumberChange);
+            control.addEventListener("change", commit);
+            control.addEventListener("blur", commit);
             control.addEventListener("keydown", (e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
                 control.blur();
-                handleNumberChange();
+                commit();
               }
             });
           } else if (item.type === "text") {
             control = createElement("input", {
+              className: "chatgpt-helper-settings-compact-input chatgpt-helper-settings-compact-text",
               type: "text",
               value: item.value || "",
               placeholder: item.placeholder || "",
-              style: {
-                flex: 1,
-                maxWidth: "200px",
-                padding: "6px 12px",
-                border: "1px solid var(--gh-border)",
-                borderRadius: "6px",
-                background: "var(--gh-input-bg)",
-                color: "var(--gh-text)",
-                fontSize: "14px"
-              }
+              "aria-label": item.label
             });
-            const handleTextChange = () => {
-              if (item.onChange) {
-                try {
-                  item.onChange(control.value);
-                } catch (err) {
-                  console.error("[ChatGPT Helper] Text onChange error:", err);
-                }
-              }
+            const commit = () => {
+              if (item.onChange) item.onChange(control.value);
             };
-            control.addEventListener("change", handleTextChange);
-            control.addEventListener("blur", handleTextChange);
+            control.addEventListener("change", commit);
+            control.addEventListener("blur", commit);
             control.addEventListener("keydown", (e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
                 control.blur();
-                handleTextChange();
+                commit();
               }
             });
           } else if (item.type === "button") {
             control = createElement("button", {
-              className: "chatgpt-helper-theme-launch-btn",
+              className: "chatgpt-helper-theme-launch-btn chatgpt-helper-settings-compact-button",
               type: "button"
-            }, item.buttonText || this.t("openThemeSettings") || "Open Theme Settings");
+            }, item.buttonText || item.label);
             control.addEventListener("click", (e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (item.onClick) {
-                try {
-                  item.onClick();
-                } catch (err) {
-                  console.error("[ChatGPT Helper] Button onClick error:", err);
-                }
-              }
+              if (item.onClick) item.onClick();
             });
           }
-          if (control) {
-            const controls = createElement("div", {
-              className: "chatgpt-helper-setting-controls",
-              style: {
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                flexShrink: 0
-              }
-            });
-            controls.appendChild(control);
-            itemEl.appendChild(controls);
-          }
-          content.appendChild(itemEl);
-        });
-        if (collapsible) {
-          return this.createCollapsibleSection(title, content, { defaultExpanded });
-        } else {
-          const section = createElement("div", {
-            className: "chatgpt-helper-setting-section",
-            style: {
-              marginBottom: "24px",
-              padding: "18px",
-              background: "var(--gh-bg-secondary)",
-              borderRadius: "16px",
-              border: "1px solid var(--gh-border)"
-            }
-          });
-          const sectionTitle = createElement("div", {
-            style: {
-              fontSize: "14px",
-              fontWeight: "600",
-              color: "var(--gh-text-secondary)",
-              marginBottom: "12px",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              paddingLeft: "4px"
-            }
-          }, title);
-          section.appendChild(sectionTitle);
-          section.appendChild(content);
-          return section;
-        }
-      },
-      renderSettings(container) {
-        const settingsContent = createElement("div", {
-          className: "chatgpt-helper-settings-scroll",
-          style: {
-            padding: "18px 16px 26px",
-            overflowY: "auto",
-            flex: 1
-          }
-        });
-        const panelSection = this.createSettingSection(this.t("panelSettings") || "面板设置", [
-          {
-            label: this.t("panelWidthLabel") || "面板宽度",
-            type: "number",
-            value: this.settings.panelWidth,
-            onChange: (val) => {
-              this.settings.panelWidth = Math.max(200, Math.min(600, parseInt(val) || 320));
-              this.saveSettings();
-              this.adjustChatGPTLayout();
-              this.showToast(this.t("panelWidthUpdated"));
-            }
-          },
-          {
-            label: this.t("defaultPanelOpenLabel") || "默认展开面板",
-            type: "toggle",
-            value: this.settings.defaultPanelState,
-            onChange: (val) => {
-              this.settings.defaultPanelState = val;
-              this.saveSettings();
-            }
-          }
-        ]);
-        const themeSection = this.createSettingSection(this.t("themeSettingsSection") || "主题设置", [
-          {
-            label: this.t("themeDialogTitle") || "主题",
-            type: "button",
-            buttonText: this.t("openThemeSettings") || "打开主题设置",
-            onClick: () => {
-              this.openThemeSettingsModal();
-            }
-          }
-        ], { defaultExpanded: false });
-        const featureSection = this.createSettingSection(this.t("featureSettings") || "功能设置", [
-          {
-            label: this.t("showUserMessagesLabel") || "显示用户消息",
-            type: "toggle",
-            value: this.settings.outline?.showUserQueries !== false,
-            onChange: (val) => {
-              if (!this.settings.outline) this.settings.outline = {};
-              this.settings.outline.showUserQueries = val;
-              this.saveSettings();
-              if (this.currentTab === "outline") {
-                this.refreshOutline();
-              }
-            }
-          },
-          {
-            label: this.t("preventAutoScrollLabel") || "防止自动滚动",
-            type: "toggle",
-            value: this.settings.preventAutoScroll || false,
-            onChange: (val) => {
-              console.log("[ChatGPT Helper] 切换防止自动滚动:", val);
-              this.settings.preventAutoScroll = val;
-              this.saveSettings();
-              if (!this.scrollLockManager) {
-                console.log("[ChatGPT Helper] 创建新的 ScrollLockManager");
-                this.scrollLockManager = new ScrollLockManager(this.adapter);
-              }
-              console.log("[ChatGPT Helper] 设置 ScrollLockManager.enabled =", val);
-              this.scrollLockManager.setEnabled(val);
-              setTimeout(() => {
-                const actualEnabled = this.scrollLockManager?.enabled;
-                console.log("[ChatGPT Helper] 防止自动滚动状态:", {
-                  期望: val,
-                  实际: actualEnabled,
-                  一致: val === actualEnabled
-                });
-                if (val !== actualEnabled) {
-                  console.warn("[ChatGPT Helper] 警告：状态不一致！");
-                }
-              }, 100);
-              this.showToast(`${this.t(val ? "enabled" : "disabled")} ${this.t("preventAutoScrollLabel")}`);
-            }
-          },
-          {
-            label: this.t("tabPlaySoundLabel") || "播放通知声音",
-            type: "toggle",
-            value: this.settings.tabSettings?.notificationSound || false,
-            onChange: (val) => {
-              if (!this.settings.tabSettings) this.settings.tabSettings = {};
-              this.settings.tabSettings.notificationSound = val;
-              if (this.settings.tabSettings.notificationVolume == null) {
-                this.settings.tabSettings.notificationVolume = 0.5;
-              }
-              this.saveSettings();
-            }
-          },
-          {
-            label: this.t("tabVolumeLabel") || "通知音量（0.1-1.0）",
-            type: "number",
-            value: this.settings.tabSettings?.notificationVolume || 0.5,
-            min: 0.1,
-            max: 1,
-            step: 0.1,
-            onChange: (val) => {
-              if (!this.settings.tabSettings) this.settings.tabSettings = {};
-              let v = parseFloat(val);
-              if (isNaN(v)) v = 0.5;
-              v = Math.max(0.1, Math.min(1, v));
-              this.settings.tabSettings.notificationVolume = v;
-              this.saveSettings();
-            }
-          },
-          {
-            label: this.t("tabAutoFocusLabel") || "自动聚焦窗口",
-            type: "toggle",
-            value: this.settings.tabSettings?.autoFocus || false,
-            onChange: (val) => {
-              if (!this.settings.tabSettings) this.settings.tabSettings = {};
-              this.settings.tabSettings.autoFocus = val;
-              this.saveSettings();
-            }
-          }
-        ]);
-        const pageSection = this.createSettingSection(this.t("pageSettings") || "页面设置", [
-          {
-            label: this.t("limitPageWidthLabel") || "限制页面宽度",
-            type: "toggle",
-            value: this.settings.pageWidth?.enabled || false,
-            onChange: (val) => {
-              if (!this.settings.pageWidth) this.settings.pageWidth = { enabled: false, value: 1200, unit: "px" };
-              this.settings.pageWidth.enabled = val;
-              this.saveSettings();
-              if (this.widthStyleManager) {
-                this.widthStyleManager.updateConfig(this.settings.pageWidth);
-              }
-              this.showToast(`${this.t(val ? "enabled" : "disabled")} ${this.t("limitPageWidthLabel")}`);
-            }
-          },
-          {
-            label: this.t("pageWidthValueLabel") || "页面宽度值",
-            type: "number",
-            value: this.settings.pageWidth?.value || 1200,
-            onChange: (val) => {
-              if (!this.settings.pageWidth) this.settings.pageWidth = { enabled: false, value: 1200, unit: "px" };
-              this.settings.pageWidth.value = Math.max(800, Math.min(2e3, parseInt(val) || 1200));
-              this.saveSettings();
-              if (this.widthStyleManager && this.settings.pageWidth.enabled) {
-                this.widthStyleManager.updateConfig(this.settings.pageWidth);
-              }
-            }
-          },
-          {
-            label: this.t("pageWidthUnitLabel") || "宽度单位",
-            type: "select",
-            value: this.settings.pageWidth?.unit || "px",
-            options: [
-              { value: "px", label: "px" },
-              { value: "%", label: "%" },
-              { value: "rem", label: "rem" }
-            ],
-            onChange: (val) => {
-              if (!this.settings.pageWidth) this.settings.pageWidth = { enabled: false, value: 1200, unit: "px" };
-              this.settings.pageWidth.unit = val;
-              this.saveSettings();
-              if (this.widthStyleManager && this.settings.pageWidth.enabled) {
-                this.widthStyleManager.updateConfig(this.settings.pageWidth);
-              }
-            }
-          }
-        ]);
-        const collapsedContainer = createElement("div", {});
-        const collapsedBtnDesc = createElement("div", {
-          className: "chatgpt-helper-setting-item-desc",
-          style: "padding: 0 12px 8px 12px; margin-bottom: 4px;"
-        }, this.t("collapsedButtonsDesc") || "调整折叠面板按钮的显示顺序");
-        collapsedContainer.appendChild(collapsedBtnDesc);
-        const currentBtnOrder = this.settings.collapsedButtonsOrder || DEFAULT_COLLAPSED_BUTTONS_ORDER;
-        currentBtnOrder.forEach((btnConfig, index) => {
-          const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
-          if (!def) return;
-          const item = createElement("div", { className: "chatgpt-helper-setting-item" });
-          const info = createElement("div", { className: "chatgpt-helper-setting-item-info" });
+          return control;
+        };
+        const createCompactRow = (item) => {
+          const row = createElement("div", { className: "chatgpt-helper-settings-compact-row" });
           const label = createElement("div", {
-            className: "chatgpt-helper-setting-item-label",
-            style: "display: flex; align-items: center;"
+            className: "chatgpt-helper-settings-compact-label" + (item.desc ? " has-desc" : ""),
+            title: item.desc ? `${item.label} - ${item.desc}` : item.label
           });
-          const iconSpan = createElement("span", {
-            className: "chatgpt-helper-inline-icon-wrap",
-            style: "display: inline-flex; width: 24px; min-width: 24px; justify-content: center; align-items: center; margin-right: 6px;"
-          });
-          iconSpan.appendChild(createCollapsedButtonIconNode(def, {
-            size: 18,
-            className: "chatgpt-helper-inline-icon"
-          }));
-          const buttonLabel = def.labelKey ? this.t(def.labelKey) : def.label || "";
-          const textSpan = createElement("span", {}, buttonLabel);
-          label.appendChild(iconSpan);
-          label.appendChild(textSpan);
-          info.appendChild(label);
-          const controls = createElement("div", { className: "chatgpt-helper-setting-controls" });
-          if (def.canToggle) {
-            const toggle = createElement("div", {
-              className: "setting-toggle" + (btnConfig.enabled ? " active" : ""),
-              style: "transform: scale(0.8); margin-right: 12px;"
-            });
-            toggle.addEventListener("click", (e) => {
-              e.stopPropagation();
-              btnConfig.enabled = !btnConfig.enabled;
-              toggle.classList.toggle("active", btnConfig.enabled);
-              this.settings.collapsedButtonsOrder = currentBtnOrder;
-              this.saveSettings();
-              this.createCollapsedButtons();
-              this.showToast(btnConfig.enabled ? this.t("enabled") || "已启用" : this.t("disabled") || "已禁用");
-            });
-            controls.appendChild(toggle);
+          label.appendChild(createElement("div", {
+            className: "chatgpt-helper-settings-compact-label-text"
+          }, item.label));
+          if (item.desc) {
+            label.appendChild(createElement("div", {
+              className: "chatgpt-helper-settings-compact-desc"
+            }, item.desc));
           }
-          const upBtn = createElement("button", {
-            className: "prompt-panel-btn chatgpt-helper-order-btn",
-            title: this.t("moveUp") || "上移"
-          });
-          upBtn.appendChild(createSvgIconNode("arrowUp", { size: 15 }));
-          upBtn.disabled = index === 0;
-          const downBtn = createElement("button", {
-            className: "prompt-panel-btn chatgpt-helper-order-btn",
-            title: this.t("moveDown") || "下移"
-          });
-          downBtn.appendChild(createSvgIconNode("arrowDown", { size: 15 }));
-          downBtn.disabled = index === currentBtnOrder.length - 1;
-          [upBtn, downBtn].forEach((btn) => {
-            if (btn.disabled) {
-              btn.style.opacity = "0.4";
-              btn.style.cursor = "not-allowed";
+          row.appendChild(label);
+          const control = createCompactControl(item);
+          if (control) {
+            const controls = createElement("div", { className: "chatgpt-helper-settings-compact-controls" });
+            controls.appendChild(control);
+            row.appendChild(controls);
+          }
+          return row;
+        };
+        const createCompactSection = (title, items) => {
+          const section = createElement("section", { className: "chatgpt-helper-settings-compact-section" });
+          section.appendChild(createElement("div", { className: "chatgpt-helper-settings-compact-title" }, title));
+          const list = createElement("div", { className: "chatgpt-helper-settings-compact-list" });
+          items.filter(Boolean).forEach((item) => list.appendChild(createCompactRow(item)));
+          section.appendChild(list);
+          return section;
+        };
+        const defaultTabOrder = ["prompts", "outline", "conversations", "export"];
+        const getTabLabel = (tabId) => tabId === "prompts" ? this.t("tabPrompts") : tabId === "outline" ? this.t("tabOutline") : tabId === "conversations" ? this.t("tabConversations") : tabId === "export" ? this.t("tabExport") : tabId;
+        const createTabVisibilityItem = (tabId) => ({
+          label: getTabLabel(tabId),
+          type: "toggle",
+          value: this.settings.tabOrder?.includes(tabId) !== false,
+          onChange: (val) => {
+            if (!Array.isArray(this.settings.tabOrder) || this.settings.tabOrder.length === 0) {
+              this.settings.tabOrder = [...defaultTabOrder];
+            }
+            if (val) {
+              const next = [...this.settings.tabOrder, tabId].filter((id, index, arr) => defaultTabOrder.includes(id) && arr.indexOf(id) === index).sort((a, b) => defaultTabOrder.indexOf(a) - defaultTabOrder.indexOf(b));
+              this.settings.tabOrder = next;
             } else {
-              btn.style.opacity = "1";
-              btn.style.cursor = "pointer";
+              const next = this.settings.tabOrder.filter((id) => id !== tabId);
+              if (next.length === 0) {
+                this.showToast(this.t("operationFailed") || "Operation failed");
+                return false;
+              }
+              this.settings.tabOrder = next;
+              if (this.currentTab === tabId) {
+                this.currentTab = next[0];
+              }
             }
-          });
-          upBtn.addEventListener("click", () => {
-            if (index > 0) {
-              const newOrder = [...currentBtnOrder];
-              [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-              this.settings.collapsedButtonsOrder = newOrder;
-              this.saveSettings();
-              this.createCollapsedButtons();
-              this.showToast(this.t("buttonOrderUpdated") || "已更新按钮顺序");
-            }
-          });
-          downBtn.addEventListener("click", () => {
-            if (index < currentBtnOrder.length - 1) {
-              const newOrder = [...currentBtnOrder];
-              [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
-              this.settings.collapsedButtonsOrder = newOrder;
-              this.saveSettings();
-              this.createCollapsedButtons();
-              this.showToast(this.t("buttonOrderUpdated") || "已更新按钮顺序");
-            }
-          });
-          controls.appendChild(upBtn);
-          controls.appendChild(downBtn);
-          item.appendChild(info);
-          item.appendChild(controls);
-          collapsedContainer.appendChild(item);
+            this.saveSettings();
+            this.createUI();
+            return true;
+          }
         });
-        const collapsedSection = this.createCollapsibleSection(this.t("collapsedButtonsTitle") || "折叠按钮", collapsedContainer, { defaultExpanded: false });
-        const tabOrderSection = this.createSettingSection(this.t("tabOrderSettings") || "tab栏功能", [
-          {
-            label: this.t("tabPrompts") || "提示词",
-            type: "toggle",
-            value: this.settings.tabOrder?.includes("prompts") !== false,
-            onChange: (val) => {
-              if (!this.settings.tabOrder) this.settings.tabOrder = ["prompts", "outline", "conversations", "export"];
-              if (val && !this.settings.tabOrder.includes("prompts")) {
-                this.settings.tabOrder.push("prompts");
-              } else if (!val) {
-                this.settings.tabOrder = this.settings.tabOrder.filter((t2) => t2 !== "prompts");
-              }
+        const getQuickButtonOrder = () => {
+          const savedOrder = Array.isArray(this.settings.collapsedButtonsOrder) ? this.settings.collapsedButtonsOrder : [];
+          const orderedIds = Array.from(new Set(savedOrder.map((item) => item?.id).filter((id) => COLLAPSED_BUTTON_DEFS[id])));
+          DEFAULT_COLLAPSED_BUTTONS_ORDER.forEach((item) => {
+            if (!orderedIds.includes(item.id)) orderedIds.push(item.id);
+          });
+          return orderedIds.map((id) => ({ id, enabled: true }));
+        };
+        const createQuickButtonsSection = () => {
+          const section = createElement("section", { className: "chatgpt-helper-settings-compact-section" });
+          section.appendChild(createElement("div", {
+            className: "chatgpt-helper-settings-compact-title"
+          }, this.t("settingsGroupQuickButtons") || "Quick Buttons"));
+          const list = createElement("div", { className: "chatgpt-helper-settings-compact-list" });
+          const order = getQuickButtonOrder();
+          order.forEach((btnConfig, index) => {
+            const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
+            if (!def) return;
+            const row = createElement("div", {
+              className: "chatgpt-helper-settings-compact-row chatgpt-helper-settings-quick-button-row"
+            });
+            const label = createElement("div", {
+              className: "chatgpt-helper-settings-compact-label chatgpt-helper-settings-icon-label"
+            });
+            const icon = createElement("span", { className: "chatgpt-helper-inline-icon-wrap" });
+            icon.appendChild(createCollapsedButtonIconNode(def, {
+              size: 16,
+              className: "chatgpt-helper-inline-icon"
+            }));
+            label.appendChild(icon);
+            label.appendChild(createElement("span", {}, def.labelKey ? this.t(def.labelKey) : def.label || btnConfig.id));
+            const controls = createElement("div", { className: "chatgpt-helper-settings-compact-controls" });
+            const move = (delta) => {
+              const nextIndex = index + delta;
+              if (nextIndex < 0 || nextIndex >= order.length) return;
+              const nextOrder = [...order];
+              [nextOrder[index], nextOrder[nextIndex]] = [nextOrder[nextIndex], nextOrder[index]];
+              this.settings.collapsedButtonsOrder = nextOrder.map((item) => ({ id: item.id, enabled: true }));
               this.saveSettings();
-              this.createUI();
-            }
-          },
-          {
-            label: this.t("tabOutline") || "大纲",
-            type: "toggle",
-            value: this.settings.tabOrder?.includes("outline") !== false,
-            onChange: (val) => {
-              if (!this.settings.tabOrder) this.settings.tabOrder = ["prompts", "outline", "conversations", "export"];
-              if (val && !this.settings.tabOrder.includes("outline")) {
-                this.settings.tabOrder.push("outline");
-              } else if (!val) {
-                this.settings.tabOrder = this.settings.tabOrder.filter((t2) => t2 !== "outline");
+              this.createCollapsedButtons();
+              this.showToast(this.t("buttonOrderUpdated") || "Button order updated");
+              rerenderSettings();
+            };
+            const upBtn = createElement("button", {
+              className: "prompt-panel-btn chatgpt-helper-order-btn",
+              title: this.t("moveUp") || "Move Up",
+              type: "button"
+            });
+            upBtn.appendChild(createSvgIconNode("arrowUp", { size: 14 }));
+            upBtn.disabled = index === 0;
+            upBtn.addEventListener("click", () => move(-1));
+            const downBtn = createElement("button", {
+              className: "prompt-panel-btn chatgpt-helper-order-btn",
+              title: this.t("moveDown") || "Move Down",
+              type: "button"
+            });
+            downBtn.appendChild(createSvgIconNode("arrowDown", { size: 14 }));
+            downBtn.disabled = index === order.length - 1;
+            downBtn.addEventListener("click", () => move(1));
+            controls.appendChild(upBtn);
+            controls.appendChild(downBtn);
+            row.appendChild(label);
+            row.appendChild(controls);
+            list.appendChild(row);
+          });
+          section.appendChild(list);
+          return section;
+        };
+        const sections = [
+          createCompactSection(this.t("settingsGroupGeneral") || "General", [
+            {
+              label: this.t("themeDialogTitle") || "Theme",
+              type: "button",
+              buttonText: this.t("openThemeSettings") || "Open Theme Settings",
+              onClick: () => this.openThemeSettingsModal()
+            },
+            {
+              label: this.t("language") || "Interface Language",
+              type: "select",
+              value: languageValue,
+              options: [
+                { value: "auto", label: this.t("autoDetect") },
+                { value: "zh-CN", label: this.t("chinese") },
+                { value: "en", label: this.t("english") }
+              ],
+              onChange: (val) => {
+                window.GM_setValue(SETTING_KEYS.LANGUAGE, val);
+                setCurrentLang(val === "auto" ? detectLanguage() : val);
+                if (this.syncExporterLanguage) this.syncExporterLanguage();
+                this.lang = val;
+                this.selectedCategory = this.t("allCategory");
+                if (!window.GM_getValue(SETTING_KEYS.PROMPTS, null)) {
+                  this.prompts = createDefaultPrompts();
+                }
+                this.createUI();
+                this.showToast(this.t("languageChanged"));
               }
-              this.saveSettings();
-              this.createUI();
-            }
-          },
-          {
-            label: this.t("tabConversations") || "会话",
-            type: "toggle",
-            value: this.settings.tabOrder?.includes("conversations") !== false,
-            onChange: (val) => {
-              if (!this.settings.tabOrder) this.settings.tabOrder = ["prompts", "outline", "conversations", "export"];
-              if (val && !this.settings.tabOrder.includes("conversations")) {
-                this.settings.tabOrder.push("conversations");
-              } else if (!val) {
-                this.settings.tabOrder = this.settings.tabOrder.filter((t2) => t2 !== "conversations");
-              }
-              this.saveSettings();
-              this.createUI();
-            }
-          },
-          {
-            label: this.t("tabExport") || "导出",
-            type: "toggle",
-            value: this.settings.tabOrder?.includes("export") !== false,
-            onChange: (val) => {
-              if (!this.settings.tabOrder) this.settings.tabOrder = ["prompts", "outline", "conversations", "export"];
-              if (val && !this.settings.tabOrder.includes("export")) {
-                this.settings.tabOrder.push("export");
-              } else if (!val) {
-                this.settings.tabOrder = this.settings.tabOrder.filter((t2) => t2 !== "export");
-              }
-              this.saveSettings();
-              this.createUI();
-            }
-          }
-        ]);
-        const savedLanguagePreference = window.GM_getValue(SETTING_KEYS.LANGUAGE, "auto");
-        const languageValue = savedLanguagePreference === "auto" || I18N[savedLanguagePreference] ? savedLanguagePreference : "auto";
-        const languageSection = this.createSettingSection(t("languageSettings"), [
-          {
-            label: t("language"),
-            type: "select",
-            value: languageValue,
-            options: [
-              { value: "auto", label: t("autoDetect") },
-              { value: "zh-CN", label: t("chinese") },
-              { value: "en", label: t("english") }
-            ],
-            onChange: (val) => {
-              window.GM_setValue(SETTING_KEYS.LANGUAGE, val);
-              setCurrentLang(val === "auto" ? detectLanguage() : val);
-              if (this.syncExporterLanguage) {
-                this.syncExporterLanguage();
-              }
-              this.lang = val;
-              this.selectedCategory = this.t("allCategory");
-              if (!window.GM_getValue(SETTING_KEYS.PROMPTS, null)) {
-                this.prompts = createDefaultPrompts();
-              }
-              this.createUI();
-              this.showToast(this.t("languageChanged"));
-            }
-          }
-        ]);
-        const readingHistorySection = this.createSettingSection(this.t("readingHistory") || "阅读历史", [
-          {
-            label: this.t("enableReadingHistoryLabel") || "启用阅读历史",
-            type: "toggle",
-            value: this.settings.readingHistory?.persistence !== false,
-            onChange: (val) => {
-              if (!this.settings.readingHistory) this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
-              this.settings.readingHistory.persistence = val;
-              this.saveSettings();
-              if (val && this.readingProgressManager) {
-                this.readingProgressManager.startRecording();
-              }
-              this.showToast(`${this.t(val ? "enabled" : "disabled")} ${this.t("readingHistory")}`);
-            }
-          },
-          {
-            label: this.t("autoRestoreLabel") || "自动跳转",
-            type: "toggle",
-            value: this.settings.readingHistory?.autoRestore || false,
-            onChange: (val) => {
-              if (!this.settings.readingHistory) this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
-              this.settings.readingHistory.autoRestore = val;
-              this.saveSettings();
-              this.showToast(`${this.t(val ? "enabled" : "disabled")} ${this.t("autoRestoreLabel")}`);
-            }
-          },
-          {
-            label: this.t("historyDaysLabel") || "历史保留时间（天）",
-            type: "number",
-            value: this.settings.readingHistory?.cleanupDays || 30,
-            min: -1,
-            max: 365,
-            onChange: (val) => {
-              if (!this.settings.readingHistory) this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
-              this.settings.readingHistory.cleanupDays = parseInt(val) || 30;
-              this.saveSettings();
-              if (this.readingProgressManager) {
-                this.readingProgressManager.cleanup();
+            },
+            {
+              label: this.t("defaultPanelOpenLabel") || "Open Panel by Default",
+              type: "toggle",
+              value: this.settings.defaultPanelState,
+              onChange: (val) => {
+                this.settings.defaultPanelState = val;
+                this.saveSettings();
               }
             }
-          }
-        ]);
-        const outlineSettingsSection = this.createSettingSection(this.t("outlineSettings") || "大纲设置", [
-          {
-            label: this.t("autoUpdateOutlineLabel") || "对话期间自动更新大纲",
-            type: "toggle",
-            value: this.settings.outline?.autoUpdate !== false,
-            onChange: (val) => {
-              if (!this.settings.outline) this.settings.outline = {};
-              this.settings.outline.autoUpdate = val;
-              this.saveSettings();
-              if (this.outlineManager) {
-                this.outlineManager.updateAutoUpdateState();
+          ]),
+          createQuickButtonsSection(),
+          createCompactSection(this.t("settingsGroupReadingNavigation") || "Reading & Navigation", [
+            {
+              label: this.t("preventAutoScrollLabel") || "Prevent Auto Scroll",
+              desc: this.t("preventAutoScrollDesc") || "Keep the page from jumping to the latest reply while you are reading earlier content.",
+              type: "toggle",
+              value: this.settings.preventAutoScroll || false,
+              onChange: (val) => {
+                this.settings.preventAutoScroll = val;
+                this.saveSettings();
+                if (!this.scrollLockManager) {
+                  this.scrollLockManager = new ScrollLockManager(this.adapter);
+                }
+                this.scrollLockManager.setEnabled(val);
+                this.showToast(this.t(val ? "enabled" : "disabled") + " " + this.t("preventAutoScrollLabel"));
+              }
+            },
+            {
+              label: this.t("enableReadingHistoryLabel") || "Reading History",
+              desc: this.t("enableReadingHistoryDesc") || "Remember the last reading position for each conversation.",
+              type: "toggle",
+              value: this.settings.readingHistory?.persistence !== false,
+              onChange: (val) => {
+                const cfg = ensureReadingHistory();
+                cfg.persistence = val;
+                this.saveSettings();
+                if (val && this.readingProgressManager) this.readingProgressManager.startRecording();
+                this.showToast(this.t(val ? "enabled" : "disabled") + " " + this.t("readingHistory"));
+              }
+            },
+            {
+              label: this.t("autoRestoreLabel") || "Auto Restore Position",
+              desc: this.t("autoRestoreDesc") || "Open a conversation at the last remembered reading position.",
+              type: "toggle",
+              value: this.settings.readingHistory?.autoRestore || false,
+              onChange: (val) => {
+                const cfg = ensureReadingHistory();
+                cfg.autoRestore = val;
+                this.saveSettings();
+                this.showToast(this.t(val ? "enabled" : "disabled") + " " + this.t("autoRestoreLabel"));
+              }
+            },
+            {
+              label: this.t("showUserMessagesLabel") || "Show User Messages",
+              desc: this.t("showUserMessagesDesc") || "Include your questions as outline nodes.",
+              type: "toggle",
+              value: this.settings.outline?.showUserQueries !== false,
+              onChange: (val) => {
+                const cfg = ensureOutline();
+                cfg.showUserQueries = val;
+                this.saveSettings();
+                if (this.currentTab === "outline") this.refreshOutline();
+              }
+            },
+            {
+              label: this.t("outlineSyncScrollLabel") || "Outline Follows Reading Position",
+              desc: this.t("outlineSyncScrollDesc") || "Highlight the matching outline item as you scroll the conversation.",
+              type: "toggle",
+              value: this.settings.outline?.syncScroll !== false,
+              onChange: (val) => {
+                const cfg = ensureOutline();
+                cfg.syncScroll = val;
+                this.saveSettings();
+                if (this.outlineManager) this.outlineManager.updateSyncScrollState();
               }
             }
-          },
-          {
-            label: this.t("outlineIntervalLabel") || "更新检测间隔（秒）",
-            type: "number",
-            value: this.settings.outline?.updateInterval || 2,
-            min: 1,
-            max: 10,
-            onChange: (val) => {
-              if (!this.settings.outline) this.settings.outline = {};
-              this.settings.outline.updateInterval = Math.max(1, Math.min(10, parseInt(val) || 2));
-              this.saveSettings();
-            }
-          },
-          {
-            label: this.t("outlineSyncScrollLabel") || "同步滚动",
-            type: "toggle",
-            value: this.settings.outline?.syncScroll !== false,
-            onChange: (val) => {
-              if (!this.settings.outline) this.settings.outline = {};
-              this.settings.outline.syncScroll = val;
-              this.saveSettings();
-              if (this.outlineManager) {
-                this.outlineManager.updateSyncScrollState();
+          ]),
+          createCompactSection(this.t("settingsGroupContentProcessing") || "Content Processing", [
+            {
+              label: this.t("enableFormulaCopyLabel") || "Formula Copy",
+              type: "toggle",
+              value: this.settings.formulaCopy?.enabled !== false,
+              onChange: (val) => {
+                const cfg = ensureFormulaCopy();
+                cfg.enabled = val;
+                this.saveSettings();
+                if (this.copyManager) {
+                  if (val) this.copyManager.initFormulaCopy();
+                  else this.copyManager.destroyFormulaCopy();
+                }
               }
-            }
-          },
-          {
-            label: this.t("outlineMaxLevelLabel") || "最大标题层级",
-            type: "select",
-            value: this.settings.outline?.maxLevel || 6,
-            options: [
-              { value: 1, label: this.t("outlineLevelOnlyH1") },
-              { value: 2, label: "H1-H2" },
-              { value: 3, label: "H1-H3" },
-              { value: 4, label: "H1-H4" },
-              { value: 5, label: "H1-H5" },
-              { value: 6, label: this.t("outlineLevelAll") }
-            ],
-            onChange: (val) => {
-              if (!this.settings.outline) this.settings.outline = {};
-              this.settings.outline.maxLevel = parseInt(val) || 6;
-              this.saveSettings();
-              if (this.currentTab === "outline") {
-                this.refreshOutline();
-              }
-            }
-          }
-        ]);
-        const tabSettingsSection = this.createSettingSection(this.t("tabPageSettings") || "标签页设置", [
-          {
-            label: this.t("tabAutoRenameLabel") || "自动重命名标签页",
-            type: "toggle",
-            value: this.settings.tabSettings?.enabled !== false,
-            onChange: (val) => {
-              if (!this.settings.tabSettings) this.settings.tabSettings = {};
-              this.settings.tabSettings.enabled = val;
-              this.saveSettings();
-              if (this.tabRenameManager) {
-                if (val) {
-                  this.tabRenameManager.start();
-                } else {
-                  this.tabRenameManager.stop();
+            },
+            {
+              label: this.t("enableTableCopyLabel") || "Table Copy",
+              type: "toggle",
+              value: this.settings.tableCopy?.enabled !== false,
+              onChange: (val) => {
+                const cfg = ensureTableCopy();
+                cfg.enabled = val;
+                this.saveSettings();
+                if (this.copyManager) {
+                  if (val) this.copyManager.initTableCopy();
+                  else this.copyManager.destroyTableCopy();
                 }
               }
             }
-          },
-          {
-            label: this.t("tabRenameIntervalLabel") || "重命名检测间隔（秒）",
-            type: "number",
-            value: this.settings.tabSettings?.renameInterval || 3,
-            min: 1,
-            max: 60,
-            onChange: (val) => {
-              if (!this.settings.tabSettings) this.settings.tabSettings = {};
-              this.settings.tabSettings.renameInterval = Math.max(1, Math.min(60, parseInt(val) || 3));
-              this.saveSettings();
-              if (this.tabRenameManager) {
-                this.tabRenameManager.restartInterval();
+          ]),
+          createCompactSection(this.t("settingsGroupTabPrivacy") || "Tabs & Privacy", [
+            createTabVisibilityItem("prompts"),
+            createTabVisibilityItem("outline"),
+            createTabVisibilityItem("conversations"),
+            createTabVisibilityItem("export"),
+            {
+              label: this.t("tabAutoRenameLabel") || "Auto Rename Tab",
+              type: "toggle",
+              value: tabSettings.enabled !== false,
+              onChange: (val) => {
+                const cfg = ensureTabSettings();
+                cfg.enabled = val;
+                this.saveSettings();
+                if (this.tabRenameManager) {
+                  if (val) this.tabRenameManager.start();
+                  else this.tabRenameManager.stop();
+                }
               }
-            }
-          },
-          {
-            label: this.t("tabShowStatusLabel") || "显示生成状态",
-            type: "toggle",
-            value: this.settings.tabSettings?.showStatus !== false,
-            onChange: (val) => {
-              if (!this.settings.tabSettings) this.settings.tabSettings = {};
-              this.settings.tabSettings.showStatus = val;
-              this.saveSettings();
-              if (this.tabRenameManager) {
-                this.tabRenameManager.updateTabName(true);
+            },
+            {
+              label: this.t("tabShowStatusLabel") || "Show Generation Status",
+              type: "toggle",
+              value: tabSettings.showStatus !== false,
+              onChange: (val) => {
+                const cfg = ensureTabSettings();
+                cfg.showStatus = val;
+                this.saveSettings();
+                if (this.tabRenameManager) this.tabRenameManager.updateTabName(true);
               }
-            }
-          },
-          {
-            label: this.t("tabPrivacyModeLabel") || "隐私模式",
-            type: "toggle",
-            value: this.settings.tabSettings?.privacyMode || false,
-            onChange: (val) => {
-              if (!this.settings.tabSettings) this.settings.tabSettings = {};
-              this.settings.tabSettings.privacyMode = val;
-              this.saveSettings();
-              if (this.tabRenameManager) {
-                this.tabRenameManager.updateTabName(true);
+            },
+            {
+              label: this.t("tabPlaySoundLabel") || "Play Notification Sound",
+              type: "toggle",
+              value: tabSettings.notificationSound || false,
+              onChange: (val) => {
+                const cfg = ensureTabSettings();
+                cfg.notificationSound = val;
+                if (cfg.notificationVolume == null) cfg.notificationVolume = 0.5;
+                this.saveSettings();
+                if (this.tabRenameManager) {
+                  if (val) this.tabRenameManager.ensureNotificationAudioUnlock();
+                  else this.tabRenameManager.teardownNotificationAudioUnlock();
+                }
+                rerenderSettings();
               }
-            }
-          },
-          {
-            label: this.t("tabPrivacyTitleLabel") || "隐私模式标题",
-            type: "text",
-            value: this.settings.tabSettings?.privacyTitle || "ChatGPT",
-            onChange: (val) => {
-              if (!this.settings.tabSettings) this.settings.tabSettings = {};
-              this.settings.tabSettings.privacyTitle = val || "ChatGPT";
-              this.saveSettings();
-              if (this.tabRenameManager) {
-                this.tabRenameManager.updateTabName(true);
+            },
+            tabSettings.notificationSound ? {
+              label: this.t("tabVolumeLabel") || "Notification Volume",
+              type: "number",
+              value: tabSettings.notificationVolume || 0.5,
+              min: 0.1,
+              max: 1,
+              step: 0.1,
+              onChange: (val) => {
+                const cfg = ensureTabSettings();
+                let volume = parseFloat(val);
+                if (isNaN(volume)) volume = 0.5;
+                cfg.notificationVolume = Math.max(0.1, Math.min(1, volume));
+                this.saveSettings();
               }
-            }
-          }
-        ]);
-        const copySettingsSection = this.createSettingSection(this.t("copySettings") || "复制功能", [
-          {
-            label: this.t("enableFormulaCopyLabel") || "启用公式复制",
-            type: "toggle",
-            value: this.settings.formulaCopy?.enabled !== false,
-            onChange: (val) => {
-              if (!this.settings.formulaCopy) this.settings.formulaCopy = { enabled: true, delimiterEnabled: true };
-              this.settings.formulaCopy.enabled = val;
-              this.saveSettings();
-              if (this.copyManager && val) {
-                this.copyManager.init();
+            } : null,
+            {
+              label: this.t("tabPrivacyModeLabel") || "Privacy Mode",
+              type: "toggle",
+              value: tabSettings.privacyMode || false,
+              onChange: (val) => {
+                const cfg = ensureTabSettings();
+                cfg.privacyMode = val;
+                this.saveSettings();
+                if (this.tabRenameManager) this.tabRenameManager.updateTabName(true);
+                rerenderSettings();
               }
-            }
-          },
-          {
-            label: this.t("formulaDelimiterLabel") || "公式使用 LaTeX 分隔符（$ / $$）",
-            type: "toggle",
-            value: this.settings.formulaCopy?.delimiterEnabled !== false,
-            onChange: (val) => {
-              if (!this.settings.formulaCopy) this.settings.formulaCopy = { enabled: true, delimiterEnabled: true };
-              this.settings.formulaCopy.delimiterEnabled = val;
-              this.saveSettings();
-            }
-          },
-          {
-            label: this.t("enableTableCopyLabel") || "启用表格复制",
-            type: "toggle",
-            value: this.settings.tableCopy?.enabled !== false,
-            onChange: (val) => {
-              if (!this.settings.tableCopy) this.settings.tableCopy = { enabled: true };
-              this.settings.tableCopy.enabled = val;
-              this.saveSettings();
-              if (this.copyManager && val) {
-                this.copyManager.init();
+            },
+            tabSettings.privacyMode ? {
+              label: this.t("tabPrivacyTitleLabel") || "Privacy Title",
+              type: "text",
+              value: tabSettings.privacyTitle || "ChatGPT",
+              onChange: (val) => {
+                const cfg = ensureTabSettings();
+                cfg.privacyTitle = val || "ChatGPT";
+                this.saveSettings();
+                if (this.tabRenameManager) this.tabRenameManager.updateTabName(true);
               }
-            }
-          }
-        ]);
-        settingsContent.appendChild(panelSection);
-        settingsContent.appendChild(themeSection);
-        settingsContent.appendChild(featureSection);
-        settingsContent.appendChild(pageSection);
-        settingsContent.appendChild(collapsedSection);
-        settingsContent.appendChild(tabOrderSection);
-        settingsContent.appendChild(languageSection);
-        settingsContent.appendChild(readingHistorySection);
-        settingsContent.appendChild(outlineSettingsSection);
-        settingsContent.appendChild(tabSettingsSection);
-        settingsContent.appendChild(copySettingsSection);
+            } : null
+          ])
+        ];
+        sections.forEach((section) => settingsContent.appendChild(section));
         const aboutFooter = createElement("div", {
           className: "chatgpt-helper-settings-footer"
         });
@@ -17226,7 +17227,7 @@
         aboutBtn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          this.openAboutModal();
+          this.openAboutModal(e.currentTarget);
         });
         aboutFooter.appendChild(aboutBtn);
         settingsContent.appendChild(aboutFooter);
@@ -17590,16 +17591,16 @@
           btnGroup.classList.add("hidden");
           btnGroup.classList.remove("collapsed");
         }
-        const btnOrder = this.settings.collapsedButtonsOrder || DEFAULT_COLLAPSED_BUTTONS_ORDER;
+        const savedOrder = Array.isArray(this.settings.collapsedButtonsOrder) ? this.settings.collapsedButtonsOrder : [];
+        const orderedIds = Array.from(new Set(savedOrder.map((item) => item?.id).filter((id) => COLLAPSED_BUTTON_DEFS[id])));
+        DEFAULT_COLLAPSED_BUTTONS_ORDER.forEach((item) => {
+          if (!orderedIds.includes(item.id)) orderedIds.push(item.id);
+        });
+        const btnOrder = orderedIds.map((id) => ({ id, enabled: true }));
         const quickButtons = {};
         btnOrder.forEach((btnConfig, index) => {
           const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
           if (!def) return;
-          if (btnConfig.id === "anchor" && this.settings.anchorEnabled === false) return;
-          if (btnConfig.id === "theme" && this.settings.themeEnabled === false) return;
-          if (btnConfig.id === "manualAnchor" && this.settings.manualAnchorEnabled === false) return;
-          const isEnabled = def.canToggle ? btnConfig.enabled !== false : true;
-          if (!isEnabled) return;
           if (index > 0 && def.isPanelOnly && !COLLAPSED_BUTTON_DEFS[btnOrder[index - 1].id]?.isPanelOnly) {
             btnGroup.appendChild(createElement("div", { className: "chatgpt-helper-btn-divider" }));
           }

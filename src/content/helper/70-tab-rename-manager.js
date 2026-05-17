@@ -83,26 +83,21 @@
             this.isRunning = false;
             this.aiState = 'idle'; // 'idle' | 'generating' | 'completed'
             this.lastAiState = 'idle';
-            this.userSawCompletion = false;
             this.notificationAudioContext = null;
             this.notificationAudioUnlocked = false;
             this.pendingNotificationTone = false;
             this.notificationUnlockHandler = null;
-            this.visibilityChangeHandler = null;
         }
 
         start() {
             if (this.isRunning) return;
             this.isRunning = true;
             this.updateTabName();
-            this.ensureNotificationAudioUnlock();
-
-            if (!this.visibilityChangeHandler) {
-                this.visibilityChangeHandler = () => this.onVisibilityChange();
+            if (this.settings.tabSettings?.notificationSound) {
+                this.ensureNotificationAudioUnlock();
             }
-            document.addEventListener('visibilitychange', this.visibilityChangeHandler);
 
-            const intervalMs = (this.settings.tabSettings?.renameInterval || 3) * 1000;
+            const intervalMs = 3000;
             this.intervalId = setInterval(() => this.updateTabName(), intervalMs);
 
             this.startGenerationObserver();
@@ -122,16 +117,13 @@
                 this.generationObserver = null;
             }
 
-            if (this.visibilityChangeHandler) {
-                document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
-            }
             this.teardownNotificationAudioUnlock();
         }
 
         restartInterval() {
             if (this.isRunning && this.intervalId) {
                 clearInterval(this.intervalId);
-                const intervalMs = (this.settings.tabSettings?.renameInterval || 3) * 1000;
+                const intervalMs = 3000;
                 this.intervalId = setInterval(() => this.updateTabName(), intervalMs);
             }
         }
@@ -159,52 +151,19 @@
             }
         }
 
-        onVisibilityChange() {
-            if (this.aiState === 'generating' && !this.adapter.isGenerating()) {
-                this.userSawCompletion = true;
-            }
-        }
-
         onAiComplete() {
             const wasGenerating = this.aiState === 'generating';
             this.aiState = 'completed';
-
             if (wasGenerating) {
                 this.sendCompletionNotification();
             }
-
-            this.userSawCompletion = false;
             this.updateTabName(true);
         }
 
         sendCompletionNotification() {
             const tabSettings = this.settings.tabSettings || {};
-
             if (tabSettings.notificationSound) {
                 void this.playNotificationSound(tabSettings.notificationVolume || 0.5);
-            }
-
-            if (tabSettings.autoFocus) {
-                try {
-                    if (window.focus) {
-                        window.focus();
-                    }
-                    setTimeout(() => {
-                        try {
-                            if (window.focus) {
-                                window.focus();
-                            }
-                        } catch (e) {
-                        }
-                    }, 100);
-                    if (window.top && window.top !== window && window.top.focus) {
-                        try {
-                            window.top.focus();
-                        } catch (e) {
-                        }
-                    }
-                } catch (e) {
-                }
             }
         }
 
@@ -213,9 +172,8 @@
             this.notificationUnlockHandler = () => {
                 void this.unlockNotificationAudio().then((unlocked) => {
                     if (unlocked && this.pendingNotificationTone) {
-                        const volume = this.settings.tabSettings?.notificationVolume || 0.5;
                         this.pendingNotificationTone = false;
-                        void this.playNotificationSound(volume);
+                        void this.playNotificationSound(this.settings.tabSettings?.notificationVolume || 0.5);
                     }
                 });
             };
@@ -240,7 +198,7 @@
                 this.notificationAudioContext = new AudioCtx();
                 return this.notificationAudioContext;
             } catch (e) {
-                console.warn('[ChatGPT Helper] 创建 AudioContext 失败:', e);
+                console.warn('[ChatGPT Helper] Failed to create AudioContext:', e);
                 return null;
             }
         }
@@ -270,7 +228,7 @@
                 }
                 return this.notificationAudioUnlocked;
             } catch (e) {
-                console.warn('[ChatGPT Helper] 解锁通知音失败:', e);
+                console.warn('[ChatGPT Helper] Failed to unlock notification sound:', e);
                 return false;
             }
         }
@@ -316,7 +274,7 @@
                 this.pendingNotificationTone = false;
                 return true;
             } catch (e) {
-                console.warn('[ChatGPT Helper] 播放通知音失败:', e);
+                console.warn('[ChatGPT Helper] Failed to play notification sound:', e);
                 this.pendingNotificationTone = true;
                 return false;
             }
@@ -342,13 +300,14 @@
             // 获取会话名称
             const sessionName = this.getCleanSessionName(tabSettings);
 
-            // 检查生成状态
             const isGenerating = this.isGenerating();
-
-            // 构建标题
-            const statusPrefix = tabSettings.showStatus !== false ? (isGenerating ? '⏳ ' : '✅ ') : '';
+            const statusPrefix = tabSettings.showStatus !== false
+                ? (isGenerating ? '\u23f3 ' : '\u2705 ')
+                : '';
             const format = tabSettings.titleFormat || '{status}{title}';
-            const modelName = format.includes('{model}') ? (this.adapter.getModelName ? this.adapter.getModelName() : '') : '';
+            const modelName = format.includes('{model}') && this.adapter.getModelName
+                ? this.adapter.getModelName()
+                : '';
 
             let finalTitle = format
                 .replace('{status}', statusPrefix)
@@ -373,6 +332,7 @@
             // 检测污染
             const isPolluted = (name) => {
                 if (!name) return false;
+                if (/^(?:\u23f3|\u2705)\s*/u.test(name)) return true;
                 if (/^[⏳✅]/.test(name)) return true;
                 if (/\[[\w\s.]+\]/.test(name)) return true;
                 if (name === (tabSettings.privacyTitle || 'ChatGPT')) return true;

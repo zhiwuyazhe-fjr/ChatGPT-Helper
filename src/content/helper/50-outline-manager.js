@@ -1377,11 +1377,6 @@
         // 设置层级
         setLevel(level) {
             this.state.expandLevel = level;
-            // 更新外部设置
-            if (this.settings.outline) {
-                this.settings.outline.maxLevel = level;
-                if (this.onSettingsChange) this.onSettingsChange();
-            }
 
             // 清除强制展开状态
             if (this.state.tree) {

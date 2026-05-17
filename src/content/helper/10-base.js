@@ -122,15 +122,12 @@
             noContent: '未找到对话内容',
             openFirst: '请先打开会话',
             settingsTitle: '设置',
-            panelSettings: '面板设置',
-            featureSettings: '功能设置',
             readingHistory: '阅读历史',
-            anchorSettings: '锚点设置',
-            copySettings: '复制功能',
-            tabFunctionSettings: 'tab栏功能',
-            tabOrderSettings: 'tab栏功能',
-            tabPageSettings: '标签页设置',
-            languageSettings: '语言设置',
+            settingsGroupGeneral: '通用',
+            settingsGroupReadingNavigation: '阅读与导航',
+            settingsGroupContentProcessing: '内容处理',
+            settingsGroupTabPrivacy: '标签页与隐私',
+            settingsGroupQuickButtons: '快捷按钮',
             language: '界面语言',
             autoDetect: '自动检测',
             chinese: '简体中文',
@@ -153,15 +150,9 @@
             returnAnchorFailed: '返回锚点失败',
             scrolledTop: '已滚动到顶部',
             scrolledBottom: '已滚动到底部',
-            panelWidthUpdated: '已更新面板宽度，刷新页面生效',
-            notificationPermissionDenied: '通知权限已被拒绝，请在浏览器设置中允许通知',
-            notificationPermissionGranted: '通知权限已授予',
-            notificationPermissionRejected: '通知权限被拒绝',
-            notificationPermissionFailed: '请求通知权限失败',
             exportModuleLoadFailed: '导出模块加载失败，请检查 ChatGPT Exporter 脚本是否正常运行。',
             exportModuleMissing: '未检测到 ChatGPT Exporter，请确保扩展已正确加载。',
             operationFailed: '操作失败',
-            themeSettingsSection: '主题设置',
             openThemeSettings: '打开主题设置',
             themeDialogTitle: '主题',
             themeAppearance: '外观',
@@ -195,19 +186,19 @@
             aboutButton: '关于',
             aboutTopEntryTitle: '关于',
             aboutDialogTitle: '关于 ChatGPT Helper',
-            aboutTagline: '为重度 ChatGPT 使用者打造的高效增强工作台',
-            aboutMotivationTitle: '😘 开发动机',
-            aboutMotivationContent: '这不仅仅是一个插件，更是一位 TJU 计算机学生对极致体验的追求。作为 ChatGPT 的重度使用者，我亲手打造了这个工具包，只为消除那些恼人的小摩擦。愿它能陪你翻过琐碎的深山，去看见真正重要的奇思妙想。',
-            aboutFeedbackTitle: '💬 反馈',
+            aboutTagline: '贴近 ChatGPT 的轻量效率面板',
+            aboutMotivationTitle: '开发动机',
+            aboutMotivationContent: '作为长期使用 ChatGPT 的 TJU 计算机学生，我把常用的提示词、导航、整理和导出需求做成一个轻量工具。它来自真实使用中的反复打磨，目标是减少切换和整理成本，让注意力留在对话本身。',
+            aboutFeedbackTitle: '反馈',
             aboutFeatureRequest: '功能建议',
-            aboutBugSupport: '问题反馈 / 支持',
-            aboutOpenSourceTitle: '🌱 开源项目',
-            aboutSupportTitle: '💕 支持项目',
-            aboutSupportContent: 'ChatGPT Helper的成长，离不开你的每一次高效交互。如果它曾为你节省过一分钟，或带来过一次惊喜，请考虑支持它的未来。每一份认可，都是我继续敲下下一行代码的动力💕',
+            aboutBugSupport: '提交反馈',
+            aboutOpenSourceTitle: '项目信息',
+            aboutSupportTitle: '分享项目',
+            aboutSupportContent: '如果 ChatGPT Helper 对你的工作流有帮助，可以把仓库分享给需要的人，或在 GitHub 上留下建议。',
             aboutShare: '分享给朋友',
-            aboutAuthorTitle: '👨‍💻 关于作者',
-            aboutAuthorBio: '📍 TJU | CS 在读\n🚀 AI 探索者 | 预备役创业者\n✨ Elon Musk 信徒',
-            aboutFooterNote: '多平台兼容 · 本地解析零上传 · 重度 ChatGPT 玩家的效率工具包',
+            aboutAuthorTitle: '关于作者',
+            aboutAuthorBio: 'TJU | CS 在读\nAI 工具探索者\n长期 ChatGPT 使用者',
+            aboutFooterNote: '兼容 chatgpt.com 与 chat.openai.com · 本地设置与解析 · 面向高频工作流',
             aboutRepoButton: 'GitHub 仓库',
             aboutRepoLabel: '项目仓库',
             aboutAuthorGithub: '作者 GitHub',
@@ -218,7 +209,7 @@
             aboutVersionLabel: '版本',
             aboutAuthorLabel: '作者',
             aboutLicenseLabel: '许可证',
-            aboutPoweredBy: '为专注的 ChatGPT 工作流打造❤️',
+            aboutPoweredBy: '为专注的 ChatGPT 工作流打造',
             aboutIntroTitle: '项目简介',
             aboutIntro: 'ChatGPT Helper 通过右侧功能面板为 ChatGPT 提供提示词管理、对话大纲、会话整理、导出与阅读定位等增强能力，尽量保持原页面结构不被打断。',
             aboutFeaturesTitle: '核心能力',
@@ -226,46 +217,34 @@
             aboutFeatureOutline: '自动生成对话大纲与导航',
             aboutFeatureConversations: '历史会话整理与批量管理',
             aboutFeatureExport: '多格式导出与阅读定位增强',
+            aboutSitesLabel: '站点',
             aboutSupportSites: '支持 chatgpt.com、chat.openai.com 与 new.oaifree.com',
             aboutPrivacyTitle: '隐私与权限',
-            aboutPrivacy: '所有设置与数据处理均在本地浏览器完成；扩展使用 storage 保存配置，notifications 仅用于完成提醒，不会上传对话内容。',
-            pageSettings: '页面设置',
-            outlineSettings: '大纲设置',
+            aboutPrivacy: '所有设置与数据处理均在本地浏览器完成；扩展使用 storage 保存本地配置，不会上传对话内容。',
             searchConversations: '搜索会话...',
             selectConversationsFirst: '请先选择要操作的会话',
-            panelWidthLabel: '面板宽度',
             defaultPanelOpenLabel: '默认展开面板',
             enablePromptsLabel: '启用提示词',
             enableOutlineLabel: '启用大纲',
             showUserMessagesLabel: '显示用户消息',
             enableConversationsLabel: '启用会话管理',
             preventAutoScrollLabel: '防止自动滚动',
-            limitPageWidthLabel: '限制页面宽度',
-            pageWidthValueLabel: '页面宽度值',
-            pageWidthUnitLabel: '宽度单位',
-            collapsedButtonsDesc: '调整折叠面板按钮的显示顺序',
-            collapsedButtonsTitle: '折叠按钮',
+            preventAutoScrollDesc: '阅读前文时，不让页面跳到最新回复',
             enableReadingHistoryLabel: '启用阅读历史',
+            enableReadingHistoryDesc: '记住每个会话上次读到的位置',
             autoRestoreLabel: '自动跳转',
-            historyDaysLabel: '历史保留时间（天）',
-            autoUpdateOutlineLabel: '对话期间自动更新大纲',
-            outlineIntervalLabel: '更新检测间隔（秒）',
-            outlineSyncScrollLabel: '同步滚动',
-            outlineMaxLevelLabel: '最大标题层级',
-            outlineLevelOnlyH1: '仅 H1',
-            outlineLevelAll: 'H1-H6（全部）',
+            autoRestoreDesc: '打开会话时回到上次阅读位置',
+            outlineSyncScrollLabel: '大纲跟随阅读位置',
+            outlineSyncScrollDesc: '滚动正文时，高亮对应的大纲条目',
+            showUserMessagesDesc: '在大纲中把你的提问也作为节点',
+            tabVisibilityLabel: 'Tab 显示',
             tabAutoRenameLabel: '自动重命名标签页',
-            tabRenameIntervalLabel: '重命名检测间隔（秒）',
             tabShowStatusLabel: '显示生成状态',
-            tabDesktopNotifyLabel: '发送桌面通知',
             tabPlaySoundLabel: '播放通知声音',
-            tabVolumeLabel: '通知音量（0.1-1.0）',
-            tabNotifyWhenFocusedLabel: '前台时也通知',
-            tabAutoFocusLabel: '自动聚焦窗口',
+            tabVolumeLabel: '通知音量',
             tabPrivacyModeLabel: '隐私模式',
             tabPrivacyTitleLabel: '隐私模式标题',
             enableFormulaCopyLabel: '启用公式复制',
-            formulaDelimiterLabel: '公式使用 LaTeX 分隔符（$ / $$）',
             enableTableCopyLabel: '启用表格复制',
             // 大纲相关文案
             outlineEmpty: '暂无大纲',
@@ -400,15 +379,12 @@
             noContent: 'No conversation content found',
             openFirst: 'Please open the conversation first',
             settingsTitle: 'Settings',
-            panelSettings: 'Panel Settings',
-            featureSettings: 'Feature Settings',
             readingHistory: 'Reading History',
-            anchorSettings: 'Anchor Settings',
-            copySettings: 'Copy Features',
-            tabFunctionSettings: 'Tab Settings',
-            tabOrderSettings: 'Tab Functions',
-            tabPageSettings: 'Tab Settings',
-            languageSettings: 'Language Settings',
+            settingsGroupGeneral: 'General',
+            settingsGroupReadingNavigation: 'Reading & Navigation',
+            settingsGroupContentProcessing: 'Content Processing',
+            settingsGroupTabPrivacy: 'Tabs & Privacy',
+            settingsGroupQuickButtons: 'Quick Buttons',
             language: 'Interface Language',
             autoDetect: 'Auto Detect',
             chinese: '简体中文',
@@ -430,15 +406,9 @@
             returnAnchorFailed: 'Failed to return to anchor',
             scrolledTop: 'Scrolled to top',
             scrolledBottom: 'Scrolled to bottom',
-            panelWidthUpdated: 'Panel width updated. Refresh the page to apply it.',
-            notificationPermissionDenied: 'Notification permission was denied. Allow notifications in browser settings.',
-            notificationPermissionGranted: 'Notification permission granted',
-            notificationPermissionRejected: 'Notification permission denied',
-            notificationPermissionFailed: 'Failed to request notification permission',
             exportModuleLoadFailed: 'Export module failed to load. Check whether the ChatGPT Exporter script is running.',
             exportModuleMissing: 'ChatGPT Exporter was not detected. Make sure the extension loaded correctly.',
             operationFailed: 'Operation failed',
-            themeSettingsSection: 'Theme Settings',
             openThemeSettings: 'Open Theme Settings',
             themeDialogTitle: 'Theme',
             themeAppearance: 'Appearance',
@@ -473,17 +443,17 @@
             aboutTopEntryTitle: 'About',
             aboutDialogTitle: 'About ChatGPT Helper',
             aboutTagline: 'A focused productivity layer designed for heavy ChatGPT users',
-            aboutMotivationTitle: '😘 Motivation',
-            aboutMotivationContent: '😘This is more than just an extension. It is one TJU computer science student\'s pursuit of a smoother, more delightful ChatGPT experience. As a heavy ChatGPT user, I built this toolkit by hand to remove the tiny frictions that keep interrupting real thinking. I hope it helps you get past the busy clutter and spend more time on ideas that truly matter.',
-            aboutFeedbackTitle: '💬 Feedback',
+            aboutMotivationTitle: 'Motivation',
+            aboutMotivationContent: 'I built ChatGPT Helper as a TJU computer science student and long-time ChatGPT user. It gathers the prompt, navigation, organization, export, and reading-position tools I kept needing in daily work, with the goal of reducing switching costs and keeping attention on the conversation.',
+            aboutFeedbackTitle: 'Feedback',
             aboutFeatureRequest: 'Feature Request',
-            aboutBugSupport: 'Bug Report / Support',
-            aboutOpenSourceTitle: '🌱 Open Source',
-            aboutSupportTitle: '💕 Support the Project',
-            aboutSupportContent: 'The growth of ChatGPT Helper comes from every efficient interaction you have with it. If it has ever saved you a minute or brought you a small surprise, please consider supporting its future. Every bit of recognition is fuel for the next line of code. 💕',
+            aboutBugSupport: 'Submit Feedback',
+            aboutOpenSourceTitle: 'Project Info',
+            aboutSupportTitle: 'Share the Project',
+            aboutSupportContent: 'If ChatGPT Helper fits your workflow, share the repository with someone who may need it, or leave feedback on GitHub.',
             aboutShare: 'Share with Friends',
-            aboutAuthorTitle: '👨‍💻 About the Author',
-            aboutAuthorBio: '📍 TJU | CS 在读\n🚀 AI 探索者 | 预备役创业者\n✨ Elon Musk 信徒',
+            aboutAuthorTitle: 'About the Author',
+            aboutAuthorBio: 'TJU | Computer Science student\nAI tool builder\nLong-time ChatGPT user',
             aboutFooterNote: 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com · Local-first, no conversation uploads',
             aboutRepoButton: 'GitHub Repository',
             aboutRepoLabel: 'Repository',
@@ -503,46 +473,34 @@
             aboutFeatureOutline: 'Automatic outline generation and navigation',
             aboutFeatureConversations: 'Conversation organization and batch actions',
             aboutFeatureExport: 'Multi-format export and reading-position tools',
+            aboutSitesLabel: 'Sites',
             aboutSupportSites: 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com',
             aboutPrivacyTitle: 'Privacy & Permissions',
-            aboutPrivacy: 'All settings and data processing stay in your browser. The extension uses storage for local preferences and notifications only for completion alerts.',
-            pageSettings: 'Page Settings',
-            outlineSettings: 'Outline Settings',
+            aboutPrivacy: 'All settings and data processing stay in your browser. The extension uses storage for local preferences and does not upload conversation content.',
             searchConversations: 'Search conversations...',
             selectConversationsFirst: 'Please select conversations first',
-            panelWidthLabel: 'Panel Width',
             defaultPanelOpenLabel: 'Open Panel by Default',
             enablePromptsLabel: 'Prompts',
             enableOutlineLabel: 'Outline',
             showUserMessagesLabel: 'Show User Messages',
             enableConversationsLabel: 'Conversation Manager',
             preventAutoScrollLabel: 'Prevent Auto Scroll',
-            limitPageWidthLabel: 'Limit Page Width',
-            pageWidthValueLabel: 'Page Width Value',
-            pageWidthUnitLabel: 'Width Unit',
-            collapsedButtonsDesc: 'Adjust the order of collapsed panel buttons',
-            collapsedButtonsTitle: 'Collapsed Buttons',
+            preventAutoScrollDesc: 'Stop the page from jumping to the newest reply while you read earlier content',
             enableReadingHistoryLabel: 'Reading History',
+            enableReadingHistoryDesc: 'Remember the last reading position in each conversation',
             autoRestoreLabel: 'Auto Restore Position',
-            historyDaysLabel: 'History Retention Days',
-            autoUpdateOutlineLabel: 'Auto Update Outline During Conversation',
-            outlineIntervalLabel: 'Update Interval (seconds)',
-            outlineSyncScrollLabel: 'Sync Scroll',
-            outlineMaxLevelLabel: 'Max Heading Level',
-            outlineLevelOnlyH1: 'H1 only',
-            outlineLevelAll: 'H1-H6 (All)',
+            autoRestoreDesc: 'Open conversations at the last remembered reading position',
+            outlineSyncScrollLabel: 'Outline Follows Reading Position',
+            outlineSyncScrollDesc: 'Highlight the matching outline item while you scroll the conversation',
+            showUserMessagesDesc: 'Include your questions as outline nodes',
+            tabVisibilityLabel: 'Tab Visibility',
             tabAutoRenameLabel: 'Auto Rename Tab',
-            tabRenameIntervalLabel: 'Rename Check Interval (seconds)',
             tabShowStatusLabel: 'Show Generation Status',
-            tabDesktopNotifyLabel: 'Desktop Notification',
             tabPlaySoundLabel: 'Play Notification Sound',
-            tabVolumeLabel: 'Notification Volume (0.1–1.0)',
-            tabNotifyWhenFocusedLabel: 'Notify Even When Tab is Focused',
-            tabAutoFocusLabel: 'Auto Focus Window',
+            tabVolumeLabel: 'Notification Volume',
             tabPrivacyModeLabel: 'Privacy Mode',
             tabPrivacyTitleLabel: 'Privacy Mode Title',
             enableFormulaCopyLabel: 'Formula Copy',
-            formulaDelimiterLabel: 'Use LaTeX Delimiters ($ / $$)',
             enableTableCopyLabel: 'Table Copy',
             languageChanged: 'Language changed',
             // Outline related
@@ -675,6 +633,10 @@
     const ISSUE_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper/issues/new';
     const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
     const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
+    const EXTENSION_NAME = 'ChatGPT Helper';
+    const EXTENSION_VERSION = '2.4.0';
+    const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
+    const EXTENSION_LICENSE = 'MIT';
     const THEME_HOST_ATTRS = [
         'data-gh-theme-host-sidebar-shell',
         'data-gh-theme-host-sidebar',
@@ -703,7 +665,14 @@
         panelWidth: 320,
         defaultPanelState: true, // true = 展开, false = 折叠
         prompts: { enabled: true },
-        outline: { enabled: true, showUserQueries: true },
+        outline: {
+            enabled: true,
+            showUserQueries: true,
+            autoUpdate: true,
+            syncScroll: true,
+            updateInterval: 2,
+            maxLevel: 6
+        },
         conversations: { enabled: true },
         tabOrder: ['prompts', 'outline', 'conversations', 'export'],
         collapsedButtonsOrder: DEFAULT_COLLAPSED_BUTTONS_ORDER,
@@ -714,22 +683,14 @@
         manualAnchorEnabled: true,
         // 滚动锁定设置
         preventAutoScroll: false,
-        // 页面宽度设置
-        pageWidth: {
-            enabled: false,
-            value: 1200,
-            unit: 'px'
-        },
         // 阶段1：阅读历史设置
         readingHistory: {
             persistence: true,
-            autoRestore: false,
-            cleanupDays: 30
+            autoRestore: false
         },
         // 阶段3：复制功能设置
         formulaCopy: {
-            enabled: true,
-            delimiterEnabled: true
+            enabled: true
         },
         tableCopy: {
             enabled: true
@@ -737,14 +698,10 @@
         // 阶段4：标签页设置
         tabSettings: {
             enabled: true,
-            renameInterval: 3,
             showStatus: true,
-            titleFormat: '{status}{title}',
-            showNotification: false,
             notificationSound: false,
             notificationVolume: 0.5,
-            notifyWhenFocused: false,
-            autoFocus: false,
+            titleFormat: '{status}{title}',
             privacyMode: false,
             privacyTitle: 'ChatGPT'
         }
@@ -827,10 +784,17 @@
 
     function getExtensionManifestMeta() {
         const runtime = getExtensionRuntime();
+        const fallback = {
+            name: EXTENSION_NAME,
+            version: EXTENSION_VERSION,
+            author: EXTENSION_AUTHOR,
+            license: EXTENSION_LICENSE
+        };
         try {
-            return runtime && typeof runtime.getManifest === 'function' ? runtime.getManifest() : null;
+            const manifest = runtime && typeof runtime.getManifest === 'function' ? runtime.getManifest() : null;
+            return manifest ? { ...fallback, ...manifest } : fallback;
         } catch (e) {
-            return null;
+            return fallback;
         }
     }
 
@@ -880,6 +844,49 @@
         }
     }
 
+    function createHelperLogoSvg() {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 48 48');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.display = 'block';
+
+        const outer = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        outer.setAttribute('cx', '24');
+        outer.setAttribute('cy', '24');
+        outer.setAttribute('r', '21');
+        outer.setAttribute('fill', '#ffffff');
+        outer.setAttribute('stroke', '#111827');
+        outer.setAttribute('stroke-width', '3');
+        svg.appendChild(outer);
+
+        const knot = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        knot.setAttribute('d', 'M18.5 15.5 24 12l5.5 3.5v6.3L35 25.1v6.2L24 38l-11-6.7v-6.2l5.5-3.3v-6.3Z M18.5 21.8 24 25l5.5-3.2 M18.5 28.2 24 31.5l5.5-3.3');
+        knot.setAttribute('stroke', '#111827');
+        knot.setAttribute('stroke-width', '3');
+        knot.setAttribute('stroke-linecap', 'round');
+        knot.setAttribute('stroke-linejoin', 'round');
+        svg.appendChild(knot);
+
+        const plusV = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        plusV.setAttribute('d', 'M35.5 8v12');
+        plusV.setAttribute('stroke', '#facc15');
+        plusV.setAttribute('stroke-width', '4.5');
+        plusV.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(plusV);
+
+        const plusH = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        plusH.setAttribute('d', 'M29.5 14h12');
+        plusH.setAttribute('stroke', '#facc15');
+        plusH.setAttribute('stroke-width', '4.5');
+        plusH.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(plusH);
+
+        return svg;
+    }
+
     function createHelperLogoNode(options = {}) {
         const {
             size = 18,
@@ -887,21 +894,43 @@
             alt = 'ChatGPT Helper',
             title = '',
         } = options;
-        const img = createElement('img', {
+        const wrap = createElement('span', {
             className,
-            alt,
             title,
-            src: getExtensionAssetUrl('icons/logo.svg'),
-            draggable: false,
+            role: 'img',
+            'aria-label': alt,
         });
-        img.width = size;
-        img.height = size;
-        img.style.width = `${size}px`;
-        img.style.height = `${size}px`;
-        img.style.display = 'block';
-        img.style.objectFit = 'contain';
-        img.style.flexShrink = '0';
-        return img;
+        wrap.style.width = `${size}px`;
+        wrap.style.height = `${size}px`;
+        wrap.style.display = 'inline-flex';
+        wrap.style.alignItems = 'center';
+        wrap.style.justifyContent = 'center';
+        wrap.style.flexShrink = '0';
+        wrap.style.lineHeight = '0';
+        wrap.style.position = 'relative';
+        wrap.style.overflow = 'hidden';
+
+        const fallbackSvg = createHelperLogoSvg();
+        fallbackSvg.classList.add('chatgpt-helper-logo-fallback-svg');
+
+        const svgImg = createElement('img', {
+            className: 'chatgpt-helper-logo-svg',
+            alt: '',
+            draggable: false,
+            'aria-hidden': 'true',
+        });
+        svgImg.addEventListener('load', () => {
+            svgImg.dataset.loaded = 'true';
+        });
+        svgImg.addEventListener('error', () => {
+            svgImg.style.display = 'none';
+            fallbackSvg.dataset.active = 'true';
+        });
+        svgImg.src = getExtensionAssetUrl('icons/logo.svg');
+
+        wrap.appendChild(fallbackSvg);
+        wrap.appendChild(svgImg);
+        return wrap;
     }
 
     const SVG_ICON_DEFS = {
@@ -919,6 +948,35 @@
         ],
         message: [
             ['path', { d: 'M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z' }]
+        ],
+        info: [
+            ['circle', { cx: '12', cy: '12', r: '10' }],
+            ['path', { d: 'M12 16v-4' }],
+            ['path', { d: 'M12 8h.01' }]
+        ],
+        user: [
+            ['path', { d: 'M19 21a7 7 0 0 0-14 0' }],
+            ['circle', { cx: '12', cy: '8', r: '4' }]
+        ],
+        shield: [
+            ['path', { d: 'M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3Z' }],
+            ['path', { d: 'm9 12 2 2 4-4' }]
+        ],
+        github: [
+            ['path', { d: 'M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5a10.5 10.5 0 0 0-6 0C8 2 7 2 7 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 6 9c0 3.5 3 5.5 6 5.5a4.8 4.8 0 0 0-1 3.5v4' }],
+            ['path', { d: 'M9 18c-4.5 2-5-2-7-2' }]
+        ],
+        external: [
+            ['path', { d: 'M15 3h6v6' }],
+            ['path', { d: 'M10 14 21 3' }],
+            ['path', { d: 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6' }]
+        ],
+        share: [
+            ['circle', { cx: '18', cy: '5', r: '3' }],
+            ['circle', { cx: '6', cy: '12', r: '3' }],
+            ['circle', { cx: '18', cy: '19', r: '3' }],
+            ['path', { d: 'm8.6 13.5 6.8 4' }],
+            ['path', { d: 'm15.4 6.5-6.8 4' }]
         ],
         export: [
             ['path', { d: 'M12 3v12' }],
@@ -1131,23 +1189,37 @@
         const secondary = preset.secondary || '#94a3b8';
         const accent = preset.accent || primary;
         const light = preset.light || '#f8fafc';
-        const darkPanelTop = `color-mix(in srgb, #070b12, ${primary} ${hasWallpaper ? 22 : 18}%)`;
-        const darkPanelBottom = `color-mix(in srgb, #05070b, ${secondary} ${hasWallpaper ? 15 : 11}%)`;
-        const lightPanelTop = `color-mix(in srgb, #ffffff, ${light} ${hasWallpaper ? 68 : 78}%)`;
-        const lightPanelBottom = `color-mix(in srgb, #f4f5f2, ${primary} ${hasWallpaper ? 12 : 8}%)`;
+        const darkPanelTop = hasWallpaper
+            ? 'rgba(32, 33, 35, 0.74)'
+            : '#202123';
+        const darkPanelBottom = hasWallpaper
+            ? 'rgba(23, 23, 23, 0.66)'
+            : '#171717';
+        const lightPanelTop = hasWallpaper
+            ? `color-mix(in srgb, #ffffff, ${light} 68%)`
+            : '#f9f9f9';
+        const lightPanelBottom = hasWallpaper
+            ? `color-mix(in srgb, #f4f5f2, ${primary} 12%)`
+            : '#f9f9f9';
         const surfaceTop = isDark ? darkPanelTop : lightPanelTop;
         const surfaceBottom = isDark ? darkPanelBottom : lightPanelBottom;
-        const neutralText = isDark ? 'rgba(248, 250, 252, 0.96)' : 'rgba(18, 23, 20, 0.94)';
-        const mutedText = isDark ? 'rgba(204, 213, 205, 0.76)' : 'rgba(85, 97, 89, 0.78)';
+        const neutralText = isDark ? 'rgba(236, 236, 241, 0.96)' : 'rgba(18, 23, 20, 0.94)';
+        const mutedText = isDark ? 'rgba(197, 197, 210, 0.74)' : 'rgba(85, 97, 89, 0.78)';
         const panelLine = isDark
-            ? `color-mix(in srgb, ${primary}, rgba(255,255,255,0.16) ${hasWallpaper ? 52 : 40}%)`
-            : `color-mix(in srgb, ${primary}, rgba(12,18,16,0.14) ${hasWallpaper ? 44 : 58}%)`;
+            ? (hasWallpaper ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.12)')
+            : (hasWallpaper
+                ? `color-mix(in srgb, ${primary}, rgba(12,18,16,0.14) 44%)`
+                : 'rgba(0, 0, 0, 0.10)');
         const cardShadow = isDark
-            ? '0 1px 0 rgba(255, 255, 255, 0.025), 0 10px 24px rgba(0, 0, 0, 0.18)'
-            : '0 1px 0 rgba(255, 255, 255, 0.72), 0 8px 22px rgba(18, 23, 20, 0.07)';
+            ? '0 1px 0 rgba(255, 255, 255, 0.035)'
+            : (hasWallpaper
+                ? '0 1px 0 rgba(255, 255, 255, 0.72), 0 8px 22px rgba(18, 23, 20, 0.07)'
+                : '0 1px 0 rgba(0, 0, 0, 0.025)');
         const elevatedShadow = isDark
-            ? `0 14px 34px color-mix(in srgb, #000000, ${primary} 16%)`
-            : `0 12px 30px color-mix(in srgb, rgba(18,23,20,0.12), ${primary} 18%)`;
+            ? (hasWallpaper ? '0 8px 20px rgba(0, 0, 0, 0.20)' : '0 0 0 0 rgba(0, 0, 0, 0)')
+            : (hasWallpaper
+                ? `0 12px 30px color-mix(in srgb, rgba(18,23,20,0.12), ${primary} 18%)`
+                : '0 0 0 0 rgba(0, 0, 0, 0)');
 
         return {
             ...vars,
@@ -1165,28 +1237,30 @@
             '--gh-text-secondary': vars['--gh-text-secondary'] || mutedText,
             '--gh-panel-surface': `linear-gradient(180deg, ${surfaceTop} 0%, ${surfaceBottom} 100%)`,
             '--gh-panel-subtle': isDark
-                ? `color-mix(in srgb, ${surfaceBottom}, ${primary} 10%)`
-                : `color-mix(in srgb, ${surfaceTop}, ${primary} 4%)`,
+                ? (hasWallpaper ? 'rgba(255, 255, 255, 0.045)' : 'color-mix(in srgb, #202123, #ffffff 2%)')
+                : (hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, ${primary} 4%)` : '#f3f3f3'),
             '--gh-panel-card': vars['--gh-panel-card-bg'] || (isDark
-                ? `color-mix(in srgb, ${surfaceTop}, #ffffff 6%)`
-                : `color-mix(in srgb, ${surfaceTop}, #ffffff 52%)`),
+                ? (hasWallpaper ? 'rgba(255, 255, 255, 0.060)' : 'color-mix(in srgb, #202123, #ffffff 5%)')
+                : (hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, #ffffff 52%)` : '#ffffff')),
             '--gh-panel-card-hover': isDark
-                ? `color-mix(in srgb, ${surfaceTop}, ${primary} 18%)`
-                : `color-mix(in srgb, ${surfaceTop}, ${primary} 9%)`,
+                ? (hasWallpaper ? 'rgba(255, 255, 255, 0.090)' : 'color-mix(in srgb, #202123, #ffffff 9%)')
+                : (hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, ${primary} 9%)` : '#ececec'),
             '--gh-panel-line': panelLine,
             '--gh-panel-muted-line': `color-mix(in srgb, ${panelLine}, transparent 42%)`,
             '--gh-panel-elevated-shadow': elevatedShadow,
             '--gh-panel-card-shadow': cardShadow,
             '--gh-header-quiet-bg': isDark
-                ? `linear-gradient(180deg, color-mix(in srgb, ${surfaceTop}, ${primary} 22%) 0%, ${surfaceTop} 100%)`
-                : `linear-gradient(180deg, color-mix(in srgb, ${surfaceTop}, ${primary} 8%) 0%, ${surfaceTop} 100%)`,
+                ? 'var(--gh-panel-surface)'
+                : (hasWallpaper
+                    ? `linear-gradient(180deg, color-mix(in srgb, ${surfaceTop}, ${primary} 8%) 0%, ${surfaceTop} 100%)`
+                    : 'var(--gh-panel-surface)'),
             '--gh-focus-ring': `color-mix(in srgb, ${primary}, transparent ${isDark ? 56 : 68}%)`,
             '--gh-control-bg': isDark
-                ? `color-mix(in srgb, ${surfaceTop}, #ffffff 6%)`
-                : `color-mix(in srgb, ${surfaceTop}, #ffffff 48%)`,
+                ? (hasWallpaper ? 'rgba(255, 255, 255, 0.055)' : 'color-mix(in srgb, #202123, #ffffff 5%)')
+                : (hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, #ffffff 48%)` : '#ffffff'),
             '--gh-control-bg-hover': isDark
-                ? `color-mix(in srgb, ${surfaceTop}, ${primary} 18%)`
-                : `color-mix(in srgb, ${surfaceTop}, ${primary} 8%)`,
+                ? (hasWallpaper ? 'rgba(255, 255, 255, 0.090)' : 'color-mix(in srgb, #202123, #ffffff 9%)')
+                : (hasWallpaper ? `color-mix(in srgb, ${surfaceTop}, ${primary} 8%)` : '#ececec'),
             '--gh-control-border': `color-mix(in srgb, ${panelLine}, transparent 8%)`,
             '--gh-control-radius': '8px',
             '--gh-card-radius': '8px',
@@ -1223,48 +1297,48 @@
         if (isOriginal) {
             if (isDark) {
                 return withProductivitySurfaceVars({
-                    '--gh-bg': hasWallpaper ? 'rgba(15, 23, 42, 0.160)' : '#1e293b',
-                    '--gh-bg-secondary': hasWallpaper ? 'rgba(15, 23, 42, 0.110)' : '#0f172a',
-                    '--gh-text': '#f1f5f9',
-                    '--gh-text-secondary': '#cbd5e1',
-                    '--gh-border': hasWallpaper ? 'rgba(226, 232, 240, 0.180)' : '#475569',
-                    '--gh-hover': hasWallpaper ? 'rgba(30, 41, 59, 0.160)' : '#334155',
-                    '--gh-shadow': hasWallpaper ? '0 14px 32px rgba(2, 6, 23, 0.200)' : '0 10px 40px rgba(0,0,0,0.4)',
+                    '--gh-bg': hasWallpaper ? 'rgba(32, 33, 35, 0.180)' : '#202123',
+                    '--gh-bg-secondary': hasWallpaper ? 'rgba(23, 23, 23, 0.140)' : '#171717',
+                    '--gh-text': '#ececf1',
+                    '--gh-text-secondary': 'rgba(236, 236, 241, 0.72)',
+                    '--gh-border': hasWallpaper ? 'rgba(255, 255, 255, 0.150)' : 'rgba(255, 255, 255, 0.120)',
+                    '--gh-hover': hasWallpaper ? 'rgba(255, 255, 255, 0.080)' : '#2a2b2d',
+                    '--gh-shadow': hasWallpaper ? '0 8px 20px rgba(0, 0, 0, 0.180)' : '0 0 0 0 rgba(0, 0, 0, 0)',
                     '--gh-input-bg': hasWallpaper
-                        ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.620) 0%, rgba(15, 23, 42, 0.520) 100%)'
-                        : '#334155',
-                    '--gh-input-border': hasWallpaper ? 'rgba(148, 163, 184, 0.420)' : '#64748b',
-                    '--gh-active-bg': hasWallpaper ? 'rgba(59, 130, 246, 0.220)' : 'rgba(59, 130, 246, 0.300)',
+                        ? 'rgba(255, 255, 255, 0.060)'
+                        : '#2a2b2d',
+                    '--gh-input-border': hasWallpaper ? 'rgba(255, 255, 255, 0.150)' : 'rgba(255, 255, 255, 0.120)',
+                    '--gh-active-bg': hasWallpaper ? 'rgba(255, 255, 255, 0.100)' : '#343541',
                     '--gh-right-overlay': hasWallpaper
-                        ? 'linear-gradient(180deg, rgba(15, 23, 42, 0.560) 0%, rgba(15, 23, 42, 0.420) 100%)'
-                        : '#1e293b',
-                    '--gh-panel-card-bg': hasWallpaper ? 'rgba(15, 23, 42, 0.420)' : '#0f172a',
-                    '--gh-panel-card-border': hasWallpaper ? 'rgba(255, 255, 255, 0.220)' : '#475569',
-                    '--gh-sidebar-button-bg': hasWallpaper ? 'rgba(15, 23, 42, 0.320)' : '#334155',
+                        ? 'linear-gradient(180deg, rgba(32, 33, 35, 0.700) 0%, rgba(23, 23, 23, 0.600) 100%)'
+                        : 'linear-gradient(180deg, #202123 0%, #171717 100%)',
+                    '--gh-panel-card-bg': hasWallpaper ? 'rgba(255, 255, 255, 0.060)' : '#2a2b2d',
+                    '--gh-panel-card-border': hasWallpaper ? 'rgba(255, 255, 255, 0.150)' : 'rgba(255, 255, 255, 0.120)',
+                    '--gh-sidebar-button-bg': hasWallpaper ? 'rgba(255, 255, 255, 0.060)' : '#2a2b2d',
                     '--gh-msg-user-bg': hasWallpaper
-                        ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.240) 0%, rgba(30, 41, 59, 0.140) 100%)'
-                        : 'rgba(51, 65, 85, 0.940)',
+                        ? 'linear-gradient(135deg, rgba(32, 33, 35, 0.220) 0%, rgba(52, 53, 65, 0.120) 100%)'
+                        : 'rgba(52, 53, 65, 0.940)',
                     '--gh-msg-assistant-bg': hasWallpaper
-                        ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.180) 0%, rgba(15, 23, 42, 0.100) 100%)'
+                        ? 'linear-gradient(135deg, rgba(32, 33, 35, 0.160) 0%, rgba(23, 23, 23, 0.090) 100%)'
                         : 'transparent',
-                    '--gh-msg-border': hasWallpaper ? 'rgba(255, 255, 255, 0.180)' : 'rgba(100, 116, 139, 0.360)',
-                    '--gh-msg-shadow': hasWallpaper ? '0 14px 32px rgba(2, 6, 23, 0.120)' : 'none',
+                    '--gh-msg-border': hasWallpaper ? 'rgba(255, 255, 255, 0.150)' : 'rgba(255, 255, 255, 0.120)',
+                    '--gh-msg-shadow': hasWallpaper ? '0 8px 20px rgba(0, 0, 0, 0.120)' : 'none',
                     '--gh-msg-blur': messageBlur,
                     '--gh-panel-blur': panelBlur,
                     '--gh-composer-blur': composerBlur,
-                    '--gh-composer-shadow': hasWallpaper ? '0 10px 24px rgba(2, 6, 23, 0.140)' : 'none',
+                    '--gh-composer-shadow': hasWallpaper ? '0 8px 20px rgba(0, 0, 0, 0.120)' : 'none',
                     '--gh-page-sidebar-bg-light': 'color-mix(in srgb, #ffffff, transparent 84%)',
                     '--gh-page-chat-bg-light': 'transparent',
                     '--gh-page-composer-bg-light': 'color-mix(in srgb, #ffffff, transparent 78%)',
                     '--gh-page-sidebar-bg-dark': hasWallpaper
-                        ? 'linear-gradient(180deg, rgba(2, 6, 23, 0.360) 0%, rgba(2, 6, 23, 0.240) 100%)'
+                        ? 'linear-gradient(180deg, rgba(32, 33, 35, 0.320) 0%, rgba(23, 23, 23, 0.220) 100%)'
                         : 'transparent',
                     '--gh-page-chat-bg-dark': 'transparent',
                     '--gh-page-composer-bg-dark': hasWallpaper
-                        ? 'linear-gradient(135deg, rgba(8, 17, 29, 0.860) 0%, rgba(15, 23, 42, 0.760) 100%)'
+                        ? 'linear-gradient(135deg, rgba(32, 33, 35, 0.800) 0%, rgba(23, 23, 23, 0.720) 100%)'
                         : 'transparent',
-                    '--gh-page-accent-soft': 'rgba(59, 130, 246, 0.120)',
-                    '--gh-page-accent-soft-dark': hasWallpaper ? 'rgba(59, 130, 246, 0.220)' : 'rgba(59, 130, 246, 0.260)',
+                    '--gh-page-accent-soft': 'rgba(59, 130, 246, 0.100)',
+                    '--gh-page-accent-soft-dark': hasWallpaper ? 'rgba(255, 255, 255, 0.100)' : 'rgba(255, 255, 255, 0.080)',
                     '--gh-page-accent-strong': '#2563eb',
                     '--gh-page-link': '#2563eb',
                     '--gh-page-selection': 'rgba(59, 130, 246, 0.180)'
@@ -1272,24 +1346,24 @@
             }
 
             return withProductivitySurfaceVars({
-                '--gh-bg': '#ffffff',
-                '--gh-bg-secondary': '#f9fafb',
-                '--gh-text': '#1f2937',
-                '--gh-text-secondary': '#6b7280',
-                '--gh-border': '#e5e7eb',
-                '--gh-hover': '#f3f4f6',
-                '--gh-shadow': '0 10px 40px rgba(0,0,0,0.15)',
+                '--gh-bg': '#f9f9f9',
+                '--gh-bg-secondary': '#f3f3f3',
+                '--gh-text': '#0d0d0d',
+                '--gh-text-secondary': 'rgba(13, 13, 13, 0.64)',
+                '--gh-border': 'rgba(0, 0, 0, 0.10)',
+                '--gh-hover': '#ececec',
+                '--gh-shadow': hasWallpaper ? '0 8px 20px rgba(0, 0, 0, 0.080)' : '0 0 0 0 rgba(0,0,0,0)',
                 '--gh-input-bg': hasWallpaper
                     ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.860) 0%, rgba(248, 250, 252, 0.760) 100%)'
                     : '#ffffff',
-                '--gh-input-border': hasWallpaper ? 'rgba(226, 232, 240, 0.860)' : '#d1d5db',
-                '--gh-active-bg': '#e5e7eb',
+                '--gh-input-border': hasWallpaper ? 'rgba(226, 232, 240, 0.860)' : 'rgba(0, 0, 0, 0.10)',
+                '--gh-active-bg': '#ececec',
                 '--gh-right-overlay': hasWallpaper
                     ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.560) 0%, rgba(248, 250, 252, 0.420) 100%)'
-                    : '#ffffff',
-                '--gh-panel-card-bg': hasWallpaper ? 'rgba(255, 255, 255, 0.540)' : '#f9fafb',
-                '--gh-panel-card-border': hasWallpaper ? 'rgba(255, 255, 255, 0.460)' : '#e5e7eb',
-                '--gh-sidebar-button-bg': hasWallpaper ? 'rgba(255, 255, 255, 0.420)' : '#f3f4f6',
+                    : '#f9f9f9',
+                '--gh-panel-card-bg': hasWallpaper ? 'rgba(255, 255, 255, 0.540)' : '#ffffff',
+                '--gh-panel-card-border': hasWallpaper ? 'rgba(255, 255, 255, 0.460)' : 'rgba(0, 0, 0, 0.10)',
+                '--gh-sidebar-button-bg': hasWallpaper ? 'rgba(255, 255, 255, 0.420)' : '#ececec',
                 '--gh-msg-user-bg': hasWallpaper
                     ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.340) 0%, rgba(248, 250, 252, 0.240) 100%)'
                     : 'rgba(255, 255, 255, 0.920)',
@@ -1304,7 +1378,7 @@
                 '--gh-composer-shadow': hasWallpaper ? '0 10px 24px rgba(15, 23, 42, 0.100)' : 'none',
                 '--gh-page-sidebar-bg-light': hasWallpaper
                     ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.360) 0%, rgba(248, 250, 252, 0.220) 100%)'
-                    : 'transparent',
+                    : '#f9f9f9',
                 '--gh-page-chat-bg-light': 'transparent',
                 '--gh-page-composer-bg-light': hasWallpaper
                     ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.900) 0%, rgba(248, 250, 252, 0.800) 100%)'
@@ -1322,69 +1396,59 @@
 
         if (isDark) {
             const sidebarTop = hasWallpaper
-                ? blendRgbColors('#020617', preset.primary, 0.12 + panelUnit * 0.18)
-                : blendRgbColors('#070711', preset.primary, 0.40 + panelUnit * 0.18);
+                ? blendRgbColors('#202123', preset.primary, 0.04 + panelUnit * 0.04)
+                : blendRgbColors('#202123', preset.primary, 0.06 + panelUnit * 0.04);
             const sidebarBottom = hasWallpaper
-                ? blendRgbColors('#020617', preset.secondary, 0.08 + panelUnit * 0.16)
-                : blendRgbColors('#06070f', preset.secondary, 0.28 + panelUnit * 0.14);
+                ? blendRgbColors('#171717', preset.secondary, 0.03 + panelUnit * 0.04)
+                : blendRgbColors('#171717', preset.secondary, 0.04 + panelUnit * 0.03);
             const panelTop = hasWallpaper
-                ? blendRgbColors('#07111f', preset.primary, 0.14 + panelUnit * 0.18)
-                : blendRgbColors('#111324', preset.primary, 0.32 + panelUnit * 0.16);
+                ? blendRgbColors('#202123', preset.primary, 0.04 + panelUnit * 0.05)
+                : blendRgbColors('#202123', preset.primary, 0.06 + panelUnit * 0.04);
             const panelBottom = hasWallpaper
-                ? blendRgbColors('#07111f', preset.secondary, 0.10 + panelUnit * 0.16)
-                : blendRgbColors('#0d1323', preset.secondary, 0.24 + panelUnit * 0.14);
+                ? blendRgbColors('#171717', preset.secondary, 0.03 + panelUnit * 0.05)
+                : blendRgbColors('#171717', preset.secondary, 0.04 + panelUnit * 0.03);
             const cardTop = hasWallpaper
-                ? blendRgbColors('#091220', preset.primary, 0.16 + panelUnit * 0.14)
-                : blendRgbColors('#171932', preset.primary, 0.28 + panelUnit * 0.16);
+                ? blendRgbColors('#2a2b2d', preset.primary, 0.04 + panelUnit * 0.05)
+                : blendRgbColors('#2a2b2d', preset.primary, 0.05 + panelUnit * 0.04);
             const cardBottom = hasWallpaper
-                ? blendRgbColors('#08111c', preset.secondary, 0.10 + panelUnit * 0.12)
-                : blendRgbColors('#111729', preset.secondary, 0.20 + panelUnit * 0.12);
+                ? blendRgbColors('#202123', preset.secondary, 0.03 + panelUnit * 0.04)
+                : blendRgbColors('#202123', preset.secondary, 0.04 + panelUnit * 0.03);
             const messageTop = hasWallpaper
-                ? blendRgbColors('#0b1324', preset.light, 0.14 + messageUnit * 0.16)
-                : blendRgbColors('#17192c', preset.light, 0.08 + messageUnit * 0.08);
+                ? blendRgbColors('#202123', preset.light, 0.04 + messageUnit * 0.05)
+                : blendRgbColors('#202123', preset.light, 0.03 + messageUnit * 0.03);
             const messageAccent = hasWallpaper
-                ? blendRgbColors('#09111f', preset.primary, 0.18 + messageUnit * 0.18)
-                : blendRgbColors('#17192c', preset.primary, 0.38 + messageUnit * 0.16);
+                ? blendRgbColors('#202123', preset.primary, 0.06 + messageUnit * 0.06)
+                : blendRgbColors('#202123', preset.primary, 0.08 + messageUnit * 0.04);
             const userAccent = hasWallpaper
-                ? blendRgbColors('#08111d', preset.secondary, 0.14 + messageUnit * 0.16)
-                : blendRgbColors('#121a2f', preset.secondary, 0.30 + messageUnit * 0.14);
-            const panelBorder = hasWallpaper
-                ? blendRgbColors('#dbeafe', preset.primary, 0.16)
-                : blendRgbColors('#64748b', preset.primary, 0.20);
-            const messageBorder = hasWallpaper
-                ? blendRgbColors('#f8fafc', preset.primary, 0.18)
-                : blendRgbColors('#94a3b8', preset.primary, 0.16);
-            const activeTint = blendRgbColors('#0b1324', preset.primary, hasWallpaper ? 0.74 : 0.78);
+                ? blendRgbColors('#252628', preset.secondary, 0.05 + messageUnit * 0.05)
+                : blendRgbColors('#252628', preset.secondary, 0.07 + messageUnit * 0.04);
+            const activeTint = blendRgbColors('#343541', preset.primary, 0.12 + panelUnit * 0.06);
             const shadowTint = hasWallpaper
-                ? blendRgbColors('#020617', preset.primary, 0.28)
-                : blendRgbColors('#030712', preset.primary, 0.18);
+                ? blendRgbColors('#000000', preset.primary, 0.04)
+                : '#000000';
             const composerTop = hasWallpaper
-                ? blendRgbColors('#09111f', preset.light, 0.12 + composerUnit * 0.14)
-                : blendRgbColors('#14172a', preset.light, 0.08 + composerUnit * 0.08);
+                ? blendRgbColors('#2a2b2d', preset.light, 0.04 + composerUnit * 0.05)
+                : blendRgbColors('#2a2b2d', preset.light, 0.03 + composerUnit * 0.03);
             const composerBottom = hasWallpaper
-                ? blendRgbColors('#08111d', preset.primary, 0.16 + composerUnit * 0.16)
-                : blendRgbColors('#101628', preset.primary, 0.34 + composerUnit * 0.16);
-            const chatTop = hasWallpaper
-                ? blendRgbColors('#060b18', preset.primary, 0.08 + panelUnit * 0.10)
-                : blendRgbColors('#090814', preset.primary, 0.30 + panelUnit * 0.14);
-            const chatBottom = hasWallpaper
-                ? blendRgbColors('#050913', preset.secondary, 0.06 + panelUnit * 0.08)
-                : blendRgbColors('#06070f', preset.secondary, 0.18 + panelUnit * 0.10);
+                ? blendRgbColors('#202123', preset.primary, 0.06 + composerUnit * 0.06)
+                : blendRgbColors('#202123', preset.primary, 0.08 + composerUnit * 0.04);
 
             return withProductivitySurfaceVars({
                 '--gh-bg': rgbaFromColor(cardTop, hasWallpaper ? (0.28 + panelUnit * 0.14) : 0.98),
                 '--gh-bg-secondary': rgbaFromColor(cardBottom, hasWallpaper ? (0.22 + panelUnit * 0.12) : 0.96),
-                '--gh-text': 'rgba(248, 250, 252, 0.96)',
-                '--gh-text-secondary': 'rgba(203, 213, 225, 0.78)',
-                '--gh-border': rgbaFromColor(panelBorder, hasWallpaper ? (0.10 + panelUnit * 0.08) : (0.22 + panelUnit * 0.08)),
-                '--gh-hover': rgbaFromColor(panelBottom, hasWallpaper ? (0.09 + panelUnit * 0.07) : (0.42 + panelUnit * 0.10)),
-                '--gh-shadow': `-14px 0 34px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.14 + panelUnit * 0.08) : (0.18 + panelUnit * 0.06))}`,
+                '--gh-text': '#ececf1',
+                '--gh-text-secondary': 'rgba(236, 236, 241, 0.72)',
+                '--gh-border': hasWallpaper ? 'rgba(255, 255, 255, 0.150)' : 'rgba(255, 255, 255, 0.120)',
+                '--gh-hover': hasWallpaper ? 'rgba(255, 255, 255, 0.080)' : '#2a2b2d',
+                '--gh-shadow': hasWallpaper
+                    ? `0 8px 20px ${rgbaFromColor(shadowTint, 0.14 + panelUnit * 0.04)}`
+                    : '0 0 0 0 rgba(0, 0, 0, 0)',
                 '--gh-input-bg': buildLinearGradient('135deg', [
                     `${rgbaFromColor(composerTop, hasWallpaper ? (0.46 + composerUnit * 0.16) : 0.94)} 0%`,
                     `${rgbaFromColor(composerBottom, hasWallpaper ? (0.36 + composerUnit * 0.14) : 0.96)} 100%`
                 ]),
-                '--gh-input-border': rgbaFromColor(messageBorder, hasWallpaper ? (0.22 + composerUnit * 0.12) : (0.24 + composerUnit * 0.10)),
-                '--gh-active-bg': rgbaFromColor(activeTint, hasWallpaper ? (0.18 + panelUnit * 0.06) : 0.88),
+                '--gh-input-border': hasWallpaper ? 'rgba(255, 255, 255, 0.150)' : 'rgba(255, 255, 255, 0.120)',
+                '--gh-active-bg': rgbaFromColor(activeTint, hasWallpaper ? (0.18 + panelUnit * 0.06) : 0.90),
                 '--gh-right-overlay': buildLinearGradient('180deg', [
                     `${rgbaFromColor(panelTop, hasWallpaper ? (0.48 + panelUnit * 0.12) : 0.99)} 0%`,
                     `${rgbaFromColor(panelBottom, hasWallpaper ? (0.36 + panelUnit * 0.10) : 0.97)} 100%`
@@ -1393,7 +1457,7 @@
                     `${rgbaFromColor(cardTop, hasWallpaper ? (0.42 + panelUnit * 0.14) : 0.98)} 0%`,
                     `${rgbaFromColor(cardBottom, hasWallpaper ? (0.32 + panelUnit * 0.12) : 0.96)} 100%`
                 ]),
-                '--gh-panel-card-border': rgbaFromColor(panelBorder, hasWallpaper ? (0.18 + panelUnit * 0.10) : (0.20 + panelUnit * 0.10)),
+                '--gh-panel-card-border': hasWallpaper ? 'rgba(255, 255, 255, 0.150)' : 'rgba(255, 255, 255, 0.120)',
                 '--gh-sidebar-button-bg': rgbaFromColor(activeTint, hasWallpaper ? (0.30 + panelUnit * 0.12) : 0.82),
                 '--gh-msg-user-bg': buildLinearGradient('135deg', [
                     `${rgbaFromColor(messageTop, hasWallpaper ? (0.18 + messageUnit * 0.12) : 0.98)} 0%`,
@@ -1405,12 +1469,16 @@
                         `${rgbaFromColor(messageAccent, 0.08 + messageUnit * 0.08)} 100%`
                     ])
                     : 'transparent',
-                '--gh-msg-border': rgbaFromColor(messageBorder, hasWallpaper ? (0.08 + messageUnit * 0.08) : (0.18 + messageUnit * 0.08)),
-                '--gh-msg-shadow': `0 16px 34px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.12 + messageUnit * 0.08) : (0.16 + messageUnit * 0.08))}`,
+                '--gh-msg-border': hasWallpaper ? 'rgba(255, 255, 255, 0.140)' : 'rgba(255, 255, 255, 0.110)',
+                '--gh-msg-shadow': hasWallpaper
+                    ? `0 8px 20px ${rgbaFromColor(shadowTint, 0.10 + messageUnit * 0.05)}`
+                    : 'none',
                 '--gh-msg-blur': messageBlur,
                 '--gh-panel-blur': panelBlur,
                 '--gh-composer-blur': composerBlur,
-                '--gh-composer-shadow': `0 12px 28px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.10 + composerUnit * 0.07) : (0.16 + composerUnit * 0.08))}`,
+                '--gh-composer-shadow': hasWallpaper
+                    ? `0 8px 20px ${rgbaFromColor(shadowTint, 0.10 + composerUnit * 0.04)}`
+                    : 'none',
                 '--gh-page-sidebar-bg-light': buildLinearGradient('180deg', [
                     `${rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.70), 0.18)} 0%`,
                     `${rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.16), 0.08)} 100%`
@@ -1497,23 +1565,33 @@
             '--gh-text-secondary': 'rgba(51, 65, 85, 0.78)',
             '--gh-border': rgbaFromColor(panelBorder, hasWallpaper ? (0.20 + panelUnit * 0.10) : (0.34 + panelUnit * 0.08)),
             '--gh-hover': rgbaFromColor(panelBottom, hasWallpaper ? (0.10 + panelUnit * 0.08) : (0.60 + panelUnit * 0.10)),
-            '--gh-shadow': `-14px 0 34px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.10 + panelUnit * 0.06) : (0.14 + panelUnit * 0.05))}`,
+            '--gh-shadow': hasWallpaper
+                ? `0 8px 20px ${rgbaFromColor(shadowTint, 0.10 + panelUnit * 0.06)}`
+                : '0 0 0 0 rgba(0, 0, 0, 0)',
             '--gh-input-bg': buildLinearGradient('135deg', [
                 `${rgbaFromColor(composerTop, hasWallpaper ? (0.72 + composerUnit * 0.16) : 0.96)} 0%`,
                 `${rgbaFromColor(composerBottom, hasWallpaper ? (0.62 + composerUnit * 0.14) : 0.90)} 100%`
             ]),
             '--gh-input-border': rgbaFromColor(messageBorder, hasWallpaper ? (0.38 + composerUnit * 0.12) : (0.38 + composerUnit * 0.08)),
             '--gh-active-bg': rgbaFromColor(activeTint, hasWallpaper ? (0.18 + panelUnit * 0.08) : (0.34 + panelUnit * 0.10)),
-            '--gh-right-overlay': buildLinearGradient('180deg', [
-                `${rgbaFromColor(panelTop, hasWallpaper ? (0.56 + panelUnit * 0.16) : 0.98)} 0%`,
-                `${rgbaFromColor(panelBottom, hasWallpaper ? (0.42 + panelUnit * 0.14) : 0.94)} 100%`
-            ]),
-            '--gh-panel-card-bg': buildLinearGradient('135deg', [
-                `${rgbaFromColor(cardTop, hasWallpaper ? (0.48 + panelUnit * 0.16) : 0.96)} 0%`,
-                `${rgbaFromColor(cardBottom, hasWallpaper ? (0.36 + panelUnit * 0.14) : 0.92)} 100%`
-            ]),
-            '--gh-panel-card-border': rgbaFromColor(panelBorder, hasWallpaper ? (0.32 + panelUnit * 0.12) : (0.36 + panelUnit * 0.08)),
-            '--gh-sidebar-button-bg': rgbaFromColor(activeTint, hasWallpaper ? (0.32 + panelUnit * 0.12) : (0.32 + panelUnit * 0.10)),
+            '--gh-right-overlay': hasWallpaper
+                ? buildLinearGradient('180deg', [
+                    `${rgbaFromColor(panelTop, 0.56 + panelUnit * 0.16)} 0%`,
+                    `${rgbaFromColor(panelBottom, 0.42 + panelUnit * 0.14)} 100%`
+                ])
+                : '#f9f9f9',
+            '--gh-panel-card-bg': hasWallpaper
+                ? buildLinearGradient('135deg', [
+                    `${rgbaFromColor(cardTop, 0.48 + panelUnit * 0.16)} 0%`,
+                    `${rgbaFromColor(cardBottom, 0.36 + panelUnit * 0.14)} 100%`
+                ])
+                : '#ffffff',
+            '--gh-panel-card-border': hasWallpaper
+                ? rgbaFromColor(panelBorder, 0.32 + panelUnit * 0.12)
+                : 'rgba(0, 0, 0, 0.10)',
+            '--gh-sidebar-button-bg': hasWallpaper
+                ? rgbaFromColor(activeTint, 0.32 + panelUnit * 0.12)
+                : '#ececec',
             '--gh-msg-user-bg': buildLinearGradient('135deg', [
                 `${rgbaFromColor(userTop, hasWallpaper ? (0.26 + messageUnit * 0.18) : 0.96)} 0%`,
                 `${rgbaFromColor(userBottom, hasWallpaper ? (0.10 + messageUnit * 0.10) : 0.88)} 100%`
@@ -1525,15 +1603,21 @@
                 ])
                 : 'transparent',
             '--gh-msg-border': rgbaFromColor(messageBorder, hasWallpaper ? (0.24 + messageUnit * 0.12) : (0.38 + messageUnit * 0.10)),
-            '--gh-msg-shadow': `0 14px 32px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.08 + messageUnit * 0.08) : (0.10 + messageUnit * 0.06))}`,
+            '--gh-msg-shadow': hasWallpaper
+                ? `0 14px 32px ${rgbaFromColor(shadowTint, 0.08 + messageUnit * 0.08)}`
+                : 'none',
             '--gh-msg-blur': messageBlur,
             '--gh-panel-blur': panelBlur,
             '--gh-composer-blur': composerBlur,
-            '--gh-composer-shadow': `0 10px 24px ${rgbaFromColor(shadowTint, hasWallpaper ? (0.08 + composerUnit * 0.08) : (0.10 + composerUnit * 0.06))}`,
-            '--gh-page-sidebar-bg-light': buildLinearGradient('180deg', [
-                `${rgbaFromColor(sidebarTop, hasWallpaper ? (0.30 + panelUnit * 0.14) : 0.98)} 0%`,
-                `${rgbaFromColor(sidebarBottom, hasWallpaper ? (0.18 + panelUnit * 0.12) : 0.94)} 100%`
-            ]),
+            '--gh-composer-shadow': hasWallpaper
+                ? `0 10px 24px ${rgbaFromColor(shadowTint, 0.08 + composerUnit * 0.08)}`
+                : 'none',
+            '--gh-page-sidebar-bg-light': hasWallpaper
+                ? buildLinearGradient('180deg', [
+                    `${rgbaFromColor(sidebarTop, 0.30 + panelUnit * 0.14)} 0%`,
+                    `${rgbaFromColor(sidebarBottom, 0.18 + panelUnit * 0.12)} 100%`
+                ])
+                : '#f9f9f9',
             '--gh-page-chat-bg-light': 'transparent',
             '--gh-page-composer-bg-light': buildLinearGradient('135deg', [
                 `${rgbaFromColor(composerTop, hasWallpaper ? (0.80 + composerUnit * 0.14) : 0.97)} 0%`,
@@ -1634,6 +1718,10 @@
         ISSUE_URL,
         REPO_URL,
         AUTHOR_GITHUB_URL,
+        EXTENSION_NAME,
+        EXTENSION_VERSION,
+        EXTENSION_AUTHOR,
+        EXTENSION_LICENSE,
         THEME_HOST_ATTRS,
         DEFAULT_THEME_CONFIG,
         DEFAULT_SETTINGS,

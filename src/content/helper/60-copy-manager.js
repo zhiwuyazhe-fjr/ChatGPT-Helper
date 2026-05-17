@@ -168,14 +168,10 @@
                 // 清理 LaTeX（移除可能的转义字符）
                 latex = latex.trim().replace(/^\\\(|\\\)$/g, '').replace(/^\\\[|\\\]$/g, '');
 
-                let copyText = latex;
-                if (this.settings.formulaCopy?.delimiterEnabled !== false) {
-                    // 判断是块级还是行内（根据元素大小或类名）
-                    const isBlock = mathEl.classList.contains('katex-display') ||
-                        mathEl.offsetHeight > 40 ||
-                        mathEl.closest('[class*="block"]');
-                    copyText = isBlock ? `$$${latex}$$` : `$${latex}$`;
-                }
+                const isBlock = mathEl.classList.contains('katex-display') ||
+                    mathEl.offsetHeight > 40 ||
+                    mathEl.closest('[class*="block"]');
+                const copyText = isBlock ? `$$${latex}$$` : `$${latex}$`;
 
                 navigator.clipboard
                     .writeText(copyText)

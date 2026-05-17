@@ -134,20 +134,21 @@
                 btnGroup.classList.remove('collapsed');
             }
 
-            const btnOrder = this.settings.collapsedButtonsOrder || DEFAULT_COLLAPSED_BUTTONS_ORDER;
+            const savedOrder = Array.isArray(this.settings.collapsedButtonsOrder)
+                ? this.settings.collapsedButtonsOrder
+                : [];
+            const orderedIds = Array.from(new Set(savedOrder
+                .map(item => item?.id)
+                .filter(id => COLLAPSED_BUTTON_DEFS[id])));
+            DEFAULT_COLLAPSED_BUTTONS_ORDER.forEach((item) => {
+                if (!orderedIds.includes(item.id)) orderedIds.push(item.id);
+            });
+            const btnOrder = orderedIds.map(id => ({ id, enabled: true }));
             const quickButtons = {};
 
             btnOrder.forEach((btnConfig, index) => {
                 const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
                 if (!def) return;
-
-                // 检查功能是否启用
-                if (btnConfig.id === 'anchor' && this.settings.anchorEnabled === false) return;
-                if (btnConfig.id === 'theme' && this.settings.themeEnabled === false) return;
-                if (btnConfig.id === 'manualAnchor' && this.settings.manualAnchorEnabled === false) return;
-
-                const isEnabled = def.canToggle ? (btnConfig.enabled !== false) : true;
-                if (!isEnabled) return;
 
                 // 添加分隔线（在类型切换时）
                 if (index > 0 && def.isPanelOnly && !COLLAPSED_BUTTON_DEFS[btnOrder[index - 1].id]?.isPanelOnly) {

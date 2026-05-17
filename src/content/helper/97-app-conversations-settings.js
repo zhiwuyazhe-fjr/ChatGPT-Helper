@@ -105,179 +105,85 @@
             }
         },
 
-        createCollapsibleSection(title, content, options = {}) {
-            const { defaultExpanded = false } = options;
-            const section = createElement('div', {
-                className: 'chatgpt-helper-setting-section',
-                style: {
-                    marginBottom: '18px',
-                    background: 'var(--gh-bg-secondary)',
-                    borderRadius: '16px',
-                    border: '1px solid var(--gh-border)',
-                    overflow: 'visible'
-                }
+        renderSettings(container) {
+            const settingsContent = createElement('div', {
+                className: 'chatgpt-helper-settings-scroll chatgpt-helper-settings-compact'
             });
 
-            // 标题栏（可点击折叠/展开）
-            const header = createElement('div', {
-                className: 'chatgpt-helper-setting-section-header',
-                style: {
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    userSelect: 'none',
-                    padding: '16px 18px',
-                    fontSize: '14px',
-                    fontWeight: '700',
-                    color: 'var(--gh-text)',
-                    transition: 'background 0.2s, border-color 0.2s',
-                    textAlign: 'center',
-                    position: 'relative'
-                }
-            });
-
-            const headerLeft = createElement('div', {
-                className: 'chatgpt-helper-setting-section-header-inner',
-                style: 'display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;'
-            });
-            // 箭头
-            const arrow = createElement('span', {
-                style: 'font-size: 12px; color: var(--gh-text-secondary); transition: transform 0.2s; display: inline-block; position: absolute; right: 2px;',
-                className: 'collapse-arrow'
-            }, '▶');
-
-            const headerTitle = createElement('span', {
-                className: 'chatgpt-helper-setting-section-title'
-            }, title);
-            headerLeft.appendChild(arrow);
-            headerLeft.appendChild(headerTitle);
-
-            header.appendChild(headerLeft);
-            section.appendChild(header);
-
-            // 内容容器
-            const contentContainer = createElement('div', {
-                className: 'chatgpt-helper-setting-section-content',
-                style: `display: ${defaultExpanded ? 'block' : 'none'}; padding: 0 16px 16px 16px;`
-            });
-            contentContainer.appendChild(content);
-
-            // 切换折叠状态
-            let isExpanded = defaultExpanded;
-            const updateState = () => {
-                contentContainer.style.display = isExpanded ? 'block' : 'none';
-                arrow.style.transform = isExpanded ? 'rotate(90deg)' : 'rotate(0deg)';
-                header.style.background = isExpanded ? 'var(--gh-hover)' : 'transparent';
+            const rerenderSettings = () => {
+                const panel = this.panel?.querySelector('#settings-content');
+                if (!panel) return;
+                clearElement(panel);
+                this.renderSettings(panel);
             };
-            // 初始化状态
-            if (defaultExpanded) {
-                arrow.style.transform = 'rotate(90deg)';
-                header.style.background = 'var(--gh-hover)';
-            }
-
-            header.addEventListener('click', () => {
-                isExpanded = !isExpanded;
-                updateState();
-            });
-            header.addEventListener('mouseenter', () => {
-                if (!isExpanded) {
-                    header.style.background = 'var(--gh-hover)';
+            const ensureReadingHistory = () => {
+                if (!this.settings.readingHistory) {
+                    this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
                 }
-            });
-            header.addEventListener('mouseleave', () => {
-                if (!isExpanded) {
-                    header.style.background = 'transparent';
-                }
-            });
+                return this.settings.readingHistory;
+            };
+            const ensureOutline = () => {
+                if (!this.settings.outline) this.settings.outline = {};
+                return this.settings.outline;
+            };
+            const ensureTabSettings = () => {
+                if (!this.settings.tabSettings) this.settings.tabSettings = {};
+                return this.settings.tabSettings;
+            };
+            const ensureFormulaCopy = () => {
+                if (!this.settings.formulaCopy) this.settings.formulaCopy = { enabled: true };
+                return this.settings.formulaCopy;
+            };
+            const ensureTableCopy = () => {
+                if (!this.settings.tableCopy) this.settings.tableCopy = { enabled: true };
+                return this.settings.tableCopy;
+            };
 
-            section.appendChild(contentContainer);
-            return section;
-        },
+            const savedLanguagePreference = window.GM_getValue(SETTING_KEYS.LANGUAGE, 'auto');
+            const languageValue = savedLanguagePreference === 'auto' || I18N[savedLanguagePreference]
+                ? savedLanguagePreference
+                : 'auto';
+            const tabSettings = ensureTabSettings();
 
-        createSettingSection(title, items, options = {}) {
-            const { collapsible = true, defaultExpanded = false } = options;
-
-            // 创建内容容器
-            const content = createElement('div', {
-                style: {
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px'
-                }
-            });
-
-            items.forEach(item => {
-                const itemEl = createElement('div', {
-                    className: 'chatgpt-helper-setting-item',
-                    style: {
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '14px 16px',
-                        borderBottom: 'none'
-                    }
-                });
-
-                const label = createElement('div', {
-                    className: 'chatgpt-helper-setting-item-label',
-                    style: {
-                        fontSize: '14px',
-                        color: 'var(--gh-text)',
-                        flex: 1,
-                        paddingLeft: '2px',
-                        textAlign: 'left'
-                    }
-                }, item.label);
-                itemEl.appendChild(label);
-
-                let control;
+            const createCompactControl = (item) => {
+                let control = null;
                 if (item.type === 'toggle') {
                     control = createElement('button', {
-                        className: `chatgpt-helper-toggle${item.value ? ' active' : ''}`,
+                        className: 'chatgpt-helper-toggle' + (item.value ? ' active' : ''),
                         type: 'button',
+                        'aria-label': item.label,
                         'aria-pressed': item.value ? 'true' : 'false'
                     });
-                    const toggleCircle = createElement('div', {
-                        className: 'chatgpt-helper-toggle-knob'
-                    });
-                    control.appendChild(toggleCircle);
-                    
-                    const handleToggle = (e) => {
-                        if (e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }
+                    control.appendChild(createElement('div', { className: 'chatgpt-helper-toggle-knob' }));
+                    control.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         const newValue = !item.value;
                         item.value = newValue;
                         control.classList.toggle('active', newValue);
                         control.setAttribute('aria-pressed', newValue ? 'true' : 'false');
                         if (item.onChange) {
-                            try {
-                                item.onChange(newValue);
-                            } catch (err) {
-                                console.error('[ChatGPT Helper] Toggle onChange error:', err);
+                            const result = item.onChange(newValue);
+                            if (result === false) {
+                                item.value = !newValue;
+                                control.classList.toggle('active', !newValue);
+                                control.setAttribute('aria-pressed', !newValue ? 'true' : 'false');
                             }
                         }
-                    };
-                    
-                    control.addEventListener('click', handleToggle);
-                    control.addEventListener('mousedown', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
                     });
                 } else if (item.type === 'select') {
                     const options = item.options || [];
                     const selected = options.find(opt => String(opt.value) === String(item.value)) || options[0];
                     control = createElement('div', {
-                        className: 'chatgpt-helper-custom-select',
+                        className: 'chatgpt-helper-custom-select chatgpt-helper-settings-compact-select',
                         'data-value': selected ? String(selected.value) : ''
                     });
                     const trigger = createElement('button', {
                         className: 'chatgpt-helper-custom-select-trigger',
                         type: 'button',
                         'aria-haspopup': 'listbox',
-                        'aria-expanded': 'false'
+                        'aria-expanded': 'false',
+                        'aria-label': item.label
                     });
                     const triggerText = createElement('span', {
                         className: 'chatgpt-helper-custom-select-value'
@@ -285,7 +191,7 @@
                     const triggerIcon = createElement('span', {
                         className: 'chatgpt-helper-custom-select-icon',
                         'aria-hidden': 'true'
-                    }, '▾');
+                    }, '\u25be');
                     trigger.appendChild(triggerText);
                     trigger.appendChild(triggerIcon);
 
@@ -293,7 +199,6 @@
                         className: 'chatgpt-helper-custom-select-menu',
                         role: 'listbox'
                     });
-
                     const closeMenu = () => {
                         control.classList.remove('open');
                         trigger.setAttribute('aria-expanded', 'false');
@@ -313,19 +218,12 @@
                             optionEl.setAttribute('aria-selected', isSelected ? 'true' : 'false');
                         });
                         closeMenu();
-                        if (item.onChange) {
-                            try {
-                                item.onChange(newValue);
-                            } catch (err) {
-                                console.error('[ChatGPT Helper] Select onChange error:', err);
-                            }
-                        }
+                        if (item.onChange) item.onChange(newValue);
                     };
-
                     options.forEach(opt => {
                         const isSelected = String(opt.value) === String(item.value);
                         const option = createElement('button', {
-                            className: `chatgpt-helper-custom-select-option${isSelected ? ' selected' : ''}`,
+                            className: 'chatgpt-helper-custom-select-option' + (isSelected ? ' selected' : ''),
                             type: 'button',
                             role: 'option',
                             'aria-selected': isSelected ? 'true' : 'false',
@@ -338,39 +236,10 @@
                         });
                         menu.appendChild(option);
                     });
-
                     trigger.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        if (control.classList.contains('open')) closeMenu();
-                        else openMenu();
-                    });
-                    trigger.addEventListener('keydown', (e) => {
-                        if (e.key === 'Escape') {
-                            closeMenu();
-                        } else if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            openMenu();
-                            const current = menu.querySelector('.chatgpt-helper-custom-select-option.selected')
-                                || menu.querySelector('.chatgpt-helper-custom-select-option');
-                            if (current) current.focus();
-                        }
-                    });
-                    menu.addEventListener('keydown', (e) => {
-                        const optionEls = Array.from(menu.querySelectorAll('.chatgpt-helper-custom-select-option'));
-                        const currentIndex = optionEls.indexOf(document.activeElement);
-                        if (e.key === 'Escape') {
-                            closeMenu();
-                            trigger.focus();
-                        } else if (e.key === 'ArrowDown') {
-                            e.preventDefault();
-                            const next = optionEls[Math.min(optionEls.length - 1, currentIndex + 1)] || optionEls[0];
-                            if (next) next.focus();
-                        } else if (e.key === 'ArrowUp') {
-                            e.preventDefault();
-                            const prev = optionEls[Math.max(0, currentIndex - 1)] || optionEls[optionEls.length - 1];
-                            if (prev) prev.focus();
-                        }
+                        control.classList.contains('open') ? closeMenu() : openMenu();
                     });
                     control.addEventListener('focusout', (e) => {
                         if (!control.contains(e.relatedTarget)) closeMenu();
@@ -378,764 +247,427 @@
                     control.appendChild(trigger);
                     control.appendChild(menu);
                 } else if (item.type === 'number') {
-                    const inputAttrs = {
+                    control = createElement('input', {
+                        className: 'chatgpt-helper-settings-compact-input',
                         type: 'number',
                         value: item.value,
                         min: item.min !== undefined ? item.min : 200,
                         max: item.max !== undefined ? item.max : 600,
-                        style: {
-                            width: '100px',
-                            padding: '6px 8px',
-                            border: '1px solid var(--gh-border)',
-                            borderRadius: '6px',
-                            background: 'var(--gh-input-bg)',
-                            color: 'var(--gh-text)',
-                            fontSize: '14px'
-                        }
+                        step: item.step !== undefined ? item.step : 1,
+                        'aria-label': item.label
+                    });
+                    const commit = () => {
+                        if (item.onChange) item.onChange(control.value);
                     };
-                    if (item.step !== undefined) {
-                        inputAttrs.step = item.step;
-                    }
-                    control = createElement('input', inputAttrs);
-                    const handleNumberChange = () => {
-                        if (item.onChange) {
-                            try {
-                                item.onChange(control.value);
-                            } catch (err) {
-                                console.error('[ChatGPT Helper] Number onChange error:', err);
-                            }
-                        }
-                    };
-                    control.addEventListener('change', handleNumberChange);
-                    control.addEventListener('blur', handleNumberChange);
+                    control.addEventListener('change', commit);
+                    control.addEventListener('blur', commit);
                     control.addEventListener('keydown', (e) => {
                         if (e.key === 'Enter') {
                             e.preventDefault();
                             control.blur();
-                            handleNumberChange();
+                            commit();
                         }
                     });
                 } else if (item.type === 'text') {
                     control = createElement('input', {
+                        className: 'chatgpt-helper-settings-compact-input chatgpt-helper-settings-compact-text',
                         type: 'text',
                         value: item.value || '',
                         placeholder: item.placeholder || '',
-                        style: {
-                            flex: 1,
-                            maxWidth: '200px',
-                            padding: '6px 12px',
-                            border: '1px solid var(--gh-border)',
-                            borderRadius: '6px',
-                            background: 'var(--gh-input-bg)',
-                            color: 'var(--gh-text)',
-                            fontSize: '14px'
-                        }
+                        'aria-label': item.label
                     });
-                    const handleTextChange = () => {
-                        if (item.onChange) {
-                            try {
-                                item.onChange(control.value);
-                            } catch (err) {
-                                console.error('[ChatGPT Helper] Text onChange error:', err);
-                            }
-                        }
+                    const commit = () => {
+                        if (item.onChange) item.onChange(control.value);
                     };
-                    control.addEventListener('change', handleTextChange);
-                    control.addEventListener('blur', handleTextChange);
+                    control.addEventListener('change', commit);
+                    control.addEventListener('blur', commit);
                     control.addEventListener('keydown', (e) => {
                         if (e.key === 'Enter') {
                             e.preventDefault();
                             control.blur();
-                            handleTextChange();
+                            commit();
                         }
                     });
                 } else if (item.type === 'button') {
                     control = createElement('button', {
-                        className: 'chatgpt-helper-theme-launch-btn',
+                        className: 'chatgpt-helper-theme-launch-btn chatgpt-helper-settings-compact-button',
                         type: 'button'
-                    }, item.buttonText || this.t('openThemeSettings') || 'Open Theme Settings');
+                    }, item.buttonText || item.label);
                     control.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        if (item.onClick) {
-                            try {
-                                item.onClick();
-                            } catch (err) {
-                                console.error('[ChatGPT Helper] Button onClick error:', err);
-                            }
-                        }
+                        if (item.onClick) item.onClick();
                     });
                 }
+                return control;
+            };
 
-                if (control) {
-                    const controls = createElement('div', {
-                        className: 'chatgpt-helper-setting-controls',
-                        style: {
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            flexShrink: 0
-                        }
-                    });
-                    controls.appendChild(control);
-                    itemEl.appendChild(controls);
-                }
-                content.appendChild(itemEl);
-            });
-
-            // 如果支持折叠，使用可折叠区域
-            if (collapsible) {
-                return this.createCollapsibleSection(title, content, { defaultExpanded });
-            } else {
-                // 不支持折叠，直接返回内容
-                const section = createElement('div', {
-                    className: 'chatgpt-helper-setting-section',
-                    style: {
-                        marginBottom: '24px',
-                        padding: '18px',
-                        background: 'var(--gh-bg-secondary)',
-                        borderRadius: '16px',
-                        border: '1px solid var(--gh-border)'
-                    }
-                });
-                const sectionTitle = createElement('div', {
-                    style: {
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        color: 'var(--gh-text-secondary)',
-                        marginBottom: '12px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        paddingLeft: '4px'
-                    }
-                }, title);
-                section.appendChild(sectionTitle);
-                section.appendChild(content);
-                return section;
-            }
-        },
-
-        renderSettings(container) {
-            const settingsContent = createElement('div', {
-                className: 'chatgpt-helper-settings-scroll',
-                style: {
-                    padding: '18px 16px 26px',
-                    overflowY: 'auto',
-                    flex: 1
-                }
-            });
-
-            // 面板设置（可折叠）
-            const panelSection = this.createSettingSection(this.t('panelSettings') || '面板设置', [
-                {
-                    label: this.t('panelWidthLabel') || '面板宽度',
-                    type: 'number',
-                    value: this.settings.panelWidth,
-                    onChange: (val) => {
-                        this.settings.panelWidth = Math.max(200, Math.min(600, parseInt(val) || 320));
-                        this.saveSettings();
-                        this.adjustChatGPTLayout();
-                        this.showToast(this.t('panelWidthUpdated'));
-                    }
-                },
-                {
-                    label: this.t('defaultPanelOpenLabel') || '默认展开面板',
-                    type: 'toggle',
-                    value: this.settings.defaultPanelState,
-                    onChange: (val) => {
-                        this.settings.defaultPanelState = val;
-                        this.saveSettings();
-                    }
-                }
-            ]);
-
-            const themeSection = this.createSettingSection(this.t('themeSettingsSection') || '主题设置', [
-                {
-                    label: this.t('themeDialogTitle') || '主题',
-                    type: 'button',
-                    buttonText: this.t('openThemeSettings') || '打开主题设置',
-                    onClick: () => {
-                        this.openThemeSettingsModal();
-                    }
-                }
-            ], { defaultExpanded: false });
-
-            // 功能设置（可折叠）
-            const featureSection = this.createSettingSection(this.t('featureSettings') || '功能设置', [
-                {
-                    label: this.t('showUserMessagesLabel') || '显示用户消息',
-                    type: 'toggle',
-                    value: this.settings.outline?.showUserQueries !== false,
-                    onChange: (val) => {
-                        if (!this.settings.outline) this.settings.outline = {};
-                        this.settings.outline.showUserQueries = val;
-                        this.saveSettings();
-                        if (this.currentTab === 'outline') {
-                            this.refreshOutline();
-                        }
-                    }
-                },
-                {
-                    label: this.t('preventAutoScrollLabel') || '防止自动滚动',
-                    type: 'toggle',
-                    value: this.settings.preventAutoScroll || false,
-                    onChange: (val) => {
-                        console.log('[ChatGPT Helper] 切换防止自动滚动:', val);
-                        this.settings.preventAutoScroll = val;
-                        this.saveSettings();
-                        if (!this.scrollLockManager) {
-                            console.log('[ChatGPT Helper] 创建新的 ScrollLockManager');
-                            this.scrollLockManager = new ScrollLockManager(this.adapter);
-                        }
-                        console.log('[ChatGPT Helper] 设置 ScrollLockManager.enabled =', val);
-                        this.scrollLockManager.setEnabled(val);
-                        // 验证状态是否正确设置
-                        setTimeout(() => {
-                            const actualEnabled = this.scrollLockManager?.enabled;
-                            console.log('[ChatGPT Helper] 防止自动滚动状态:', {
-                                期望: val,
-                                实际: actualEnabled,
-                                一致: val === actualEnabled
-                            });
-                            if (val !== actualEnabled) {
-                                console.warn('[ChatGPT Helper] 警告：状态不一致！');
-                            }
-                        }, 100);
-                        this.showToast(`${this.t(val ? 'enabled' : 'disabled')} ${this.t('preventAutoScrollLabel')}`);
-                    }
-                },
-                {
-                    label: this.t('tabPlaySoundLabel') || '播放通知声音',
-                    type: 'toggle',
-                    value: this.settings.tabSettings?.notificationSound || false,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.notificationSound = val;
-                        if (this.settings.tabSettings.notificationVolume == null) {
-                            this.settings.tabSettings.notificationVolume = 0.5;
-                        }
-                        this.saveSettings();
-                    }
-                },
-                {
-                    label: this.t('tabVolumeLabel') || '通知音量（0.1-1.0）',
-                    type: 'number',
-                    value: this.settings.tabSettings?.notificationVolume || 0.5,
-                    min: 0.1,
-                    max: 1.0,
-                    step: 0.1,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        let v = parseFloat(val);
-                        if (isNaN(v)) v = 0.5;
-                        v = Math.max(0.1, Math.min(1.0, v));
-                        this.settings.tabSettings.notificationVolume = v;
-                        this.saveSettings();
-                    }
-                },
-                {
-                    label: this.t('tabAutoFocusLabel') || '自动聚焦窗口',
-                    type: 'toggle',
-                    value: this.settings.tabSettings?.autoFocus || false,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.autoFocus = val;
-                        this.saveSettings();
-                    }
-                }
-            ]);
-
-            // 页面设置（可折叠）
-            const pageSection = this.createSettingSection(this.t('pageSettings') || '页面设置', [
-                {
-                    label: this.t('limitPageWidthLabel') || '限制页面宽度',
-                    type: 'toggle',
-                    value: this.settings.pageWidth?.enabled || false,
-                    onChange: (val) => {
-                        if (!this.settings.pageWidth) this.settings.pageWidth = { enabled: false, value: 1200, unit: 'px' };
-                        this.settings.pageWidth.enabled = val;
-                        this.saveSettings();
-                        if (this.widthStyleManager) {
-                            this.widthStyleManager.updateConfig(this.settings.pageWidth);
-                        }
-                        this.showToast(`${this.t(val ? 'enabled' : 'disabled')} ${this.t('limitPageWidthLabel')}`);
-                    }
-                },
-                {
-                    label: this.t('pageWidthValueLabel') || '页面宽度值',
-                    type: 'number',
-                    value: this.settings.pageWidth?.value || 1200,
-                    onChange: (val) => {
-                        if (!this.settings.pageWidth) this.settings.pageWidth = { enabled: false, value: 1200, unit: 'px' };
-                        this.settings.pageWidth.value = Math.max(800, Math.min(2000, parseInt(val) || 1200));
-                        this.saveSettings();
-                        if (this.widthStyleManager && this.settings.pageWidth.enabled) {
-                            this.widthStyleManager.updateConfig(this.settings.pageWidth);
-                        }
-                    }
-                },
-                {
-                    label: this.t('pageWidthUnitLabel') || '宽度单位',
-                    type: 'select',
-                    value: this.settings.pageWidth?.unit || 'px',
-                    options: [
-                        { value: 'px', label: 'px' },
-                        { value: '%', label: '%' },
-                        { value: 'rem', label: 'rem' }
-                    ],
-                    onChange: (val) => {
-                        if (!this.settings.pageWidth) this.settings.pageWidth = { enabled: false, value: 1200, unit: 'px' };
-                        this.settings.pageWidth.unit = val;
-                        this.saveSettings();
-                        if (this.widthStyleManager && this.settings.pageWidth.enabled) {
-                            this.widthStyleManager.updateConfig(this.settings.pageWidth);
-                        }
-                    }
-                }
-            ]);
-
-            // 折叠按钮设置（可折叠）
-            const collapsedContainer = createElement('div', {});
-            const collapsedBtnDesc = createElement('div', {
-                className: 'chatgpt-helper-setting-item-desc',
-                style: 'padding: 0 12px 8px 12px; margin-bottom: 4px;'
-            }, this.t('collapsedButtonsDesc') || '调整折叠面板按钮的显示顺序');
-            collapsedContainer.appendChild(collapsedBtnDesc);
-
-            const currentBtnOrder = this.settings.collapsedButtonsOrder || DEFAULT_COLLAPSED_BUTTONS_ORDER;
-
-            currentBtnOrder.forEach((btnConfig, index) => {
-                const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
-                if (!def) return;
-
-                const item = createElement('div', { className: 'chatgpt-helper-setting-item' });
-                const info = createElement('div', { className: 'chatgpt-helper-setting-item-info' });
+            const createCompactRow = (item) => {
+                const row = createElement('div', { className: 'chatgpt-helper-settings-compact-row' });
                 const label = createElement('div', {
-                    className: 'chatgpt-helper-setting-item-label',
-                    style: 'display: flex; align-items: center;'
+                    className: 'chatgpt-helper-settings-compact-label' + (item.desc ? ' has-desc' : ''),
+                    title: item.desc ? `${item.label} - ${item.desc}` : item.label
                 });
-                const iconSpan = createElement('span', {
-                    className: 'chatgpt-helper-inline-icon-wrap',
-                    style: 'display: inline-flex; width: 24px; min-width: 24px; justify-content: center; align-items: center; margin-right: 6px;'
-                });
-                iconSpan.appendChild(createCollapsedButtonIconNode(def, {
-                    size: 18,
-                    className: 'chatgpt-helper-inline-icon'
-                }));
-                const buttonLabel = def.labelKey ? this.t(def.labelKey) : (def.label || '');
-                const textSpan = createElement('span', {}, buttonLabel);
-                label.appendChild(iconSpan);
-                label.appendChild(textSpan);
-                info.appendChild(label);
-
-                const controls = createElement('div', { className: 'chatgpt-helper-setting-controls' });
-
-                // 可切换的按钮（anchor/theme/manualAnchor）添加开关
-                if (def.canToggle) {
-                    const toggle = createElement('div', {
-                        className: 'setting-toggle' + (btnConfig.enabled ? ' active' : ''),
-                        style: 'transform: scale(0.8); margin-right: 12px;'
-                    });
-                    toggle.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        btnConfig.enabled = !btnConfig.enabled;
-                        toggle.classList.toggle('active', btnConfig.enabled);
-                        this.settings.collapsedButtonsOrder = currentBtnOrder;
-                        this.saveSettings();
-                        this.createCollapsedButtons();
-                        this.showToast(btnConfig.enabled ? (this.t('enabled') || '已启用') : (this.t('disabled') || '已禁用'));
-                    });
-                    controls.appendChild(toggle);
+                label.appendChild(createElement('div', {
+                    className: 'chatgpt-helper-settings-compact-label-text'
+                }, item.label));
+                if (item.desc) {
+                    label.appendChild(createElement('div', {
+                        className: 'chatgpt-helper-settings-compact-desc'
+                    }, item.desc));
                 }
+                row.appendChild(label);
+                const control = createCompactControl(item);
+                if (control) {
+                    const controls = createElement('div', { className: 'chatgpt-helper-settings-compact-controls' });
+                    controls.appendChild(control);
+                    row.appendChild(controls);
+                }
+                return row;
+            };
 
-                // 上下移动按钮
-                const upBtn = createElement('button', {
-                    className: 'prompt-panel-btn chatgpt-helper-order-btn',
-                    title: this.t('moveUp') || '上移'
-                });
-                upBtn.appendChild(createSvgIconNode('arrowUp', { size: 15 }));
-                upBtn.disabled = index === 0;
+            const createCompactSection = (title, items) => {
+                const section = createElement('section', { className: 'chatgpt-helper-settings-compact-section' });
+                section.appendChild(createElement('div', { className: 'chatgpt-helper-settings-compact-title' }, title));
+                const list = createElement('div', { className: 'chatgpt-helper-settings-compact-list' });
+                items.filter(Boolean).forEach((item) => list.appendChild(createCompactRow(item)));
+                section.appendChild(list);
+                return section;
+            };
 
-                const downBtn = createElement('button', {
-                    className: 'prompt-panel-btn chatgpt-helper-order-btn',
-                    title: this.t('moveDown') || '下移'
-                });
-                downBtn.appendChild(createSvgIconNode('arrowDown', { size: 15 }));
-                downBtn.disabled = index === currentBtnOrder.length - 1;
-
-                [upBtn, downBtn].forEach((btn) => {
-                    if (btn.disabled) {
-                        btn.style.opacity = '0.4';
-                        btn.style.cursor = 'not-allowed';
+            const defaultTabOrder = ['prompts', 'outline', 'conversations', 'export'];
+            const getTabLabel = (tabId) => tabId === 'prompts' ? this.t('tabPrompts') :
+                tabId === 'outline' ? this.t('tabOutline') :
+                    tabId === 'conversations' ? this.t('tabConversations') :
+                        tabId === 'export' ? this.t('tabExport') : tabId;
+            const createTabVisibilityItem = (tabId) => ({
+                label: getTabLabel(tabId),
+                type: 'toggle',
+                value: this.settings.tabOrder?.includes(tabId) !== false,
+                onChange: (val) => {
+                    if (!Array.isArray(this.settings.tabOrder) || this.settings.tabOrder.length === 0) {
+                        this.settings.tabOrder = [...defaultTabOrder];
+                    }
+                    if (val) {
+                        const next = [...this.settings.tabOrder, tabId]
+                            .filter((id, index, arr) => defaultTabOrder.includes(id) && arr.indexOf(id) === index)
+                            .sort((a, b) => defaultTabOrder.indexOf(a) - defaultTabOrder.indexOf(b));
+                        this.settings.tabOrder = next;
                     } else {
-                        btn.style.opacity = '1';
-                        btn.style.cursor = 'pointer';
+                        const next = this.settings.tabOrder.filter(id => id !== tabId);
+                        if (next.length === 0) {
+                            this.showToast(this.t('operationFailed') || 'Operation failed');
+                            return false;
+                        }
+                        this.settings.tabOrder = next;
+                        if (this.currentTab === tabId) {
+                            this.currentTab = next[0];
+                        }
                     }
-                });
-
-                upBtn.addEventListener('click', () => {
-                    if (index > 0) {
-                        const newOrder = [...currentBtnOrder];
-                        [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
-                        this.settings.collapsedButtonsOrder = newOrder;
-                        this.saveSettings();
-                        this.createCollapsedButtons();
-                        this.showToast(this.t('buttonOrderUpdated') || '已更新按钮顺序');
-                    }
-                });
-
-                downBtn.addEventListener('click', () => {
-                    if (index < currentBtnOrder.length - 1) {
-                        const newOrder = [...currentBtnOrder];
-                        [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
-                        this.settings.collapsedButtonsOrder = newOrder;
-                        this.saveSettings();
-                        this.createCollapsedButtons();
-                        this.showToast(this.t('buttonOrderUpdated') || '已更新按钮顺序');
-                    }
-                });
-
-                controls.appendChild(upBtn);
-                controls.appendChild(downBtn);
-
-                item.appendChild(info);
-                item.appendChild(controls);
-                collapsedContainer.appendChild(item);
+                    this.saveSettings();
+                    this.createUI();
+                    return true;
+                }
             });
+            const getQuickButtonOrder = () => {
+                const savedOrder = Array.isArray(this.settings.collapsedButtonsOrder)
+                    ? this.settings.collapsedButtonsOrder
+                    : [];
+                const orderedIds = Array.from(new Set(savedOrder
+                    .map(item => item?.id)
+                    .filter(id => COLLAPSED_BUTTON_DEFS[id])));
+                DEFAULT_COLLAPSED_BUTTONS_ORDER.forEach((item) => {
+                    if (!orderedIds.includes(item.id)) orderedIds.push(item.id);
+                });
+                return orderedIds.map(id => ({ id, enabled: true }));
+            };
+            const createQuickButtonsSection = () => {
+                const section = createElement('section', { className: 'chatgpt-helper-settings-compact-section' });
+                section.appendChild(createElement('div', {
+                    className: 'chatgpt-helper-settings-compact-title'
+                }, this.t('settingsGroupQuickButtons') || 'Quick Buttons'));
+                const list = createElement('div', { className: 'chatgpt-helper-settings-compact-list' });
+                const order = getQuickButtonOrder();
+                order.forEach((btnConfig, index) => {
+                    const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
+                    if (!def) return;
+                    const row = createElement('div', {
+                        className: 'chatgpt-helper-settings-compact-row chatgpt-helper-settings-quick-button-row'
+                    });
+                    const label = createElement('div', {
+                        className: 'chatgpt-helper-settings-compact-label chatgpt-helper-settings-icon-label'
+                    });
+                    const icon = createElement('span', { className: 'chatgpt-helper-inline-icon-wrap' });
+                    icon.appendChild(createCollapsedButtonIconNode(def, {
+                        size: 16,
+                        className: 'chatgpt-helper-inline-icon'
+                    }));
+                    label.appendChild(icon);
+                    label.appendChild(createElement('span', {}, def.labelKey ? this.t(def.labelKey) : (def.label || btnConfig.id)));
 
-            const collapsedSection = this.createCollapsibleSection(this.t('collapsedButtonsTitle') || '折叠按钮', collapsedContainer, { defaultExpanded: false });
+                    const controls = createElement('div', { className: 'chatgpt-helper-settings-compact-controls' });
+                    const move = (delta) => {
+                        const nextIndex = index + delta;
+                        if (nextIndex < 0 || nextIndex >= order.length) return;
+                        const nextOrder = [...order];
+                        [nextOrder[index], nextOrder[nextIndex]] = [nextOrder[nextIndex], nextOrder[index]];
+                        this.settings.collapsedButtonsOrder = nextOrder.map(item => ({ id: item.id, enabled: true }));
+                        this.saveSettings();
+                        this.createCollapsedButtons();
+                        this.showToast(this.t('buttonOrderUpdated') || 'Button order updated');
+                        rerenderSettings();
+                    };
+                    const upBtn = createElement('button', {
+                        className: 'prompt-panel-btn chatgpt-helper-order-btn',
+                        title: this.t('moveUp') || 'Move Up',
+                        type: 'button'
+                    });
+                    upBtn.appendChild(createSvgIconNode('arrowUp', { size: 14 }));
+                    upBtn.disabled = index === 0;
+                    upBtn.addEventListener('click', () => move(-1));
+                    const downBtn = createElement('button', {
+                        className: 'prompt-panel-btn chatgpt-helper-order-btn',
+                        title: this.t('moveDown') || 'Move Down',
+                        type: 'button'
+                    });
+                    downBtn.appendChild(createSvgIconNode('arrowDown', { size: 14 }));
+                    downBtn.disabled = index === order.length - 1;
+                    downBtn.addEventListener('click', () => move(1));
+                    controls.appendChild(upBtn);
+                    controls.appendChild(downBtn);
+                    row.appendChild(label);
+                    row.appendChild(controls);
+                    list.appendChild(row);
+                });
+                section.appendChild(list);
+                return section;
+            };
 
-            // Tab顺序设置（可折叠）
-            const tabOrderSection = this.createSettingSection(this.t('tabOrderSettings') || 'tab栏功能', [
-                {
-                    label: this.t('tabPrompts') || '提示词',
-                    type: 'toggle',
-                    value: this.settings.tabOrder?.includes('prompts') !== false,
-                    onChange: (val) => {
-                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
-                        if (val && !this.settings.tabOrder.includes('prompts')) {
-                            this.settings.tabOrder.push('prompts');
-                        } else if (!val) {
-                            this.settings.tabOrder = this.settings.tabOrder.filter(t => t !== 'prompts');
+            const sections = [
+                createCompactSection(this.t('settingsGroupGeneral') || 'General', [
+                    {
+                        label: this.t('themeDialogTitle') || 'Theme',
+                        type: 'button',
+                        buttonText: this.t('openThemeSettings') || 'Open Theme Settings',
+                        onClick: () => this.openThemeSettingsModal()
+                    },
+                    {
+                        label: this.t('language') || 'Interface Language',
+                        type: 'select',
+                        value: languageValue,
+                        options: [
+                            { value: 'auto', label: this.t('autoDetect') },
+                            { value: 'zh-CN', label: this.t('chinese') },
+                            { value: 'en', label: this.t('english') }
+                        ],
+                        onChange: (val) => {
+                            window.GM_setValue(SETTING_KEYS.LANGUAGE, val);
+                            setCurrentLang(val === 'auto' ? detectLanguage() : val);
+                            if (this.syncExporterLanguage) this.syncExporterLanguage();
+                            this.lang = val;
+                            this.selectedCategory = this.t('allCategory');
+                            if (!window.GM_getValue(SETTING_KEYS.PROMPTS, null)) {
+                                this.prompts = createDefaultPrompts();
+                            }
+                            this.createUI();
+                            this.showToast(this.t('languageChanged'));
                         }
-                        this.saveSettings();
-                        this.createUI();
-                    }
-                },
-                {
-                    label: this.t('tabOutline') || '大纲',
-                    type: 'toggle',
-                    value: this.settings.tabOrder?.includes('outline') !== false,
-                    onChange: (val) => {
-                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
-                        if (val && !this.settings.tabOrder.includes('outline')) {
-                            this.settings.tabOrder.push('outline');
-                        } else if (!val) {
-                            this.settings.tabOrder = this.settings.tabOrder.filter(t => t !== 'outline');
-                        }
-                        this.saveSettings();
-                        this.createUI();
-                    }
-                },
-                {
-                    label: this.t('tabConversations') || '会话',
-                    type: 'toggle',
-                    value: this.settings.tabOrder?.includes('conversations') !== false,
-                    onChange: (val) => {
-                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
-                        if (val && !this.settings.tabOrder.includes('conversations')) {
-                            this.settings.tabOrder.push('conversations');
-                        } else if (!val) {
-                            this.settings.tabOrder = this.settings.tabOrder.filter(t => t !== 'conversations');
-                        }
-                        this.saveSettings();
-                        this.createUI();
-                    }
-                },
-                {
-                    label: this.t('tabExport') || '导出',
-                    type: 'toggle',
-                    value: this.settings.tabOrder?.includes('export') !== false,
-                    onChange: (val) => {
-                        if (!this.settings.tabOrder) this.settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
-                        if (val && !this.settings.tabOrder.includes('export')) {
-                            this.settings.tabOrder.push('export');
-                        } else if (!val) {
-                            this.settings.tabOrder = this.settings.tabOrder.filter(t => t !== 'export');
-                        }
-                        this.saveSettings();
-                        this.createUI();
-                    }
-                }
-            ]);
-
-            const savedLanguagePreference = window.GM_getValue(SETTING_KEYS.LANGUAGE, 'auto');
-            const languageValue = savedLanguagePreference === 'auto' || I18N[savedLanguagePreference]
-                ? savedLanguagePreference
-                : 'auto';
-
-            // 语言设置（可折叠）
-            const languageSection = this.createSettingSection(t('languageSettings'), [
-                {
-                    label: t('language'),
-                    type: 'select',
-                    value: languageValue,
-                    options: [
-                        { value: 'auto', label: t('autoDetect') },
-                        { value: 'zh-CN', label: t('chinese') },
-                        { value: 'en', label: t('english') }
-                    ],
-                    onChange: (val) => {
-                        window.GM_setValue(SETTING_KEYS.LANGUAGE, val);
-                        setCurrentLang(val === 'auto' ? detectLanguage() : val);
-                        if (this.syncExporterLanguage) {
-                            this.syncExporterLanguage();
-                        }
-                        this.lang = val;
-                        this.selectedCategory = this.t('allCategory');
-                        if (!window.GM_getValue(SETTING_KEYS.PROMPTS, null)) {
-                            this.prompts = createDefaultPrompts();
-                        }
-                        // 重新渲染UI以应用新语言
-                        this.createUI();
-                        this.showToast(this.t('languageChanged'));
-                    }
-                }
-            ]);
-
-            // 阅读历史设置（可折叠）
-            const readingHistorySection = this.createSettingSection(this.t('readingHistory') || '阅读历史', [
-                {
-                    label: this.t('enableReadingHistoryLabel') || '启用阅读历史',
-                    type: 'toggle',
-                    value: this.settings.readingHistory?.persistence !== false,
-                    onChange: (val) => {
-                        if (!this.settings.readingHistory) this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
-                        this.settings.readingHistory.persistence = val;
-                        this.saveSettings();
-                        if (val && this.readingProgressManager) {
-                            this.readingProgressManager.startRecording();
-                        }
-                        this.showToast(`${this.t(val ? 'enabled' : 'disabled')} ${this.t('readingHistory')}`);
-                    }
-                },
-                {
-                    label: this.t('autoRestoreLabel') || '自动跳转',
-                    type: 'toggle',
-                    value: this.settings.readingHistory?.autoRestore || false,
-                    onChange: (val) => {
-                        if (!this.settings.readingHistory) this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
-                        this.settings.readingHistory.autoRestore = val;
-                        this.saveSettings();
-                        this.showToast(`${this.t(val ? 'enabled' : 'disabled')} ${this.t('autoRestoreLabel')}`);
-                    }
-                },
-                {
-                    label: this.t('historyDaysLabel') || '历史保留时间（天）',
-                    type: 'number',
-                    value: this.settings.readingHistory?.cleanupDays || 30,
-                    min: -1,
-                    max: 365,
-                    onChange: (val) => {
-                        if (!this.settings.readingHistory) this.settings.readingHistory = { persistence: true, autoRestore: false, cleanupDays: 30 };
-                        this.settings.readingHistory.cleanupDays = parseInt(val) || 30;
-                        this.saveSettings();
-                        if (this.readingProgressManager) {
-                            this.readingProgressManager.cleanup();
+                    },
+                    {
+                        label: this.t('defaultPanelOpenLabel') || 'Open Panel by Default',
+                        type: 'toggle',
+                        value: this.settings.defaultPanelState,
+                        onChange: (val) => {
+                            this.settings.defaultPanelState = val;
+                            this.saveSettings();
                         }
                     }
-                }
-            ]);
-
-            // 大纲设置（可折叠）
-            const outlineSettingsSection = this.createSettingSection(this.t('outlineSettings') || '大纲设置', [
-                {
-                    label: this.t('autoUpdateOutlineLabel') || '对话期间自动更新大纲',
-                    type: 'toggle',
-                    value: this.settings.outline?.autoUpdate !== false,
-                    onChange: (val) => {
-                        if (!this.settings.outline) this.settings.outline = {};
-                        this.settings.outline.autoUpdate = val;
-                        this.saveSettings();
-                        if (this.outlineManager) {
-                            this.outlineManager.updateAutoUpdateState();
+                ]),
+                createQuickButtonsSection(),
+                createCompactSection(this.t('settingsGroupReadingNavigation') || 'Reading & Navigation', [
+                    {
+                        label: this.t('preventAutoScrollLabel') || 'Prevent Auto Scroll',
+                        desc: this.t('preventAutoScrollDesc') || 'Keep the page from jumping to the latest reply while you are reading earlier content.',
+                        type: 'toggle',
+                        value: this.settings.preventAutoScroll || false,
+                        onChange: (val) => {
+                            this.settings.preventAutoScroll = val;
+                            this.saveSettings();
+                            if (!this.scrollLockManager) {
+                                this.scrollLockManager = new ScrollLockManager(this.adapter);
+                            }
+                            this.scrollLockManager.setEnabled(val);
+                            this.showToast(this.t(val ? 'enabled' : 'disabled') + ' ' + this.t('preventAutoScrollLabel'));
+                        }
+                    },
+                    {
+                        label: this.t('enableReadingHistoryLabel') || 'Reading History',
+                        desc: this.t('enableReadingHistoryDesc') || 'Remember the last reading position for each conversation.',
+                        type: 'toggle',
+                        value: this.settings.readingHistory?.persistence !== false,
+                        onChange: (val) => {
+                            const cfg = ensureReadingHistory();
+                            cfg.persistence = val;
+                            this.saveSettings();
+                            if (val && this.readingProgressManager) this.readingProgressManager.startRecording();
+                            this.showToast(this.t(val ? 'enabled' : 'disabled') + ' ' + this.t('readingHistory'));
+                        }
+                    },
+                    {
+                        label: this.t('autoRestoreLabel') || 'Auto Restore Position',
+                        desc: this.t('autoRestoreDesc') || 'Open a conversation at the last remembered reading position.',
+                        type: 'toggle',
+                        value: this.settings.readingHistory?.autoRestore || false,
+                        onChange: (val) => {
+                            const cfg = ensureReadingHistory();
+                            cfg.autoRestore = val;
+                            this.saveSettings();
+                            this.showToast(this.t(val ? 'enabled' : 'disabled') + ' ' + this.t('autoRestoreLabel'));
+                        }
+                    },
+                    {
+                        label: this.t('showUserMessagesLabel') || 'Show User Messages',
+                        desc: this.t('showUserMessagesDesc') || 'Include your questions as outline nodes.',
+                        type: 'toggle',
+                        value: this.settings.outline?.showUserQueries !== false,
+                        onChange: (val) => {
+                            const cfg = ensureOutline();
+                            cfg.showUserQueries = val;
+                            this.saveSettings();
+                            if (this.currentTab === 'outline') this.refreshOutline();
+                        }
+                    },
+                    {
+                        label: this.t('outlineSyncScrollLabel') || 'Outline Follows Reading Position',
+                        desc: this.t('outlineSyncScrollDesc') || 'Highlight the matching outline item as you scroll the conversation.',
+                        type: 'toggle',
+                        value: this.settings.outline?.syncScroll !== false,
+                        onChange: (val) => {
+                            const cfg = ensureOutline();
+                            cfg.syncScroll = val;
+                            this.saveSettings();
+                            if (this.outlineManager) this.outlineManager.updateSyncScrollState();
                         }
                     }
-                },
-                {
-                    label: this.t('outlineIntervalLabel') || '更新检测间隔（秒）',
-                    type: 'number',
-                    value: this.settings.outline?.updateInterval || 2,
-                    min: 1,
-                    max: 10,
-                    onChange: (val) => {
-                        if (!this.settings.outline) this.settings.outline = {};
-                        this.settings.outline.updateInterval = Math.max(1, Math.min(10, parseInt(val) || 2));
-                        this.saveSettings();
-                    }
-                },
-                {
-                    label: this.t('outlineSyncScrollLabel') || '同步滚动',
-                    type: 'toggle',
-                    value: this.settings.outline?.syncScroll !== false,
-                    onChange: (val) => {
-                        if (!this.settings.outline) this.settings.outline = {};
-                        this.settings.outline.syncScroll = val;
-                        this.saveSettings();
-                        if (this.outlineManager) {
-                            this.outlineManager.updateSyncScrollState();
+                ]),
+                createCompactSection(this.t('settingsGroupContentProcessing') || 'Content Processing', [
+                    {
+                        label: this.t('enableFormulaCopyLabel') || 'Formula Copy',
+                        type: 'toggle',
+                        value: this.settings.formulaCopy?.enabled !== false,
+                        onChange: (val) => {
+                            const cfg = ensureFormulaCopy();
+                            cfg.enabled = val;
+                            this.saveSettings();
+                            if (this.copyManager) {
+                                if (val) this.copyManager.initFormulaCopy();
+                                else this.copyManager.destroyFormulaCopy();
+                            }
                         }
-                    }
-                },
-                {
-                    label: this.t('outlineMaxLevelLabel') || '最大标题层级',
-                    type: 'select',
-                    value: this.settings.outline?.maxLevel || 6,
-                    options: [
-                        { value: 1, label: this.t('outlineLevelOnlyH1') },
-                        { value: 2, label: 'H1-H2' },
-                        { value: 3, label: 'H1-H3' },
-                        { value: 4, label: 'H1-H4' },
-                        { value: 5, label: 'H1-H5' },
-                        { value: 6, label: this.t('outlineLevelAll') }
-                    ],
-                    onChange: (val) => {
-                        if (!this.settings.outline) this.settings.outline = {};
-                        this.settings.outline.maxLevel = parseInt(val) || 6;
-                        this.saveSettings();
-                        if (this.currentTab === 'outline') {
-                            this.refreshOutline();
-                        }
-                    }
-                }
-            ]);
-
-            // 标签页设置（可折叠）
-            const tabSettingsSection = this.createSettingSection(this.t('tabPageSettings') || '标签页设置', [
-                {
-                    label: this.t('tabAutoRenameLabel') || '自动重命名标签页',
-                    type: 'toggle',
-                    value: this.settings.tabSettings?.enabled !== false,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.enabled = val;
-                        this.saveSettings();
-                        if (this.tabRenameManager) {
-                            if (val) {
-                                this.tabRenameManager.start();
-                            } else {
-                                this.tabRenameManager.stop();
+                    },
+                    {
+                        label: this.t('enableTableCopyLabel') || 'Table Copy',
+                        type: 'toggle',
+                        value: this.settings.tableCopy?.enabled !== false,
+                        onChange: (val) => {
+                            const cfg = ensureTableCopy();
+                            cfg.enabled = val;
+                            this.saveSettings();
+                            if (this.copyManager) {
+                                if (val) this.copyManager.initTableCopy();
+                                else this.copyManager.destroyTableCopy();
                             }
                         }
                     }
-                },
-                {
-                    label: this.t('tabRenameIntervalLabel') || '重命名检测间隔（秒）',
-                    type: 'number',
-                    value: this.settings.tabSettings?.renameInterval || 3,
-                    min: 1,
-                    max: 60,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.renameInterval = Math.max(1, Math.min(60, parseInt(val) || 3));
-                        this.saveSettings();
-                        if (this.tabRenameManager) {
-                            this.tabRenameManager.restartInterval();
+                ]),
+                createCompactSection(this.t('settingsGroupTabPrivacy') || 'Tabs & Privacy', [
+                    createTabVisibilityItem('prompts'),
+                    createTabVisibilityItem('outline'),
+                    createTabVisibilityItem('conversations'),
+                    createTabVisibilityItem('export'),
+                    {
+                        label: this.t('tabAutoRenameLabel') || 'Auto Rename Tab',
+                        type: 'toggle',
+                        value: tabSettings.enabled !== false,
+                        onChange: (val) => {
+                            const cfg = ensureTabSettings();
+                            cfg.enabled = val;
+                            this.saveSettings();
+                            if (this.tabRenameManager) {
+                                if (val) this.tabRenameManager.start();
+                                else this.tabRenameManager.stop();
+                            }
                         }
-                    }
-                },
-                {
-                    label: this.t('tabShowStatusLabel') || '显示生成状态',
-                    type: 'toggle',
-                    value: this.settings.tabSettings?.showStatus !== false,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.showStatus = val;
-                        this.saveSettings();
-                        if (this.tabRenameManager) {
-                            this.tabRenameManager.updateTabName(true);
+                    },
+                    {
+                        label: this.t('tabShowStatusLabel') || 'Show Generation Status',
+                        type: 'toggle',
+                        value: tabSettings.showStatus !== false,
+                        onChange: (val) => {
+                            const cfg = ensureTabSettings();
+                            cfg.showStatus = val;
+                            this.saveSettings();
+                            if (this.tabRenameManager) this.tabRenameManager.updateTabName(true);
                         }
-                    }
-                },
-                {
-                    label: this.t('tabPrivacyModeLabel') || '隐私模式',
-                    type: 'toggle',
-                    value: this.settings.tabSettings?.privacyMode || false,
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.privacyMode = val;
-                        this.saveSettings();
-                        if (this.tabRenameManager) {
-                            this.tabRenameManager.updateTabName(true);
+                    },
+                    {
+                        label: this.t('tabPlaySoundLabel') || 'Play Notification Sound',
+                        type: 'toggle',
+                        value: tabSettings.notificationSound || false,
+                        onChange: (val) => {
+                            const cfg = ensureTabSettings();
+                            cfg.notificationSound = val;
+                            if (cfg.notificationVolume == null) cfg.notificationVolume = 0.5;
+                            this.saveSettings();
+                            if (this.tabRenameManager) {
+                                if (val) this.tabRenameManager.ensureNotificationAudioUnlock();
+                                else this.tabRenameManager.teardownNotificationAudioUnlock();
+                            }
+                            rerenderSettings();
                         }
-                    }
-                },
-                {
-                    label: this.t('tabPrivacyTitleLabel') || '隐私模式标题',
-                    type: 'text',
-                    value: this.settings.tabSettings?.privacyTitle || 'ChatGPT',
-                    onChange: (val) => {
-                        if (!this.settings.tabSettings) this.settings.tabSettings = {};
-                        this.settings.tabSettings.privacyTitle = val || 'ChatGPT';
-                        this.saveSettings();
-                        if (this.tabRenameManager) {
-                            this.tabRenameManager.updateTabName(true);
+                    },
+                    tabSettings.notificationSound ? {
+                        label: this.t('tabVolumeLabel') || 'Notification Volume',
+                        type: 'number',
+                        value: tabSettings.notificationVolume || 0.5,
+                        min: 0.1,
+                        max: 1,
+                        step: 0.1,
+                        onChange: (val) => {
+                            const cfg = ensureTabSettings();
+                            let volume = parseFloat(val);
+                            if (isNaN(volume)) volume = 0.5;
+                            cfg.notificationVolume = Math.max(0.1, Math.min(1, volume));
+                            this.saveSettings();
                         }
-                    }
-                }
-            ]);
+                    } : null,
+                    {
+                        label: this.t('tabPrivacyModeLabel') || 'Privacy Mode',
+                        type: 'toggle',
+                        value: tabSettings.privacyMode || false,
+                        onChange: (val) => {
+                            const cfg = ensureTabSettings();
+                            cfg.privacyMode = val;
+                            this.saveSettings();
+                            if (this.tabRenameManager) this.tabRenameManager.updateTabName(true);
+                            rerenderSettings();
+                        }
+                    },
+                    tabSettings.privacyMode ? {
+                        label: this.t('tabPrivacyTitleLabel') || 'Privacy Title',
+                        type: 'text',
+                        value: tabSettings.privacyTitle || 'ChatGPT',
+                        onChange: (val) => {
+                            const cfg = ensureTabSettings();
+                            cfg.privacyTitle = val || 'ChatGPT';
+                            this.saveSettings();
+                            if (this.tabRenameManager) this.tabRenameManager.updateTabName(true);
+                        }
+                    } : null
+                ])
+            ];
 
-            // 复制功能设置（可折叠）
-            const copySettingsSection = this.createSettingSection(this.t('copySettings') || '复制功能', [
-                {
-                    label: this.t('enableFormulaCopyLabel') || '启用公式复制',
-                    type: 'toggle',
-                    value: this.settings.formulaCopy?.enabled !== false,
-                    onChange: (val) => {
-                        if (!this.settings.formulaCopy) this.settings.formulaCopy = { enabled: true, delimiterEnabled: true };
-                        this.settings.formulaCopy.enabled = val;
-                        this.saveSettings();
-                        if (this.copyManager && val) {
-                            this.copyManager.init();
-                        }
-                    }
-                },
-                {
-                    label: this.t('formulaDelimiterLabel') || '公式使用 LaTeX 分隔符（$ / $$）',
-                    type: 'toggle',
-                    value: this.settings.formulaCopy?.delimiterEnabled !== false,
-                    onChange: (val) => {
-                        if (!this.settings.formulaCopy) this.settings.formulaCopy = { enabled: true, delimiterEnabled: true };
-                        this.settings.formulaCopy.delimiterEnabled = val;
-                        this.saveSettings();
-                    }
-                },
-                {
-                    label: this.t('enableTableCopyLabel') || '启用表格复制',
-                    type: 'toggle',
-                    value: this.settings.tableCopy?.enabled !== false,
-                    onChange: (val) => {
-                        if (!this.settings.tableCopy) this.settings.tableCopy = { enabled: true };
-                        this.settings.tableCopy.enabled = val;
-                        this.saveSettings();
-                        if (this.copyManager && val) {
-                            this.copyManager.init();
-                        }
-                    }
-                }
-            ]);
-
-            settingsContent.appendChild(panelSection);
-            settingsContent.appendChild(themeSection);
-            settingsContent.appendChild(featureSection);
-            settingsContent.appendChild(pageSection);
-            settingsContent.appendChild(collapsedSection);
-            settingsContent.appendChild(tabOrderSection);
-            settingsContent.appendChild(languageSection);
-            settingsContent.appendChild(readingHistorySection);
-            settingsContent.appendChild(outlineSettingsSection);
-            settingsContent.appendChild(tabSettingsSection);
-            settingsContent.appendChild(copySettingsSection);
+            sections.forEach(section => settingsContent.appendChild(section));
 
             const aboutFooter = createElement('div', {
                 className: 'chatgpt-helper-settings-footer'
@@ -1147,7 +679,7 @@
             aboutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                this.openAboutModal();
+                this.openAboutModal(e.currentTarget);
             });
             aboutFooter.appendChild(aboutBtn);
             settingsContent.appendChild(aboutFooter);

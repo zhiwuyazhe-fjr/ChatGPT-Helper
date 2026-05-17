@@ -540,7 +540,8 @@
                 className: 'chatgpt-helper-header-btn chatgpt-helper-header-about-btn',
                 title: this.t('aboutTopEntryTitle') || this.t('aboutButton') || 'About',
                 id: 'chatgpt-helper-header-about-btn',
-                type: 'button'
+                type: 'button',
+                'aria-label': this.t('aboutTopEntryTitle') || this.t('aboutButton') || 'About'
             });
             const aboutIcon = createElement('span', { className: 'chatgpt-helper-about-entry-icon' }, 'i');
             aboutIcon.setAttribute('aria-hidden', 'true');
@@ -548,7 +549,7 @@
             aboutBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                this.openAboutModal();
+                this.openAboutModal(e.currentTarget);
             });
 
             controls.appendChild(themeBtn);
@@ -569,7 +570,13 @@
             // Tab 导航
             const tabs = createElement('div', { id: 'chatgpt-helper-tabs' });
             tabs.setAttribute('role', 'tablist');
-            const tabOrder = this.settings.tabOrder || ['prompts', 'outline', 'conversations', 'export'];
+            const defaultTabOrder = ['prompts', 'outline', 'conversations', 'export'];
+            const tabOrder = Array.isArray(this.settings.tabOrder) && this.settings.tabOrder.length > 0
+                ? this.settings.tabOrder.filter(tabId => defaultTabOrder.includes(tabId))
+                : [...defaultTabOrder];
+            if (!tabOrder.includes(this.currentTab) && this.currentTab !== 'settings') {
+                this.currentTab = tabOrder[0] || 'prompts';
+            }
 
             tabOrder.forEach(tabId => {
                 if (tabId === 'settings') return; // 设置按钮在头部

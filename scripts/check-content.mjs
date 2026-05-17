@@ -21,6 +21,19 @@ for (const file of walk(path.join(root, 'content-scripts'))) {
 }
 
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'))
+const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
+const packageLock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf8'))
+const versionSources = {
+    'manifest.json': manifest.version,
+    'package.json': packageJson.version,
+    'package-lock.json': packageLock.version,
+    'package-lock.json packages[""]': packageLock.packages?.['']?.version,
+}
+const versionValues = Object.values(versionSources)
+if (versionValues.some(value => !value) || new Set(versionValues).size !== 1) {
+    throw new Error(`version mismatch:\n${Object.entries(versionSources).map(([source, version]) => `${source}: ${version ?? '(missing)'}`).join('\n')}`)
+}
+
 const scripts = manifest.content_scripts?.[0]?.js ?? []
 const expectedScripts = [
     'libs/jszip.min.js',

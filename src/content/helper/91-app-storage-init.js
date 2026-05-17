@@ -74,6 +74,26 @@
         console.error('[ChatGPT Helper] ChatGPTHelper is not loaded; skipping App Storage And Init module');
         return;
     }
+    const MAIN_TAB_ORDER = ['prompts', 'outline', 'conversations', 'export'];
+    const FIXED_PAGE_WIDTH_CONFIG = { enabled: false, value: 1200, unit: 'px' };
+    const normalizeMainTabOrder = (value) => {
+        const ordered = Array.isArray(value)
+            ? value.filter(tabId => MAIN_TAB_ORDER.includes(tabId))
+            : [];
+        const unique = Array.from(new Set(ordered));
+        return unique.length > 0 ? unique : [...MAIN_TAB_ORDER];
+    };
+    const normalizeCollapsedButtonsOrder = (value) => {
+        const source = Array.isArray(value) ? value : [];
+        const orderedIds = Array.from(new Set(source
+            .map(item => item?.id)
+            .filter(id => COLLAPSED_BUTTON_DEFS[id])));
+        DEFAULT_COLLAPSED_BUTTONS_ORDER.forEach((item) => {
+            if (!orderedIds.includes(item.id)) orderedIds.push(item.id);
+        });
+        return orderedIds.map(id => ({ id, enabled: true }));
+    };
+
     Object.assign(ChatGPTHelper.prototype, {
         loadPrompts() {
             const promptLibraryVersion = 3;
@@ -106,92 +126,110 @@
             window.GM_setValue(SETTING_KEYS.PROMPTS, this.prompts);
         },
 
-        loadSettings() {
-            const saved = window.GM_getValue(SETTING_KEYS.SETTINGS, null);
-            const source = saved && typeof saved === 'object' ? saved : {};
+        normalizeRuntimeSettings(source = {}) {
+            const saved = source && typeof source === 'object' ? source : {};
             const settings = {
                 ...DEFAULT_SETTINGS,
-                ...source,
-                prompts: { ...DEFAULT_SETTINGS.prompts, ...(source.prompts || {}) },
-                outline: { ...DEFAULT_SETTINGS.outline, ...(source.outline || {}) },
-                conversations: { ...DEFAULT_SETTINGS.conversations, ...(source.conversations || {}) },
-                pageWidth: { ...DEFAULT_SETTINGS.pageWidth, ...(source.pageWidth || {}) },
-                readingHistory: { ...DEFAULT_SETTINGS.readingHistory, ...(source.readingHistory || {}) },
-                formulaCopy: { ...DEFAULT_SETTINGS.formulaCopy, ...(source.formulaCopy || {}) },
-                tableCopy: { ...DEFAULT_SETTINGS.tableCopy, ...(source.tableCopy || {}) },
-                tabSettings: { ...DEFAULT_SETTINGS.tabSettings, ...(source.tabSettings || {}) }
+                panelWidth: Math.max(200, Math.min(600, parseInt(saved.panelWidth) || DEFAULT_SETTINGS.panelWidth)),
+                defaultPanelState: saved.defaultPanelState !== undefined
+                    ? Boolean(saved.defaultPanelState)
+                    : DEFAULT_SETTINGS.defaultPanelState,
+                preventAutoScroll: Boolean(saved.preventAutoScroll),
+                prompts: { enabled: true },
+                outline: {
+                    enabled: true,
+                    showUserQueries: saved.outline?.showUserQueries !== false,
+                    autoUpdate: true,
+                    syncScroll: saved.outline?.syncScroll !== false,
+                    updateInterval: 2,
+                    maxLevel: 6
+                },
+                conversations: { enabled: true },
+                pageWidth: { ...FIXED_PAGE_WIDTH_CONFIG },
+                tabOrder: normalizeMainTabOrder(saved.tabOrder),
+                collapsedButtonsOrder: normalizeCollapsedButtonsOrder(saved.collapsedButtonsOrder),
+                anchorEnabled: true,
+                themeEnabled: true,
+                manualAnchorEnabled: true,
+                readingHistory: {
+                    persistence: saved.readingHistory?.persistence !== false,
+                    autoRestore: Boolean(saved.readingHistory?.autoRestore),
+                    cleanupDays: 30
+                },
+                formulaCopy: {
+                    enabled: saved.formulaCopy?.enabled !== false
+                },
+                tableCopy: {
+                    enabled: saved.tableCopy?.enabled !== false
+                },
+                tabSettings: {
+                    enabled: saved.tabSettings?.enabled !== false,
+                    showStatus: saved.tabSettings?.showStatus !== false,
+                    notificationSound: Boolean(saved.tabSettings?.notificationSound),
+                    notificationVolume: Math.max(0.1, Math.min(1, Number(saved.tabSettings?.notificationVolume) || 0.5)),
+                    titleFormat: saved.tabSettings?.titleFormat || '{status}{title}',
+                    privacyMode: Boolean(saved.tabSettings?.privacyMode),
+                    privacyTitle: saved.tabSettings?.privacyTitle || 'ChatGPT'
+                }
             };
 
-            settings.themeConfig = normalizeThemeConfig(source.themeConfig, source.themeMode);
+            settings.themeConfig = normalizeThemeConfig(saved.themeConfig, saved.themeMode);
             settings.themeMode = null;
-
-            if (!Array.isArray(settings.tabOrder)) {
-                settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
-            }
-
-            if (!Array.isArray(settings.collapsedButtonsOrder)) {
-                settings.collapsedButtonsOrder = DEFAULT_COLLAPSED_BUTTONS_ORDER.map((item) => ({ ...item }));
-            } else {
-                settings.collapsedButtonsOrder = settings.collapsedButtonsOrder
-                    .filter((item) => item && COLLAPSED_BUTTON_DEFS[item.id])
-                    .map((item) => ({
-                        id: item.id,
-                        enabled: item.enabled !== false
-                    }));
-                if (settings.collapsedButtonsOrder.length === 0) {
-                    settings.collapsedButtonsOrder = DEFAULT_COLLAPSED_BUTTONS_ORDER.map((item) => ({ ...item }));
-                }
-            }
-
-            // 确保 tabOrder 包含 export（兼容旧版本）
-            if (settings.tabOrder && !settings.tabOrder.includes('export')) {
-                settings.tabOrder.push('export');
-            } else if (!settings.tabOrder) {
-                settings.tabOrder = ['prompts', 'outline', 'conversations', 'export'];
-            }
             return settings;
         },
 
-        saveSettings() {
-            this.settings.themeConfig = normalizeThemeConfig(this.settings.themeConfig, this.settings.themeMode);
-            window.GM_setValue(SETTING_KEYS.SETTINGS, this.settings);
+        serializeSettingsForStorage(settings = this.settings) {
+            const normalized = this.normalizeRuntimeSettings(settings || {});
+            return {
+                panelWidth: normalized.panelWidth,
+                defaultPanelState: normalized.defaultPanelState,
+                prompts: { enabled: true },
+                outline: {
+                    enabled: true,
+                    showUserQueries: normalized.outline.showUserQueries,
+                    syncScroll: normalized.outline.syncScroll
+                },
+                conversations: { enabled: true },
+                tabOrder: [...normalized.tabOrder],
+                collapsedButtonsOrder: normalized.collapsedButtonsOrder.map((item) => ({ ...item, enabled: true })),
+                themeMode: null,
+                themeConfig: normalized.themeConfig,
+                anchorEnabled: true,
+                themeEnabled: true,
+                manualAnchorEnabled: true,
+                preventAutoScroll: normalized.preventAutoScroll,
+                readingHistory: {
+                    persistence: normalized.readingHistory.persistence,
+                    autoRestore: normalized.readingHistory.autoRestore
+                },
+                formulaCopy: {
+                    enabled: normalized.formulaCopy.enabled
+                },
+                tableCopy: {
+                    enabled: normalized.tableCopy.enabled
+                },
+                tabSettings: {
+                    enabled: normalized.tabSettings.enabled,
+                    showStatus: normalized.tabSettings.showStatus,
+                    notificationSound: normalized.tabSettings.notificationSound,
+                    notificationVolume: normalized.tabSettings.notificationVolume,
+                    titleFormat: normalized.tabSettings.titleFormat,
+                    privacyMode: normalized.tabSettings.privacyMode,
+                    privacyTitle: normalized.tabSettings.privacyTitle
+                }
+            };
         },
 
-        async requestNotificationPermission() {
-            // 如果使用 GM_notification，不需要权限
-            if (typeof window.GM_notification !== 'undefined') {
-                return true;
-            }
-            
-            // 使用浏览器原生 Notification API
-            if (typeof Notification === 'undefined') {
-                console.warn('[ChatGPT Helper] Notification API 不可用');
-                return false;
-            }
+        loadSettings() {
+            const saved = window.GM_getValue(SETTING_KEYS.SETTINGS, null);
+            return this.normalizeRuntimeSettings(saved);
+        },
 
-            if (Notification.permission === 'granted') {
-                return true;
-            }
-
-            if (Notification.permission === 'denied') {
-                this.showToast(this.t('notificationPermissionDenied'));
-                return false;
-            }
-
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    this.showToast(this.t('notificationPermissionGranted'));
-                    return true;
-                } else {
-                    this.showToast(this.t('notificationPermissionRejected'));
-                    return false;
-                }
-            } catch (err) {
-                console.error('[ChatGPT Helper] 请求通知权限失败:', err);
-                this.showToast(this.t('notificationPermissionFailed'));
-                return false;
-            }
+        saveSettings() {
+            const normalized = this.normalizeRuntimeSettings(this.settings);
+            Object.keys(this.settings).forEach((key) => delete this.settings[key]);
+            Object.assign(this.settings, normalized);
+            window.GM_setValue(SETTING_KEYS.SETTINGS, this.serializeSettingsForStorage(this.settings));
         },
 
         init() {

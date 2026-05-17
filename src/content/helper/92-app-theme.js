@@ -22,10 +22,10 @@
         THEME_BACKGROUND_STORE,
         THEME_BACKGROUND_MAX_SIZE,
         THEME_BACKGROUND_ALLOWED_TYPES,
-        FEATURE_REQUEST_URL,
         ISSUE_URL,
         REPO_URL,
         AUTHOR_GITHUB_URL,
+        EXTENSION_VERSION,
         THEME_HOST_ATTRS,
         DEFAULT_THEME_CONFIG,
         DEFAULT_SETTINGS,
@@ -35,7 +35,6 @@
         getExtensionAssetUrl,
         getExtensionManifestMeta,
         openExternalLink,
-        copyTextToClipboard,
         createHelperLogoNode,
         SVG_ICON_DEFS,
         createSvgIconNode,
@@ -398,16 +397,16 @@
                 root.style.setProperty('--gh-header-bg', gradient);
                 root.style.setProperty('--gh-theme-surface-light-base', rgbaFromColor(blendRgbColors('#ffffff', preset.light, 0.64), 1));
                 root.style.setProperty('--gh-theme-surface-light-accent', rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.18), 1));
-                root.style.setProperty('--gh-theme-surface-dark-base', rgbaFromColor(blendRgbColors('#020617', preset.primary, 0.18), 1));
-                root.style.setProperty('--gh-theme-surface-dark-accent', rgbaFromColor(blendRgbColors('#020617', preset.secondary, 0.16), 1));
+                root.style.setProperty('--gh-theme-surface-dark-base', rgbaFromColor(blendRgbColors('#202123', preset.primary, 0.06), 1));
+                root.style.setProperty('--gh-theme-surface-dark-accent', rgbaFromColor(blendRgbColors('#171717', preset.secondary, 0.04), 1));
                 root.style.setProperty('--gh-page-sidebar-bg-light', 'linear-gradient(180deg, rgba(255, 255, 255, 0.360), rgba(248, 250, 252, 0.220))');
                 root.style.setProperty('--gh-page-chat-bg-light', 'transparent');
                 root.style.setProperty('--gh-page-composer-bg-light', 'linear-gradient(135deg, rgba(255, 255, 255, 0.900), rgba(248, 250, 252, 0.800))');
-                root.style.setProperty('--gh-page-sidebar-bg-dark', 'linear-gradient(180deg, rgba(2, 6, 23, 0.360), rgba(2, 6, 23, 0.240))');
+                root.style.setProperty('--gh-page-sidebar-bg-dark', 'linear-gradient(180deg, rgba(32, 33, 35, 0.320), rgba(23, 23, 23, 0.220))');
                 root.style.setProperty('--gh-page-chat-bg-dark', 'transparent');
-                root.style.setProperty('--gh-page-composer-bg-dark', 'linear-gradient(135deg, rgba(8, 17, 29, 0.860), rgba(15, 23, 42, 0.760))');
+                root.style.setProperty('--gh-page-composer-bg-dark', 'linear-gradient(135deg, rgba(32, 33, 35, 0.800), rgba(23, 23, 23, 0.720))');
                 root.style.setProperty('--gh-page-accent-soft', `color-mix(in srgb, ${preset.primary}, transparent 84%)`);
-                root.style.setProperty('--gh-page-accent-soft-dark', `color-mix(in srgb, ${preset.primary}, transparent 74%)`);
+                root.style.setProperty('--gh-page-accent-soft-dark', `color-mix(in srgb, ${preset.primary}, transparent 88%)`);
                 root.style.setProperty('--gh-page-accent-strong', preset.accent);
                 root.style.setProperty('--gh-page-link', preset.accent);
                 root.style.setProperty('--gh-page-selection', `color-mix(in srgb, ${preset.primary}, transparent 82%)`);
@@ -665,21 +664,21 @@
                     --gh-bg-blur: 5px;
                     --gh-sidebar-enhance-alpha: 0.2;
                     --gh-bg-overlay-light: rgba(12, 18, 32, 0.18);
-                    --gh-bg-overlay-dark: rgba(2, 6, 23, 0.48);
+                    --gh-bg-overlay-dark: rgba(23, 23, 23, 0.48);
                     --gh-panel-blur: 14px;
                     --gh-composer-blur: 16px;
-                    --gh-page-sidebar-bg-light: linear-gradient(180deg, rgba(255, 255, 255, 0.360), rgba(248, 250, 252, 0.220));
+                    --gh-page-sidebar-bg-light: #f9f9f9;
                     --gh-page-chat-bg-light: transparent;
                     --gh-page-composer-bg-light: linear-gradient(135deg, rgba(255, 255, 255, 0.900), rgba(248, 250, 252, 0.800));
-                    --gh-page-sidebar-bg-dark: linear-gradient(180deg, rgba(2, 6, 23, 0.360), rgba(2, 6, 23, 0.240));
+                    --gh-page-sidebar-bg-dark: linear-gradient(180deg, rgba(32, 33, 35, 0.320), rgba(23, 23, 23, 0.220));
                     --gh-page-chat-bg-dark: transparent;
-                    --gh-page-composer-bg-dark: linear-gradient(135deg, rgba(8, 17, 29, 0.860), rgba(15, 23, 42, 0.760));
+                    --gh-page-composer-bg-dark: linear-gradient(135deg, rgba(32, 33, 35, 0.800), rgba(23, 23, 23, 0.720));
                     --gh-page-accent-soft: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 84%);
-                    --gh-page-accent-soft-dark: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 74%);
+                    --gh-page-accent-soft-dark: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 88%);
                     --gh-page-accent-strong: var(--gh-theme-accent, #2563eb);
                     --gh-page-link: var(--gh-theme-accent, #2563eb);
                     --gh-page-selection: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 82%);
-                    --gh-right-overlay: linear-gradient(180deg, rgba(255,255,255,0.56), rgba(248,250,252,0.42));
+                    --gh-right-overlay: #f9f9f9;
                     --gh-panel-card-bg: rgba(255,255,255,0.54);
                     --gh-panel-card-border: rgba(255,255,255,0.46);
                     --gh-sidebar-button-bg: rgba(255,255,255,0.42);
@@ -751,7 +750,7 @@
                     background: var(--gh-right-overlay) !important;
                     backdrop-filter: blur(calc(var(--gh-panel-blur) + 2px)) saturate(1.03);
                     -webkit-backdrop-filter: blur(calc(var(--gh-panel-blur) + 2px)) saturate(1.03);
-                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border);
+                    box-shadow: inset 1px 0 0 var(--gh-panel-line);
                 }
 
                 :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar > div,
@@ -975,6 +974,11 @@
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"],
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="聊天历史"] {
+                    --sidebar-mask-bg: var(--gh-page-sidebar-bg-dark);
+                    --sidebar-surface-primary: var(--gh-page-sidebar-bg-dark);
+                    --sidebar-surface-secondary: var(--gh-panel-subtle);
+                    --sidebar-surface-tertiary: var(--gh-panel-card);
+                    --bg-elevated-secondary: var(--gh-panel-card);
                     background: var(--gh-page-sidebar-bg-dark) !important;
                 }
 
@@ -1273,13 +1277,13 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] aside[aria-label*="Chat history"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] aside[aria-label*="聊天历史"] {
-                    --sidebar-mask-bg: transparent;
-                    --sidebar-surface-primary: transparent;
-                    --sidebar-surface-secondary: transparent;
-                    --sidebar-surface-tertiary: transparent;
-                    --bg-elevated-secondary: transparent;
+                    --sidebar-mask-bg: var(--gh-page-sidebar-bg-light);
+                    --sidebar-surface-primary: var(--gh-page-sidebar-bg-light);
+                    --sidebar-surface-secondary: var(--gh-panel-subtle);
+                    --sidebar-surface-tertiary: var(--gh-panel-card);
+                    --bg-elevated-secondary: var(--gh-panel-card);
                     background: var(--gh-page-sidebar-bg-light) !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                    box-shadow: inset -1px 0 0 var(--gh-panel-line);
                 }
 
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
@@ -1287,6 +1291,11 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="聊天历史"] {
+                    --sidebar-mask-bg: var(--gh-page-sidebar-bg-dark);
+                    --sidebar-surface-primary: var(--gh-page-sidebar-bg-dark);
+                    --sidebar-surface-secondary: var(--gh-panel-subtle);
+                    --sidebar-surface-tertiary: var(--gh-panel-card);
+                    --bg-elevated-secondary: var(--gh-panel-card);
                     background: var(--gh-page-sidebar-bg-dark) !important;
                 }
 
@@ -1318,7 +1327,7 @@
 
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-right {
                     background: var(--gh-right-overlay) !important;
-                    box-shadow: var(--gh-shadow), inset 0 0 0 1px var(--gh-panel-card-border);
+                    box-shadow: inset 1px 0 0 var(--gh-panel-line);
                 }
 
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #chatgpt-helper-content {
@@ -1329,8 +1338,8 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-search-bar,
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-categories,
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .outline-fixed-toolbar {
-                    background: color-mix(in srgb, var(--gh-bg-secondary), transparent 2%) !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                    background: var(--gh-panel-surface) !important;
+                    box-shadow: none !important;
                 }
 
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] .chatgpt-helper-search-input,
@@ -1374,7 +1383,7 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] {
-                    background: transparent !important;
+                    background: var(--gh-page-sidebar-bg-light) !important;
                     box-shadow: none !important;
                 }
 
@@ -1394,7 +1403,40 @@
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] > div,
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"] > div > div,
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] > div > div {
-                    background: transparent !important;
+                    background: var(--gh-page-sidebar-bg-light) !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"],
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"]::before,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"]::after,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"]::before,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"]::after,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"] > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"] > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"] > div > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="bottom-0"] > div > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"]::before,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"]::after,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"]::before,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"]::after,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"] > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="top-0"] > div > div,
+                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] [class*="sticky"][class*="bottom-0"] > div > div {
+                    background: var(--gh-page-sidebar-bg-dark) !important;
                     background-image: none !important;
                     box-shadow: none !important;
                 }
@@ -1581,9 +1623,17 @@
                 :root[data-gh-page-theme="true"] [data-gh-theme-host-chat-list="true"],
                 :root[data-gh-page-theme="true"] #chatgpt-helper-center,
                 :root[data-gh-page-theme="true"] main,
-                :root[data-gh-page-theme="true"] [role="main"],
-                :root[data-gh-page-theme="true"] header,
-                :root[data-gh-page-theme="true"] [role="banner"] {
+                :root[data-gh-page-theme="true"] [role="main"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-page-theme="true"] header,
+                :root[data-gh-bg-enabled="true"][data-gh-page-theme="true"] [role="banner"] {
                     background: transparent !important;
                     background-color: transparent !important;
                     background-image: none !important;
@@ -1956,46 +2006,62 @@
                 : 'none';
         },
 
-        openAboutModal() {
+        openAboutModal(triggerElement = null) {
+            if (triggerElement && typeof triggerElement.focus === 'function') {
+                this.aboutModalTrigger = triggerElement;
+            }
+
             if (this.aboutModal && this.aboutModal.isConnected) {
-                requestAnimationFrame(() => this.aboutModal.classList.add('open'));
+                requestAnimationFrame(() => {
+                    this.aboutModal.classList.add('open');
+                    const closeControl = this.aboutModal.querySelector('.chatgpt-helper-about-close');
+                    if (closeControl && typeof closeControl.focus === 'function') {
+                        try {
+                            closeControl.focus({ preventScroll: true });
+                        } catch (e) {
+                            closeControl.focus();
+                        }
+                    }
+                });
                 return;
             }
 
             const manifest = getExtensionManifestMeta() || {};
             const productName = manifest.name || 'ChatGPT Helper';
-            const version = manifest.version || '2.1.0';
-            const author = typeof manifest.author === 'string'
-                ? manifest.author
-                : (manifest.author && typeof manifest.author.name === 'string' ? manifest.author.name : 'zhiwuyazhe_fjr');
+            const version = manifest.version || EXTENSION_VERSION || '0.0.0';
+            const titleId = 'chatgpt-helper-about-title';
+            const descriptionId = 'chatgpt-helper-about-description';
 
             const overlay = createElement('div', { id: 'chatgpt-helper-about-modal' });
             const dialog = createElement('div', { className: 'chatgpt-helper-about-dialog' });
             dialog.setAttribute('role', 'dialog');
             dialog.setAttribute('aria-modal', 'true');
-            dialog.setAttribute('aria-label', this.t('aboutDialogTitle') || 'About ChatGPT Helper');
+            dialog.setAttribute('aria-labelledby', titleId);
+            dialog.setAttribute('aria-describedby', descriptionId);
 
             const header = createElement('div', { className: 'chatgpt-helper-about-header' });
             const titleWrap = createElement('div', { className: 'chatgpt-helper-about-title-wrap' });
             titleWrap.appendChild(createHelperLogoNode({
-                size: 64,
+                size: 44,
                 className: 'chatgpt-helper-about-logo',
                 title: productName,
             }));
 
             const titleText = createElement('div', { className: 'chatgpt-helper-about-title-text' });
             const nameRow = createElement('div', { className: 'chatgpt-helper-about-name-row' });
-            nameRow.appendChild(createElement('div', { className: 'chatgpt-helper-about-name' }, productName));
+            nameRow.appendChild(createElement('h2', { className: 'chatgpt-helper-about-name', id: titleId }, productName));
             nameRow.appendChild(createElement('div', { className: 'chatgpt-helper-about-badge' }, `v${version}`));
             titleText.appendChild(nameRow);
-            titleText.appendChild(createElement('div', { className: 'chatgpt-helper-about-tagline' }, this.t('aboutTagline') || 'A focused productivity layer designed for heavy ChatGPT users'));
+            titleText.appendChild(createElement('p', { className: 'chatgpt-helper-about-tagline', id: descriptionId }, this.t('aboutTagline') || 'A focused productivity layer designed for heavy ChatGPT users'));
             titleWrap.appendChild(titleText);
 
             const closeBtn = createElement('button', {
                 className: 'chatgpt-helper-about-close',
                 type: 'button',
-                title: this.t('aboutClose') || 'Close'
-            }, '×');
+                title: this.t('aboutClose') || 'Close',
+                'aria-label': this.t('aboutClose') || 'Close'
+            });
+            closeBtn.appendChild(createSvgIconNode('close', { size: 16 }));
 
             header.appendChild(titleWrap);
             header.appendChild(closeBtn);
@@ -2005,11 +2071,18 @@
 
             const createSection = (title, options = {}) => {
                 const section = createElement('section', {
-                    className: `chatgpt-helper-about-section${options.soft ? ' soft' : ''}${options.tight ? ' tight' : ''}`
+                    className: `chatgpt-helper-about-section${options.compact ? ' compact' : ''}${options.featured ? ' featured' : ''}`
                 });
-                section.appendChild(createElement('div', { className: 'chatgpt-helper-about-section-title' }, title));
+                const sectionHeader = createElement('div', { className: 'chatgpt-helper-about-section-head' });
+                if (options.icon) {
+                    const iconWrap = createElement('span', { className: 'chatgpt-helper-about-section-icon' });
+                    iconWrap.appendChild(createSvgIconNode(options.icon, { size: 15, strokeWidth: '2.2' }));
+                    sectionHeader.appendChild(iconWrap);
+                }
+                sectionHeader.appendChild(createElement('h3', { className: 'chatgpt-helper-about-section-title' }, title));
+                section.appendChild(sectionHeader);
                 if (options.text) {
-                    section.appendChild(createElement('div', { className: 'chatgpt-helper-about-section-text' }, options.text));
+                    section.appendChild(createElement('p', { className: 'chatgpt-helper-about-section-text' }, options.text));
                 }
                 if (options.bodyNode) {
                     section.appendChild(options.bodyNode);
@@ -2026,113 +2099,117 @@
                     className: `chatgpt-helper-about-link-btn ${options.variant || 'ghost'}${options.disabled ? ' disabled' : ''}`,
                     type: 'button',
                     disabled: !!options.disabled,
-                    title: options.title || ''
-                }, label);
+                    title: options.title || label
+                });
+                if (options.icon) {
+                    button.appendChild(createSvgIconNode(options.icon, { size: 15, strokeWidth: '2.2' }));
+                }
+                button.appendChild(createElement('span', {}, label));
                 if (options.onClick && !options.disabled) {
                     button.addEventListener('click', options.onClick);
                 }
                 return button;
             };
 
+            const storyBody = createElement('div', { className: 'chatgpt-helper-about-story' });
+            storyBody.appendChild(createElement('p', {
+                className: 'chatgpt-helper-about-section-lead'
+            }, this.t('aboutIntro') || 'ChatGPT Helper adds a focused side panel for ChatGPT workflows.'));
+            storyBody.appendChild(createElement('p', {
+                className: 'chatgpt-helper-about-section-text'
+            }, this.t('aboutMotivationContent') || 'This is more than just an extension.'));
+
             const motivationSection = createSection(
-                this.t('aboutMotivationTitle') || '😘 Motivation',
+                this.t('aboutMotivationTitle') || 'Motivation',
                 {
-                    text: this.t('aboutMotivationContent') || 'This is more than just an extension.',
+                    bodyNode: storyBody,
+                    icon: 'info',
+                    featured: true
                 }
             );
 
-            const feedbackActions = createActionRow();
-            feedbackActions.appendChild(createActionButton(
-                this.t('aboutFeatureRequest') || 'Feature Request',
+            const featureList = createElement('ul', { className: 'chatgpt-helper-about-feature-list' });
+            [
+                this.t('aboutFeaturePrompts') || 'Prompt management and quick insertion',
+                this.t('aboutFeatureOutline') || 'Automatic outline generation and navigation',
+                this.t('aboutFeatureConversations') || 'Conversation organization and batch actions',
+                this.t('aboutFeatureExport') || 'Multi-format export and reading-position tools'
+            ].forEach((feature, index) => {
+                const item = createElement('li', { className: 'chatgpt-helper-about-feature-item' });
+                item.appendChild(createElement('span', { className: 'chatgpt-helper-about-feature-index' }, String(index + 1).padStart(2, '0')));
+                item.appendChild(createElement('span', {}, feature));
+                featureList.appendChild(item);
+            });
+            const featuresSection = createSection(
+                this.t('aboutFeaturesTitle') || 'Core Features',
                 {
-                    variant: 'ghost',
-                    disabled: !FEATURE_REQUEST_URL,
-                    title: FEATURE_REQUEST_URL ? '' : (this.t('disabled') || 'Disabled')
-                }
-            ));
-            feedbackActions.appendChild(createActionButton(
-                this.t('aboutBugSupport') || 'Bug Report / Support',
-                {
-                    variant: 'ghost',
-                    onClick: () => openExternalLink(ISSUE_URL)
-                }
-            ));
-            const feedbackSection = createSection(
-                this.t('aboutFeedbackTitle') || '💬 Feedback',
-                { actions: feedbackActions, tight: true }
-            );
-
-            const openSourceInfo = createElement('div', { className: 'chatgpt-helper-about-inline-meta' });
-            openSourceInfo.appendChild(createElement('span', { className: 'chatgpt-helper-about-inline-label' }, `${this.t('aboutRepoLabel') || 'Repository'}:`));
-            openSourceInfo.appendChild(createElement('span', { className: 'chatgpt-helper-about-inline-value' }, REPO_URL.replace(/^https?:\/\//, '')));
-            const openSourceActions = createActionRow();
-            openSourceActions.appendChild(createActionButton(
-                this.t('aboutRepoButton') || 'GitHub Repository',
-                {
-                    variant: 'ghost',
-                    onClick: () => openExternalLink(REPO_URL)
-                }
-            ));
-            const openSourceSection = createSection(
-                this.t('aboutOpenSourceTitle') || '🌱 Open Source',
-                {
-                    bodyNode: openSourceInfo,
-                    actions: openSourceActions,
-                    tight: true
+                    bodyNode: featureList,
+                    icon: 'list',
+                    compact: true
                 }
             );
 
-            const supportActions = createActionRow();
-            supportActions.appendChild(createActionButton(
-                this.t('aboutShare') || 'Share with Friends',
+            const privacySection = createSection(
+                this.t('aboutPrivacyTitle') || 'Privacy & Permissions',
                 {
-                    variant: 'soft',
-                    onClick: async () => {
-                        const copied = await copyTextToClipboard(REPO_URL);
-                        this.showToast(copied
-                            ? (this.t('aboutCopyRepoSuccess') || 'Repository link copied')
-                            : (this.t('aboutCopyRepoFailed') || 'Copy failed'));
-                    }
-                }
-            ));
-            const supportSection = createSection(
-                this.t('aboutSupportTitle') || '💕 Support the Project',
-                {
-                    text: this.t('aboutSupportContent') || 'Every bit of recognition is fuel for the next line of code.',
-                    actions: supportActions,
+                    text: this.t('aboutPrivacy') || 'All settings and data processing stay in your browser.',
+                    icon: 'shield',
+                    compact: true
                 }
             );
 
             const authorBody = createElement('div', { className: 'chatgpt-helper-about-author-block' });
-            authorBody.appendChild(createElement('div', { className: 'chatgpt-helper-about-author-name' }, author || 'zhiwuyazhe_fjr'));
-            authorBody.appendChild(createElement('div', { className: 'chatgpt-helper-about-section-text chatgpt-helper-about-author-bio' }, this.t('aboutAuthorBio') || 'Author bio coming soon'));
+            authorBody.appendChild(createElement('p', { className: 'chatgpt-helper-about-section-text chatgpt-helper-about-author-bio' }, this.t('aboutAuthorBio') || 'Author bio coming soon'));
             const authorActions = createActionRow();
             authorActions.appendChild(createActionButton(
                 this.t('aboutAuthorGithub') || 'Author GitHub',
                 {
                     variant: 'ghost',
+                    icon: 'user',
                     onClick: () => openExternalLink(AUTHOR_GITHUB_URL)
                 }
             ));
             const authorSection = createSection(
-                this.t('aboutAuthorTitle') || '👨‍💻 About the Author',
+                this.t('aboutAuthorTitle') || 'About the Author',
                 {
                     bodyNode: authorBody,
                     actions: authorActions,
-                    tight: true
+                    compact: true,
+                    icon: 'user'
                 }
             );
 
-            shell.appendChild(motivationSection);
-            shell.appendChild(feedbackSection);
-            shell.appendChild(openSourceSection);
-            shell.appendChild(supportSection);
-            shell.appendChild(authorSection);
+            const mainStack = createElement('div', { className: 'chatgpt-helper-about-main-stack' });
+            const sideStack = createElement('div', { className: 'chatgpt-helper-about-side-stack' });
+            mainStack.appendChild(motivationSection);
+            mainStack.appendChild(featuresSection);
+            sideStack.appendChild(privacySection);
+            sideStack.appendChild(authorSection);
+
+            shell.appendChild(mainStack);
+            shell.appendChild(sideStack);
             body.appendChild(shell);
 
             const footer = createElement('div', { className: 'chatgpt-helper-about-footer' });
             footer.appendChild(createElement('div', { className: 'chatgpt-helper-about-footer-note' }, this.t('aboutFooterNote') || 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com · Local-first, no conversation uploads'));
-            footer.appendChild(createElement('div', { className: 'chatgpt-helper-about-footer-text' }, this.t('aboutPoweredBy') || 'Built for focused ChatGPT workflows'));
+            const footerActions = createElement('div', { className: 'chatgpt-helper-about-footer-actions' });
+            footerActions.appendChild(createActionButton(
+                this.t('aboutRepoButton') || 'GitHub Repository',
+                {
+                    variant: 'primary',
+                    icon: 'github',
+                    onClick: () => openExternalLink(REPO_URL)
+                }
+            ));
+            footerActions.appendChild(createActionButton(
+                this.t('aboutBugSupport') || 'Submit Feedback',
+                {
+                    variant: 'ghost',
+                    icon: 'message',
+                    onClick: () => openExternalLink(ISSUE_URL)
+                }
+            ));
+            footer.appendChild(footerActions);
 
             dialog.appendChild(header);
             dialog.appendChild(body);
@@ -2157,13 +2234,21 @@
             document.addEventListener('keydown', this.aboutModalEscHandler, true);
 
             this.aboutModal = overlay;
-            requestAnimationFrame(() => overlay.classList.add('open'));
+            requestAnimationFrame(() => {
+                overlay.classList.add('open');
+                try {
+                    closeBtn.focus({ preventScroll: true });
+                } catch (e) {
+                    closeBtn.focus();
+                }
+            });
         },
 
         closeAboutModal() {
             if (!this.aboutModal) return;
             this.aboutModal.classList.remove('open');
             const modalToRemove = this.aboutModal;
+            const triggerToFocus = this.aboutModalTrigger;
             setTimeout(() => {
                 if (modalToRemove && modalToRemove.parentNode) {
                     modalToRemove.parentNode.removeChild(modalToRemove);
@@ -2176,8 +2261,18 @@
                 document.removeEventListener('keydown', this.aboutModalEscHandler, true);
             }
             this.aboutModal = null;
+            this.aboutModalTrigger = null;
             this.aboutModalBackdropHandler = null;
             this.aboutModalEscHandler = null;
+            if (triggerToFocus && triggerToFocus.isConnected && typeof triggerToFocus.focus === 'function') {
+                setTimeout(() => {
+                    try {
+                        triggerToFocus.focus({ preventScroll: true });
+                    } catch (e) {
+                        triggerToFocus.focus();
+                    }
+                }, 0);
+            }
         },
 
         openThemeSettingsModal() {
