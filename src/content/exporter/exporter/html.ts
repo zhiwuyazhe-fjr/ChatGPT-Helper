@@ -1,0 +1,381 @@
+import JSZip from 'jszip'
+import { fetchConversation, getCurrentChatId, processConversation, shouldSkipMessageInExport } from '../api'
+import { KEY_THINKING_ENABLED, KEY_TIMESTAMP_24H, KEY_TIMESTAMP_ENABLED, KEY_TIMESTAMP_HTML, baseUrl } from '../constants'
+import i18n from '../i18n'
+import { checkIfConversationStarted, getUserAvatar } from '../page'
+import templateHtml from '../template.html?raw'
+import { buildZipFileName, downloadFile, getFileNameWithFormat } from '../utils/download'
+import { fromMarkdown, toHtml } from '../utils/markdown'
+import { ScriptStorage } from '../utils/storage'
+import { standardizeLineBreaks } from '../utils/text'
+import { dateStr, getColorScheme, timestamp, unixTimestampToISOString } from '../utils/utils'
+import type { ApiConversationWithId, ConversationNodeMessage, ConversationResult, ThinkingContent } from '../api'
+import type { ExportMeta } from '../ui/SettingContext'
+import type { PartInfo } from '../utils/download'
+
+export async function exportToHtml(fileNameFormat: string, metaList: ExportMeta[]) {
+    if (!checkIfConversationStarted()) {
+        alert(i18n.t('Please start a conversation first'))
+        return false
+    }
+
+    const userAvatar = await getUserAvatar()
+
+    const chatId = await getCurrentChatId()
+    const rawConversation = await fetchConversation(chatId, true)
+    const enableThinking = ScriptStorage.get<boolean>(KEY_THINKING_ENABLED) ?? false
+    const conversation = processConversation(rawConversation, { enableThinking })
+    const html = conversationToHtml(conversation, userAvatar, metaList)
+
+    const fileName = getFileNameWithFormat(fileNameFormat, 'html', { title: conversation.title, chatId, createTime: conversation.createTime, updateTime: conversation.updateTime })
+    downloadFile(fileName, 'text/html', standardizeLineBreaks(html))
+
+    return true
+}
+
+export async function exportAllToHtml(fileNameFormat: string, apiConversations: ApiConversationWithId[], metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number) {
+    const userAvatar = await getUserAvatar()
+
+    const zip = new JSZip()
+    const filenameMap = new Map<string, number>()
+    const enableThinking = ScriptStorage.get<boolean>(KEY_THINKING_ENABLED) ?? false
+    const conversations = apiConversations.map(x => processConversation(x, { enableThinking }))
+    conversations.forEach((conversation) => {
+        let fileName = getFileNameWithFormat(fileNameFormat, 'html', {
+            title: conversation.title,
+            chatId: conversation.id,
+            createTime: conversation.createTime,
+            updateTime: conversation.updateTime,
+        })
+        if (filenameMap.has(fileName)) {
+            const count = filenameMap.get(fileName) ?? 1
+            filenameMap.set(fileName, count + 1)
+            fileName = `${fileName.slice(0, -5)} (${count}).html`
+        }
+        else {
+            filenameMap.set(fileName, 1)
+        }
+        const content = conversationToHtml(conversation, userAvatar, metaList)
+        zip.file(fileName, content)
+    })
+
+    const blob = await zip.generateAsync({
+        type: 'blob',
+        compression: 'DEFLATE',
+        compressionOptions: {
+            level: 9,
+        },
+    })
+    const partInfo: PartInfo | undefined = (partIndex != null && totalParts != null)
+        ? { part: partIndex, total: totalParts }
+        : undefined
+    downloadFile(buildZipFileName('html', projectName, partInfo), 'application/zip', blob)
+
+    return true
+}
+
+function conversationToHtml(conversation: ConversationResult, avatar: string, metaList?: ExportMeta[]) {
+    const { id, title, model, modelSlug, createTime, updateTime, conversationNodes } = conversation
+
+    const enableTimestamp = ScriptStorage.get<boolean>(KEY_TIMESTAMP_ENABLED) ?? false
+    const timeStampHtml = ScriptStorage.get<boolean>(KEY_TIMESTAMP_HTML) ?? false
+    const timeStamp24H = ScriptStorage.get<boolean>(KEY_TIMESTAMP_24H) ?? false
+
+    const LatexRegex = /(\s\$\$.+?\$\$\s|\s\$.+?\$\s|\\\[.+?\\\]|\\\(.+?\\\))|(^\$$[\S\s]+?^\$$)|(^\$\$[\S\s]+?^\$\$\$)/gm
+
+    const conversationHtml = conversationNodes.map(({ message, thinking }) => {
+        if (!message || !message.content) return null
+
+        if (shouldSkipMessageInExport(message)) return null
+
+        const author = transformAuthor(message.author)
+        const model = message?.metadata?.model_slug === 'gpt-4' ? 'GPT-4' : 'GPT-3'
+        const authorType = message.author.role === 'user' ? 'user' : model
+        const avatarEl = message.author.role === 'user'
+            ? `<img alt="${author}" />`
+            : '<svg width="41" height="41"><use xlink:href="#chatgpt" /></svg>'
+
+        let postSteps: Array<(input: string) => string> = []
+        if (message.author.role === 'assistant') {
+            // Handle old-style footnotes (【11†(PrintWiki)】 format)
+            postSteps.push(input => transformFootNotes(input, message.metadata))
+            // Handle new-style content references (web search citations with Unicode markers)
+            postSteps.push(input => transformContentReferences(input, message.metadata))
+
+            postSteps.push((input) => {
+                const matches = input.match(LatexRegex)
+
+                // Skip code block as the following steps can potentially break the code
+                const isCodeBlock = /```/.test(input)
+                if (!isCodeBlock && matches) {
+                    let index = 0
+                    input = input.replace(LatexRegex, () => {
+                        // Replace it with `╬${index}╬` to avoid processing from ruining the formula
+                        return `╬${index++}╬`
+                    })
+                    input = input
+                        .replace(/^\\\[(.+)\\\]$/gm, '$$$$$1$$$$')
+                        .replace(/\\\[/g, '$$')
+                        .replace(/\\\]/g, '$$')
+                        .replace(/\\\(/g, '$')
+                        .replace(/\\\)/g, '$')
+                }
+
+                let transformed = toHtml(fromMarkdown(input))
+
+                if (!isCodeBlock && matches) {
+                    // Replace `╬${index}╬` back to the original latex
+                    transformed = transformed.replace(/╬(\d+)╬/g, (_, index) => {
+                        return matches[+index]
+                    })
+                }
+
+                return transformed
+            })
+        }
+        if (message.author.role === 'user') {
+            postSteps = [...postSteps, input => `<p class="no-katex">${escapeHtml(input)}</p>`]
+        }
+        const postProcess = (input: string) => postSteps.reduce((acc, fn) => fn(acc), input)
+        const content = transformContent(message.content, message.metadata, postProcess)
+
+        const timestamp = message?.create_time ?? ''
+        const showTimestamp = enableTimestamp && timeStampHtml && timestamp
+        let timestampHtml = ''
+        let conversationTime = ''
+
+        if (showTimestamp) {
+            const date = new Date(timestamp * 1000)
+            // format: 20:12 / 08:12 PM
+            conversationTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: !timeStamp24H })
+            timestampHtml = `<time class="time" datetime="${date.toISOString()}" title="${date.toLocaleString()}">${conversationTime}</time>`
+        }
+
+        const thinkingBlock = thinking ? formatThinkingHtml(thinking) : ''
+
+        return `
+<div class="conversation-item">
+    <div class="author ${authorType}">
+        ${avatarEl}
+    </div>
+    <div class="conversation-content-wrapper">
+        ${thinkingBlock}
+        <div class="conversation-content">
+            ${content}
+        </div>
+    </div>
+    ${timestampHtml}
+</div>`
+    }).filter(Boolean).join('\n\n')
+
+    const date = dateStr()
+    const time = new Date().toISOString()
+    const source = `${baseUrl}/c/${id}`
+    const lang = document.documentElement.lang ?? 'en'
+    const theme = getColorScheme()
+
+    const _metaList = metaList
+        ?.filter(x => !!x.name)
+        .map(({ name, value }) => {
+            const val = value
+                .replace('{title}', title)
+                .replace('{date}', date)
+                .replace('{timestamp}', timestamp())
+                .replace('{source}', source)
+                .replace('{model}', model)
+                .replace('{mode_name}', modelSlug)
+                .replace('{create_time}', unixTimestampToISOString(createTime))
+                .replace('{update_time}', unixTimestampToISOString(updateTime))
+
+            return [name, val] as const
+        })
+    ?? []
+    const detailsHtml = _metaList.length > 0
+        ? `<details>
+    <summary>Metadata</summary>
+    <div class="metadata_container">
+        ${_metaList.map(([key, value]) => `<div class="metadata_item"><div>${key}</div><div>${value}</div></div>`).join('\n')}
+    </div>
+</details>`
+        : ''
+
+    const html = templateHtml
+        .replaceAll('{{title}}', title)
+        .replaceAll('{{date}}', date)
+        .replaceAll('{{time}}', time)
+        .replaceAll('{{source}}', source)
+        .replaceAll('{{lang}}', lang)
+        .replaceAll('{{theme}}', theme)
+        .replaceAll('{{avatar}}', avatar)
+        .replaceAll('{{details}}', detailsHtml)
+        .replaceAll('{{content}}', conversationHtml)
+    return html
+}
+
+function transformAuthor(author: ConversationNodeMessage['author']): string {
+    switch (author.role) {
+        case 'assistant':
+            return 'ChatGPT'
+        case 'user':
+            return 'You'
+        case 'tool':
+            return `Plugin${author.name ? ` (${author.name})` : ''}`
+        default:
+            return author.role
+    }
+}
+
+/**
+ * Transform foot notes in assistant's message
+ */
+function transformFootNotes(
+    input: string,
+    metadata: ConversationNodeMessage['metadata'],
+) {
+    // 【11†(PrintWiki)】
+    const footNoteMarkRegex = /【(\d+)†\((.+?)\)】/g
+    return input.replace(footNoteMarkRegex, (match, citeIndex, _evidenceText) => {
+        const citation = metadata?.citations?.find(cite => cite.metadata?.extra?.cited_message_idx === +citeIndex)
+        // We simply remove the foot note mark in html output
+        if (citation) return ''
+
+        return match
+    })
+}
+
+function transformContentReferences(
+    input: string,
+    metadata: ConversationNodeMessage['metadata'],
+) {
+    const contentRefs = metadata?.content_references
+    if (!contentRefs || contentRefs.length === 0) return input
+
+    const sortedRefs = [...contentRefs].sort((a, b) => (b.matched_text?.length || 0) - (a.matched_text?.length || 0))
+
+    // Normalize unicode variants (non-breaking spaces, non-breaking hyphens) to regular ASCII
+    const normalize = (s: string) => s
+        .replaceAll(/[\u00A0\u202F\u2007\u2060]/gu, ' ')
+        .replaceAll(/[\u2010-\u2015\u2212]/gu, '-')
+
+    let output = normalize(input)
+
+    for (const ref of sortedRefs) {
+        if (!ref.matched_text) continue
+
+        const matchedText = normalize(ref.matched_text)
+
+        switch (ref.type) {
+            case 'sources_footnote':
+                break
+            case 'grouped_webpages': {
+                // For citations, build links from items including supporting_websites
+                const item = ref.items?.[0]
+                if (item) {
+                    const links: string[] = []
+                    // Primary source
+                    links.push(`[${item.attribution || item.title}](${item.url})`)
+                    // Supporting sources
+                    for (const sw of item.supporting_websites || []) {
+                        links.push(`[${sw.attribution || sw.title}](${sw.url})`)
+                    }
+                    // Markdown links will be converted to HTML by the subsequent toHtml step
+                    output = output.replaceAll(matchedText, `(${links.join(', ')})`)
+                }
+                else {
+                    output = output.replaceAll(matchedText, ref.alt || '')
+                }
+                break
+            }
+            default:
+                // Use ref.alt which contains display text or pre-formatted markdown link
+                // Markdown links will be converted to HTML by the subsequent toHtml step
+                output = output.replaceAll(matchedText, ref.alt || '')
+        }
+    }
+    return output
+}
+
+/**
+ * Convert the content based on the type of message
+ */
+function transformContent(
+    content: ConversationNodeMessage['content'],
+    metadata: ConversationNodeMessage['metadata'],
+    postProcess: (input: string) => string,
+) {
+    switch (content.content_type) {
+        case 'text':
+            return postProcess(content.parts?.join('\n') || '')
+        case 'code':
+            return `Code:\n\`\`\`\n${content.text}\n\`\`\`` || ''
+        case 'execution_output':
+            if (metadata?.aggregate_result?.messages) {
+                return metadata.aggregate_result.messages
+                    .filter(msg => msg.message_type === 'image')
+                    .map(msg => `<img src="${msg.image_url}" height="${msg.height}" width="${msg.width}" />`)
+                    .join('\n')
+            }
+            return postProcess(`Result:\n\`\`\`\n${content.text}\n\`\`\`` || '')
+        case 'tether_quote':
+            return postProcess(`> ${content.title || content.text || ''}`)
+        case 'tether_browsing_code':
+            return postProcess('') // TODO: implement
+        case 'tether_browsing_display': {
+            const metadataList = metadata?._cite_metadata?.metadata_list
+            if (Array.isArray(metadataList) && metadataList.length > 0) {
+                return postProcess(metadataList.map(({ title, url }) => {
+                    return `> [${title}](${url})`
+                }).join('\n'))
+            }
+            return postProcess('')
+        }
+        case 'multimodal_text': {
+            return content.parts?.map((part) => {
+                if (typeof part === 'string') return postProcess(part)
+                if (part.content_type === 'image_asset_pointer') return `<img src="${part.asset_pointer}" height="${part.height}" width="${part.width}" />`
+                if (part.content_type === 'audio_transcription') return `<div style="font-style: italic; opacity: 0.65;">“${part.text}”</div>`
+                if (part.content_type === 'audio_asset_pointer') return null
+                if (part.content_type === 'real_time_user_audio_video_asset_pointer') return null
+                return postProcess('[Unsupported multimodal content]')
+            }).join('\n') || ''
+        }
+        default:
+            console.warn('[Exporter] Unsupported Content:', content.content_type, content)
+            return postProcess(`[Unsupported Content: ${content.content_type} ]`)
+    }
+}
+
+function formatThinkingHtml(thinking: ThinkingContent): string {
+    const durationLabel = thinking.durationSeconds != null
+        ? `Thought for ${thinking.durationSeconds} seconds`
+        : 'Thinking'
+
+    const parts: string[] = []
+
+    if (thinking.activities?.length) {
+        const items = thinking.activities.map(a => `<li>${escapeHtml(a)}</li>`).join('')
+        parts.push(`<ul>${items}</ul>`)
+    }
+
+    const thoughts = thinking.thoughts
+        .map(t => t.content || t.summary)
+        .filter(Boolean)
+        .map(text => `<p>${escapeHtml(text)}</p>`)
+        .join('\n')
+    if (thoughts) parts.push(thoughts)
+
+    const body = parts.join('\n')
+
+    if (!body) return ''
+
+    return `<details class="thinking"><summary>${escapeHtml(durationLabel)}</summary>${body}</details>`
+}
+
+function escapeHtml(html: string) {
+    return html
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+}

@@ -1,0 +1,201 @@
+import { fetchConversation, getCurrentChatId, processConversation, shouldSkipMessageInExport } from '../api'
+import i18n from '../i18n'
+import { checkIfConversationStarted } from '../page'
+import { copyToClipboard } from '../utils/clipboard'
+import { flatMap, fromMarkdown, toMarkdown } from '../utils/markdown'
+import { standardizeLineBreaks } from '../utils/text'
+import type { ConversationNodeMessage } from '../api'
+import type { Emphasis, Strong } from 'mdast'
+
+export async function exportToText() {
+    if (!checkIfConversationStarted()) {
+        alert(i18n.t('Please start a conversation first'))
+        return false
+    }
+
+    const chatId = await getCurrentChatId()
+    // All image in text output will be replaced with `[image]`
+    // So we don't need to waste time to download them
+    const rawConversation = await fetchConversation(chatId, false)
+
+    const { conversationNodes } = processConversation(rawConversation)
+    const text = conversationNodes
+        .map(({ message }) => transformMessage(message))
+        .filter(Boolean)
+        .join('\n\n')
+
+    copyToClipboard(standardizeLineBreaks(text))
+
+    return true
+}
+
+const LatexRegex = /(\s\$\$.+\$\$\s|\s\$.+\$\s|\\\[.+\\\]|\\\(.+\\\))|(^\$$[\S\s]+^\$$)|(^\$\$[\S\s]+^\$\$$)/gm
+
+function transformMessage(message?: ConversationNodeMessage) {
+    if (!message || !message.content) return null
+
+    if (shouldSkipMessageInExport(message)) return null
+
+    const author = transformAuthor(message.author)
+    let content = transformContent(message.content, message.metadata)
+
+    const matches = content.match(LatexRegex)
+    if (matches) {
+        let index = 0
+        content = content.replace(LatexRegex, () => {
+            // Replace it with `╬${index}╬` to avoid markdown processor ruin the formula
+            return `╬${index++}╬`
+        })
+    }
+
+    if (message.author.role === 'assistant') {
+        content = transformContentReferences(content, message.metadata)
+        content = transformFootNotes(content, message.metadata)
+    }
+
+    // Only message from assistant will be reformatted
+    if (message.author.role === 'assistant' && content) {
+        content = reformatContent(content)
+    }
+
+    if (matches) {
+        // Replace `╬${index}╬` back to the original latex
+        content = content.replace(/╬(\d+)╬/g, (_, index) => {
+            return matches[+index]
+        })
+    }
+
+    return `${author}:\n${content}`
+}
+
+/**
+ * Convert the content based on the type of message
+ */
+function transformContent(
+    content: ConversationNodeMessage['content'],
+    metadata: ConversationNodeMessage['metadata'],
+) {
+    switch (content.content_type) {
+        case 'text':
+            return content.parts?.join('\n') || ''
+        case 'code':
+            return content.text || ''
+        case 'execution_output':
+            if (metadata?.aggregate_result?.messages) {
+                return metadata.aggregate_result.messages
+                    .filter(msg => msg.message_type === 'image')
+                    .map(() => '[image]')
+                    .join('\n')
+            }
+            return content.text || ''
+        case 'tether_quote':
+            return `> ${content.title || content.text || ''}`
+        case 'tether_browsing_code':
+            return '' // TODO: implement
+        case 'tether_browsing_display': {
+            const metadataList = metadata?._cite_metadata?.metadata_list
+            if (Array.isArray(metadataList) && metadataList.length > 0) {
+                return metadataList.map(({ title, url }) => `> [${title}](${url})`).join('\n')
+            }
+            return ''
+        }
+        case 'multimodal_text': {
+            return content.parts?.map((part) => {
+                if (typeof part === 'string') return part
+                // We show `[image]` for multimodal as the base64 string is too long. This is bad for sharing pure text.
+                if (part.content_type === 'image_asset_pointer') return '[image]'
+                if (part.content_type === 'audio_transcription') return `[audio] ${part.text}`
+                if (part.content_type === 'audio_asset_pointer') return null
+                if (part.content_type === 'real_time_user_audio_video_asset_pointer') return null
+                return '[Unsupported multimodal content]'
+            }).join('\n') || ''
+        }
+        default:
+            console.warn('[Exporter] Unsupported Content:', content.content_type, content)
+            return '[Unsupported Content]'
+    }
+}
+
+/**
+ * Remove some markdown syntaxes from the content
+ */
+function reformatContent(input: string) {
+    const root = fromMarkdown(input)
+    flatMap(root, (item) => {
+        // Replace strong/bold with text
+        if (item.type === 'strong') return (item as Strong).children
+        // Replace emphasis/italic with text
+        if (item.type === 'emphasis') return (item as Emphasis).children
+
+        return [item]
+    })
+    const result = toMarkdown(root)
+    // HACK: render to markdown will let [ be escaped, so we need to remove the first character
+    if (result.startsWith('\\[') && input.startsWith('[')) {
+        return result.slice(1)
+    }
+    return result
+}
+
+function transformAuthor(author: ConversationNodeMessage['author']): string {
+    switch (author.role) {
+        case 'assistant':
+            return 'ChatGPT'
+        case 'user':
+            return 'You'
+        case 'tool':
+            return `Plugin${author.name ? ` (${author.name})` : ''}`
+        default:
+            return author.role
+    }
+}
+
+function transformContentReferences(
+    input: string,
+    metadata: ConversationNodeMessage['metadata'],
+) {
+    const contentRefs = metadata?.content_references
+    if (!contentRefs || contentRefs.length === 0) return input
+
+    const sortedRefs = [...contentRefs].sort((a, b) => (b.matched_text?.length || 0) - (a.matched_text?.length || 0))
+
+    // Normalize unicode variants (non-breaking spaces, non-breaking hyphens) to regular ASCII
+    const normalize = (s: string) => s
+        .replaceAll(/[\u00A0\u202F\u2007\u2060]/gu, ' ')
+        .replaceAll(/[\u2010-\u2015\u2212]/gu, '-')
+
+    let output = normalize(input)
+
+    for (const ref of sortedRefs) {
+        if (!ref.matched_text) continue
+
+        const matchedText = normalize(ref.matched_text)
+
+        switch (ref.type) {
+            case 'sources_footnote':
+                break
+            default:
+                // Use ref.alt which contains display text (links won't render in plain text)
+                output = output.replaceAll(matchedText, ref.alt || '')
+        }
+    }
+    return output
+}
+
+/**
+ * Transform foot notes in assistant's message
+ */
+function transformFootNotes(
+    input: string,
+    metadata: ConversationNodeMessage['metadata'],
+) {
+    // 【11†(PrintWiki)】
+    const footNoteMarkRegex = /【(\d+)†\((.+?)\)】/g
+    return input.replace(footNoteMarkRegex, (match, citeIndex, _evidenceText) => {
+        const citation = metadata?.citations?.find(cite => cite.metadata?.extra?.cited_message_idx === +citeIndex)
+        // We simply remove the foot note mark in text output
+        if (citation) return ''
+
+        return match
+    })
+}

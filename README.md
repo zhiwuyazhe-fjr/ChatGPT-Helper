@@ -144,6 +144,16 @@
 4.  **加载已解压的扩展程序**: 点击按钮，选择项目根目录。
 5.  **开始使用**: 访问 `https://chatgpt.com`，侧边栏将自动出现。
 
+### 开发构建
+
+```bash
+npm install
+npm run build
+npm run check
+```
+
+构建产物会输出到 `content-scripts/dist/`，并随仓库提交，因此普通本地加载不需要先执行构建。`npm run check` 会执行内容脚本语法检查、manifest 加载顺序检查、VM 模拟加载和 TypeScript 类型检查。
+
 ---
 
 <a id="usage"></a>
@@ -161,16 +171,26 @@
 ```bash
 ChatGPTHelper/
 ├── content-scripts/
-│   ├── chatgpt-helper.js          # 核心逻辑（UI、提示词、大纲）
-│   ├── chatgpt-helper-exporter.js # 导出功能
-│   └── gm-api-adapter.js          # API 适配器
+│   ├── dist/
+│   │   ├── chatgpt-helper.js      # 构建后的 Helper 内容脚本
+│   │   └── chatgpt-exporter.js    # 构建后的导出器内容脚本
+│   └── gm-api-adapter.js          # GM API / chrome.storage 适配器
+├── src/
+│   └── content/
+│       ├── entries/               # 内容脚本构建入口
+│       ├── helper/                # Helper 源码模块
+│       └── exporter/              # ChatGPT Exporter 2.32.1 适配源码
+├── scripts/
+│   ├── build-content.mjs          # Vite/Rollup 构建脚本
+│   └── check-content.mjs          # 语法、manifest、模块加载检查
 ├── libs/
 │   ├── jszip.min.js               # 压缩库
 │   └── html2canvas.min.js         # 截图库
 ├── icons/                         # 图标资源
 ├── docs/
 │   └── screenshots/               # 文档图片（README 使用）
-├── manifest.json                  # 扩展配置
+├── package.json                   # 开发依赖、构建命令与类型检查
+├── manifest.json                  # 扩展配置，加载 dist 产物
 └── README.md                      # 说明文档
 ```
 
@@ -180,6 +200,7 @@ ChatGPTHelper/
 - **支持站点**:
     - `https://chat.openai.com/*`
     - `https://chatgpt.com/*`
+    - `https://new.oaifree.com/*`
 
 ## 🔒 隐私与权限
 

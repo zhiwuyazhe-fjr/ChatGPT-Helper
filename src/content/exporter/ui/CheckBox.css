@@ -1,0 +1,51 @@
+.CheckBoxLabel {
+    position: relative;
+    display: flex;
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+.CheckBoxLabel * {
+    cursor: pointer;
+}
+
+.CheckBoxLabel[disabled] {
+    opacity: 0.7;
+}
+
+.CheckBoxLabel[disabled] * {
+    cursor: not-allowed;
+}
+
+.CheckBoxLabel input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.CheckBoxLabel .IconWrapper {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    vertical-align: middle;
+    font-size: 1.5rem;
+}
+
+.CheckBoxLabel input:checked ~ svg {
+    color: rgb(28 100 242);
+}
+
+.dark .CheckBoxLabel input:checked ~ svg {
+    color: rgb(144, 202, 249);
+}
+
+.CheckBoxLabel .LabelText {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+}

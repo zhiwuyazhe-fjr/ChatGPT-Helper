@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Helper",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "ChatGPT Helper：极简助手，三栏布局增强，提示词管理、对话大纲、会话管理、折叠功能，配合导出功能，支持导出为PDF、HTML、Markdown格式",
   "author": "zhiwuyazhe_fjr",
   "icons": {
@@ -15,40 +15,20 @@
   ],
   "host_permissions": [
     "https://chat.openai.com/*",
-    "https://chatgpt.com/*",
-    "https://new.oaifree.com/*"
+    "https://chatgpt.com/*"
   ],
   "content_scripts": [
     {
       "matches": [
         "https://chat.openai.com/*",
-        "https://chatgpt.com/*",
-        "https://new.oaifree.com/*"
+        "https://chatgpt.com/*"
       ],
       "js": [
         "libs/jszip.min.js",
         "libs/html2canvas.min.js",
         "content-scripts/gm-api-adapter.js",
-        "content-scripts/chatgpt-helper-exporter.js",
-        "content-scripts/helper/10-base.js",
-        "content-scripts/helper/20-theme-assets.js",
-        "content-scripts/helper/30-conversation-manager.js",
-        "content-scripts/helper/40-scroll-managers.js",
-        "content-scripts/helper/50-outline-manager.js",
-        "content-scripts/helper/60-copy-manager.js",
-        "content-scripts/helper/70-tab-rename-manager.js",
-        "content-scripts/helper/80-chatgpt-adapter.js",
-        "content-scripts/helper/90-app-core.js",
-        "content-scripts/helper/91-app-storage-init.js",
-        "content-scripts/helper/92-app-theme.js",
-        "content-scripts/helper/93-app-styles.js",
-        "content-scripts/helper/94-app-layout.js",
-        "content-scripts/helper/95-app-prompts.js",
-        "content-scripts/helper/96-app-export.js",
-        "content-scripts/helper/97-app-conversations-settings.js",
-        "content-scripts/helper/98-app-outline.js",
-        "content-scripts/helper/99-app-controls-events.js",
-        "content-scripts/chatgpt-helper.js"
+        "content-scripts/dist/chatgpt-exporter.js",
+        "content-scripts/dist/chatgpt-helper.js"
       ],
       "run_at": "document_idle",
       "all_frames": false
@@ -62,8 +42,7 @@
       ],
       "matches": [
         "https://chat.openai.com/*",
-        "https://chatgpt.com/*",
-        "https://new.oaifree.com/*"
+        "https://chatgpt.com/*"
       ]
     }
   ]
