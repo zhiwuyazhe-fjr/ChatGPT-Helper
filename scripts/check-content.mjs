@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import vm from 'node:vm'
 import { execFileSync } from 'node:child_process'
+import './generate-html-assets.mjs'
 
 const root = process.cwd()
 
@@ -32,6 +33,42 @@ const versionSources = {
 const versionValues = Object.values(versionSources)
 if (versionValues.some(value => !value) || new Set(versionValues).size !== 1) {
     throw new Error(`version mismatch:\n${Object.entries(versionSources).map(([source, version]) => `${source}: ${version ?? '(missing)'}`).join('\n')}`)
+}
+
+const remoteHostedCodeRules = [
+    {
+        label: 'remote <script src>',
+        pattern: /<script\b[^>]*\bsrc\s*=\s*["']https?:\/\//i,
+    },
+    {
+        label: 'remote stylesheet',
+        pattern: /<link\b(?=[^>]*\brel\s*=\s*["']stylesheet["'])(?=[^>]*\bhref\s*=\s*["']https?:\/\/)[^>]*>/i,
+    },
+    {
+        label: 'remote dynamic import',
+        pattern: /\bimport\s*\(\s*["']https?:\/\//i,
+    },
+    {
+        label: 'remote worker script',
+        pattern: /\bnew\s+Worker\s*\(\s*["']https?:\/\//i,
+    },
+]
+
+const remoteHostedCodeScanFiles = [
+    path.join(root, 'src/content/exporter/template.html'),
+    ...walk(path.join(root, 'content-scripts')),
+]
+const remoteHostedCodeViolations = []
+for (const file of remoteHostedCodeScanFiles) {
+    const content = fs.readFileSync(file, 'utf8')
+    for (const rule of remoteHostedCodeRules) {
+        if (rule.pattern.test(content)) {
+            remoteHostedCodeViolations.push(`${path.relative(root, file)}: ${rule.label}`)
+        }
+    }
+}
+if (remoteHostedCodeViolations.length > 0) {
+    throw new Error(`remote hosted code is not allowed in Chrome Web Store MV3 packages:\n${remoteHostedCodeViolations.join('\n')}`)
 }
 
 const scripts = manifest.content_scripts?.[0]?.js ?? []
@@ -91,6 +128,7 @@ const body = makeElement('body')
 const head = makeElement('head')
 const document = {
     readyState: 'loading',
+    compatMode: 'CSS1Compat',
     documentElement,
     body,
     head,

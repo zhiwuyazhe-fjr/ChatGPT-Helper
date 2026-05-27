@@ -1,6 +1,9 @@
 import JSZip from 'jszip'
+import hljs from 'highlight.js/lib/common'
+import renderMathInElement from 'katex/contrib/auto-render'
 import { fetchConversation, getCurrentChatId, processConversation, shouldSkipMessageInExport } from '../api'
 import { KEY_THINKING_ENABLED, KEY_TIMESTAMP_24H, KEY_TIMESTAMP_ENABLED, KEY_TIMESTAMP_HTML, baseUrl } from '../constants'
+import { exportedHtmlStyles } from '../generated/html-assets'
 import i18n from '../i18n'
 import { checkIfConversationStarted, getUserAvatar } from '../page'
 import templateHtml from '../template.html?raw'
@@ -199,7 +202,10 @@ function conversationToHtml(conversation: ConversationResult, avatar: string, me
 </details>`
         : ''
 
+    const enhancedConversationHtml = enhanceExportedContent(conversationHtml)
+
     const html = templateHtml
+        .replaceAll('{{headStyles}}', exportedHtmlStyles)
         .replaceAll('{{title}}', title)
         .replaceAll('{{date}}', date)
         .replaceAll('{{time}}', time)
@@ -208,7 +214,7 @@ function conversationToHtml(conversation: ConversationResult, avatar: string, me
         .replaceAll('{{theme}}', theme)
         .replaceAll('{{avatar}}', avatar)
         .replaceAll('{{details}}', detailsHtml)
-        .replaceAll('{{content}}', conversationHtml)
+        .replaceAll('{{content}}', enhancedConversationHtml)
     return html
 }
 
@@ -378,4 +384,83 @@ function escapeHtml(html: string) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;')
+}
+
+function enhanceExportedContent(html: string): string {
+    const container = document.createElement('div')
+    container.innerHTML = html
+
+    highlightCodeBlocks(container)
+    renderMath(container)
+    alignKatexBlocks(container)
+
+    return container.innerHTML
+}
+
+function highlightCodeBlocks(container: HTMLElement) {
+    container.querySelectorAll('pre code').forEach((block) => {
+        try {
+            hljs.highlightElement(block as HTMLElement)
+        }
+        catch (error) {
+            console.warn('[Exporter] Failed to highlight code block:', error)
+        }
+    })
+}
+
+function renderMath(container: HTMLElement) {
+    try {
+        renderMathInElement(container, {
+            delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\[', right: '\\]', display: true },
+                { left: '\\(', right: '\\)', display: false },
+            ],
+            throwOnError: false,
+            ignoredClasses: ['no-katex'],
+            preProcess(math: string) {
+                return `\\displaystyle \\Large ${math}`
+            },
+        })
+    }
+    catch (error) {
+        console.warn('[Exporter] Failed to render math:', error)
+    }
+}
+
+function alignKatexBlocks(container: HTMLElement) {
+    container.querySelectorAll('.katex').forEach((el) => {
+        const parent = el.parentNode
+        const grandparent = parent?.parentNode
+        if (!(parent instanceof HTMLElement) || !(grandparent instanceof HTMLElement)) return
+
+        const katexElement = el as HTMLElement
+        if (grandparent.tagName === 'P' && isOnlyContent(grandparent, parent)) {
+            katexElement.style.width = '100%'
+            katexElement.style.display = 'block'
+            katexElement.style.textAlign = 'center'
+            parent.style.textAlign = 'center'
+        }
+        else {
+            katexElement.style.display = 'inline-block'
+            katexElement.style.width = 'fit-content'
+        }
+    })
+}
+
+function isOnlyContent(parent: Node, element: Node): boolean {
+    let onlyKaTeX = true
+    parent.childNodes.forEach((child) => {
+        if (child === element) return
+        if (child.nodeType === Node.TEXT_NODE) {
+            if (child.textContent?.trim()) {
+                onlyKaTeX = false
+            }
+        }
+        else if (child.nodeType === Node.ELEMENT_NODE) {
+            onlyKaTeX = false
+        }
+    })
+    return onlyKaTeX
 }

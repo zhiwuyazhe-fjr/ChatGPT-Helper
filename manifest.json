@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Helper",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "ChatGPT Helper：极简助手，三栏布局增强，提示词管理、对话大纲、会话管理、折叠功能，配合导出功能，支持导出为PDF、HTML、Markdown格式",
   "author": "zhiwuyazhe_fjr",
   "icons": {

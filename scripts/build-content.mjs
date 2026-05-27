@@ -2,6 +2,7 @@ import { build } from 'vite'
 import preact from '@preact/preset-vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 import { resolve } from 'node:path'
+import './generate-html-assets.mjs'
 
 const root = process.cwd()
 const outDir = resolve(root, 'content-scripts/dist')
