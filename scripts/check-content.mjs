@@ -17,8 +17,34 @@ function walk(dir) {
     return result
 }
 
-for (const file of walk(path.join(root, 'content-scripts'))) {
+function isUnicodeNoncharacter(codePoint) {
+    return (codePoint >= 0xFDD0 && codePoint <= 0xFDEF) ||
+        ((codePoint & 0xFFFE) === 0xFFFE && codePoint <= 0x10FFFF)
+}
+
+function findUnicodeNoncharacter(content) {
+    let byteOffset = 0
+    for (const char of content) {
+        const codePoint = char.codePointAt(0)
+        if (isUnicodeNoncharacter(codePoint)) {
+            return { codePoint, byteOffset }
+        }
+        byteOffset += Buffer.byteLength(char, 'utf8')
+    }
+    return null
+}
+
+const contentScriptFiles = walk(path.join(root, 'content-scripts'))
+for (const file of contentScriptFiles) {
     execFileSync(process.execPath, ['--check', file], { stdio: 'inherit' })
+}
+for (const file of contentScriptFiles) {
+    const content = fs.readFileSync(file, 'utf8')
+    const hit = findUnicodeNoncharacter(content)
+    if (hit) {
+        const codePoint = `U+${hit.codePoint.toString(16).toUpperCase().padStart(4, '0')}`
+        throw new Error(`${path.relative(root, file)} contains Unicode noncharacter ${codePoint} at byte offset ${hit.byteOffset}; Chrome rejects extension scripts containing Unicode noncharacters`)
+    }
 }
 
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'))

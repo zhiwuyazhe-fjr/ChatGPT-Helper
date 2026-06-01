@@ -11,7 +11,7 @@ const common = {
     configFile: false,
     root,
     esbuild: {
-        charset: 'utf8',
+        charset: 'ascii',
     },
     plugins: [
         preact({
