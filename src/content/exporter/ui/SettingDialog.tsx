@@ -1,4 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
+import { useState } from 'preact/hooks'
 import { useTranslation } from 'react-i18next'
 import sanitize from 'sanitize-filename'
 import { baseUrl } from '../constants'
@@ -10,9 +11,46 @@ import { IconCross, IconTrash } from './Icons'
 import { useSettingContext } from './SettingContext'
 import { Toggle } from './Toggle'
 import type { FC } from '../type'
+import type { ComponentChildren } from 'preact'
 
 function Variable({ name, title }: { name: string; title: string }) {
     return <strong className="cursor-help select-all whitespace-nowrap" title={title}>{name}</strong>
+}
+
+interface SettingsSectionProps {
+    id: string
+    title: string
+    action?: ComponentChildren
+    defaultOpen?: boolean
+    children: ComponentChildren
+}
+
+function SettingsSection({ id, title, action, defaultOpen = true, children }: SettingsSectionProps) {
+    const [open, setOpen] = useState(defaultOpen)
+    const panelId = `${id}-panel`
+
+    return (
+        <div className="settings-section">
+            <dt className="settings-section-header">
+                <button
+                    type="button"
+                    className="settings-section-trigger"
+                    aria-expanded={open}
+                    aria-controls={panelId}
+                    onClick={() => setOpen(value => !value)}
+                >
+                    <span className={`settings-section-chevron${open ? ' open' : ''}`} aria-hidden="true">&gt;</span>
+                    <span>{title}</span>
+                </button>
+                {action && <div className="settings-section-action">{action}</div>}
+            </dt>
+            {open && (
+                <dd id={panelId} className="settings-section-panel">
+                    {children}
+                </dd>
+            )}
+        </div>
+    )
 }
 
 interface SettingDialogProps {
@@ -64,14 +102,113 @@ export const SettingDialog: FC<SettingDialogProps> = ({
                 <Dialog.Content className="DialogContent">
                     <Dialog.Title className="DialogTitle">{t('Exporter Settings')}</Dialog.Title>
                     <div className="DialogBody">
-                        <dl className="space-y-6">
-                            <div className="relative flex bg-white dark:bg-white/5 rounded p-4">
-                                <div>
-                                    <dt className="text-md font-medium text-gray-800 dark:text-white">
-                                        {t('File Name')}
-                                    </dt>
-                                    <dd>
-                                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <dl className="settings-sections">
+                            <SettingsSection id="filename" title={t('File Name')}>
+                                <p className="text-sm text-gray-700 dark:text-gray-300">
+                                    {t('Available variables')}:{' '}
+                                    <Variable name="{title}" title={title} />
+                                    ,{' '}
+                                    <Variable name="{date}" title={date} />
+                                    ,{' '}
+                                    <Variable name="{timestamp}" title={timestamp} />
+                                    ,{' '}
+                                    <Variable name="{chat_id}" title={chatId} />
+                                    ,{' '}
+                                    <Variable name="{create_time}" title={unixTimestampToISOString(createTime)} />
+                                    ,{' '}
+                                    <Variable name="{update_time}" title={unixTimestampToISOString(updateTime)} />
+                                </p>
+                                <input className="Input mt-4" id="filename-input" value={format} onChange={e => setFormat(e.currentTarget.value)} />
+                                <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
+                                    {t('Preview')}:{' '}
+                                    <span className="select-all" style={{ 'text-decoration': 'underline', 'text-underline-offset': 4 }}>{preview}</span>
+                                </p>
+                            </SettingsSection>
+
+                            <SettingsSection
+                                id="thinking"
+                                title={t('Export Thinking Process')}
+                                action={<Toggle label="" checked={enableThinking} onCheckedUpdate={setEnableThinking} />}
+                            >
+                                <p className="text-sm text-gray-700 dark:text-gray-300">
+                                    {t('Export Thinking Process Description')}
+                                </p>
+                            </SettingsSection>
+
+                            <SettingsSection id="export-all-limit" title={t('Export All Limit')}>
+                                <p className="text-sm text-gray-700 dark:text-gray-300">
+                                    {t('Export All Limit Description')}
+                                </p>
+                                <div className="flex items-center gap-4 mt-3">
+                                    <input
+                                        type="range"
+                                        min="100"
+                                        max="20000"
+                                        step="100"
+                                        value={exportAllLimit}
+                                        onChange={e =>
+                                            setExportAllLimit(
+                                                Number.parseInt(
+                                                    e.currentTarget.value,
+                                                    10,
+                                                ),
+                                            )}
+                                        className="flex-grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                                        id="exportAllLimitSlider"
+                                    />
+                                    <span className="font-medium text-gray-900 dark:text-gray-300 w-12 text-right">
+                                        {exportAllLimit}
+                                    </span>
+                                </div>
+                            </SettingsSection>
+
+                            <SettingsSection
+                                id="conversation-timestamp"
+                                title={t('Conversation Timestamp')}
+                                action={<Toggle label="" checked={enableTimestamp} onCheckedUpdate={setEnableTimestamp} />}
+                            >
+                                <p className="text-sm text-gray-700 dark:text-gray-300">
+                                    {t('Conversation Timestamp Description')}
+                                </p>
+                                {enableTimestamp && (
+                                    <>
+                                        <div className="mt-2">
+                                            <Toggle
+                                                label={t('Use 24-hour format')}
+                                                checked={timeStamp24H}
+                                                onCheckedUpdate={setTimeStamp24H}
+                                            />
+                                        </div>
+                                        <div className="mt-2">
+                                            <Toggle
+                                                label={t('Enable on HTML')}
+                                                checked={enableTimestampHTML}
+                                                onCheckedUpdate={setEnableTimestampHTML}
+                                            />
+                                        </div>
+                                        <div className="mt-2">
+                                            <Toggle
+                                                label={t('Enable on Markdown')}
+                                                checked={enableTimestampMarkdown}
+                                                onCheckedUpdate={setEnableTimestampMarkdown}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                            </SettingsSection>
+
+                            <SettingsSection
+                                id="export-metadata"
+                                title={t('Export Metadata')}
+                                action={<Toggle label="" checked={enableMeta} onCheckedUpdate={setEnableMeta} />}
+                            >
+                                <p className="text-sm text-gray-700 dark:text-gray-300">
+                                    {t('Export Metadata Description')}
+                                </p>
+
+                                {enableMeta && (
+                                    <>
+                                        <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
                                             {t('Available variables')}:{' '}
                                             <Variable name="{title}" title={title} />
                                             ,{' '}
@@ -79,180 +216,58 @@ export const SettingDialog: FC<SettingDialogProps> = ({
                                             ,{' '}
                                             <Variable name="{timestamp}" title={timestamp} />
                                             ,{' '}
-                                            <Variable name="{chat_id}" title={chatId} />
+                                            <Variable name="{source}" title={source} />
                                             ,{' '}
-                                            <Variable name="{create_time}" title={unixTimestampToISOString(createTime)} />
+                                            <Variable name="{model}" title="ChatGPT-3.5" />
                                             ,{' '}
-                                            <Variable name="{update_time}" title={unixTimestampToISOString(updateTime)} />
+                                            <Variable name="{model_name}" title="text-davinci-002-render-sha" />
+                                            ,{' '}
+                                            <Variable name="{create_time}" title="2023-04-10T21:45:35.027Z" />
+                                            ,{' '}
+                                            <Variable name="{update_time}" title="2023-04-10T21:45:35.027Z" />
                                         </p>
-                                        <input className="Input mt-4" id="filename" value={format} onChange={e => setFormat(e.currentTarget.value)} />
-                                        <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
-                                            {t('Preview')}:{' '}
-                                            <span className="select-all" style={{ 'text-decoration': 'underline', 'text-underline-offset': 4 }}>{preview}</span>
-                                        </p>
-                                    </dd>
-                                </div>
-                            </div>
-                            <div className="relative flex bg-white dark:bg-white/5 rounded p-4">
-                                <div>
-                                    <dt className="text-md font-medium text-gray-800 dark:text-white">
-                                        {t('Export Thinking Process')}
-                                    </dt>
-                                    <dd className="text-sm text-gray-700 dark:text-gray-300">
-                                        {t('Export Thinking Process Description')}
-                                    </dd>
-                                </div>
-                                <div className="absolute right-4">
-                                    <Toggle label="" checked={enableThinking} onCheckedUpdate={setEnableThinking} />
-                                </div>
-                            </div>
-                            <div className="relative flex bg-white dark:bg-white/5 rounded p-4">
-                                <div>
-                                    <dt className="text-md font-medium text-gray-800 dark:text-white">
-                                        {t('Export All Limit')}{' '}
-                                        {/* Add translation key */}
-                                    </dt>
-                                    <dd className="text-sm text-gray-700 dark:text-gray-300 mt-2">
-                                        {t('Export All Limit Description')}{' '}
-                                        {/* Add translation key */}
-                                        <div className="flex items-center gap-4 mt-3">
-                                            <input
-                                                type="range"
-                                                min="100" // Set min value
-                                                max="20000" // Set max value (adjust as needed)
-                                                step="100" // Set step value
-                                                value={exportAllLimit}
-                                                onChange={e =>
-                                                    setExportAllLimit(
-                                                        Number.parseInt(
-                                                            e.currentTarget.value,
-                                                            10,
-                                                        ),
-                                                    )}
-                                                className="flex-grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-                                                id="exportAllLimitSlider"
-                                            />
-                                            <span className="font-medium text-gray-900 dark:text-gray-300 w-12 text-right">
-                                                {exportAllLimit}
-                                            </span>
+                                        {exportMetaList.map((meta, i) => (
+                                            <div className="flex items-center mt-2" key={i}>
+                                                <input
+                                                    className="Input"
+                                                    value={meta.name}
+                                                    onChange={(e) => {
+                                                        const list = [...exportMetaList]
+                                                        list[i] = { ...list[i], name: e.currentTarget.value }
+                                                        setExportMetaList(list)
+                                                    }}
+                                                />
+                                                <span className="mx-2">-&gt;</span>
+                                                <input
+                                                    className="Input"
+                                                    value={meta.value}
+                                                    onChange={(e) => {
+                                                        const list = [...exportMetaList]
+                                                        list[i] = { ...list[i], value: e.currentTarget.value }
+                                                        setExportMetaList(list)
+                                                    }}
+                                                />
+                                                <button
+                                                    className="ml-2 rounded-full p-1 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition ease-in-out duration-150"
+                                                    aria-label="Remove"
+                                                    onClick={() => setExportMetaList(exportMetaList.filter((_, j) => j !== i))}
+                                                >
+                                                    <IconTrash className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <div className="flex justify-center items-center mt-2 pr-8">
+                                            <button
+                                                className="w-full border border-[#6f6e77] dark:border-gray-[#86858d] rounded-md py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition ease-in-out duration-150"
+                                                aria-label="Add"
+                                                onClick={() => setExportMetaList([...exportMetaList, { name: '', value: '' }])}
+                                            >
+                                                +
+                                            </button>
                                         </div>
-                                    </dd>
-                                </div>
-                            </div>
-                            <div className="relative flex bg-white dark:bg-white/5 rounded p-4">
-                                <div>
-                                    <dt className="text-md font-medium text-gray-800 dark:text-white">
-                                        {t('Conversation Timestamp')}
-                                    </dt>
-                                    <dd className="text-sm text-gray-700 dark:text-gray-300">
-                                        {t('Conversation Timestamp Description')}
-                                        {enableTimestamp && (
-                                            <>
-                                                <div className="mt-2">
-                                                    <Toggle
-                                                        label={t('Use 24-hour format')}
-                                                        checked={timeStamp24H}
-                                                        onCheckedUpdate={setTimeStamp24H}
-                                                    />
-                                                </div>
-                                                <div className="mt-2">
-                                                    <Toggle
-                                                        label={t('Enable on HTML')}
-                                                        checked={enableTimestampHTML}
-                                                        onCheckedUpdate={setEnableTimestampHTML}
-                                                    />
-                                                </div>
-                                                <div className="mt-2">
-                                                    <Toggle
-                                                        label={t('Enable on Markdown')}
-                                                        checked={enableTimestampMarkdown}
-                                                        onCheckedUpdate={setEnableTimestampMarkdown}
-                                                    />
-                                                </div>
-                                            </>
-                                        )}
-                                    </dd>
-                                </div>
-                                <div className="absolute right-4">
-                                    <Toggle label="" checked={enableTimestamp} onCheckedUpdate={setEnableTimestamp} />
-                                </div>
-                            </div>
-                            <div className="relative flex bg-white dark:bg-white/5 rounded p-4">
-                                <div>
-                                    <dt className="text-md font-medium text-gray-800 dark:text-white">
-                                        {t('Export Metadata')}
-                                    </dt>
-                                    <dd className="text-sm text-gray-700 dark:text-gray-300">
-                                        {t('Export Metadata Description')}
-
-                                        {enableMeta && (
-                                            <>
-                                                <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-                                                    {t('Available variables')}:{' '}
-                                                    <Variable name="{title}" title={title} />
-                                                    ,{' '}
-                                                    <Variable name="{date}" title={date} />
-                                                    ,{' '}
-                                                    <Variable name="{timestamp}" title={timestamp} />
-                                                    ,{' '}
-                                                    <Variable name="{source}" title={source} />
-                                                    ,{' '}
-                                                    <Variable name="{model}" title="ChatGPT-3.5" />
-                                                    ,{' '}
-                                                    <Variable name="{model_name}" title="text-davinci-002-render-sha" />
-                                                    ,{' '}
-                                                    <Variable name="{create_time}" title="2023-04-10T21:45:35.027Z" />
-                                                    ,{' '}
-                                                    <Variable name="{update_time}" title="2023-04-10T21:45:35.027Z" />
-                                                </p>
-                                                {/* eslint-disable-next-line pionxzh/consistent-list-newline */}
-                                                {exportMetaList.map((meta, i) => (
-                                                    <div className="flex items-center mt-2" key={i}>
-                                                        <input
-                                                            className="Input"
-                                                            value={meta.name}
-                                                            onChange={(e) => {
-                                                                const list = [...exportMetaList]
-                                                                list[i] = { ...list[i], name: e.currentTarget.value }
-                                                                setExportMetaList(list)
-                                                            }}
-                                                        />
-                                                        <span className="mx-2">→</span>
-                                                        <input
-                                                            className="Input"
-                                                            value={meta.value}
-                                                            onChange={(e) => {
-                                                                const list = [...exportMetaList]
-                                                                list[i] = { ...list[i], value: e.currentTarget.value }
-                                                                setExportMetaList(list)
-                                                            }}
-                                                        />
-                                                        <button
-                                                            className="ml-2 rounded-full p-1 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition ease-in-out duration-150"
-                                                            aria-label="Remove"
-                                                            onClick={() => setExportMetaList(exportMetaList.filter((_, j) => j !== i))}
-                                                        >
-                                                            <IconTrash className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                                <div className="flex justify-center items-center mt-2 pr-8">
-                                                    <button
-                                                        className="w-full border border-[#6f6e77] dark:border-gray-[#86858d] rounded-md py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition ease-in-out duration-150"
-                                                        aria-label="Add"
-                                                        onClick={() => setExportMetaList([...exportMetaList, { name: '', value: '' }])}
-                                                    >
-                                                        +
-                                                    </button>
-                                                </div>
-                                            </>
-                                        )}
-                                    </dd>
-                                </div>
-                                <div className="absolute right-4">
-                                    <Toggle label="" checked={enableMeta} onCheckedUpdate={setEnableMeta} />
-                                </div>
-                            </div>
+                                    </>
+                                )}
+                            </SettingsSection>
                         </dl>
                         <div className="flex mt-6" style={{ justifyContent: 'flex-end' }}>
                             <Dialog.Close asChild>

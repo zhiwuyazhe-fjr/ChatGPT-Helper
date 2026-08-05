@@ -97,6 +97,37 @@ if (remoteHostedCodeViolations.length > 0) {
     throw new Error(`remote hosted code is not allowed in Chrome Web Store MV3 packages:\n${remoteHostedCodeViolations.join('\n')}`)
 }
 
+const exporterTemplate = fs.readFileSync(path.join(root, 'src/content/exporter/template.html'), 'utf8')
+if (exporterTemplate.includes('ChatGPT Exporter')) {
+    throw new Error('exported HTML template must use ChatGPT Helper branding instead of ChatGPT Exporter')
+}
+if (!exporterTemplate.includes('ChatGPT Helper')) {
+    throw new Error('exported HTML template is missing ChatGPT Helper branding')
+}
+if (!exporterTemplate.includes('class="export-shell"')) {
+    throw new Error('exported HTML template must include the refreshed export-shell layout')
+}
+
+const settingDialogSource = fs.readFileSync(path.join(root, 'src/content/exporter/ui/SettingDialog.tsx'), 'utf8')
+for (const requiredSnippet of ['SettingsSection', 'aria-expanded', 'settings-section-panel']) {
+    if (!settingDialogSource.includes(requiredSnippet)) {
+        throw new Error(`settings dialog is missing collapsible section support: ${requiredSnippet}`)
+    }
+}
+
+const helperSettingsSource = fs.readFileSync(path.join(root, 'src/content/helper/97-app-conversations-settings.js'), 'utf8')
+for (const requiredSnippet of ['createCollapsibleSettingsSection', 'aria-expanded', 'chatgpt-helper-settings-compact-section collapsed']) {
+    if (!helperSettingsSource.includes(requiredSnippet)) {
+        throw new Error(`helper settings panel is missing collapsible section support: ${requiredSnippet}`)
+    }
+}
+const helperStylesSource = fs.readFileSync(path.join(root, 'src/content/helper/93-app-styles.js'), 'utf8')
+for (const requiredSnippet of ['chatgpt-helper-settings-compact-title-btn', 'chatgpt-helper-settings-compact-section.collapsed']) {
+    if (!helperStylesSource.includes(requiredSnippet)) {
+        throw new Error(`helper settings styles are missing collapsible section support: ${requiredSnippet}`)
+    }
+}
+
 const scripts = manifest.content_scripts?.[0]?.js ?? []
 const expectedScripts = [
     'libs/jszip.min.js',

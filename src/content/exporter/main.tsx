@@ -156,7 +156,7 @@ function defineExporterMount() {
             render(<DirectMenu container={container} />, container)
         }
         catch (error) {
-            console.error('[ChatGPT Exporter] Failed to render DirectMenu:', error)
+            console.error('[ChatGPT Helper Export] Failed to render DirectMenu:', error)
             container.appendChild(document.createElement('div')).textContent = `导出功能加载失败: ${(error as Error).message}`
         }
         return container

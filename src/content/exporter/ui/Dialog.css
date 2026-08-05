@@ -53,6 +53,94 @@
     overflow-x: hidden;
 }
 
+.settings-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.settings-section {
+    overflow: hidden;
+    border-radius: 6px;
+    background-color: #fff;
+}
+
+.dark .settings-section {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.settings-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding: 0 14px;
+}
+
+.settings-section-trigger {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    flex: 1;
+    gap: 8px;
+    border: 0;
+    background: transparent;
+    padding: 12px 0;
+    color: #1f2937;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.settings-section-trigger:hover {
+    color: #0f7f68;
+}
+
+.dark .settings-section-trigger {
+    color: #fff;
+}
+
+.dark .settings-section-trigger:hover {
+    color: #7ddfc4;
+}
+
+.settings-section-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    color: #6b7280;
+    font-size: 18px;
+    line-height: 1;
+    transform: rotate(0deg);
+    transition: transform 150ms ease;
+}
+
+.settings-section-chevron.open {
+    transform: rotate(90deg);
+}
+
+.settings-section-action {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+}
+
+.settings-section-panel {
+    margin: 0;
+    padding: 0 14px 14px 38px;
+    color: #374151;
+}
+
+.dark .settings-section-panel {
+    color: #d1d5db;
+}
+
 .dark .DialogTitle {
     color: #fff;
 }

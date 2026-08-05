@@ -326,14 +326,54 @@
                 return row;
             };
 
-            const createCompactSection = (title, items) => {
-                const section = createElement('section', { className: 'chatgpt-helper-settings-compact-section' });
-                section.appendChild(createElement('div', { className: 'chatgpt-helper-settings-compact-title' }, title));
-                const list = createElement('div', { className: 'chatgpt-helper-settings-compact-list' });
-                items.filter(Boolean).forEach((item) => list.appendChild(createCompactRow(item)));
+            const getCollapsedSettingsSections = () => {
+                if (!this.collapsedSettingsSections) this.collapsedSettingsSections = new Set();
+                return this.collapsedSettingsSections;
+            };
+            const createCollapsibleSettingsSection = (id, title, content) => {
+                const collapsedSections = getCollapsedSettingsSections();
+                const isCollapsed = collapsedSections.has(id);
+                const listId = `chatgpt-helper-settings-${id}-list`;
+                const sectionClass = isCollapsed
+                    ? 'chatgpt-helper-settings-compact-section collapsed'
+                    : 'chatgpt-helper-settings-compact-section';
+                const section = createElement('section', {
+                    className: sectionClass,
+                    'data-settings-section': id
+                });
+                const header = createElement('div', { className: 'chatgpt-helper-settings-compact-title' });
+                const trigger = createElement('button', {
+                    className: 'chatgpt-helper-settings-compact-title-btn',
+                    type: 'button',
+                    'aria-expanded': String(!isCollapsed),
+                    'aria-controls': listId
+                });
+                trigger.appendChild(createElement('span', {
+                    className: 'chatgpt-helper-settings-compact-title-chevron',
+                    'aria-hidden': 'true'
+                }, '>'));
+                trigger.appendChild(createElement('span', {
+                    className: 'chatgpt-helper-settings-compact-title-text'
+                }, title));
+                trigger.addEventListener('click', () => {
+                    const nextCollapsed = !section.classList.contains('collapsed');
+                    section.classList.toggle('collapsed', nextCollapsed);
+                    trigger.setAttribute('aria-expanded', String(!nextCollapsed));
+                    if (nextCollapsed) collapsedSections.add(id);
+                    else collapsedSections.delete(id);
+                });
+                header.appendChild(trigger);
+                section.appendChild(header);
+                const list = content();
+                list.id = listId;
                 section.appendChild(list);
                 return section;
             };
+            const createCompactSection = (id, title, items) => createCollapsibleSettingsSection(id, title, () => {
+                const list = createElement('div', { className: 'chatgpt-helper-settings-compact-list' });
+                items.filter(Boolean).forEach((item) => list.appendChild(createCompactRow(item)));
+                return list;
+            });
 
             const defaultTabOrder = ['prompts', 'outline', 'conversations', 'export'];
             const getTabLabel = (tabId) => tabId === 'prompts' ? this.t('tabPrompts') :
@@ -382,69 +422,66 @@
                 return orderedIds.map(id => ({ id, enabled: true }));
             };
             const createQuickButtonsSection = () => {
-                const section = createElement('section', { className: 'chatgpt-helper-settings-compact-section' });
-                section.appendChild(createElement('div', {
-                    className: 'chatgpt-helper-settings-compact-title'
-                }, this.t('settingsGroupQuickButtons') || 'Quick Buttons'));
-                const list = createElement('div', { className: 'chatgpt-helper-settings-compact-list' });
-                const order = getQuickButtonOrder();
-                order.forEach((btnConfig, index) => {
-                    const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
-                    if (!def) return;
-                    const row = createElement('div', {
-                        className: 'chatgpt-helper-settings-compact-row chatgpt-helper-settings-quick-button-row'
-                    });
-                    const label = createElement('div', {
-                        className: 'chatgpt-helper-settings-compact-label chatgpt-helper-settings-icon-label'
-                    });
-                    const icon = createElement('span', { className: 'chatgpt-helper-inline-icon-wrap' });
-                    icon.appendChild(createCollapsedButtonIconNode(def, {
-                        size: 16,
-                        className: 'chatgpt-helper-inline-icon'
-                    }));
-                    label.appendChild(icon);
-                    label.appendChild(createElement('span', {}, def.labelKey ? this.t(def.labelKey) : (def.label || btnConfig.id)));
+                return createCollapsibleSettingsSection('quick-buttons', this.t('settingsGroupQuickButtons') || 'Quick Buttons', () => {
+                    const list = createElement('div', { className: 'chatgpt-helper-settings-compact-list' });
+                    const order = getQuickButtonOrder();
+                    order.forEach((btnConfig, index) => {
+                        const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
+                        if (!def) return;
+                        const row = createElement('div', {
+                            className: 'chatgpt-helper-settings-compact-row chatgpt-helper-settings-quick-button-row'
+                        });
+                        const label = createElement('div', {
+                            className: 'chatgpt-helper-settings-compact-label chatgpt-helper-settings-icon-label'
+                        });
+                        const icon = createElement('span', { className: 'chatgpt-helper-inline-icon-wrap' });
+                        icon.appendChild(createCollapsedButtonIconNode(def, {
+                            size: 16,
+                            className: 'chatgpt-helper-inline-icon'
+                        }));
+                        label.appendChild(icon);
+                        label.appendChild(createElement('span', {}, def.labelKey ? this.t(def.labelKey) : (def.label || btnConfig.id)));
 
-                    const controls = createElement('div', { className: 'chatgpt-helper-settings-compact-controls' });
-                    const move = (delta) => {
-                        const nextIndex = index + delta;
-                        if (nextIndex < 0 || nextIndex >= order.length) return;
-                        const nextOrder = [...order];
-                        [nextOrder[index], nextOrder[nextIndex]] = [nextOrder[nextIndex], nextOrder[index]];
-                        this.settings.collapsedButtonsOrder = nextOrder.map(item => ({ id: item.id, enabled: true }));
-                        this.saveSettings();
-                        this.createCollapsedButtons();
-                        this.showToast(this.t('buttonOrderUpdated') || 'Button order updated');
-                        rerenderSettings();
-                    };
-                    const upBtn = createElement('button', {
-                        className: 'prompt-panel-btn chatgpt-helper-order-btn',
-                        title: this.t('moveUp') || 'Move Up',
-                        type: 'button'
+                        const controls = createElement('div', { className: 'chatgpt-helper-settings-compact-controls' });
+                        const move = (delta) => {
+                            const nextIndex = index + delta;
+                            if (nextIndex < 0 || nextIndex >= order.length) return;
+                            const nextOrder = [...order];
+                            [nextOrder[index], nextOrder[nextIndex]] = [nextOrder[nextIndex], nextOrder[index]];
+                            this.settings.collapsedButtonsOrder = nextOrder.map(item => ({ id: item.id, enabled: true }));
+                            this.saveSettings();
+                            this.createCollapsedButtons();
+                            this.showToast(this.t('buttonOrderUpdated') || 'Button order updated');
+                            rerenderSettings();
+                        };
+                        const upBtn = createElement('button', {
+                            className: 'prompt-panel-btn chatgpt-helper-order-btn',
+                            title: this.t('moveUp') || 'Move Up',
+                            type: 'button'
+                        });
+                        upBtn.appendChild(createSvgIconNode('arrowUp', { size: 14 }));
+                        upBtn.disabled = index === 0;
+                        upBtn.addEventListener('click', () => move(-1));
+                        const downBtn = createElement('button', {
+                            className: 'prompt-panel-btn chatgpt-helper-order-btn',
+                            title: this.t('moveDown') || 'Move Down',
+                            type: 'button'
+                        });
+                        downBtn.appendChild(createSvgIconNode('arrowDown', { size: 14 }));
+                        downBtn.disabled = index === order.length - 1;
+                        downBtn.addEventListener('click', () => move(1));
+                        controls.appendChild(upBtn);
+                        controls.appendChild(downBtn);
+                        row.appendChild(label);
+                        row.appendChild(controls);
+                        list.appendChild(row);
                     });
-                    upBtn.appendChild(createSvgIconNode('arrowUp', { size: 14 }));
-                    upBtn.disabled = index === 0;
-                    upBtn.addEventListener('click', () => move(-1));
-                    const downBtn = createElement('button', {
-                        className: 'prompt-panel-btn chatgpt-helper-order-btn',
-                        title: this.t('moveDown') || 'Move Down',
-                        type: 'button'
-                    });
-                    downBtn.appendChild(createSvgIconNode('arrowDown', { size: 14 }));
-                    downBtn.disabled = index === order.length - 1;
-                    downBtn.addEventListener('click', () => move(1));
-                    controls.appendChild(upBtn);
-                    controls.appendChild(downBtn);
-                    row.appendChild(label);
-                    row.appendChild(controls);
-                    list.appendChild(row);
+                    return list;
                 });
-                section.appendChild(list);
-                return section;
             };
 
             const sections = [
-                createCompactSection(this.t('settingsGroupGeneral') || 'General', [
+                createCompactSection('general', this.t('settingsGroupGeneral') || 'General', [
                     {
                         label: this.t('themeDialogTitle') || 'Theme',
                         type: 'button',
@@ -484,7 +521,7 @@
                     }
                 ]),
                 createQuickButtonsSection(),
-                createCompactSection(this.t('settingsGroupReadingNavigation') || 'Reading & Navigation', [
+                createCompactSection('reading-navigation', this.t('settingsGroupReadingNavigation') || 'Reading & Navigation', [
                     {
                         label: this.t('preventAutoScrollLabel') || 'Prevent Auto Scroll',
                         desc: this.t('preventAutoScrollDesc') || 'Keep the page from jumping to the latest reply while you are reading earlier content.',
@@ -550,7 +587,7 @@
                         }
                     }
                 ]),
-                createCompactSection(this.t('settingsGroupContentProcessing') || 'Content Processing', [
+                createCompactSection('content-processing', this.t('settingsGroupContentProcessing') || 'Content Processing', [
                     {
                         label: this.t('enableFormulaCopyLabel') || 'Formula Copy',
                         type: 'toggle',
@@ -580,7 +617,7 @@
                         }
                     }
                 ]),
-                createCompactSection(this.t('settingsGroupTabPrivacy') || 'Tabs & Privacy', [
+                createCompactSection('tab-privacy', this.t('settingsGroupTabPrivacy') || 'Tabs & Privacy', [
                     createTabVisibilityItem('prompts'),
                     createTabVisibilityItem('outline'),
                     createTabVisibilityItem('conversations'),

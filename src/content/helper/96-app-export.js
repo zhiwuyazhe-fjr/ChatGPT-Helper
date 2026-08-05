@@ -157,10 +157,10 @@
                             mountedContainer.classList.add('chatgpt-helper-export-host');
                             mountedContainer.setAttribute('data-gh-exporter-host', 'true');
                             exportContainer.setAttribute('data-gh-exporter-container', 'true');
-                            console.log('[ChatGPT Helper] ChatGPT Exporter 挂载成功');
+                            console.log('[ChatGPT Helper] 导出模块挂载成功');
                         }
                     } catch (e) {
-                        console.error('[ChatGPT Helper] 挂载 ChatGPT Exporter 失败:', e);
+                        console.error('[ChatGPT Helper] 挂载导出模块失败:', e);
                         exportContainer.appendChild(createElement('div', {
                             style: { padding: '12px', fontSize: '13px', color: 'var(--gh-text-secondary)' }
                         }, this.t('exportModuleLoadFailed')));

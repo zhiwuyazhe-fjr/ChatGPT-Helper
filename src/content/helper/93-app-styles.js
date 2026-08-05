@@ -2235,13 +2235,67 @@
                 }
 
                 .chatgpt-helper-settings-compact-title {
-                    padding: 6px 2px 5px;
+                    padding: 0;
                     font-size: 11px;
                     line-height: 1.2;
                     font-weight: 700;
                     color: color-mix(in srgb, var(--gh-text-secondary, #6b7280), var(--gh-text, #111827) 20%);
                     letter-spacing: 0.04em;
                     text-transform: uppercase;
+                }
+
+                .chatgpt-helper-settings-compact-title-btn {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    border: 0;
+                    border-radius: 6px;
+                    background: transparent;
+                    padding: 6px 2px 5px;
+                    color: inherit;
+                    cursor: pointer;
+                    font: inherit;
+                    letter-spacing: inherit;
+                    line-height: inherit;
+                    text-align: left;
+                    text-transform: inherit;
+                }
+
+                .chatgpt-helper-settings-compact-title-btn:hover {
+                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 62%);
+                    color: var(--gh-text, #111827);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-settings-compact-title-btn:hover {
+                    background: color-mix(in srgb, var(--gh-hover, #1f2937), transparent 48%);
+                }
+
+                .chatgpt-helper-settings-compact-title-chevron {
+                    width: 14px;
+                    min-width: 14px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--gh-text-secondary, #6b7280);
+                    font-size: 12px;
+                    transform: rotate(90deg);
+                    transition: transform 150ms ease;
+                }
+
+                .chatgpt-helper-settings-compact-section.collapsed .chatgpt-helper-settings-compact-title-chevron {
+                    transform: rotate(0deg);
+                }
+
+                .chatgpt-helper-settings-compact-section.collapsed .chatgpt-helper-settings-compact-list {
+                    display: none;
+                }
+
+                .chatgpt-helper-settings-compact-title-text {
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                 }
 
                 .chatgpt-helper-settings-compact-list {

@@ -3,7 +3,7 @@
   try {
     if (typeof document != "undefined") {
       var elementStyle = document.createElement("style");
-      elementStyle.appendChild(document.createTextNode('.CheckBoxLabel {\r\n    position: relative;\r\n    display: flex;\r\n    font-size: 16px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.CheckBoxLabel * {\r\n    cursor: pointer;\r\n}\r\n\r\n.CheckBoxLabel[disabled] {\r\n    opacity: 0.7;\r\n}\r\n\r\n.CheckBoxLabel[disabled] * {\r\n    cursor: not-allowed;\r\n}\r\n\r\n.CheckBoxLabel input {\r\n    position: absolute;\r\n    opacity: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.CheckBoxLabel .IconWrapper {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    position: relative;\r\n    vertical-align: middle;\r\n    font-size: 1.5rem;\r\n}\r\n\r\n.CheckBoxLabel input:checked ~ svg {\r\n    color: rgb(28 100 242);\r\n}\r\n\r\n.dark .CheckBoxLabel input:checked ~ svg {\r\n    color: rgb(144, 202, 249);\r\n}\r\n\r\n.CheckBoxLabel .LabelText {\r\n    margin-left: 0.5rem;\r\n    font-size: 1rem;\r\n    line-height: 1.5;\r\n}\r\nspan[data-time-format] {\r\n    display: none;\r\n}\r\n\r\nbody[data-time-format="12"] span[data-time-format="12"] {\r\n    display: inline;\r\n}\r\n\r\nbody[data-time-format="24"] span[data-time-format="24"] {\r\n    display: inline;\r\n}\r\n\r\n.Select {\r\n    padding: 0 0 0 0.5rem;\r\n    width: 7.5rem;\r\n    border-radius: 4px;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\n.dark .Select {\r\n    background-color: #2f2f2f;\r\n    color: #fff;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\nhtml {\r\n    --ce-text-primary: var(--text-primary, #0d0d0d);\r\n    --ce-menu-primary: var(--sidebar-surface-primary, #f9f9f9);\r\n    --ce-menu-secondary: var(--sidebar-surface-secondary, #ececec);\r\n    --ce-border-light: var(--border-light, rgba(0, 0, 0, .1));\r\n}\r\n\r\n.dark {\r\n    --ce-text-primary: var(--text-primary, #ececec);\r\n    --ce-menu-primary: var(--sidebar-surface-primary, #171717);\r\n    --ce-menu-secondary: var(--sidebar-surface-secondary, #212121);\r\n    --ce-border-light: var(--border-default, rgba(0, 0, 0, .05));\r\n}\r\n\r\n.bg-menu {\r\n    background-color: var(--ce-menu-secondary);\r\n}\r\n\r\n.border-menu {\r\n    border-color: var(--ce-border-light);\r\n}\r\n\r\n.menu-item {\r\n    height: 46px;\r\n}\r\n\r\n.menu-item[disabled] {\r\n    filter: brightness(0.5);\r\n}\r\n\r\n.inputFieldSet {\r\n    display: block;\r\n    border-width: 2px;\r\n    border-style: groove;\r\n}\r\n\r\n.inputFieldSet legend {\r\n    margin-left: 4px;\r\n}\r\n\r\n.inputFieldSet input {\r\n    background-color: transparent;\r\n    box-shadow: none!important;\r\n}\r\n\r\n.row-half {\r\n    grid-column: auto / span 1;\r\n}\r\n\r\n.row-full {\r\n    grid-column: auto / span 2;\r\n}\r\n\r\n.dropdown-backdrop {\r\n    display: block;\r\n    position: fixed;\r\n    top: 0;\r\n    bottom: 0;\r\n    left: 0;\r\n    right: 0;\r\n    background-color: rgba(0,0,0,.5);\r\n    animation-name: pointerFadeIn;\r\n    animation-duration: .3s;\r\n}\r\n\r\n@keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n@keyframes slideUp {\r\n    from {\r\n        transform: translateY(100%);\r\n    }\r\n    to {\r\n        transform: translateY(0);\r\n    }\r\n}\r\n\r\n@keyframes pointerFadeIn {\r\n    from {\r\n        opacity: 0;\r\n        pointer-events: none;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n        pointer-events: auto;\r\n    }\r\n}\r\n\r\n@keyframes rotate {\r\n    from {\r\n        transform: rotate(0deg);\r\n    }\r\n    to {\r\n        transform: rotate(360deg);\r\n    }\r\n}\r\n\r\n@keyframes circularDash {\r\n    0% {\r\n        stroke-dasharray: 1px, 200px;\r\n        stroke-dashoffset: 0;\r\n    }\r\n    50% {\r\n        stroke-dasharray: 100px, 200px;\r\n        stroke-dashoffset: -15px;\r\n    }\r\n    100% {\r\n        stroke-dasharray: 100px, 200px;\r\n        stroke-dashoffset: -125px;\r\n    }\r\n}\r\n.DialogOverlay {\r\n    background-color: rgba(0, 0, 0, 0.44);\r\n    position: fixed;\r\n    inset: 0;\r\n    z-index: 1000;\r\n    animation: fadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1);\r\n}\r\n\r\n.DialogContent {\r\n    background-color: #f3f3f3;\r\n    border-radius: 6px;\r\n    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;\r\n    position: fixed;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    width: 90vw;\r\n    max-width: 560px;\r\n    max-height: 85vh;\r\n    overflow: hidden;\r\n    padding: 16px 24px;\r\n    z-index: 1001;\r\n    outline: none;\r\n    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.dark .DialogContent {\r\n    background-color: #2a2a2a;\r\n    border-color: #40414f;\r\n    border-width: 1px;\r\n}\r\n\r\n.DialogContent input[type="checkbox"] {\r\n    border: none;\r\n    outline: none;\r\n    box-shadow: none;\r\n}\r\n\r\n.DialogTitle {\r\n    margin: 0 0 16px 0;\r\n    font-weight: 500;\r\n    color: #1a1523;\r\n    font-size: 20px;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.DialogBody {\r\n    flex: 1;\r\n    min-height: 0;\r\n    overflow-y: auto;\r\n    overflow-x: hidden;\r\n}\r\n\r\n.dark .DialogTitle {\r\n    color: #fff;\r\n}\r\n\r\n.Button {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    border-radius: 4px;\r\n    padding: 0 15px;\r\n    font-size: 15px;\r\n    line-height: 1;\r\n    height: 35px;\r\n}\r\n.Button.green {\r\n    background-color: #ddf3e4;\r\n    color: #18794e;\r\n}\r\n.Button.red {\r\n    background-color: #f9d9d9;\r\n    color: #a71d2a;\r\n}\r\n.Button.neutral {\r\n    background-color: transparent;\r\n    color: #6f6e77;\r\n    border: 1px solid #6f6e77;\r\n    font-size: 13px;\r\n    height: 26px;\r\n    padding: 0 8px;\r\n}\r\n.Button.green:hover {\r\n    background-color: #ccebd7;\r\n}\r\n.Button.neutral:hover {\r\n    background-color: rgba(111, 110, 119, 0.1);\r\n}\r\n.dark .Button.neutral {\r\n    color: #a0a0a8;\r\n    border-color: #a0a0a8;\r\n}\r\n.dark .Button.neutral:hover {\r\n    background-color: rgba(160, 160, 168, 0.1);\r\n}\r\n.Button:disabled {\r\n    opacity: 0.5;\r\n    color: #6f6e77;\r\n    background-color: #e0e0e0;\r\n    cursor: not-allowed;\r\n}\r\n.Button:disabled:hover {\r\n    background-color: #e0e0e0;\r\n}\r\n\r\n.IconButton {\r\n    font-family: inherit;\r\n    border-radius: 100%;\r\n    height: 25px;\r\n    width: 25px;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    color: #6f6e77;\r\n}\r\n.IconButton:hover {\r\n    background-color: rgba(0, 0, 0, 0.06);\r\n}\r\n\r\n.CloseButton {\r\n    position: absolute;\r\n    top: 10px;\r\n    right: 10px;\r\n}\r\n\r\n.Fieldset {\r\n    display: flex;\r\n    gap: 20px;\r\n    align-items: center;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.Label {\r\n    font-size: 15px;\r\n    color: #1a1523;\r\n    min-width: 90px;\r\n    text-align: right;\r\n}\r\n\r\n.dark .Label {\r\n    color: #fff;\r\n}\r\n\r\n.Input {\r\n    width: 100%;\r\n    flex: 1;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    border-radius: 4px;\r\n    padding: 0 10px;\r\n    font-size: 15px;\r\n    line-height: 1;\r\n    color: #000;\r\n    background-color: #fafafa;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n    height: 35px;\r\n    outline: none;\r\n}\r\n\r\n.dark .Input {\r\n    background-color: #2f2f2f;\r\n    color: #fff;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\n.Description {\r\n    font-size: 13px;\r\n    color: #5a5865;\r\n    text-align: right;\r\n    margin-bottom: 4px;\r\n}\r\n\r\n.dark .Description {\r\n    color: #bcbcbc;\r\n}\r\n\r\n.SelectSearch {\r\n    width: 100%;\r\n    padding: 8px 16px;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    border-radius: 4px 4px 0 0;\r\n    background-color: transparent;\r\n    color: inherit;\r\n    font-size: 14px;\r\n    outline: none;\r\n    flex-shrink: 0;\r\n}\r\n.SelectSearch::placeholder {\r\n    color: #9ca3af;\r\n}\r\n\r\n.SelectToolbar {\r\n    display: flex;\r\n    align-items: center;\r\n    padding: 12px 16px;\r\n    border-radius: 0;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.ProjectSelect .Select {\r\n    width: auto;\r\n}\r\n\r\n.SelectList {\r\n    position: relative;\r\n    width: 100%;\r\n    flex: 1;\r\n    min-height: 120px;\r\n    padding: 12px 16px;\r\n    overflow-x: hidden;\r\n    overflow-y: auto;\r\n    border: 1px solid #6f6e77;\r\n    border-radius: 0 0 4px 4px;\r\n    white-space: nowrap;\r\n}\r\n\r\n.SelectItem {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    overflow: hidden;\r\n}\r\n\r\n.SelectItem .CheckBoxLabel {\r\n    flex: 1;\r\n    min-width: 0;\r\n}\r\n\r\n.SelectItem .LabelText {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n\r\n.SelectItem label, .SelectItem input {\r\n    cursor: pointer;\r\n}\r\n\r\n.SelectItem span {\r\n    vertical-align: middle;\r\n}\r\n\r\n.SelectItemMeta {\r\n    flex-shrink: 0;\r\n    font-size: 0.7rem;\r\n    color: #9ca3af;\r\n    white-space: nowrap;\r\n    font-variant-numeric: tabular-nums;\r\n    min-width: 6.5rem;\r\n    text-align: right;\r\n}\r\n.SelectItemMetaActive {\r\n    color: #6b7280;\r\n    font-weight: 600;\r\n}\r\n.dark {\r\n    .SelectItemMetaActive { color: #d1d5db; }\r\n}\r\n\r\n/* ── Sortable column header row ── */\r\n.SelectListHeader {\r\n    display: flex;\r\n    align-items: center;\r\n    padding: 0 16px;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    background: #f9fafb;\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.dark {\r\n    .SelectListHeader { background: #1f2937; }\r\n}\r\n\r\n.SelectListHeaderCell {\r\n    flex-shrink: 0;\r\n    font-size: 0.68rem;\r\n    font-weight: 600;\r\n    color: #9ca3af;\r\n    letter-spacing: 0.03em;\r\n    text-transform: uppercase;\r\n    background: transparent;\r\n    border: none;\r\n    padding: 5px 4px;\r\n    cursor: pointer;\r\n    white-space: nowrap;\r\n    min-width: 6.5rem;\r\n    text-align: right;\r\n}\r\n.SelectListHeaderCell:hover { color: #374151; }\r\n.dark {\r\n    .SelectListHeaderCell:hover { color: #e5e7eb; }\r\n}\r\n.SelectListHeaderCellTitle {\r\n    flex: 1;\r\n    text-align: left;\r\n    padding-left: 28px; /* align with checkbox label */\r\n}\r\n.SelectListHeaderCellActive {\r\n    color: #2563eb;\r\n}\r\n.dark {\r\n    .SelectListHeaderCellActive { color: #60a5fa; }\r\n}\r\n\r\n\r\n@keyframes contentShow {\r\n    from {\r\n        opacity: 0;\r\n        transform: translate(-50%, -48%) scale(0.96);\r\n    }\r\n    to {\r\n        opacity: 1;\r\n        transform: translate(-50%, -50%) scale(1);\r\n    }\r\n}\r\n.animate-fadeIn  {\r\n    animation: fadeIn .3s;\r\n}\r\n\r\n.animate-slideUp  {\r\n    animation: slideUp .3s;\r\n}\r\n\r\n.bg-blue-600 {\r\n    background-color: rgb(28 100 242);\r\n}\r\n\r\n.hover\\:bg-gray-500\\/10:hover {\r\n    background-color: hsla(0, 0%, 61%, .1)\r\n}\r\n\r\n.border-\\[\\#6f6e77\\] {\r\n    border-color: #6f6e77;\r\n}\r\n\r\n.cursor-help {\r\n    cursor: help;\r\n}\r\n\r\n.dark .dark\\:bg-white\\/5 {\r\n    background-color: rgb(255 255 255 / 5%);\r\n}\r\n\r\n.dark .dark\\:text-gray-200 {\r\n    color: rgb(229 231 235 / 1);\r\n}\r\n\r\n.dark .dark\\:text-gray-300 {\r\n    color: rgb(209 213 219 / 1);\r\n}\r\n\r\n.dark .dark\\:border-gray-\\[\\#86858d\\] {\r\n    border-color: #86858d;\r\n}\r\n\r\n.gap-x-1 {\r\n    column-gap: 0.25rem;\r\n}\r\n\r\n.h-2\\.5 {\r\n    height: 0.625rem;\r\n}\r\n\r\n.h-4 {\r\n    height: 1rem;\r\n}\r\n\r\n.inline-flex {\r\n    display: inline-flex;\r\n}\r\n\r\n.items-center {\r\n    align-items: center;\r\n}\r\n\r\n.ml-3 {\r\n    margin-left: 0.75rem;\r\n}\r\n\r\n.ml-4 {\r\n    margin-left: 1rem;\r\n}\r\n\r\n.mr-8 {\r\n    margin-right: 2rem;\r\n}\r\n\r\n.pb-0 {\r\n    padding-bottom: 0;\r\n}\r\n\r\n.pr-8 {\r\n    padding-right: 2rem;\r\n}\r\n\r\n.right-4 {\r\n    right: 1rem;\r\n}\r\n\r\n.rounded-full {\r\n    border-radius: 9999px;\r\n}\r\n\r\n.select-all {\r\n    user-select: all!important;\r\n}\r\n\r\n.shrink-0 {\r\n    flex-shrink: 0;\r\n}\r\n\r\n.space-y-6>:not([hidden])~:not([hidden]) {\r\n    --tw-space-y-reverse: 0;\r\n    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));\r\n    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));\r\n}\r\n\r\n.truncate {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n\r\n.whitespace-nowrap {\r\n    white-space: nowrap;\r\n}\r\n\r\n@media (min-width:768px) {\r\n    /* md */\r\n}\r\n\r\n@media (min-width:1024px) {\r\n    .lg\\:mt-0 {\r\n        margin-top: 0;\r\n    }\r\n\r\n    .lg\\:top-8 {\r\n        top: 2rem;\r\n    }\r\n}\r\n\r\n\r\n.toggle-switch {\r\n    position: relative;\r\n    outline: none;\r\n    background-color: rgb(229 231 235);\r\n    border: 1px solid rgb(107 114 128);\r\n    border-radius: 9999px;\r\n    cursor: pointer;\r\n    height: 20px;\r\n    width: 32px;\r\n}\r\n\r\n.dark .toggle-switch {\r\n    background-color: rgb(255 255 255 / 5%);\r\n    border-color: rgb(255 255 255 / 1);\r\n}\r\n\r\n.toggle-switch[data-state="checked"] {\r\n    background-color: rgb(0 0 0);\r\n    border-color: rgb(0 0 0);\r\n}\r\n\r\n.dark .toggle-switch[data-state="checked"] {\r\n    background-color: rgb(22 163 74);\r\n    border-color: rgb(22 163 74);\r\n}\r\n\r\n.toggle-switch-handle {\r\n    display: block;\r\n    background-color: rgb(255 255 255);\r\n    border-radius: 9999px;\r\n    height: 16px;\r\n    width: 16px;\r\n    transition: transform 0.1s;\r\n    will-change: transform;\r\n    transform: translateX(1px);\r\n}\r\n\r\n.toggle-switch-handle[data-state="checked"] {\r\n    transform: translateX(14px);\r\n}\r\n\r\n.toggle-switch-handle:hover {\r\n    background-color: rgb(243 244 246);\r\n}\r\n\r\n.toggle-switch-label {\r\n    color: rgb(107 114 128);\r\n    margin-left: 0.75rem;\r\n    font-size: 0.875rem;\r\n    font-weight: 500;\r\n}\r\n\r\n.toggle-switch-label:hover {\r\n    color: rgb(71 85 105);\r\n}'));
+      elementStyle.appendChild(document.createTextNode('.CheckBoxLabel {\r\n    position: relative;\r\n    display: flex;\r\n    font-size: 16px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.CheckBoxLabel * {\r\n    cursor: pointer;\r\n}\r\n\r\n.CheckBoxLabel[disabled] {\r\n    opacity: 0.7;\r\n}\r\n\r\n.CheckBoxLabel[disabled] * {\r\n    cursor: not-allowed;\r\n}\r\n\r\n.CheckBoxLabel input {\r\n    position: absolute;\r\n    opacity: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.CheckBoxLabel .IconWrapper {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    position: relative;\r\n    vertical-align: middle;\r\n    font-size: 1.5rem;\r\n}\r\n\r\n.CheckBoxLabel input:checked ~ svg {\r\n    color: rgb(28 100 242);\r\n}\r\n\r\n.dark .CheckBoxLabel input:checked ~ svg {\r\n    color: rgb(144, 202, 249);\r\n}\r\n\r\n.CheckBoxLabel .LabelText {\r\n    margin-left: 0.5rem;\r\n    font-size: 1rem;\r\n    line-height: 1.5;\r\n}\r\nspan[data-time-format] {\r\n    display: none;\r\n}\r\n\r\nbody[data-time-format="12"] span[data-time-format="12"] {\r\n    display: inline;\r\n}\r\n\r\nbody[data-time-format="24"] span[data-time-format="24"] {\r\n    display: inline;\r\n}\r\n\r\n.Select {\r\n    padding: 0 0 0 0.5rem;\r\n    width: 7.5rem;\r\n    border-radius: 4px;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\n.dark .Select {\r\n    background-color: #2f2f2f;\r\n    color: #fff;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\nhtml {\r\n    --ce-text-primary: var(--text-primary, #0d0d0d);\r\n    --ce-menu-primary: var(--sidebar-surface-primary, #f9f9f9);\r\n    --ce-menu-secondary: var(--sidebar-surface-secondary, #ececec);\r\n    --ce-border-light: var(--border-light, rgba(0, 0, 0, .1));\r\n}\r\n\r\n.dark {\r\n    --ce-text-primary: var(--text-primary, #ececec);\r\n    --ce-menu-primary: var(--sidebar-surface-primary, #171717);\r\n    --ce-menu-secondary: var(--sidebar-surface-secondary, #212121);\r\n    --ce-border-light: var(--border-default, rgba(0, 0, 0, .05));\r\n}\r\n\r\n.bg-menu {\r\n    background-color: var(--ce-menu-secondary);\r\n}\r\n\r\n.border-menu {\r\n    border-color: var(--ce-border-light);\r\n}\r\n\r\n.menu-item {\r\n    height: 46px;\r\n}\r\n\r\n.menu-item[disabled] {\r\n    filter: brightness(0.5);\r\n}\r\n\r\n.inputFieldSet {\r\n    display: block;\r\n    border-width: 2px;\r\n    border-style: groove;\r\n}\r\n\r\n.inputFieldSet legend {\r\n    margin-left: 4px;\r\n}\r\n\r\n.inputFieldSet input {\r\n    background-color: transparent;\r\n    box-shadow: none!important;\r\n}\r\n\r\n.row-half {\r\n    grid-column: auto / span 1;\r\n}\r\n\r\n.row-full {\r\n    grid-column: auto / span 2;\r\n}\r\n\r\n.dropdown-backdrop {\r\n    display: block;\r\n    position: fixed;\r\n    top: 0;\r\n    bottom: 0;\r\n    left: 0;\r\n    right: 0;\r\n    background-color: rgba(0,0,0,.5);\r\n    animation-name: pointerFadeIn;\r\n    animation-duration: .3s;\r\n}\r\n\r\n@keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n@keyframes slideUp {\r\n    from {\r\n        transform: translateY(100%);\r\n    }\r\n    to {\r\n        transform: translateY(0);\r\n    }\r\n}\r\n\r\n@keyframes pointerFadeIn {\r\n    from {\r\n        opacity: 0;\r\n        pointer-events: none;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n        pointer-events: auto;\r\n    }\r\n}\r\n\r\n@keyframes rotate {\r\n    from {\r\n        transform: rotate(0deg);\r\n    }\r\n    to {\r\n        transform: rotate(360deg);\r\n    }\r\n}\r\n\r\n@keyframes circularDash {\r\n    0% {\r\n        stroke-dasharray: 1px, 200px;\r\n        stroke-dashoffset: 0;\r\n    }\r\n    50% {\r\n        stroke-dasharray: 100px, 200px;\r\n        stroke-dashoffset: -15px;\r\n    }\r\n    100% {\r\n        stroke-dasharray: 100px, 200px;\r\n        stroke-dashoffset: -125px;\r\n    }\r\n}\r\n.DialogOverlay {\r\n    background-color: rgba(0, 0, 0, 0.44);\r\n    position: fixed;\r\n    inset: 0;\r\n    z-index: 1000;\r\n    animation: fadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1);\r\n}\r\n\r\n.DialogContent {\r\n    background-color: #f3f3f3;\r\n    border-radius: 6px;\r\n    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;\r\n    position: fixed;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    width: 90vw;\r\n    max-width: 560px;\r\n    max-height: 85vh;\r\n    overflow: hidden;\r\n    padding: 16px 24px;\r\n    z-index: 1001;\r\n    outline: none;\r\n    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.dark .DialogContent {\r\n    background-color: #2a2a2a;\r\n    border-color: #40414f;\r\n    border-width: 1px;\r\n}\r\n\r\n.DialogContent input[type="checkbox"] {\r\n    border: none;\r\n    outline: none;\r\n    box-shadow: none;\r\n}\r\n\r\n.DialogTitle {\r\n    margin: 0 0 16px 0;\r\n    font-weight: 500;\r\n    color: #1a1523;\r\n    font-size: 20px;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.DialogBody {\n    flex: 1;\n    min-height: 0;\n    overflow-y: auto;\n    overflow-x: hidden;\n}\n\n.settings-sections {\n    display: flex;\n    flex-direction: column;\n    gap: 12px;\n}\n\n.settings-section {\n    overflow: hidden;\n    border-radius: 6px;\n    background-color: #fff;\n}\n\n.dark .settings-section {\n    background-color: rgba(255, 255, 255, 0.05);\n}\n\n.settings-section-header {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 12px;\n    min-height: 48px;\n    padding: 0 14px;\n}\n\n.settings-section-trigger {\n    display: inline-flex;\n    align-items: center;\n    min-width: 0;\n    flex: 1;\n    gap: 8px;\n    border: 0;\n    background: transparent;\n    padding: 12px 0;\n    color: #1f2937;\n    cursor: pointer;\n    font-family: inherit;\n    font-size: 15px;\n    font-weight: 600;\n    text-align: left;\n}\n\n.settings-section-trigger:hover {\n    color: #0f7f68;\n}\n\n.dark .settings-section-trigger {\n    color: #fff;\n}\n\n.dark .settings-section-trigger:hover {\n    color: #7ddfc4;\n}\n\n.settings-section-chevron {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    width: 16px;\n    height: 16px;\n    flex: 0 0 auto;\n    color: #6b7280;\n    font-size: 18px;\n    line-height: 1;\n    transform: rotate(0deg);\n    transition: transform 150ms ease;\n}\n\n.settings-section-chevron.open {\n    transform: rotate(90deg);\n}\n\n.settings-section-action {\n    display: inline-flex;\n    align-items: center;\n    flex: 0 0 auto;\n}\n\n.settings-section-panel {\n    margin: 0;\n    padding: 0 14px 14px 38px;\n    color: #374151;\n}\n\n.dark .settings-section-panel {\n    color: #d1d5db;\n}\n\r\n.dark .DialogTitle {\r\n    color: #fff;\r\n}\r\n\r\n.Button {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    border-radius: 4px;\r\n    padding: 0 15px;\r\n    font-size: 15px;\r\n    line-height: 1;\r\n    height: 35px;\r\n}\r\n.Button.green {\r\n    background-color: #ddf3e4;\r\n    color: #18794e;\r\n}\r\n.Button.red {\r\n    background-color: #f9d9d9;\r\n    color: #a71d2a;\r\n}\r\n.Button.neutral {\r\n    background-color: transparent;\r\n    color: #6f6e77;\r\n    border: 1px solid #6f6e77;\r\n    font-size: 13px;\r\n    height: 26px;\r\n    padding: 0 8px;\r\n}\r\n.Button.green:hover {\r\n    background-color: #ccebd7;\r\n}\r\n.Button.neutral:hover {\r\n    background-color: rgba(111, 110, 119, 0.1);\r\n}\r\n.dark .Button.neutral {\r\n    color: #a0a0a8;\r\n    border-color: #a0a0a8;\r\n}\r\n.dark .Button.neutral:hover {\r\n    background-color: rgba(160, 160, 168, 0.1);\r\n}\r\n.Button:disabled {\r\n    opacity: 0.5;\r\n    color: #6f6e77;\r\n    background-color: #e0e0e0;\r\n    cursor: not-allowed;\r\n}\r\n.Button:disabled:hover {\r\n    background-color: #e0e0e0;\r\n}\r\n\r\n.IconButton {\r\n    font-family: inherit;\r\n    border-radius: 100%;\r\n    height: 25px;\r\n    width: 25px;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    color: #6f6e77;\r\n}\r\n.IconButton:hover {\r\n    background-color: rgba(0, 0, 0, 0.06);\r\n}\r\n\r\n.CloseButton {\r\n    position: absolute;\r\n    top: 10px;\r\n    right: 10px;\r\n}\r\n\r\n.Fieldset {\r\n    display: flex;\r\n    gap: 20px;\r\n    align-items: center;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.Label {\r\n    font-size: 15px;\r\n    color: #1a1523;\r\n    min-width: 90px;\r\n    text-align: right;\r\n}\r\n\r\n.dark .Label {\r\n    color: #fff;\r\n}\r\n\r\n.Input {\r\n    width: 100%;\r\n    flex: 1;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    border-radius: 4px;\r\n    padding: 0 10px;\r\n    font-size: 15px;\r\n    line-height: 1;\r\n    color: #000;\r\n    background-color: #fafafa;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n    height: 35px;\r\n    outline: none;\r\n}\r\n\r\n.dark .Input {\r\n    background-color: #2f2f2f;\r\n    color: #fff;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\n.Description {\r\n    font-size: 13px;\r\n    color: #5a5865;\r\n    text-align: right;\r\n    margin-bottom: 4px;\r\n}\r\n\r\n.dark .Description {\r\n    color: #bcbcbc;\r\n}\r\n\r\n.SelectSearch {\r\n    width: 100%;\r\n    padding: 8px 16px;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    border-radius: 4px 4px 0 0;\r\n    background-color: transparent;\r\n    color: inherit;\r\n    font-size: 14px;\r\n    outline: none;\r\n    flex-shrink: 0;\r\n}\r\n.SelectSearch::placeholder {\r\n    color: #9ca3af;\r\n}\r\n\r\n.SelectToolbar {\r\n    display: flex;\r\n    align-items: center;\r\n    padding: 12px 16px;\r\n    border-radius: 0;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.ProjectSelect .Select {\r\n    width: auto;\r\n}\r\n\r\n.SelectList {\r\n    position: relative;\r\n    width: 100%;\r\n    flex: 1;\r\n    min-height: 120px;\r\n    padding: 12px 16px;\r\n    overflow-x: hidden;\r\n    overflow-y: auto;\r\n    border: 1px solid #6f6e77;\r\n    border-radius: 0 0 4px 4px;\r\n    white-space: nowrap;\r\n}\r\n\r\n.SelectItem {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    overflow: hidden;\r\n}\r\n\r\n.SelectItem .CheckBoxLabel {\r\n    flex: 1;\r\n    min-width: 0;\r\n}\r\n\r\n.SelectItem .LabelText {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n\r\n.SelectItem label, .SelectItem input {\r\n    cursor: pointer;\r\n}\r\n\r\n.SelectItem span {\r\n    vertical-align: middle;\r\n}\r\n\r\n.SelectItemMeta {\r\n    flex-shrink: 0;\r\n    font-size: 0.7rem;\r\n    color: #9ca3af;\r\n    white-space: nowrap;\r\n    font-variant-numeric: tabular-nums;\r\n    min-width: 6.5rem;\r\n    text-align: right;\r\n}\r\n.SelectItemMetaActive {\r\n    color: #6b7280;\r\n    font-weight: 600;\r\n}\r\n.dark {\r\n    .SelectItemMetaActive { color: #d1d5db; }\r\n}\r\n\r\n/* ── Sortable column header row ── */\r\n.SelectListHeader {\r\n    display: flex;\r\n    align-items: center;\r\n    padding: 0 16px;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    background: #f9fafb;\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.dark {\r\n    .SelectListHeader { background: #1f2937; }\r\n}\r\n\r\n.SelectListHeaderCell {\r\n    flex-shrink: 0;\r\n    font-size: 0.68rem;\r\n    font-weight: 600;\r\n    color: #9ca3af;\r\n    letter-spacing: 0.03em;\r\n    text-transform: uppercase;\r\n    background: transparent;\r\n    border: none;\r\n    padding: 5px 4px;\r\n    cursor: pointer;\r\n    white-space: nowrap;\r\n    min-width: 6.5rem;\r\n    text-align: right;\r\n}\r\n.SelectListHeaderCell:hover { color: #374151; }\r\n.dark {\r\n    .SelectListHeaderCell:hover { color: #e5e7eb; }\r\n}\r\n.SelectListHeaderCellTitle {\r\n    flex: 1;\r\n    text-align: left;\r\n    padding-left: 28px; /* align with checkbox label */\r\n}\r\n.SelectListHeaderCellActive {\r\n    color: #2563eb;\r\n}\r\n.dark {\r\n    .SelectListHeaderCellActive { color: #60a5fa; }\r\n}\r\n\r\n\r\n@keyframes contentShow {\r\n    from {\r\n        opacity: 0;\r\n        transform: translate(-50%, -48%) scale(0.96);\r\n    }\r\n    to {\r\n        opacity: 1;\r\n        transform: translate(-50%, -50%) scale(1);\r\n    }\r\n}\r\n.animate-fadeIn  {\r\n    animation: fadeIn .3s;\r\n}\r\n\r\n.animate-slideUp  {\r\n    animation: slideUp .3s;\r\n}\r\n\r\n.bg-blue-600 {\r\n    background-color: rgb(28 100 242);\r\n}\r\n\r\n.hover\\:bg-gray-500\\/10:hover {\r\n    background-color: hsla(0, 0%, 61%, .1)\r\n}\r\n\r\n.border-\\[\\#6f6e77\\] {\r\n    border-color: #6f6e77;\r\n}\r\n\r\n.cursor-help {\r\n    cursor: help;\r\n}\r\n\r\n.dark .dark\\:bg-white\\/5 {\r\n    background-color: rgb(255 255 255 / 5%);\r\n}\r\n\r\n.dark .dark\\:text-gray-200 {\r\n    color: rgb(229 231 235 / 1);\r\n}\r\n\r\n.dark .dark\\:text-gray-300 {\r\n    color: rgb(209 213 219 / 1);\r\n}\r\n\r\n.dark .dark\\:border-gray-\\[\\#86858d\\] {\r\n    border-color: #86858d;\r\n}\r\n\r\n.gap-x-1 {\r\n    column-gap: 0.25rem;\r\n}\r\n\r\n.h-2\\.5 {\r\n    height: 0.625rem;\r\n}\r\n\r\n.h-4 {\r\n    height: 1rem;\r\n}\r\n\r\n.inline-flex {\r\n    display: inline-flex;\r\n}\r\n\r\n.items-center {\r\n    align-items: center;\r\n}\r\n\r\n.ml-3 {\r\n    margin-left: 0.75rem;\r\n}\r\n\r\n.ml-4 {\r\n    margin-left: 1rem;\r\n}\r\n\r\n.mr-8 {\r\n    margin-right: 2rem;\r\n}\r\n\r\n.pb-0 {\r\n    padding-bottom: 0;\r\n}\r\n\r\n.pr-8 {\r\n    padding-right: 2rem;\r\n}\r\n\r\n.right-4 {\r\n    right: 1rem;\r\n}\r\n\r\n.rounded-full {\r\n    border-radius: 9999px;\r\n}\r\n\r\n.select-all {\r\n    user-select: all!important;\r\n}\r\n\r\n.shrink-0 {\r\n    flex-shrink: 0;\r\n}\r\n\r\n.space-y-6>:not([hidden])~:not([hidden]) {\r\n    --tw-space-y-reverse: 0;\r\n    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));\r\n    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));\r\n}\r\n\r\n.truncate {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n\r\n.whitespace-nowrap {\r\n    white-space: nowrap;\r\n}\r\n\r\n@media (min-width:768px) {\r\n    /* md */\r\n}\r\n\r\n@media (min-width:1024px) {\r\n    .lg\\:mt-0 {\r\n        margin-top: 0;\r\n    }\r\n\r\n    .lg\\:top-8 {\r\n        top: 2rem;\r\n    }\r\n}\r\n\r\n\r\n.toggle-switch {\r\n    position: relative;\r\n    outline: none;\r\n    background-color: rgb(229 231 235);\r\n    border: 1px solid rgb(107 114 128);\r\n    border-radius: 9999px;\r\n    cursor: pointer;\r\n    height: 20px;\r\n    width: 32px;\r\n}\r\n\r\n.dark .toggle-switch {\r\n    background-color: rgb(255 255 255 / 5%);\r\n    border-color: rgb(255 255 255 / 1);\r\n}\r\n\r\n.toggle-switch[data-state="checked"] {\r\n    background-color: rgb(0 0 0);\r\n    border-color: rgb(0 0 0);\r\n}\r\n\r\n.dark .toggle-switch[data-state="checked"] {\r\n    background-color: rgb(22 163 74);\r\n    border-color: rgb(22 163 74);\r\n}\r\n\r\n.toggle-switch-handle {\r\n    display: block;\r\n    background-color: rgb(255 255 255);\r\n    border-radius: 9999px;\r\n    height: 16px;\r\n    width: 16px;\r\n    transition: transform 0.1s;\r\n    will-change: transform;\r\n    transform: translateX(1px);\r\n}\r\n\r\n.toggle-switch-handle[data-state="checked"] {\r\n    transform: translateX(14px);\r\n}\r\n\r\n.toggle-switch-handle:hover {\r\n    background-color: rgb(243 244 246);\r\n}\r\n\r\n.toggle-switch-label {\r\n    color: rgb(107 114 128);\r\n    margin-left: 0.75rem;\r\n    font-size: 0.875rem;\r\n    font-weight: 500;\r\n}\r\n\r\n.toggle-switch-label:hover {\r\n    color: rgb(71 85 105);\r\n}'));
       document.head.appendChild(elementStyle);
     }
   } catch (e) {
@@ -34394,7 +34394,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   instance.hasLoadedNamespace;
   instance.loadNamespaces;
   instance.loadLanguages;
-  const title$8 = "ChatGPT Exporter";
+  const title$8 = "ChatGPT Helper";
   const ExportHelper$8 = "Export";
   const Setting$8 = "Setting";
   const Language$8 = "Language";
@@ -34479,7 +34479,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Load more conversations": "Load {{n}} more",
     "Load more conversations remaining": "Load {{n}} more \xB7 {{remaining}} left"
   };
-  const title$7 = "ChatGPT Exporter";
+  const title$7 = "ChatGPT Helper";
   const ExportHelper$7 = "Exportar";
   const Setting$7 = "Ajustes";
   const Language$7 = "Idioma";
@@ -34545,7 +34545,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Last 100": "\xDAltimas 100",
     "No results": "Sin resultados"
   };
-  const title$6 = "Exportateur ChatGPT";
+  const title$6 = "ChatGPT Helper";
   const ExportHelper$6 = "Exporter";
   const Setting$6 = "Param\xE8tre";
   const Language$6 = "Langue";
@@ -34611,7 +34611,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Last 100": "100 derni\xE8res",
     "No results": "Aucun r\xE9sultat"
   };
-  const title$5 = "ChatGPT Exporter";
+  const title$5 = "ChatGPT Helper";
   const ExportHelper$5 = "Ekspor";
   const Setting$5 = "Pengaturan";
   const Language$5 = "Bahasa";
@@ -34677,7 +34677,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Last 100": "100 Terakhir",
     "No results": "Tidak ada hasil"
   };
-  const title$4 = "ChatGPT\u30A8\u30AF\u30B9\u30DD\u30FC\u30BF\u30FC";
+  const title$4 = "ChatGPT Helper";
   const ExportHelper$4 = "\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8";
   const Setting$4 = "\u8A2D\u5B9A";
   const Language$4 = "\u8A00\u8A9E";
@@ -34743,7 +34743,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Last 100": "\u6700\u65B0100\u4EF6",
     "No results": "\u7D50\u679C\u306A\u3057"
   };
-  const title$3 = "ChatGPT Exporter";
+  const title$3 = "ChatGPT Helper";
   const ExportHelper$3 = "Export";
   const Setting$3 = "\u041F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\u044B";
   const Language$3 = "\u042F\u0437\u044B\u043A";
@@ -34809,7 +34809,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Last 100": "\u041F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0435 100",
     "No results": "\u041D\u0435\u0442 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u043E\u0432"
   };
-  const title$2 = "ChatGPT Exporter";
+  const title$2 = "ChatGPT Helper";
   const ExportHelper$2 = "D\u0131\u015Fa Aktar";
   const Setting$2 = "Ayarlar";
   const Language$2 = "Dil";
@@ -34875,7 +34875,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Last 100": "Son 100",
     "No results": "Sonu\xE7 yok"
   };
-  const title$1 = "ChatGPT Exporter";
+  const title$1 = "ChatGPT Helper";
   const ExportHelper$1 = "\u5BFC\u51FA\u52A9\u624B";
   const Setting$1 = "\u8BBE\u7F6E";
   const Language$1 = "\u8BED\u8A00";
@@ -34941,7 +34941,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Last 100": "\u6700\u65B0 100 \u6761",
     "No results": "\u65E0\u7ED3\u679C"
   };
-  const title = "ChatGPT Exporter";
+  const title = "ChatGPT Helper";
   const ExportHelper = "Export";
   const Setting = "\u8A2D\u5B9A";
   const Language = "\u8A9E\u8A00";
@@ -35292,35 +35292,54 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         {{headStyles}}
 
         :root {
-            --page-text: #0d0d0d;
-            --page-bg: #fff;
-            --td-borders: #374151;\r
-            --th-borders: #4b5563;\r
-            --tw-prose-code: var(--page-text);\r
-            --tw-prose-counters: #9b9b9b;\r
-            --tw-prose-headings: var(--page-text);\r
-            --tw-prose-hr: rgba(0,0,0,.25);\r
-            --tw-prose-links: var(--page-text);\r
-            --tw-prose-quotes: var(--page-text);\r
-            --meta-title: #616c77;\r
-        }\r
+            --page-text: #111111;
+            --page-muted: #6b7280;
+            --page-soft: #8a918c;
+            --page-bg: #f6f5f1;
+            --page-surface: #fffefa;
+            --page-surface-elevated: #ffffff;
+            --page-border: #e4e1da;
+            --page-border-strong: #d5d1c8;
+            --brand: #10a37f;
+            --brand-text: #0f7f68;
+            --code-bg: #151817;
+            --td-borders: #d5d1c8;
+            --th-borders: #c2bdb2;
+            --tw-prose-code: var(--page-text);
+            --tw-prose-counters: #8a918c;
+            --tw-prose-headings: var(--page-text);
+            --tw-prose-hr: var(--page-border);
+            --tw-prose-links: var(--brand-text);
+            --tw-prose-quotes: var(--page-text);
+            --meta-title: #69716d;
+        }
+
+        [data-theme="dark"] {
+            --page-text: #ececec;
+            --page-muted: #a8aaa6;
+            --page-soft: #8d938d;
+            --page-bg: #171817;
+            --page-surface: #20211f;
+            --page-surface-elevated: #262724;
+            --page-border: #373a35;
+            --page-border-strong: #4a4e47;
+            --brand: #11b78d;
+            --brand-text: #6de2c2;
+            --code-bg: #0d0f0e;
+            --td-borders: #4a4e47;
+            --th-borders: #5b6058;
+            --tw-prose-code: var(--page-text);
+            --tw-prose-counters: #929790;
+            --tw-prose-headings: var(--page-text);
+            --tw-prose-hr: var(--page-border);
+            --tw-prose-links: var(--brand-text);
+            --tw-prose-quotes: var(--page-text);
+            --meta-title: #a8aaa6;
+        }
 \r
-        [data-theme="dark"] {\r
-            --page-text: #ececec;\r
-            --page-bg: #212121;\r
-            --tw-prose-code: var(--page-text);\r
-            --tw-prose-counters: #9b9b9b;\r
-            --tw-prose-headings: var(--page-text);\r
-            --tw-prose-hr: hsla(0,0%,100%,.25);\r
-            --tw-prose-links: var(--page-text);\r
-            --tw-prose-quotes: var(--page-text);\r
-            --meta-title: #959faa;\r
-        }\r
-\r
-        * {\r
-            box-sizing: border-box;\r
-            font-size: 16px;\r
-        }\r
+        * {
+            box-sizing: border-box;
+        }
 \r
         ::-webkit-scrollbar {\r
             height: 1rem;\r
@@ -35350,12 +35369,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             background-color: rgba(236,236,241,var(--tw-bg-opacity))\r
         }\r
 \r
-        .dark ::-webkit-scrollbar-thumb {\r
+        [data-theme="dark"] ::-webkit-scrollbar-thumb {
             --tw-bg-opacity: 1;\r
             background-color: rgba(86,88,105,var(--tw-bg-opacity))\r
         }\r
 \r
-        .dark ::-webkit-scrollbar-thumb:hover {\r
+        [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
             --tw-bg-opacity: 1;\r
             background-color: rgba(172,172,190,var(--tw-bg-opacity))\r
         }\r
@@ -35370,15 +35389,17 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             }\r
         }\r
 \r
-        body {\r
-            font-family: S\xF6hne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;\r
-            font-size: 14px;\r
-            line-height: 1.5;\r
-            color: var(--page-text);\r
-            background-color: var(--page-bg);\r
-            margin: 0;\r
-            padding: 0;\r
-        }\r
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            font-size: 16px;
+            line-height: 1.55;
+            color: var(--page-text);
+            background:
+                radial-gradient(circle at top left, color-mix(in srgb, var(--brand) 8%, transparent), transparent 28rem),
+                var(--page-bg);
+            margin: 0;
+            padding: 0;
+        }
 \r
         [data-theme="light"] .sun {\r
             display: none;\r
@@ -35388,16 +35409,23 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             display: none;\r
         }\r
 \r
-        .toggle {\r
-            display: inline-flex;\r
-            justify-content: center;\r
-            align-items: center;\r
-            width: 32px;\r
-            height: 32px;\r
-            border-radius: 4px;\r
-            background-color: #fff;\r
-            border: 1px solid #e2e8f0;\r
-        }\r
+        .toggle {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            color: var(--page-text);
+            background-color: var(--page-surface-elevated);
+            border: 1px solid var(--page-border);
+            cursor: pointer;
+        }
+
+        .toggle:hover {
+            border-color: var(--page-border-strong);
+            background-color: color-mix(in srgb, var(--page-surface-elevated) 86%, var(--brand) 14%);
+        }
 \r
         [data-width="narrow"] .width-toggle .expand {\r
             display: block;\r
@@ -35407,41 +35435,56 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             display: block;\r
         }\r
 \r
-        .width-toggle {\r
-            display: inline-flex;\r
-            justify-content: center;\r
-            align-items: center;\r
-            width: 32px;\r
-            height: 32px;\r
-            border-radius: 4px;\r
-            background-color: #fff;\r
-            border: 1px solid #e2e8f0;\r
-            margin-left: 8px;\r
-            cursor: pointer;\r
-        }\r
+        .width-toggle {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            color: var(--page-text);
+            background-color: var(--page-surface-elevated);
+            border: 1px solid var(--page-border);
+            margin-left: 8px;
+            cursor: pointer;
+        }
 \r
         .width-toggle svg {\r
             display: none;\r
         }\r
 \r
-        .metadata_container {\r
-            display: flex;\r
-            flex-direction: column;\r
-            margin-top: 8px;\r
-            padding-left: 1rem;\r
-        }\r
+        details {
+            margin-top: 1rem;
+            border: 1px solid var(--page-border);
+            border-radius: 8px;
+            background: var(--page-surface-elevated);
+        }
+
+        details summary {
+            cursor: pointer;
+            padding: 0.75rem 0.875rem;
+            color: var(--page-muted);
+            font-weight: 650;
+        }
+
+        .metadata_container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 0 0.875rem 0.875rem;
+        }
 \r
-        .metadata_item {\r
-            display: flex;\r
-            flex-direction: row;\r
-            align-items: center;\r
-            border-radius: 16px;\r
-            padding: 4px 0.5rem;\r
-        }\r
-\r
-        .metadata_item:hover {\r
-            background-color: rgba(0,0,0,.1);\r
-        }\r
+        .metadata_item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            border-radius: 6px;
+            padding: 0.35rem 0.5rem;
+        }
+
+        .metadata_item:hover {
+            background-color: color-mix(in srgb, var(--page-surface-elevated) 82%, var(--page-text) 8%);
+        }
 \r
         .metadata_item > div:first-child {\r
             flex: 0 1 100px;\r
@@ -35452,12 +35495,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             flex: 1;\r
         }\r
 \r
-        a {\r
-            color: var(--tw-prose-links);\r
-            font-size: 0.8rem;\r
-            text-decoration-line: underline;\r
-            text-underline-offset: 2px;\r
-        }\r
+        a {
+            color: var(--tw-prose-links);
+            text-decoration-line: underline;
+            text-underline-offset: 3px;
+        }
 \r
         .conversation-content > p:first-child,\r
         ol:first-child {\r
@@ -35477,27 +35519,30 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             content: "\`";\r
         }\r
 \r
-        hr {\r
-            width: 100%;\r
-            height: 0;\r
-            border: 1px solid var(--tw-prose-hr);\r
-            margin-bottom: 1em;\r
-            margin-top: 1em;\r
-        }\r
-\r
-        pre {\r
-            color: #ffffff;\r
-            background-color: #000000;\r
-            overflow-x: auto;\r
-            margin: 0 0 1rem 0;\r
-            border-radius: 0.375rem;\r
-        }\r
-\r
-        pre>code {\r
-            font-family: S\xF6hne Mono, Monaco, Andale Mono, Ubuntu Mono, monospace !important;\r
-            font-weight: 400;\r
-            font-size: .875em;\r
-            line-height: 1.7142857;\r
+        hr {
+            width: 100%;
+            height: 0;
+            border: 0;
+            border-top: 1px solid var(--tw-prose-hr);
+            margin-bottom: 1em;
+            margin-top: 1em;
+        }
+
+        pre {
+            color: #ffffff;
+            background-color: var(--code-bg);
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--page-border);
+            border-radius: 8px;
+            padding: 0.75rem 0.875rem;
+        }
+
+        pre>code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Monaco, monospace !important;
+            font-weight: 400;
+            font-size: .875em;
+            line-height: 1.7142857;
         }\r
 \r
         h1, h2, h3, h4, h5, h6 {\r
@@ -35505,13 +35550,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             margin: 0;\r
         }\r
 \r
-        h1 {\r
-            font-size: 2.25em;\r
-            font-weight: 600;\r
-            line-height: 1.1111111;\r
-            margin-bottom: 0.8888889em;\r
-            margin-top: 0;\r
-        }\r
+        h1 {
+            font-size: clamp(1.9rem, 4vw, 3.25rem);
+            font-weight: 760;
+            line-height: 1.08;
+            margin-bottom: 0.35em;
+            margin-top: 0;
+        }
 \r
         h2 {\r
             font-size: 1.5em;\r
@@ -35545,16 +35590,16 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             font-weight: 600;\r
         }\r
 \r
-        blockquote {\r
-            border-left: 2px solid rgba(142,142,160,1);\r
-            color: var(--tw-prose-quotes);\r
-            font-style: italic;\r
-            font-style: normal;\r
-            font-weight: 500;\r
-            line-height: 1rem;\r
-            margin: 1.6em 0;\r
-            padding-left: 1em;\r
-            quotes: "\\201C""\\201D""\\2018""\\2019";\r
+        blockquote {
+            border-left: 3px solid var(--page-border-strong);
+            color: var(--tw-prose-quotes);
+            font-style: italic;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 1.55;
+            margin: 1.6em 0;
+            padding-left: 1em;
+            quotes: "\\201C""\\201D""\\2018""\\2019";
         }\r
 \r
         blockquote p:first-of-type:before {\r
@@ -35596,12 +35641,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             border-bottom-width: 1px;\r
         }\r
 \r
-        table th {\r
-            background-color: rgba(236,236,241,.2);\r
-            border-bottom-width: 1px;\r
-            border-left-width: 1px;\r
-            border-top-width: 1px;\r
-            padding: 0.25rem 0.75rem;\r
+        table th {
+            background-color: color-mix(in srgb, var(--page-surface-elevated) 86%, var(--page-text) 8%);
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-top-width: 1px;
+            padding: 0.45rem 0.75rem;
         }\r
 \r
         table th:first-child {\r
@@ -35630,11 +35675,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             border-bottom-right-radius: 0.375rem;\r
         }\r
 \r
-        table td {\r
-            border-bottom-width: 1px;\r
-            border-left-width: 1px;\r
-            padding: 0.25rem 0.75rem;\r
-        }\r
+        table td {
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            padding: 0.45rem 0.75rem;
+        }
 \r
         table td:last-child {\r
             border-right-width: 1px;\r
@@ -35644,90 +35689,137 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             accent-color: #2563eb;\r
         }\r
 \r
-        .conversation {\r
-            margin: 0 auto;\r
-            padding: 1rem;\r
-            max-width: 64rem;\r
-        }\r
+        .export-shell {
+            width: min(100%, 1180px);
+            margin: 0 auto;
+            padding: clamp(1rem, 2.5vw, 2rem);
+        }
+
+        .conversation {
+            margin: 0 auto;
+            max-width: 60rem;
+        }
+
+        [data-width="narrow"] .conversation {
+            max-width: 60rem;
+        }
+
+        [data-width="wide"] .conversation {
+            max-width: 100%;
+        }
+
+        .conversation-header {
+            margin-bottom: 1.25rem;
+            padding: clamp(1.25rem, 3vw, 2rem);
+            border: 1px solid var(--page-border);
+            border-radius: 8px;
+            background: var(--page-surface);
+        }
+
+        .export-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.35rem;
+        }
+
+        .export-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            color: var(--page-muted);
+            font-size: 0.8rem;
+            font-weight: 760;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .export-brand-mark {
+            display: inline-flex;
+            width: 1.3rem;
+            height: 1.3rem;
+            border-radius: 6px;
+            background: var(--brand);
+        }
+
+        .export-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .conversation-title {
+            margin: 0;
+        }
+
+        .conversation-title a {
+            color: var(--page-text);
+            text-decoration: none;
+        }
+
+        .conversation-title a:hover {
+            color: var(--brand-text);
+        }
+
+        .conversation-export {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .export-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 1.75rem;
+            padding: 0.25rem 0.6rem;
+            border: 1px solid var(--page-border);
+            border-radius: 999px;
+            color: var(--page-muted);
+            background: var(--page-surface-elevated);
+            font-size: 0.78rem;
+            line-height: 1.25;
+        }
+
+        .conversation-item {
+            display: grid;
+            grid-template-columns: 2.25rem minmax(0, 1fr);
+            gap: 0.85rem;
+            position: relative;
+            padding: 1.15rem clamp(0.85rem, 2vw, 1.5rem);
+            border: 1px solid var(--page-border);
+            border-top-width: 0;
+            background: var(--page-surface);
+        }
+
+        .conversation-item:first-of-type {
+            border-top-width: 1px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .conversation-item:last-child {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .author {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 0.1rem;
+        }
 \r
-        [data-width="narrow"] .conversation {\r
-            max-width: 64rem;\r
-        }\r
-\r
-        [data-width="wide"] .conversation {\r
-            max-width: 90%;\r
-        }\r
-\r
-        @media (min-width: 1280px) {\r
-            .conversation {\r
-                max-width: 48rem;\r
-            }\r
-        }\r
-\r
-        @media (min-width: 1024px) {\r
-            .conversation {\r
-                max-width: 40rem;\r
-            }\r
-        }\r
-\r
-        @media (min-width: 768px) {\r
-            .conversation {\r
-                max-width: 48rem;\r
-            }\r
-        }\r
-\r
-        .conversation-header {\r
-            margin-bottom: 1rem;\r
-        }\r
-\r
-        .conversation-header h1 {\r
-            margin: 0;\r
-        }\r
-\r
-        .conversation-header h1 a {\r
-            font-size: 1.5rem;\r
-        }\r
-\r
-        .conversation-header .conversation-export {\r
-            margin-top: 0.5rem;\r
-            font-size: 0.8rem;\r
-        }\r
-\r
-        .conversation-header p {\r
-            margin-top: 0.5rem;\r
-            font-size: 0.8rem;\r
-        }\r
-\r
-        .conversation-item {\r
-            display: flex;\r
-            position: relative;\r
-            padding: 1rem;\r
-            border-left: 1px solid rgba(0,0,0,.1);\r
-            border-right: 1px solid rgba(0,0,0,.1);\r
-            border-bottom: 1px solid rgba(0,0,0,.1);\r
-        }\r
-\r
-        .conversation-item:first-of-type {\r
-            border-top: 1px solid rgba(0,0,0,.1);\r
-        }\r
-\r
-        .author {\r
-            display: flex;\r
-            flex: 0 0 30px;\r
-            justify-content: center;\r
-            align-items: center;\r
-            width: 30px;\r
-            height: 30px;\r
-            border-radius: 0.125rem;\r
-            margin-right: 1rem;\r
-            overflow: hidden;\r
-        }\r
-\r
-        .author svg {\r
-            color: #fff;\r
-            width: 22px;\r
-            height: 22px;\r
-        }\r
+        .author svg {
+            color: #fff;
+            width: 1.35rem;
+            height: 1.35rem;
+        }
 \r
         .author img {\r
             content: url({{avatar}});\r
@@ -35739,9 +35831,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             background-color: rgb(16, 163, 127);\r
         }\r
 \r
-        .author.GPT-4 {\r
-            background-color: black;\r
-        }\r
+        .author.GPT-4 {
+            background-color: #111111;
+        }
 \r
         .conversation-content-wrapper {\r
             display: flex;\r
@@ -35751,60 +35843,78 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             flex-direction: column;\r
         }\r
 \r
-        .thinking {\r
-            font-size: 0.875rem;\r
-            line-height: 1.5;\r
-            margin-bottom: 0.75rem;\r
-            border: 1px solid #d1d5db;\r
-            border-radius: 0.5rem;\r
-            padding: 0.5rem 0.75rem;\r
-        }\r
-\r
-        .thinking summary {\r
-            cursor: pointer;\r
-            font-weight: 500;\r
-            color: #6b7280;\r
-        }\r
-\r
-        .thinking p {\r
-            margin: 0.5rem 0;\r
-            color: #6b7280;\r
-        }\r
-\r
-        .dark .thinking {\r
-            border-color: #4b5563;\r
-        }\r
-\r
-        .dark .thinking summary,\r
-        .dark .thinking p {\r
-            color: #9ca3af;\r
-        }\r
-\r
-        .conversation-content {\r
-            font-size: 1rem;\r
-            line-height: 1.5;\r
-        }\r
-\r
-        .conversation-content p {\r
-            white-space: pre-wrap;\r
-            line-height: 28px;\r
-        }\r
+        .thinking {
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--page-border);
+            border-radius: 8px;
+            background: color-mix(in srgb, var(--page-surface-elevated) 88%, var(--brand) 8%);
+            padding: 0.6rem 0.75rem;
+        }
+
+        .thinking summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--page-muted);
+        }
+
+        .thinking p {
+            margin: 0.5rem 0;
+            color: var(--page-muted);
+        }
+
+        .conversation-content {
+            font-size: 1rem;
+            line-height: 1.65;
+        }
+
+        .conversation-content p {
+            white-space: pre-wrap;
+            line-height: 1.75;
+        }
 \r
         .conversation-content img, .conversation-content video {\r
-            display: block;\r
-            max-width: 100%;\r
-            height: auto;\r
-            margin-bottom: 2em;\r
-            margin-top: 2em;\r
-        }\r
-\r
-        .time {\r
-            position: absolute;\r
-            right: 8px;\r
-            bottom: 0;\r
-            font-size: 0.8rem;\r
-            color: #acacbe\r
-        }\r
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 1.5em;
+            margin-top: 1.5em;
+            border-radius: 8px;
+        }
+
+        .time {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 0.75rem;
+            color: var(--page-soft);
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 640px) {
+            .export-topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .conversation-item {
+                grid-template-columns: 1.9rem minmax(0, 1fr);
+                gap: 0.65rem;
+            }
+
+            .author {
+                width: 1.9rem;
+                height: 1.9rem;
+                border-radius: 7px;
+            }
+
+            .time {
+                position: static;
+                grid-column: 2;
+                margin-top: -0.4rem;
+            }
+        }
 \r
     </style>\r
 </head>\r
@@ -35815,33 +35925,43 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             <path d="M37.5324 16.8707C37.9808 15.5241 38.1363 14.0974 37.9886 12.6859C37.8409 11.2744 37.3934 9.91076 36.676 8.68622C35.6126 6.83404 33.9882 5.3676 32.0373 4.4985C30.0864 3.62941 27.9098 3.40259 25.8215 3.85078C24.8796 2.7893 23.7219 1.94125 22.4257 1.36341C21.1295 0.785575 19.7249 0.491269 18.3058 0.500197C16.1708 0.495044 14.0893 1.16803 12.3614 2.42214C10.6335 3.67624 9.34853 5.44666 8.6917 7.47815C7.30085 7.76286 5.98686 8.3414 4.8377 9.17505C3.68854 10.0087 2.73073 11.0782 2.02839 12.312C0.956464 14.1591 0.498905 16.2988 0.721698 18.4228C0.944492 20.5467 1.83612 22.5449 3.268 24.1293C2.81966 25.4759 2.66413 26.9026 2.81182 28.3141C2.95951 29.7256 3.40701 31.0892 4.12437 32.3138C5.18791 34.1659 6.8123 35.6322 8.76321 36.5013C10.7141 37.3704 12.8907 37.5973 14.9789 37.1492C15.9208 38.2107 17.0786 39.0587 18.3747 39.6366C19.6709 40.2144 21.0755 40.5087 22.4946 40.4998C24.6307 40.5054 26.7133 39.8321 28.4418 38.5772C30.1704 37.3223 31.4556 35.5506 32.1119 33.5179C33.5027 33.2332 34.8167 32.6547 35.9659 31.821C37.115 30.9874 38.0728 29.9178 38.7752 28.684C39.8458 26.8371 40.3023 24.6979 40.0789 22.5748C39.8556 20.4517 38.9639 18.4544 37.5324 16.8707ZM22.4978 37.8849C20.7443 37.8874 19.0459 37.2733 17.6994 36.1501C17.7601 36.117 17.8666 36.0586 17.936 36.0161L25.9004 31.4156C26.1003 31.3019 26.2663 31.137 26.3813 30.9378C26.4964 30.7386 26.5563 30.5124 26.5549 30.2825V19.0542L29.9213 20.998C29.9389 21.0068 29.9541 21.0198 29.9656 21.0359C29.977 21.052 29.9842 21.0707 29.9867 21.0902V30.3889C29.9842 32.375 29.1946 34.2791 27.7909 35.6841C26.3872 37.0892 24.4838 37.8806 22.4978 37.8849ZM6.39227 31.0064C5.51397 29.4888 5.19742 27.7107 5.49804 25.9832C5.55718 26.0187 5.66048 26.0818 5.73461 26.1244L13.699 30.7248C13.8975 30.8408 14.1233 30.902 14.3532 30.902C14.583 30.902 14.8088 30.8408 15.0073 30.7248L24.731 25.1103V28.9979C24.7321 29.0177 24.7283 29.0376 24.7199 29.0556C24.7115 29.0736 24.6988 29.0893 24.6829 29.1012L16.6317 33.7497C14.9096 34.7416 12.8643 35.0097 10.9447 34.4954C9.02506 33.9811 7.38785 32.7263 6.39227 31.0064ZM4.29707 13.6194C5.17156 12.0998 6.55279 10.9364 8.19885 10.3327C8.19885 10.4013 8.19491 10.5228 8.19491 10.6071V19.808C8.19351 20.0378 8.25334 20.2638 8.36823 20.4629C8.48312 20.6619 8.64893 20.8267 8.84863 20.9404L18.5723 26.5542L15.206 28.4979C15.1894 28.5089 15.1703 28.5155 15.1505 28.5173C15.1307 28.5191 15.1107 28.516 15.0924 28.5082L7.04046 23.8557C5.32135 22.8601 4.06716 21.2235 3.55289 19.3046C3.03862 17.3858 3.30624 15.3413 4.29707 13.6194ZM31.955 20.0556L22.2312 14.4411L25.5976 12.4981C25.6142 12.4872 25.6333 12.4805 25.6531 12.4787C25.6729 12.4769 25.6928 12.4801 25.7111 12.4879L33.7631 17.1364C34.9967 17.849 36.0017 18.8982 36.6606 20.1613C37.3194 21.4244 37.6047 22.849 37.4832 24.2684C37.3617 25.6878 36.8382 27.0432 35.9743 28.1759C35.1103 29.3086 33.9415 30.1717 32.6047 30.6641C32.6047 30.5947 32.6047 30.4733 32.6047 30.3889V21.188C32.6066 20.9586 32.5474 20.7328 32.4332 20.5338C32.319 20.3348 32.154 20.1698 31.955 20.0556ZM35.3055 15.0128C35.2464 14.9765 35.1431 14.9142 35.069 14.8717L27.1045 10.2712C26.906 10.1554 26.6803 10.0943 26.4504 10.0943C26.2206 10.0943 25.9948 10.1554 25.7963 10.2712L16.0726 15.8858V11.9982C16.0715 11.9783 16.0753 11.9585 16.0837 11.9405C16.0921 11.9225 16.1048 11.9068 16.1207 11.8949L24.1719 7.25025C25.4053 6.53903 26.8158 6.19376 28.2383 6.25482C29.6608 6.31589 31.0364 6.78077 32.2044 7.59508C33.3723 8.40939 34.2842 9.53945 34.8334 10.8531C35.3826 12.1667 35.5464 13.6095 35.3055 15.0128ZM14.2424 21.9419L10.8752 19.9981C10.8576 19.9893 10.8423 19.9763 10.8309 19.9602C10.8195 19.9441 10.8122 19.9254 10.8098 19.9058V10.6071C10.8107 9.18295 11.2173 7.78848 11.9819 6.58696C12.7466 5.38544 13.8377 4.42659 15.1275 3.82264C16.4173 3.21869 17.8524 2.99464 19.2649 3.1767C20.6775 3.35876 22.0089 3.93941 23.1034 4.85067C23.0427 4.88379 22.937 4.94215 22.8668 4.98473L14.9024 9.58517C14.7025 9.69878 14.5366 9.86356 14.4215 10.0626C14.3065 10.2616 14.2466 10.4877 14.2479 10.7175L14.2424 21.9419ZM16.071 17.9991L20.4018 15.4978L24.7325 17.9975V22.9985L20.4018 25.4983L16.071 22.9985V17.9991Z" fill="currentColor"></path>\r
         </symbol>\r
     </svg>\r
-    <div class="conversation">\r
-        <div class="conversation-header">\r
-            <h1>\r
-                <a href="{{source}}" target="_blank" rel="noopener noreferrer">{{title}}</a>\r
-                <button class="toggle">\r
-                    <svg class="sun" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>\r
-                    <svg class="moon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>\r
-                </button>\r
-                <button class="toggle width-toggle">\r
-                    <svg class="expand" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="display: block;">\r
-                        <path d="M3 12h18M6 8l-4 4 4 4M18 8l4 4-4 4"></path>\r
-                    </svg>\r
-                    <svg class="narrow" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="display: none;">\r
-                        <path d="M3 12h7M14 12h7M6 16l4-4-4-4M18 16l-4-4 4-4"></path>\r
-                    </svg>\r
-                </button>\r
-            </h1>\r
-            <div class="conversation-export">\r
-                <p>Exported by\r
-                <a href="https://github.com/pionxzh/chatgpt-exporter.git">ChatGPT Exporter</a>\r
-                at {{time}}</p>\r
-            </div>\r
-            {{details}}\r
-        </div>\r
-\r
-        {{content}}\r
-    </div>\r
+    <main class="export-shell">
+    <div class="conversation">
+        <div class="conversation-header">
+            <div class="export-topbar">
+                <div class="export-brand">
+                    <span class="export-brand-mark" aria-hidden="true"></span>
+                    <span>ChatGPT Helper Export</span>
+                </div>
+                <div class="export-controls" aria-label="Export display controls">
+                    <button class="toggle" type="button" title="Toggle theme" aria-label="Toggle theme">
+                        <svg class="sun" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        <svg class="moon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </button>
+                    <button class="toggle width-toggle" type="button" title="Toggle content width" aria-label="Toggle content width">
+                        <svg class="expand" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                            <path d="M3 12h18M6 8l-4 4 4 4M18 8l4 4-4 4"></path>
+                        </svg>
+                        <svg class="narrow" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                            <path d="M3 12h7M14 12h7M6 16l4-4-4-4M18 16l-4-4 4-4"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <h1 class="conversation-title">
+                <a href="{{source}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
+            </h1>
+            <div class="conversation-export">
+                <span class="export-pill">Exported by ChatGPT Helper</span>
+                <time class="export-pill" datetime="{{time}}">{{time}}</time>
+                <a class="export-pill" href="{{source}}" target="_blank" rel="noopener noreferrer">Open source conversation</a>
+            </div>
+            {{details}}
+        </div>
+
+        {{content}}
+    </div>
+    </main>
 \r
 \r
     <script>\r
@@ -49716,6 +49836,30 @@ ${content2}`;
   function Variable({ name, title: title2 }) {
     return /* @__PURE__ */ u$5("strong", { className: "cursor-help select-all whitespace-nowrap", title: title2, children: name });
   }
+  function SettingsSection({ id, title: title2, action, defaultOpen = true, children }) {
+    const [open2, setOpen] = d$3(defaultOpen);
+    const panelId = `${id}-panel`;
+    return /* @__PURE__ */ u$5("div", { className: "settings-section", children: [
+      /* @__PURE__ */ u$5("dt", { className: "settings-section-header", children: [
+        /* @__PURE__ */ u$5(
+          "button",
+          {
+            type: "button",
+            className: "settings-section-trigger",
+            "aria-expanded": open2,
+            "aria-controls": panelId,
+            onClick: () => setOpen((value) => !value),
+            children: [
+              /* @__PURE__ */ u$5("span", { className: `settings-section-chevron${open2 ? " open" : ""}`, "aria-hidden": "true", children: ">" }),
+              /* @__PURE__ */ u$5("span", { children: title2 })
+            ]
+          }
+        ),
+        action && /* @__PURE__ */ u$5("div", { className: "settings-section-action", children: action })
+      ] }),
+      open2 && /* @__PURE__ */ u$5("dd", { id: panelId, className: "settings-section-panel", children })
+    ] });
+  }
   const SettingDialog = ({
     open: open2,
     onOpenChange,
@@ -49766,83 +49910,78 @@ ${content2}`;
             /* @__PURE__ */ u$5(Content, { className: "DialogContent", children: [
               /* @__PURE__ */ u$5(Title, { className: "DialogTitle", children: t2("Exporter Settings") }),
               /* @__PURE__ */ u$5("div", { className: "DialogBody", children: [
-                /* @__PURE__ */ u$5("dl", { className: "space-y-6", children: [
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ u$5("div", { children: [
-                    /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("File Name") }),
-                    /* @__PURE__ */ u$5("dd", { children: [
-                      /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
-                        t2("Available variables"),
-                        ":",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{title}", title: title2 }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{date}", title: date }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{timestamp}", title: timestamp$1 }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{chat_id}", title: chatId }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{create_time}", title: unixTimestampToISOString(createTime) }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{update_time}", title: unixTimestampToISOString(updateTime) })
-                      ] }),
-                      /* @__PURE__ */ u$5("input", { className: "Input mt-4", id: "filename", value: format, onChange: (e2) => setFormat(e2.currentTarget.value) }),
-                      /* @__PURE__ */ u$5("p", { className: "mt-1 text-sm text-gray-700 dark:text-gray-300", children: [
-                        t2("Preview"),
-                        ":",
-                        " ",
-                        /* @__PURE__ */ u$5("span", { className: "select-all", style: { "text-decoration": "underline", "text-underline-offset": 4 }, children: preview })
-                      ] })
-                    ] })
-                  ] }) }),
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
-                    /* @__PURE__ */ u$5("div", { children: [
-                      /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Export Thinking Process") }),
-                      /* @__PURE__ */ u$5("dd", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Export Thinking Process Description") })
-                    ] }),
-                    /* @__PURE__ */ u$5("div", { className: "absolute right-4", children: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableThinking, onCheckedUpdate: setEnableThinking }) })
-                  ] }),
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ u$5("div", { children: [
-                    /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: [
-                      t2("Export All Limit"),
-                      " "
-                    ] }),
-                    /* @__PURE__ */ u$5("dd", { className: "text-sm text-gray-700 dark:text-gray-300 mt-2", children: [
-                      t2("Export All Limit Description"),
+                /* @__PURE__ */ u$5("dl", { className: "settings-sections", children: [
+                  /* @__PURE__ */ u$5(SettingsSection, { id: "filename", title: t2("File Name"), children: [
+                    /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
+                      t2("Available variables"),
+                      ":",
                       " ",
-                      /* @__PURE__ */ u$5("div", { className: "flex items-center gap-4 mt-3", children: [
-                        /* @__PURE__ */ u$5(
-                          "input",
-                          {
-                            type: "range",
-                            min: "100",
-                            max: "20000",
-                            step: "100",
-                            value: exportAllLimit,
-                            onChange: (e2) => setExportAllLimit(
-                              Number.parseInt(
-                                e2.currentTarget.value,
-                                10
-                              )
-                            ),
-                            className: "flex-grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700",
-                            id: "exportAllLimitSlider"
-                          }
-                        ),
-                        /* @__PURE__ */ u$5("span", { className: "font-medium text-gray-900 dark:text-gray-300 w-12 text-right", children: exportAllLimit })
-                      ] })
+                      /* @__PURE__ */ u$5(Variable, { name: "{title}", title: title2 }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{date}", title: date }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{timestamp}", title: timestamp$1 }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{chat_id}", title: chatId }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{create_time}", title: unixTimestampToISOString(createTime) }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{update_time}", title: unixTimestampToISOString(updateTime) })
+                    ] }),
+                    /* @__PURE__ */ u$5("input", { className: "Input mt-4", id: "filename-input", value: format, onChange: (e2) => setFormat(e2.currentTarget.value) }),
+                    /* @__PURE__ */ u$5("p", { className: "mt-1 text-sm text-gray-700 dark:text-gray-300", children: [
+                      t2("Preview"),
+                      ":",
+                      " ",
+                      /* @__PURE__ */ u$5("span", { className: "select-all", style: { "text-decoration": "underline", "text-underline-offset": 4 }, children: preview })
                     ] })
-                  ] }) }),
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
-                    /* @__PURE__ */ u$5("div", { children: [
-                      /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Conversation Timestamp") }),
-                      /* @__PURE__ */ u$5("dd", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
-                        t2("Conversation Timestamp Description"),
+                  ] }),
+                  /* @__PURE__ */ u$5(
+                    SettingsSection,
+                    {
+                      id: "thinking",
+                      title: t2("Export Thinking Process"),
+                      action: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableThinking, onCheckedUpdate: setEnableThinking }),
+                      children: /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Export Thinking Process Description") })
+                    }
+                  ),
+                  /* @__PURE__ */ u$5(SettingsSection, { id: "export-all-limit", title: t2("Export All Limit"), children: [
+                    /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Export All Limit Description") }),
+                    /* @__PURE__ */ u$5("div", { className: "flex items-center gap-4 mt-3", children: [
+                      /* @__PURE__ */ u$5(
+                        "input",
+                        {
+                          type: "range",
+                          min: "100",
+                          max: "20000",
+                          step: "100",
+                          value: exportAllLimit,
+                          onChange: (e2) => setExportAllLimit(
+                            Number.parseInt(
+                              e2.currentTarget.value,
+                              10
+                            )
+                          ),
+                          className: "flex-grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700",
+                          id: "exportAllLimitSlider"
+                        }
+                      ),
+                      /* @__PURE__ */ u$5("span", { className: "font-medium text-gray-900 dark:text-gray-300 w-12 text-right", children: exportAllLimit })
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ u$5(
+                    SettingsSection,
+                    {
+                      id: "conversation-timestamp",
+                      title: t2("Conversation Timestamp"),
+                      action: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableTimestamp, onCheckedUpdate: setEnableTimestamp }),
+                      children: [
+                        /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Conversation Timestamp Description") }),
                         enableTimestamp && /* @__PURE__ */ u$5(S$3, { children: [
                           /* @__PURE__ */ u$5("div", { className: "mt-2", children: /* @__PURE__ */ u$5(
                             Toggle,
@@ -49869,15 +50008,17 @@ ${content2}`;
                             }
                           ) })
                         ] })
-                      ] })
-                    ] }),
-                    /* @__PURE__ */ u$5("div", { className: "absolute right-4", children: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableTimestamp, onCheckedUpdate: setEnableTimestamp }) })
-                  ] }),
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
-                    /* @__PURE__ */ u$5("div", { children: [
-                      /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Export Metadata") }),
-                      /* @__PURE__ */ u$5("dd", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
-                        t2("Export Metadata Description"),
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ u$5(
+                    SettingsSection,
+                    {
+                      id: "export-metadata",
+                      title: t2("Export Metadata"),
+                      action: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableMeta, onCheckedUpdate: setEnableMeta }),
+                      children: [
+                        /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Export Metadata Description") }),
                         enableMeta && /* @__PURE__ */ u$5(S$3, { children: [
                           /* @__PURE__ */ u$5("p", { className: "mt-2 text-sm text-gray-700 dark:text-gray-300", children: [
                             t2("Available variables"),
@@ -49919,7 +50060,7 @@ ${content2}`;
                                 }
                               }
                             ),
-                            /* @__PURE__ */ u$5("span", { className: "mx-2", children: "\u2192" }),
+                            /* @__PURE__ */ u$5("span", { className: "mx-2", children: "->" }),
                             /* @__PURE__ */ u$5(
                               "input",
                               {
@@ -49952,10 +50093,9 @@ ${content2}`;
                             }
                           ) })
                         ] })
-                      ] })
-                    ] }),
-                    /* @__PURE__ */ u$5("div", { className: "absolute right-4", children: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableMeta, onCheckedUpdate: setEnableMeta }) })
-                  ] })
+                      ]
+                    }
+                  )
                 ] }),
                 /* @__PURE__ */ u$5("div", { className: "flex mt-6", style: { justifyContent: "flex-end" }, children: /* @__PURE__ */ u$5(Close, { asChild: true, children: /* @__PURE__ */ u$5("button", { className: "Button green font-bold", children: t2("Save") }) }) })
               ] }),
@@ -50238,7 +50378,7 @@ ${content2}`;
       try {
         R$2(/* @__PURE__ */ u$5(DirectMenu, { container }), container);
       } catch (error2) {
-        console.error("[ChatGPT Exporter] Failed to render DirectMenu:", error2);
+        console.error("[ChatGPT Helper Export] Failed to render DirectMenu:", error2);
         container.appendChild(document.createElement("div")).textContent = `\u5BFC\u51FA\u529F\u80FD\u52A0\u8F7D\u5931\u8D25: ${error2.message}`;
       }
       return container;
