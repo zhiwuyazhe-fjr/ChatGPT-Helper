@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node scripts/build-content.mjs",
     "check": "node scripts/check-content.mjs && tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "package": "npm run build && npm run check && node scripts/package-extension.mjs"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.14",

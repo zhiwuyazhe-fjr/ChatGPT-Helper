@@ -3,7 +3,7 @@
   try {
     if (typeof document != "undefined") {
       var elementStyle = document.createElement("style");
-      elementStyle.appendChild(document.createTextNode('.CheckBoxLabel {\r\n    position: relative;\r\n    display: flex;\r\n    font-size: 16px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.CheckBoxLabel * {\r\n    cursor: pointer;\r\n}\r\n\r\n.CheckBoxLabel[disabled] {\r\n    opacity: 0.7;\r\n}\r\n\r\n.CheckBoxLabel[disabled] * {\r\n    cursor: not-allowed;\r\n}\r\n\r\n.CheckBoxLabel input {\r\n    position: absolute;\r\n    opacity: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.CheckBoxLabel .IconWrapper {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    position: relative;\r\n    vertical-align: middle;\r\n    font-size: 1.5rem;\r\n}\r\n\r\n.CheckBoxLabel input:checked ~ svg {\r\n    color: rgb(28 100 242);\r\n}\r\n\r\n.dark .CheckBoxLabel input:checked ~ svg {\r\n    color: rgb(144, 202, 249);\r\n}\r\n\r\n.CheckBoxLabel .LabelText {\r\n    margin-left: 0.5rem;\r\n    font-size: 1rem;\r\n    line-height: 1.5;\r\n}\r\nspan[data-time-format] {\r\n    display: none;\r\n}\r\n\r\nbody[data-time-format="12"] span[data-time-format="12"] {\r\n    display: inline;\r\n}\r\n\r\nbody[data-time-format="24"] span[data-time-format="24"] {\r\n    display: inline;\r\n}\r\n\r\n.Select {\r\n    padding: 0 0 0 0.5rem;\r\n    width: 7.5rem;\r\n    border-radius: 4px;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\n.dark .Select {\r\n    background-color: #2f2f2f;\r\n    color: #fff;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\nhtml {\r\n    --ce-text-primary: var(--text-primary, #0d0d0d);\r\n    --ce-menu-primary: var(--sidebar-surface-primary, #f9f9f9);\r\n    --ce-menu-secondary: var(--sidebar-surface-secondary, #ececec);\r\n    --ce-border-light: var(--border-light, rgba(0, 0, 0, .1));\r\n}\r\n\r\n.dark {\r\n    --ce-text-primary: var(--text-primary, #ececec);\r\n    --ce-menu-primary: var(--sidebar-surface-primary, #171717);\r\n    --ce-menu-secondary: var(--sidebar-surface-secondary, #212121);\r\n    --ce-border-light: var(--border-default, rgba(0, 0, 0, .05));\r\n}\r\n\r\n.bg-menu {\r\n    background-color: var(--ce-menu-secondary);\r\n}\r\n\r\n.border-menu {\r\n    border-color: var(--ce-border-light);\r\n}\r\n\r\n.menu-item {\r\n    height: 46px;\r\n}\r\n\r\n.menu-item[disabled] {\r\n    filter: brightness(0.5);\r\n}\r\n\r\n.inputFieldSet {\r\n    display: block;\r\n    border-width: 2px;\r\n    border-style: groove;\r\n}\r\n\r\n.inputFieldSet legend {\r\n    margin-left: 4px;\r\n}\r\n\r\n.inputFieldSet input {\r\n    background-color: transparent;\r\n    box-shadow: none!important;\r\n}\r\n\r\n.row-half {\r\n    grid-column: auto / span 1;\r\n}\r\n\r\n.row-full {\r\n    grid-column: auto / span 2;\r\n}\r\n\r\n.dropdown-backdrop {\r\n    display: block;\r\n    position: fixed;\r\n    top: 0;\r\n    bottom: 0;\r\n    left: 0;\r\n    right: 0;\r\n    background-color: rgba(0,0,0,.5);\r\n    animation-name: pointerFadeIn;\r\n    animation-duration: .3s;\r\n}\r\n\r\n@keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n@keyframes slideUp {\r\n    from {\r\n        transform: translateY(100%);\r\n    }\r\n    to {\r\n        transform: translateY(0);\r\n    }\r\n}\r\n\r\n@keyframes pointerFadeIn {\r\n    from {\r\n        opacity: 0;\r\n        pointer-events: none;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n        pointer-events: auto;\r\n    }\r\n}\r\n\r\n@keyframes rotate {\r\n    from {\r\n        transform: rotate(0deg);\r\n    }\r\n    to {\r\n        transform: rotate(360deg);\r\n    }\r\n}\r\n\r\n@keyframes circularDash {\r\n    0% {\r\n        stroke-dasharray: 1px, 200px;\r\n        stroke-dashoffset: 0;\r\n    }\r\n    50% {\r\n        stroke-dasharray: 100px, 200px;\r\n        stroke-dashoffset: -15px;\r\n    }\r\n    100% {\r\n        stroke-dasharray: 100px, 200px;\r\n        stroke-dashoffset: -125px;\r\n    }\r\n}\r\n.DialogOverlay {\r\n    background-color: rgba(0, 0, 0, 0.44);\r\n    position: fixed;\r\n    inset: 0;\r\n    z-index: 1000;\r\n    animation: fadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1);\r\n}\r\n\r\n.DialogContent {\r\n    background-color: #f3f3f3;\r\n    border-radius: 6px;\r\n    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;\r\n    position: fixed;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    width: 90vw;\r\n    max-width: 560px;\r\n    max-height: 85vh;\r\n    overflow: hidden;\r\n    padding: 16px 24px;\r\n    z-index: 1001;\r\n    outline: none;\r\n    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.dark .DialogContent {\r\n    background-color: #2a2a2a;\r\n    border-color: #40414f;\r\n    border-width: 1px;\r\n}\r\n\r\n.DialogContent input[type="checkbox"] {\r\n    border: none;\r\n    outline: none;\r\n    box-shadow: none;\r\n}\r\n\r\n.DialogTitle {\r\n    margin: 0 0 16px 0;\r\n    font-weight: 500;\r\n    color: #1a1523;\r\n    font-size: 20px;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.DialogBody {\r\n    flex: 1;\r\n    min-height: 0;\r\n    overflow-y: auto;\r\n    overflow-x: hidden;\r\n}\r\n\r\n.dark .DialogTitle {\r\n    color: #fff;\r\n}\r\n\r\n.Button {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    border-radius: 4px;\r\n    padding: 0 15px;\r\n    font-size: 15px;\r\n    line-height: 1;\r\n    height: 35px;\r\n}\r\n.Button.green {\r\n    background-color: #ddf3e4;\r\n    color: #18794e;\r\n}\r\n.Button.red {\r\n    background-color: #f9d9d9;\r\n    color: #a71d2a;\r\n}\r\n.Button.neutral {\r\n    background-color: transparent;\r\n    color: #6f6e77;\r\n    border: 1px solid #6f6e77;\r\n    font-size: 13px;\r\n    height: 26px;\r\n    padding: 0 8px;\r\n}\r\n.Button.green:hover {\r\n    background-color: #ccebd7;\r\n}\r\n.Button.neutral:hover {\r\n    background-color: rgba(111, 110, 119, 0.1);\r\n}\r\n.dark .Button.neutral {\r\n    color: #a0a0a8;\r\n    border-color: #a0a0a8;\r\n}\r\n.dark .Button.neutral:hover {\r\n    background-color: rgba(160, 160, 168, 0.1);\r\n}\r\n.Button:disabled {\r\n    opacity: 0.5;\r\n    color: #6f6e77;\r\n    background-color: #e0e0e0;\r\n    cursor: not-allowed;\r\n}\r\n.Button:disabled:hover {\r\n    background-color: #e0e0e0;\r\n}\r\n\r\n.IconButton {\r\n    font-family: inherit;\r\n    border-radius: 100%;\r\n    height: 25px;\r\n    width: 25px;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    color: #6f6e77;\r\n}\r\n.IconButton:hover {\r\n    background-color: rgba(0, 0, 0, 0.06);\r\n}\r\n\r\n.CloseButton {\r\n    position: absolute;\r\n    top: 10px;\r\n    right: 10px;\r\n}\r\n\r\n.Fieldset {\r\n    display: flex;\r\n    gap: 20px;\r\n    align-items: center;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.Label {\r\n    font-size: 15px;\r\n    color: #1a1523;\r\n    min-width: 90px;\r\n    text-align: right;\r\n}\r\n\r\n.dark .Label {\r\n    color: #fff;\r\n}\r\n\r\n.Input {\r\n    width: 100%;\r\n    flex: 1;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    border-radius: 4px;\r\n    padding: 0 10px;\r\n    font-size: 15px;\r\n    line-height: 1;\r\n    color: #000;\r\n    background-color: #fafafa;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n    height: 35px;\r\n    outline: none;\r\n}\r\n\r\n.dark .Input {\r\n    background-color: #2f2f2f;\r\n    color: #fff;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\n.Description {\r\n    font-size: 13px;\r\n    color: #5a5865;\r\n    text-align: right;\r\n    margin-bottom: 4px;\r\n}\r\n\r\n.dark .Description {\r\n    color: #bcbcbc;\r\n}\r\n\r\n.SelectSearch {\r\n    width: 100%;\r\n    padding: 8px 16px;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    border-radius: 4px 4px 0 0;\r\n    background-color: transparent;\r\n    color: inherit;\r\n    font-size: 14px;\r\n    outline: none;\r\n    flex-shrink: 0;\r\n}\r\n.SelectSearch::placeholder {\r\n    color: #9ca3af;\r\n}\r\n\r\n.SelectToolbar {\r\n    display: flex;\r\n    align-items: center;\r\n    padding: 12px 16px;\r\n    border-radius: 0;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.ProjectSelect .Select {\r\n    width: auto;\r\n}\r\n\r\n.SelectList {\r\n    position: relative;\r\n    width: 100%;\r\n    flex: 1;\r\n    min-height: 120px;\r\n    padding: 12px 16px;\r\n    overflow-x: hidden;\r\n    overflow-y: auto;\r\n    border: 1px solid #6f6e77;\r\n    border-radius: 0 0 4px 4px;\r\n    white-space: nowrap;\r\n}\r\n\r\n.SelectItem {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    overflow: hidden;\r\n}\r\n\r\n.SelectItem .CheckBoxLabel {\r\n    flex: 1;\r\n    min-width: 0;\r\n}\r\n\r\n.SelectItem .LabelText {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n\r\n.SelectItem label, .SelectItem input {\r\n    cursor: pointer;\r\n}\r\n\r\n.SelectItem span {\r\n    vertical-align: middle;\r\n}\r\n\r\n.SelectItemMeta {\r\n    flex-shrink: 0;\r\n    font-size: 0.7rem;\r\n    color: #9ca3af;\r\n    white-space: nowrap;\r\n    font-variant-numeric: tabular-nums;\r\n    min-width: 6.5rem;\r\n    text-align: right;\r\n}\r\n.SelectItemMetaActive {\r\n    color: #6b7280;\r\n    font-weight: 600;\r\n}\r\n.dark {\r\n    .SelectItemMetaActive { color: #d1d5db; }\r\n}\r\n\r\n/* ── Sortable column header row ── */\r\n.SelectListHeader {\r\n    display: flex;\r\n    align-items: center;\r\n    padding: 0 16px;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    background: #f9fafb;\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.dark {\r\n    .SelectListHeader { background: #1f2937; }\r\n}\r\n\r\n.SelectListHeaderCell {\r\n    flex-shrink: 0;\r\n    font-size: 0.68rem;\r\n    font-weight: 600;\r\n    color: #9ca3af;\r\n    letter-spacing: 0.03em;\r\n    text-transform: uppercase;\r\n    background: transparent;\r\n    border: none;\r\n    padding: 5px 4px;\r\n    cursor: pointer;\r\n    white-space: nowrap;\r\n    min-width: 6.5rem;\r\n    text-align: right;\r\n}\r\n.SelectListHeaderCell:hover { color: #374151; }\r\n.dark {\r\n    .SelectListHeaderCell:hover { color: #e5e7eb; }\r\n}\r\n.SelectListHeaderCellTitle {\r\n    flex: 1;\r\n    text-align: left;\r\n    padding-left: 28px; /* align with checkbox label */\r\n}\r\n.SelectListHeaderCellActive {\r\n    color: #2563eb;\r\n}\r\n.dark {\r\n    .SelectListHeaderCellActive { color: #60a5fa; }\r\n}\r\n\r\n\r\n@keyframes contentShow {\r\n    from {\r\n        opacity: 0;\r\n        transform: translate(-50%, -48%) scale(0.96);\r\n    }\r\n    to {\r\n        opacity: 1;\r\n        transform: translate(-50%, -50%) scale(1);\r\n    }\r\n}\r\n.animate-fadeIn  {\r\n    animation: fadeIn .3s;\r\n}\r\n\r\n.animate-slideUp  {\r\n    animation: slideUp .3s;\r\n}\r\n\r\n.bg-blue-600 {\r\n    background-color: rgb(28 100 242);\r\n}\r\n\r\n.hover\\:bg-gray-500\\/10:hover {\r\n    background-color: hsla(0, 0%, 61%, .1)\r\n}\r\n\r\n.border-\\[\\#6f6e77\\] {\r\n    border-color: #6f6e77;\r\n}\r\n\r\n.cursor-help {\r\n    cursor: help;\r\n}\r\n\r\n.dark .dark\\:bg-white\\/5 {\r\n    background-color: rgb(255 255 255 / 5%);\r\n}\r\n\r\n.dark .dark\\:text-gray-200 {\r\n    color: rgb(229 231 235 / 1);\r\n}\r\n\r\n.dark .dark\\:text-gray-300 {\r\n    color: rgb(209 213 219 / 1);\r\n}\r\n\r\n.dark .dark\\:border-gray-\\[\\#86858d\\] {\r\n    border-color: #86858d;\r\n}\r\n\r\n.gap-x-1 {\r\n    column-gap: 0.25rem;\r\n}\r\n\r\n.h-2\\.5 {\r\n    height: 0.625rem;\r\n}\r\n\r\n.h-4 {\r\n    height: 1rem;\r\n}\r\n\r\n.inline-flex {\r\n    display: inline-flex;\r\n}\r\n\r\n.items-center {\r\n    align-items: center;\r\n}\r\n\r\n.ml-3 {\r\n    margin-left: 0.75rem;\r\n}\r\n\r\n.ml-4 {\r\n    margin-left: 1rem;\r\n}\r\n\r\n.mr-8 {\r\n    margin-right: 2rem;\r\n}\r\n\r\n.pb-0 {\r\n    padding-bottom: 0;\r\n}\r\n\r\n.pr-8 {\r\n    padding-right: 2rem;\r\n}\r\n\r\n.right-4 {\r\n    right: 1rem;\r\n}\r\n\r\n.rounded-full {\r\n    border-radius: 9999px;\r\n}\r\n\r\n.select-all {\r\n    user-select: all!important;\r\n}\r\n\r\n.shrink-0 {\r\n    flex-shrink: 0;\r\n}\r\n\r\n.space-y-6>:not([hidden])~:not([hidden]) {\r\n    --tw-space-y-reverse: 0;\r\n    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));\r\n    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));\r\n}\r\n\r\n.truncate {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n\r\n.whitespace-nowrap {\r\n    white-space: nowrap;\r\n}\r\n\r\n@media (min-width:768px) {\r\n    /* md */\r\n}\r\n\r\n@media (min-width:1024px) {\r\n    .lg\\:mt-0 {\r\n        margin-top: 0;\r\n    }\r\n\r\n    .lg\\:top-8 {\r\n        top: 2rem;\r\n    }\r\n}\r\n\r\n\r\n.toggle-switch {\r\n    position: relative;\r\n    outline: none;\r\n    background-color: rgb(229 231 235);\r\n    border: 1px solid rgb(107 114 128);\r\n    border-radius: 9999px;\r\n    cursor: pointer;\r\n    height: 20px;\r\n    width: 32px;\r\n}\r\n\r\n.dark .toggle-switch {\r\n    background-color: rgb(255 255 255 / 5%);\r\n    border-color: rgb(255 255 255 / 1);\r\n}\r\n\r\n.toggle-switch[data-state="checked"] {\r\n    background-color: rgb(0 0 0);\r\n    border-color: rgb(0 0 0);\r\n}\r\n\r\n.dark .toggle-switch[data-state="checked"] {\r\n    background-color: rgb(22 163 74);\r\n    border-color: rgb(22 163 74);\r\n}\r\n\r\n.toggle-switch-handle {\r\n    display: block;\r\n    background-color: rgb(255 255 255);\r\n    border-radius: 9999px;\r\n    height: 16px;\r\n    width: 16px;\r\n    transition: transform 0.1s;\r\n    will-change: transform;\r\n    transform: translateX(1px);\r\n}\r\n\r\n.toggle-switch-handle[data-state="checked"] {\r\n    transform: translateX(14px);\r\n}\r\n\r\n.toggle-switch-handle:hover {\r\n    background-color: rgb(243 244 246);\r\n}\r\n\r\n.toggle-switch-label {\r\n    color: rgb(107 114 128);\r\n    margin-left: 0.75rem;\r\n    font-size: 0.875rem;\r\n    font-weight: 500;\r\n}\r\n\r\n.toggle-switch-label:hover {\r\n    color: rgb(71 85 105);\r\n}'));
+      elementStyle.appendChild(document.createTextNode('.CheckBoxLabel {\r\n    position: relative;\r\n    display: flex;\r\n    font-size: 16px;\r\n    vertical-align: middle;\r\n}\r\n\r\n.CheckBoxLabel * {\r\n    cursor: pointer;\r\n}\r\n\r\n.CheckBoxLabel[disabled] {\r\n    opacity: 0.7;\r\n}\r\n\r\n.CheckBoxLabel[disabled] * {\r\n    cursor: not-allowed;\r\n}\r\n\r\n.CheckBoxLabel input {\r\n    position: absolute;\r\n    opacity: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.CheckBoxLabel .IconWrapper {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    position: relative;\r\n    vertical-align: middle;\r\n    font-size: 1.5rem;\r\n}\r\n\r\n.CheckBoxLabel input:checked ~ svg {\r\n    color: rgb(28 100 242);\r\n}\r\n\r\n.dark .CheckBoxLabel input:checked ~ svg {\r\n    color: rgb(144, 202, 249);\r\n}\r\n\r\n.CheckBoxLabel .LabelText {\r\n    margin-left: 0.5rem;\r\n    font-size: 1rem;\r\n    line-height: 1.5;\r\n}\r\nspan[data-time-format] {\r\n    display: none;\r\n}\r\n\r\nbody[data-time-format="12"] span[data-time-format="12"] {\r\n    display: inline;\r\n}\r\n\r\nbody[data-time-format="24"] span[data-time-format="24"] {\r\n    display: inline;\r\n}\r\n\r\n.Select {\r\n    padding: 0 0 0 0.5rem;\r\n    width: 7.5rem;\r\n    border-radius: 4px;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\n.dark .Select {\r\n    background-color: #2f2f2f;\r\n    color: #fff;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\nhtml {\r\n    --ce-text-primary: var(--text-primary, #0d0d0d);\r\n    --ce-menu-primary: var(--sidebar-surface-primary, #f9f9f9);\r\n    --ce-menu-secondary: var(--sidebar-surface-secondary, #ececec);\r\n    --ce-border-light: var(--border-light, rgba(0, 0, 0, .1));\r\n}\r\n\r\n.dark {\r\n    --ce-text-primary: var(--text-primary, #ececec);\r\n    --ce-menu-primary: var(--sidebar-surface-primary, #171717);\r\n    --ce-menu-secondary: var(--sidebar-surface-secondary, #212121);\r\n    --ce-border-light: var(--border-default, rgba(0, 0, 0, .05));\r\n}\r\n\r\n.bg-menu {\r\n    background-color: var(--ce-menu-secondary);\r\n}\r\n\r\n.border-menu {\r\n    border-color: var(--ce-border-light);\r\n}\r\n\r\n.menu-item {\r\n    height: 46px;\r\n}\r\n\r\n.menu-item[disabled] {\r\n    filter: brightness(0.5);\r\n}\r\n\r\n.inputFieldSet {\r\n    display: block;\r\n    border-width: 2px;\r\n    border-style: groove;\r\n}\r\n\r\n.inputFieldSet legend {\r\n    margin-left: 4px;\r\n}\r\n\r\n.inputFieldSet input {\r\n    background-color: transparent;\r\n    box-shadow: none!important;\r\n}\r\n\r\n.row-half {\r\n    grid-column: auto / span 1;\r\n}\r\n\r\n.row-full {\r\n    grid-column: auto / span 2;\r\n}\r\n\r\n.dropdown-backdrop {\r\n    display: block;\r\n    position: fixed;\r\n    top: 0;\r\n    bottom: 0;\r\n    left: 0;\r\n    right: 0;\r\n    background-color: rgba(0,0,0,.5);\r\n    animation-name: pointerFadeIn;\r\n    animation-duration: .3s;\r\n}\r\n\r\n@keyframes fadeIn {\r\n    from {\r\n        opacity: 0;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n    }\r\n}\r\n\r\n@keyframes slideUp {\r\n    from {\r\n        transform: translateY(100%);\r\n    }\r\n    to {\r\n        transform: translateY(0);\r\n    }\r\n}\r\n\r\n@keyframes pointerFadeIn {\r\n    from {\r\n        opacity: 0;\r\n        pointer-events: none;\r\n    }\r\n    to {\r\n        opacity: 1;\r\n        pointer-events: auto;\r\n    }\r\n}\r\n\r\n@keyframes rotate {\r\n    from {\r\n        transform: rotate(0deg);\r\n    }\r\n    to {\r\n        transform: rotate(360deg);\r\n    }\r\n}\r\n\r\n@keyframes circularDash {\r\n    0% {\r\n        stroke-dasharray: 1px, 200px;\r\n        stroke-dashoffset: 0;\r\n    }\r\n    50% {\r\n        stroke-dasharray: 100px, 200px;\r\n        stroke-dashoffset: -15px;\r\n    }\r\n    100% {\r\n        stroke-dasharray: 100px, 200px;\r\n        stroke-dashoffset: -125px;\r\n    }\r\n}\r\n.DialogOverlay {\r\n    background-color: rgba(0, 0, 0, 0.44);\r\n    position: fixed;\r\n    inset: 0;\r\n    z-index: 1000;\r\n    animation: fadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1);\r\n}\r\n\r\n.DialogContent {\r\n    background-color: #f3f3f3;\r\n    border-radius: 6px;\r\n    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;\r\n    position: fixed;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    width: 90vw;\r\n    max-width: 560px;\r\n    max-height: 85vh;\r\n    overflow: hidden;\r\n    padding: 16px 24px;\r\n    z-index: 1001;\r\n    outline: none;\r\n    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);\r\n    display: flex;\r\n    flex-direction: column;\r\n}\r\n\r\n.dark .DialogContent {\r\n    background-color: #2a2a2a;\r\n    border-color: #40414f;\r\n    border-width: 1px;\r\n}\r\n\r\n.DialogContent input[type="checkbox"] {\r\n    border: none;\r\n    outline: none;\r\n    box-shadow: none;\r\n}\r\n\r\n.DialogTitle {\r\n    margin: 0 0 16px 0;\r\n    font-weight: 500;\r\n    color: #1a1523;\r\n    font-size: 20px;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.DialogBody {\n    flex: 1;\n    min-height: 0;\n    overflow-y: auto;\n    overflow-x: hidden;\n}\n\n.settings-sections {\n    display: flex;\n    flex-direction: column;\n    gap: 12px;\n}\n\n.settings-section {\n    overflow: hidden;\n    border-radius: 6px;\n    background-color: #fff;\n}\n\n.dark .settings-section {\n    background-color: rgba(255, 255, 255, 0.05);\n}\n\n.settings-section-header {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 12px;\n    min-height: 48px;\n    padding: 0 14px;\n}\n\n.settings-section-trigger {\n    display: inline-flex;\n    align-items: center;\n    min-width: 0;\n    flex: 1;\n    gap: 8px;\n    border: 0;\n    background: transparent;\n    padding: 12px 0;\n    color: #1f2937;\n    cursor: pointer;\n    font-family: inherit;\n    font-size: 15px;\n    font-weight: 600;\n    text-align: left;\n}\n\n.settings-section-trigger:hover {\n    color: #0f7f68;\n}\n\n.dark .settings-section-trigger {\n    color: #fff;\n}\n\n.dark .settings-section-trigger:hover {\n    color: #7ddfc4;\n}\n\n.settings-section-chevron {\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    width: 16px;\n    height: 16px;\n    flex: 0 0 auto;\n    color: #6b7280;\n    font-size: 18px;\n    line-height: 1;\n    transform: rotate(0deg);\n    transition: transform 150ms ease;\n}\n\n.settings-section-chevron.open {\n    transform: rotate(90deg);\n}\n\n.settings-section-action {\n    display: inline-flex;\n    align-items: center;\n    flex: 0 0 auto;\n}\n\n.settings-section-panel {\n    margin: 0;\n    padding: 0 14px 14px 38px;\n    color: #374151;\n}\n\n.dark .settings-section-panel {\n    color: #d1d5db;\n}\n\r\n.dark .DialogTitle {\r\n    color: #fff;\r\n}\r\n\r\n.Button {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    border-radius: 4px;\r\n    padding: 0 15px;\r\n    font-size: 15px;\r\n    line-height: 1;\r\n    height: 35px;\r\n}\r\n.Button.green {\r\n    background-color: #ddf3e4;\r\n    color: #18794e;\r\n}\r\n.Button.red {\r\n    background-color: #f9d9d9;\r\n    color: #a71d2a;\r\n}\r\n.Button.neutral {\r\n    background-color: transparent;\r\n    color: #6f6e77;\r\n    border: 1px solid #6f6e77;\r\n    font-size: 13px;\r\n    height: 26px;\r\n    padding: 0 8px;\r\n}\r\n.Button.green:hover {\r\n    background-color: #ccebd7;\r\n}\r\n.Button.neutral:hover {\r\n    background-color: rgba(111, 110, 119, 0.1);\r\n}\r\n.dark .Button.neutral {\r\n    color: #a0a0a8;\r\n    border-color: #a0a0a8;\r\n}\r\n.dark .Button.neutral:hover {\r\n    background-color: rgba(160, 160, 168, 0.1);\r\n}\r\n.Button:disabled {\r\n    opacity: 0.5;\r\n    color: #6f6e77;\r\n    background-color: #e0e0e0;\r\n    cursor: not-allowed;\r\n}\r\n.Button:disabled:hover {\r\n    background-color: #e0e0e0;\r\n}\r\n\r\n.IconButton {\r\n    font-family: inherit;\r\n    border-radius: 100%;\r\n    height: 25px;\r\n    width: 25px;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    color: #6f6e77;\r\n}\r\n.IconButton:hover {\r\n    background-color: rgba(0, 0, 0, 0.06);\r\n}\r\n\r\n.CloseButton {\r\n    position: absolute;\r\n    top: 10px;\r\n    right: 10px;\r\n}\r\n\r\n.Fieldset {\r\n    display: flex;\r\n    gap: 20px;\r\n    align-items: center;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.Label {\r\n    font-size: 15px;\r\n    color: #1a1523;\r\n    min-width: 90px;\r\n    text-align: right;\r\n}\r\n\r\n.dark .Label {\r\n    color: #fff;\r\n}\r\n\r\n.Input {\r\n    width: 100%;\r\n    flex: 1;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    border-radius: 4px;\r\n    padding: 0 10px;\r\n    font-size: 15px;\r\n    line-height: 1;\r\n    color: #000;\r\n    background-color: #fafafa;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n    height: 35px;\r\n    outline: none;\r\n}\r\n\r\n.dark .Input {\r\n    background-color: #2f2f2f;\r\n    color: #fff;\r\n    box-shadow: 0 0 0 1px #6f6e77;\r\n}\r\n\r\n.Description {\r\n    font-size: 13px;\r\n    color: #5a5865;\r\n    text-align: right;\r\n    margin-bottom: 4px;\r\n}\r\n\r\n.dark .Description {\r\n    color: #bcbcbc;\r\n}\r\n\r\n.SelectSearch {\r\n    width: 100%;\r\n    padding: 8px 16px;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    border-radius: 4px 4px 0 0;\r\n    background-color: transparent;\r\n    color: inherit;\r\n    font-size: 14px;\r\n    outline: none;\r\n    flex-shrink: 0;\r\n}\r\n.SelectSearch::placeholder {\r\n    color: #9ca3af;\r\n}\r\n\r\n.SelectToolbar {\r\n    display: flex;\r\n    align-items: center;\r\n    padding: 12px 16px;\r\n    border-radius: 0;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.ProjectSelect .Select {\r\n    width: auto;\r\n}\r\n\r\n.SelectList {\r\n    position: relative;\r\n    width: 100%;\r\n    flex: 1;\r\n    min-height: 120px;\r\n    padding: 12px 16px;\r\n    overflow-x: hidden;\r\n    overflow-y: auto;\r\n    border: 1px solid #6f6e77;\r\n    border-radius: 0 0 4px 4px;\r\n    white-space: nowrap;\r\n}\r\n\r\n.SelectItem {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    overflow: hidden;\r\n}\r\n\r\n.SelectItem .CheckBoxLabel {\r\n    flex: 1;\r\n    min-width: 0;\r\n}\r\n\r\n.SelectItem .LabelText {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n\r\n.SelectItem label, .SelectItem input {\r\n    cursor: pointer;\r\n}\r\n\r\n.SelectItem span {\r\n    vertical-align: middle;\r\n}\r\n\r\n.SelectItemMeta {\r\n    flex-shrink: 0;\r\n    font-size: 0.7rem;\r\n    color: #9ca3af;\r\n    white-space: nowrap;\r\n    font-variant-numeric: tabular-nums;\r\n    min-width: 6.5rem;\r\n    text-align: right;\r\n}\r\n.SelectItemMetaActive {\r\n    color: #6b7280;\r\n    font-weight: 600;\r\n}\r\n.dark {\r\n    .SelectItemMetaActive { color: #d1d5db; }\r\n}\r\n\r\n/* ── Sortable column header row ── */\r\n.SelectListHeader {\r\n    display: flex;\r\n    align-items: center;\r\n    padding: 0 16px;\r\n    border: 1px solid #6f6e77;\r\n    border-bottom: none;\r\n    background: #f9fafb;\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\n\r\n.dark {\r\n    .SelectListHeader { background: #1f2937; }\r\n}\r\n\r\n.SelectListHeaderCell {\r\n    flex-shrink: 0;\r\n    font-size: 0.68rem;\r\n    font-weight: 600;\r\n    color: #9ca3af;\r\n    letter-spacing: 0.03em;\r\n    text-transform: uppercase;\r\n    background: transparent;\r\n    border: none;\r\n    padding: 5px 4px;\r\n    cursor: pointer;\r\n    white-space: nowrap;\r\n    min-width: 6.5rem;\r\n    text-align: right;\r\n}\r\n.SelectListHeaderCell:hover { color: #374151; }\r\n.dark {\r\n    .SelectListHeaderCell:hover { color: #e5e7eb; }\r\n}\r\n.SelectListHeaderCellTitle {\r\n    flex: 1;\r\n    text-align: left;\r\n    padding-left: 28px; /* align with checkbox label */\r\n}\r\n.SelectListHeaderCellActive {\r\n    color: #2563eb;\r\n}\r\n.dark {\r\n    .SelectListHeaderCellActive { color: #60a5fa; }\r\n}\r\n\r\n\r\n@keyframes contentShow {\r\n    from {\r\n        opacity: 0;\r\n        transform: translate(-50%, -48%) scale(0.96);\r\n    }\r\n    to {\r\n        opacity: 1;\r\n        transform: translate(-50%, -50%) scale(1);\r\n    }\r\n}\r\n.animate-fadeIn  {\r\n    animation: fadeIn .3s;\r\n}\r\n\r\n.animate-slideUp  {\r\n    animation: slideUp .3s;\r\n}\r\n\r\n.bg-blue-600 {\r\n    background-color: rgb(28 100 242);\r\n}\r\n\r\n.hover\\:bg-gray-500\\/10:hover {\r\n    background-color: hsla(0, 0%, 61%, .1)\r\n}\r\n\r\n.border-\\[\\#6f6e77\\] {\r\n    border-color: #6f6e77;\r\n}\r\n\r\n.cursor-help {\r\n    cursor: help;\r\n}\r\n\r\n.dark .dark\\:bg-white\\/5 {\r\n    background-color: rgb(255 255 255 / 5%);\r\n}\r\n\r\n.dark .dark\\:text-gray-200 {\r\n    color: rgb(229 231 235 / 1);\r\n}\r\n\r\n.dark .dark\\:text-gray-300 {\r\n    color: rgb(209 213 219 / 1);\r\n}\r\n\r\n.dark .dark\\:border-gray-\\[\\#86858d\\] {\r\n    border-color: #86858d;\r\n}\r\n\r\n.gap-x-1 {\r\n    column-gap: 0.25rem;\r\n}\r\n\r\n.h-2\\.5 {\r\n    height: 0.625rem;\r\n}\r\n\r\n.h-4 {\r\n    height: 1rem;\r\n}\r\n\r\n.inline-flex {\r\n    display: inline-flex;\r\n}\r\n\r\n.items-center {\r\n    align-items: center;\r\n}\r\n\r\n.ml-3 {\r\n    margin-left: 0.75rem;\r\n}\r\n\r\n.ml-4 {\r\n    margin-left: 1rem;\r\n}\r\n\r\n.mr-8 {\r\n    margin-right: 2rem;\r\n}\r\n\r\n.pb-0 {\r\n    padding-bottom: 0;\r\n}\r\n\r\n.pr-8 {\r\n    padding-right: 2rem;\r\n}\r\n\r\n.right-4 {\r\n    right: 1rem;\r\n}\r\n\r\n.rounded-full {\r\n    border-radius: 9999px;\r\n}\r\n\r\n.select-all {\r\n    user-select: all!important;\r\n}\r\n\r\n.shrink-0 {\r\n    flex-shrink: 0;\r\n}\r\n\r\n.space-y-6>:not([hidden])~:not([hidden]) {\r\n    --tw-space-y-reverse: 0;\r\n    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));\r\n    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));\r\n}\r\n\r\n.truncate {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n\r\n.whitespace-nowrap {\r\n    white-space: nowrap;\r\n}\r\n\r\n@media (min-width:768px) {\r\n    /* md */\r\n}\r\n\r\n@media (min-width:1024px) {\r\n    .lg\\:mt-0 {\r\n        margin-top: 0;\r\n    }\r\n\r\n    .lg\\:top-8 {\r\n        top: 2rem;\r\n    }\r\n}\r\n\r\n\r\n.toggle-switch {\r\n    position: relative;\r\n    outline: none;\r\n    background-color: rgb(229 231 235);\r\n    border: 1px solid rgb(107 114 128);\r\n    border-radius: 9999px;\r\n    cursor: pointer;\r\n    height: 20px;\r\n    width: 32px;\r\n}\r\n\r\n.dark .toggle-switch {\r\n    background-color: rgb(255 255 255 / 5%);\r\n    border-color: rgb(255 255 255 / 1);\r\n}\r\n\r\n.toggle-switch[data-state="checked"] {\r\n    background-color: rgb(0 0 0);\r\n    border-color: rgb(0 0 0);\r\n}\r\n\r\n.dark .toggle-switch[data-state="checked"] {\r\n    background-color: rgb(22 163 74);\r\n    border-color: rgb(22 163 74);\r\n}\r\n\r\n.toggle-switch-handle {\r\n    display: block;\r\n    background-color: rgb(255 255 255);\r\n    border-radius: 9999px;\r\n    height: 16px;\r\n    width: 16px;\r\n    transition: transform 0.1s;\r\n    will-change: transform;\r\n    transform: translateX(1px);\r\n}\r\n\r\n.toggle-switch-handle[data-state="checked"] {\r\n    transform: translateX(14px);\r\n}\r\n\r\n.toggle-switch-handle:hover {\r\n    background-color: rgb(243 244 246);\r\n}\r\n\r\n.toggle-switch-label {\r\n    color: rgb(107 114 128);\r\n    margin-left: 0.75rem;\r\n    font-size: 0.875rem;\r\n    font-weight: 500;\r\n}\r\n\r\n.toggle-switch-label:hover {\r\n    color: rgb(71 85 105);\r\n}'));
       document.head.appendChild(elementStyle);
     }
   } catch (e) {
@@ -3660,12 +3660,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "&#34;": '"',
     "&nbsp;": " ",
     "&#160;": " ",
-    "&copy;": "©",
-    "&#169;": "©",
-    "&reg;": "®",
-    "&#174;": "®",
-    "&hellip;": "…",
-    "&#8230;": "…",
+    "&copy;": "\xA9",
+    "&#169;": "\xA9",
+    "&reg;": "\xAE",
+    "&#174;": "\xAE",
+    "&hellip;": "\u2026",
+    "&#8230;": "\u2026",
     "&#x2F;": "/",
     "&#47;": "/"
   };
@@ -9119,7 +9119,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
     function java(hljs2) {
       const regex = hljs2.regex;
-      const JAVA_IDENT_RE = "[À-ʸa-zA-Z_$][À-ʸa-zA-Z_$0-9]*";
+      const JAVA_IDENT_RE = "[\xC0-\u02B8a-zA-Z_$][\xC0-\u02B8a-zA-Z_$0-9]*";
       const GENERIC_IDENT_RE = JAVA_IDENT_RE + recurRegex("(?:<" + JAVA_IDENT_RE + "~~~(?:\\s*,\\s*" + JAVA_IDENT_RE + "~~~)*>)?", /~~~/g, 2);
       const MAIN_KEYWORDS = [
         "synchronized",
@@ -17126,16 +17126,16 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         } else {
           error2 += " at position " + (start + 1) + ": ";
         }
-        var underlined = input.slice(start, end).replace(/[^]/g, "$&̲");
+        var underlined = input.slice(start, end).replace(/[^]/g, "$&\u0332");
         var left;
         if (start > 15) {
-          left = "…" + input.slice(start - 15, start);
+          left = "\u2026" + input.slice(start - 15, start);
         } else {
           left = input.slice(0, start);
         }
         var right;
         if (end + 15 < input.length) {
-          right = input.slice(end, end + 15) + "…";
+          right = input.slice(end, end + 15) + "\u2026";
         } else {
           right = input.slice(end);
         }
@@ -17617,23 +17617,23 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   };
   var innerPath = function innerPath2(name, height) {
     switch (name) {
-      case "⎜":
+      case "\u239C":
         return "M291 0 H417 V" + height + " H291z M291 0 H417 V" + height + " H291z";
-      case "∣":
+      case "\u2223":
         return "M145 0 H188 V" + height + " H145z M145 0 H188 V" + height + " H145z";
-      case "∥":
+      case "\u2225":
         return "M145 0 H188 V" + height + " H145z M145 0 H188 V" + height + " H145z" + ("M367 0 H410 V" + height + " H367z M367 0 H410 V" + height + " H367z");
-      case "⎟":
+      case "\u239F":
         return "M457 0 H583 V" + height + " H457z M457 0 H583 V" + height + " H457z";
-      case "⎢":
+      case "\u23A2":
         return "M319 0 H403 V" + height + " H319z M319 0 H403 V" + height + " H319z";
-      case "⎥":
+      case "\u23A5":
         return "M263 0 H347 V" + height + " H263z M263 0 H347 V" + height + " H263z";
-      case "⎪":
+      case "\u23AA":
         return "M384 0 H504 V" + height + " H384z M384 0 H504 V" + height + " H384z";
-      case "⏐":
+      case "\u23D0":
         return "M312 0 H355 V" + height + " H312z M312 0 H355 V" + height + " H312z";
-      case "‖":
+      case "\u2016":
         return "M257 0 H300 V" + height + " H257z M257 0 H300 V" + height + " H257z" + ("M478 0 H521 V" + height + " H478z M478 0 H521 V" + height + " H478z");
       default:
         return "";
@@ -19948,77 +19948,77 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   };
   var extraCharacterMap = {
     // Latin-1
-    "Å": "A",
-    "Ð": "D",
-    "Þ": "o",
-    "å": "a",
-    "ð": "d",
-    "þ": "o",
+    "\xC5": "A",
+    "\xD0": "D",
+    "\xDE": "o",
+    "\xE5": "a",
+    "\xF0": "d",
+    "\xFE": "o",
     // Cyrillic
-    "А": "A",
-    "Б": "B",
-    "В": "B",
-    "Г": "F",
-    "Д": "A",
-    "Е": "E",
-    "Ж": "K",
-    "З": "3",
-    "И": "N",
-    "Й": "N",
-    "К": "K",
-    "Л": "N",
-    "М": "M",
-    "Н": "H",
-    "О": "O",
-    "П": "N",
-    "Р": "P",
-    "С": "C",
-    "Т": "T",
-    "У": "y",
-    "Ф": "O",
-    "Х": "X",
-    "Ц": "U",
-    "Ч": "h",
-    "Ш": "W",
-    "Щ": "W",
-    "Ъ": "B",
-    "Ы": "X",
-    "Ь": "B",
-    "Э": "3",
-    "Ю": "X",
-    "Я": "R",
-    "а": "a",
-    "б": "b",
-    "в": "a",
-    "г": "r",
-    "д": "y",
-    "е": "e",
-    "ж": "m",
-    "з": "e",
-    "и": "n",
-    "й": "n",
-    "к": "n",
-    "л": "n",
-    "м": "m",
-    "н": "n",
-    "о": "o",
-    "п": "n",
-    "р": "p",
-    "с": "c",
-    "т": "o",
-    "у": "y",
-    "ф": "b",
-    "х": "x",
-    "ц": "n",
-    "ч": "n",
-    "ш": "w",
-    "щ": "w",
-    "ъ": "a",
-    "ы": "m",
-    "ь": "a",
-    "э": "e",
-    "ю": "m",
-    "я": "r"
+    "\u0410": "A",
+    "\u0411": "B",
+    "\u0412": "B",
+    "\u0413": "F",
+    "\u0414": "A",
+    "\u0415": "E",
+    "\u0416": "K",
+    "\u0417": "3",
+    "\u0418": "N",
+    "\u0419": "N",
+    "\u041A": "K",
+    "\u041B": "N",
+    "\u041C": "M",
+    "\u041D": "H",
+    "\u041E": "O",
+    "\u041F": "N",
+    "\u0420": "P",
+    "\u0421": "C",
+    "\u0422": "T",
+    "\u0423": "y",
+    "\u0424": "O",
+    "\u0425": "X",
+    "\u0426": "U",
+    "\u0427": "h",
+    "\u0428": "W",
+    "\u0429": "W",
+    "\u042A": "B",
+    "\u042B": "X",
+    "\u042C": "B",
+    "\u042D": "3",
+    "\u042E": "X",
+    "\u042F": "R",
+    "\u0430": "a",
+    "\u0431": "b",
+    "\u0432": "a",
+    "\u0433": "r",
+    "\u0434": "y",
+    "\u0435": "e",
+    "\u0436": "m",
+    "\u0437": "e",
+    "\u0438": "n",
+    "\u0439": "n",
+    "\u043A": "n",
+    "\u043B": "n",
+    "\u043C": "m",
+    "\u043D": "n",
+    "\u043E": "o",
+    "\u043F": "n",
+    "\u0440": "p",
+    "\u0441": "c",
+    "\u0442": "o",
+    "\u0443": "y",
+    "\u0444": "b",
+    "\u0445": "x",
+    "\u0446": "n",
+    "\u0447": "n",
+    "\u0448": "w",
+    "\u0449": "w",
+    "\u044A": "a",
+    "\u044B": "m",
+    "\u044C": "a",
+    "\u044D": "e",
+    "\u044E": "m",
+    "\u044F": "r"
   };
   function setFontMetrics(fontName, metrics) {
     fontMetricsData[fontName] = metrics;
@@ -20580,11 +20580,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
   }
   var iCombinations = {
-    "î": "ı̂",
-    "ï": "ı̈",
-    "í": "ı́",
+    "\xEE": "\u0131\u0302",
+    "\xEF": "\u0131\u0308",
+    "\xED": "\u0131\u0301",
     // 'ī': '\u0131\u0304', // enable when we add Extended Latin
-    "ì": "ı̀"
+    "\xEC": "\u0131\u0300"
   };
   class SymbolNode {
     constructor(text2, height, depth, italic, skew, width, classes, style) {
@@ -20825,328 +20825,328 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   var rel = "rel";
   var spacing = "spacing";
   var textord = "textord";
-  defineSymbol(math, main, rel, "≡", "\\equiv", true);
-  defineSymbol(math, main, rel, "≺", "\\prec", true);
-  defineSymbol(math, main, rel, "≻", "\\succ", true);
-  defineSymbol(math, main, rel, "∼", "\\sim", true);
-  defineSymbol(math, main, rel, "⊥", "\\perp");
-  defineSymbol(math, main, rel, "⪯", "\\preceq", true);
-  defineSymbol(math, main, rel, "⪰", "\\succeq", true);
-  defineSymbol(math, main, rel, "≃", "\\simeq", true);
-  defineSymbol(math, main, rel, "∣", "\\mid", true);
-  defineSymbol(math, main, rel, "≪", "\\ll", true);
-  defineSymbol(math, main, rel, "≫", "\\gg", true);
-  defineSymbol(math, main, rel, "≍", "\\asymp", true);
-  defineSymbol(math, main, rel, "∥", "\\parallel");
-  defineSymbol(math, main, rel, "⋈", "\\bowtie", true);
-  defineSymbol(math, main, rel, "⌣", "\\smile", true);
-  defineSymbol(math, main, rel, "⊑", "\\sqsubseteq", true);
-  defineSymbol(math, main, rel, "⊒", "\\sqsupseteq", true);
-  defineSymbol(math, main, rel, "≐", "\\doteq", true);
-  defineSymbol(math, main, rel, "⌢", "\\frown", true);
-  defineSymbol(math, main, rel, "∋", "\\ni", true);
-  defineSymbol(math, main, rel, "∝", "\\propto", true);
-  defineSymbol(math, main, rel, "⊢", "\\vdash", true);
-  defineSymbol(math, main, rel, "⊣", "\\dashv", true);
-  defineSymbol(math, main, rel, "∋", "\\owns");
+  defineSymbol(math, main, rel, "\u2261", "\\equiv", true);
+  defineSymbol(math, main, rel, "\u227A", "\\prec", true);
+  defineSymbol(math, main, rel, "\u227B", "\\succ", true);
+  defineSymbol(math, main, rel, "\u223C", "\\sim", true);
+  defineSymbol(math, main, rel, "\u22A5", "\\perp");
+  defineSymbol(math, main, rel, "\u2AAF", "\\preceq", true);
+  defineSymbol(math, main, rel, "\u2AB0", "\\succeq", true);
+  defineSymbol(math, main, rel, "\u2243", "\\simeq", true);
+  defineSymbol(math, main, rel, "\u2223", "\\mid", true);
+  defineSymbol(math, main, rel, "\u226A", "\\ll", true);
+  defineSymbol(math, main, rel, "\u226B", "\\gg", true);
+  defineSymbol(math, main, rel, "\u224D", "\\asymp", true);
+  defineSymbol(math, main, rel, "\u2225", "\\parallel");
+  defineSymbol(math, main, rel, "\u22C8", "\\bowtie", true);
+  defineSymbol(math, main, rel, "\u2323", "\\smile", true);
+  defineSymbol(math, main, rel, "\u2291", "\\sqsubseteq", true);
+  defineSymbol(math, main, rel, "\u2292", "\\sqsupseteq", true);
+  defineSymbol(math, main, rel, "\u2250", "\\doteq", true);
+  defineSymbol(math, main, rel, "\u2322", "\\frown", true);
+  defineSymbol(math, main, rel, "\u220B", "\\ni", true);
+  defineSymbol(math, main, rel, "\u221D", "\\propto", true);
+  defineSymbol(math, main, rel, "\u22A2", "\\vdash", true);
+  defineSymbol(math, main, rel, "\u22A3", "\\dashv", true);
+  defineSymbol(math, main, rel, "\u220B", "\\owns");
   defineSymbol(math, main, punct, ".", "\\ldotp");
-  defineSymbol(math, main, punct, "⋅", "\\cdotp");
+  defineSymbol(math, main, punct, "\u22C5", "\\cdotp");
   defineSymbol(math, main, textord, "#", "\\#");
   defineSymbol(text$6, main, textord, "#", "\\#");
   defineSymbol(math, main, textord, "&", "\\&");
   defineSymbol(text$6, main, textord, "&", "\\&");
-  defineSymbol(math, main, textord, "ℵ", "\\aleph", true);
-  defineSymbol(math, main, textord, "∀", "\\forall", true);
-  defineSymbol(math, main, textord, "ℏ", "\\hbar", true);
-  defineSymbol(math, main, textord, "∃", "\\exists", true);
-  defineSymbol(math, main, textord, "∇", "\\nabla", true);
-  defineSymbol(math, main, textord, "♭", "\\flat", true);
-  defineSymbol(math, main, textord, "ℓ", "\\ell", true);
-  defineSymbol(math, main, textord, "♮", "\\natural", true);
-  defineSymbol(math, main, textord, "♣", "\\clubsuit", true);
-  defineSymbol(math, main, textord, "℘", "\\wp", true);
-  defineSymbol(math, main, textord, "♯", "\\sharp", true);
-  defineSymbol(math, main, textord, "♢", "\\diamondsuit", true);
-  defineSymbol(math, main, textord, "ℜ", "\\Re", true);
-  defineSymbol(math, main, textord, "♡", "\\heartsuit", true);
-  defineSymbol(math, main, textord, "ℑ", "\\Im", true);
-  defineSymbol(math, main, textord, "♠", "\\spadesuit", true);
-  defineSymbol(math, main, textord, "§", "\\S", true);
-  defineSymbol(text$6, main, textord, "§", "\\S");
-  defineSymbol(math, main, textord, "¶", "\\P", true);
-  defineSymbol(text$6, main, textord, "¶", "\\P");
-  defineSymbol(math, main, textord, "†", "\\dag");
-  defineSymbol(text$6, main, textord, "†", "\\dag");
-  defineSymbol(text$6, main, textord, "†", "\\textdagger");
-  defineSymbol(math, main, textord, "‡", "\\ddag");
-  defineSymbol(text$6, main, textord, "‡", "\\ddag");
-  defineSymbol(text$6, main, textord, "‡", "\\textdaggerdbl");
-  defineSymbol(math, main, close, "⎱", "\\rmoustache", true);
-  defineSymbol(math, main, open, "⎰", "\\lmoustache", true);
-  defineSymbol(math, main, close, "⟯", "\\rgroup", true);
-  defineSymbol(math, main, open, "⟮", "\\lgroup", true);
-  defineSymbol(math, main, bin, "∓", "\\mp", true);
-  defineSymbol(math, main, bin, "⊖", "\\ominus", true);
-  defineSymbol(math, main, bin, "⊎", "\\uplus", true);
-  defineSymbol(math, main, bin, "⊓", "\\sqcap", true);
-  defineSymbol(math, main, bin, "∗", "\\ast");
-  defineSymbol(math, main, bin, "⊔", "\\sqcup", true);
-  defineSymbol(math, main, bin, "◯", "\\bigcirc", true);
-  defineSymbol(math, main, bin, "∙", "\\bullet", true);
-  defineSymbol(math, main, bin, "‡", "\\ddagger");
-  defineSymbol(math, main, bin, "≀", "\\wr", true);
-  defineSymbol(math, main, bin, "⨿", "\\amalg");
+  defineSymbol(math, main, textord, "\u2135", "\\aleph", true);
+  defineSymbol(math, main, textord, "\u2200", "\\forall", true);
+  defineSymbol(math, main, textord, "\u210F", "\\hbar", true);
+  defineSymbol(math, main, textord, "\u2203", "\\exists", true);
+  defineSymbol(math, main, textord, "\u2207", "\\nabla", true);
+  defineSymbol(math, main, textord, "\u266D", "\\flat", true);
+  defineSymbol(math, main, textord, "\u2113", "\\ell", true);
+  defineSymbol(math, main, textord, "\u266E", "\\natural", true);
+  defineSymbol(math, main, textord, "\u2663", "\\clubsuit", true);
+  defineSymbol(math, main, textord, "\u2118", "\\wp", true);
+  defineSymbol(math, main, textord, "\u266F", "\\sharp", true);
+  defineSymbol(math, main, textord, "\u2662", "\\diamondsuit", true);
+  defineSymbol(math, main, textord, "\u211C", "\\Re", true);
+  defineSymbol(math, main, textord, "\u2661", "\\heartsuit", true);
+  defineSymbol(math, main, textord, "\u2111", "\\Im", true);
+  defineSymbol(math, main, textord, "\u2660", "\\spadesuit", true);
+  defineSymbol(math, main, textord, "\xA7", "\\S", true);
+  defineSymbol(text$6, main, textord, "\xA7", "\\S");
+  defineSymbol(math, main, textord, "\xB6", "\\P", true);
+  defineSymbol(text$6, main, textord, "\xB6", "\\P");
+  defineSymbol(math, main, textord, "\u2020", "\\dag");
+  defineSymbol(text$6, main, textord, "\u2020", "\\dag");
+  defineSymbol(text$6, main, textord, "\u2020", "\\textdagger");
+  defineSymbol(math, main, textord, "\u2021", "\\ddag");
+  defineSymbol(text$6, main, textord, "\u2021", "\\ddag");
+  defineSymbol(text$6, main, textord, "\u2021", "\\textdaggerdbl");
+  defineSymbol(math, main, close, "\u23B1", "\\rmoustache", true);
+  defineSymbol(math, main, open, "\u23B0", "\\lmoustache", true);
+  defineSymbol(math, main, close, "\u27EF", "\\rgroup", true);
+  defineSymbol(math, main, open, "\u27EE", "\\lgroup", true);
+  defineSymbol(math, main, bin, "\u2213", "\\mp", true);
+  defineSymbol(math, main, bin, "\u2296", "\\ominus", true);
+  defineSymbol(math, main, bin, "\u228E", "\\uplus", true);
+  defineSymbol(math, main, bin, "\u2293", "\\sqcap", true);
+  defineSymbol(math, main, bin, "\u2217", "\\ast");
+  defineSymbol(math, main, bin, "\u2294", "\\sqcup", true);
+  defineSymbol(math, main, bin, "\u25EF", "\\bigcirc", true);
+  defineSymbol(math, main, bin, "\u2219", "\\bullet", true);
+  defineSymbol(math, main, bin, "\u2021", "\\ddagger");
+  defineSymbol(math, main, bin, "\u2240", "\\wr", true);
+  defineSymbol(math, main, bin, "\u2A3F", "\\amalg");
   defineSymbol(math, main, bin, "&", "\\And");
-  defineSymbol(math, main, rel, "⟵", "\\longleftarrow", true);
-  defineSymbol(math, main, rel, "⇐", "\\Leftarrow", true);
-  defineSymbol(math, main, rel, "⟸", "\\Longleftarrow", true);
-  defineSymbol(math, main, rel, "⟶", "\\longrightarrow", true);
-  defineSymbol(math, main, rel, "⇒", "\\Rightarrow", true);
-  defineSymbol(math, main, rel, "⟹", "\\Longrightarrow", true);
-  defineSymbol(math, main, rel, "↔", "\\leftrightarrow", true);
-  defineSymbol(math, main, rel, "⟷", "\\longleftrightarrow", true);
-  defineSymbol(math, main, rel, "⇔", "\\Leftrightarrow", true);
-  defineSymbol(math, main, rel, "⟺", "\\Longleftrightarrow", true);
-  defineSymbol(math, main, rel, "↦", "\\mapsto", true);
-  defineSymbol(math, main, rel, "⟼", "\\longmapsto", true);
-  defineSymbol(math, main, rel, "↗", "\\nearrow", true);
-  defineSymbol(math, main, rel, "↩", "\\hookleftarrow", true);
-  defineSymbol(math, main, rel, "↪", "\\hookrightarrow", true);
-  defineSymbol(math, main, rel, "↘", "\\searrow", true);
-  defineSymbol(math, main, rel, "↼", "\\leftharpoonup", true);
-  defineSymbol(math, main, rel, "⇀", "\\rightharpoonup", true);
-  defineSymbol(math, main, rel, "↙", "\\swarrow", true);
-  defineSymbol(math, main, rel, "↽", "\\leftharpoondown", true);
-  defineSymbol(math, main, rel, "⇁", "\\rightharpoondown", true);
-  defineSymbol(math, main, rel, "↖", "\\nwarrow", true);
-  defineSymbol(math, main, rel, "⇌", "\\rightleftharpoons", true);
-  defineSymbol(math, ams, rel, "≮", "\\nless", true);
-  defineSymbol(math, ams, rel, "", "\\@nleqslant");
-  defineSymbol(math, ams, rel, "", "\\@nleqq");
-  defineSymbol(math, ams, rel, "⪇", "\\lneq", true);
-  defineSymbol(math, ams, rel, "≨", "\\lneqq", true);
-  defineSymbol(math, ams, rel, "", "\\@lvertneqq");
-  defineSymbol(math, ams, rel, "⋦", "\\lnsim", true);
-  defineSymbol(math, ams, rel, "⪉", "\\lnapprox", true);
-  defineSymbol(math, ams, rel, "⊀", "\\nprec", true);
-  defineSymbol(math, ams, rel, "⋠", "\\npreceq", true);
-  defineSymbol(math, ams, rel, "⋨", "\\precnsim", true);
-  defineSymbol(math, ams, rel, "⪹", "\\precnapprox", true);
-  defineSymbol(math, ams, rel, "≁", "\\nsim", true);
-  defineSymbol(math, ams, rel, "", "\\@nshortmid");
-  defineSymbol(math, ams, rel, "∤", "\\nmid", true);
-  defineSymbol(math, ams, rel, "⊬", "\\nvdash", true);
-  defineSymbol(math, ams, rel, "⊭", "\\nvDash", true);
-  defineSymbol(math, ams, rel, "⋪", "\\ntriangleleft");
-  defineSymbol(math, ams, rel, "⋬", "\\ntrianglelefteq", true);
-  defineSymbol(math, ams, rel, "⊊", "\\subsetneq", true);
-  defineSymbol(math, ams, rel, "", "\\@varsubsetneq");
-  defineSymbol(math, ams, rel, "⫋", "\\subsetneqq", true);
-  defineSymbol(math, ams, rel, "", "\\@varsubsetneqq");
-  defineSymbol(math, ams, rel, "≯", "\\ngtr", true);
-  defineSymbol(math, ams, rel, "", "\\@ngeqslant");
-  defineSymbol(math, ams, rel, "", "\\@ngeqq");
-  defineSymbol(math, ams, rel, "⪈", "\\gneq", true);
-  defineSymbol(math, ams, rel, "≩", "\\gneqq", true);
-  defineSymbol(math, ams, rel, "", "\\@gvertneqq");
-  defineSymbol(math, ams, rel, "⋧", "\\gnsim", true);
-  defineSymbol(math, ams, rel, "⪊", "\\gnapprox", true);
-  defineSymbol(math, ams, rel, "⊁", "\\nsucc", true);
-  defineSymbol(math, ams, rel, "⋡", "\\nsucceq", true);
-  defineSymbol(math, ams, rel, "⋩", "\\succnsim", true);
-  defineSymbol(math, ams, rel, "⪺", "\\succnapprox", true);
-  defineSymbol(math, ams, rel, "≆", "\\ncong", true);
-  defineSymbol(math, ams, rel, "", "\\@nshortparallel");
-  defineSymbol(math, ams, rel, "∦", "\\nparallel", true);
-  defineSymbol(math, ams, rel, "⊯", "\\nVDash", true);
-  defineSymbol(math, ams, rel, "⋫", "\\ntriangleright");
-  defineSymbol(math, ams, rel, "⋭", "\\ntrianglerighteq", true);
-  defineSymbol(math, ams, rel, "", "\\@nsupseteqq");
-  defineSymbol(math, ams, rel, "⊋", "\\supsetneq", true);
-  defineSymbol(math, ams, rel, "", "\\@varsupsetneq");
-  defineSymbol(math, ams, rel, "⫌", "\\supsetneqq", true);
-  defineSymbol(math, ams, rel, "", "\\@varsupsetneqq");
-  defineSymbol(math, ams, rel, "⊮", "\\nVdash", true);
-  defineSymbol(math, ams, rel, "⪵", "\\precneqq", true);
-  defineSymbol(math, ams, rel, "⪶", "\\succneqq", true);
-  defineSymbol(math, ams, rel, "", "\\@nsubseteqq");
-  defineSymbol(math, ams, bin, "⊴", "\\unlhd");
-  defineSymbol(math, ams, bin, "⊵", "\\unrhd");
-  defineSymbol(math, ams, rel, "↚", "\\nleftarrow", true);
-  defineSymbol(math, ams, rel, "↛", "\\nrightarrow", true);
-  defineSymbol(math, ams, rel, "⇍", "\\nLeftarrow", true);
-  defineSymbol(math, ams, rel, "⇏", "\\nRightarrow", true);
-  defineSymbol(math, ams, rel, "↮", "\\nleftrightarrow", true);
-  defineSymbol(math, ams, rel, "⇎", "\\nLeftrightarrow", true);
-  defineSymbol(math, ams, rel, "△", "\\vartriangle");
-  defineSymbol(math, ams, textord, "ℏ", "\\hslash");
-  defineSymbol(math, ams, textord, "▽", "\\triangledown");
-  defineSymbol(math, ams, textord, "◊", "\\lozenge");
-  defineSymbol(math, ams, textord, "Ⓢ", "\\circledS");
-  defineSymbol(math, ams, textord, "®", "\\circledR");
-  defineSymbol(text$6, ams, textord, "®", "\\circledR");
-  defineSymbol(math, ams, textord, "∡", "\\measuredangle", true);
-  defineSymbol(math, ams, textord, "∄", "\\nexists");
-  defineSymbol(math, ams, textord, "℧", "\\mho");
-  defineSymbol(math, ams, textord, "Ⅎ", "\\Finv", true);
-  defineSymbol(math, ams, textord, "⅁", "\\Game", true);
-  defineSymbol(math, ams, textord, "‵", "\\backprime");
-  defineSymbol(math, ams, textord, "▲", "\\blacktriangle");
-  defineSymbol(math, ams, textord, "▼", "\\blacktriangledown");
-  defineSymbol(math, ams, textord, "■", "\\blacksquare");
-  defineSymbol(math, ams, textord, "⧫", "\\blacklozenge");
-  defineSymbol(math, ams, textord, "★", "\\bigstar");
-  defineSymbol(math, ams, textord, "∢", "\\sphericalangle", true);
-  defineSymbol(math, ams, textord, "∁", "\\complement", true);
-  defineSymbol(math, ams, textord, "ð", "\\eth", true);
-  defineSymbol(text$6, main, textord, "ð", "ð");
-  defineSymbol(math, ams, textord, "╱", "\\diagup");
-  defineSymbol(math, ams, textord, "╲", "\\diagdown");
-  defineSymbol(math, ams, textord, "□", "\\square");
-  defineSymbol(math, ams, textord, "□", "\\Box");
-  defineSymbol(math, ams, textord, "◊", "\\Diamond");
-  defineSymbol(math, ams, textord, "¥", "\\yen", true);
-  defineSymbol(text$6, ams, textord, "¥", "\\yen", true);
-  defineSymbol(math, ams, textord, "✓", "\\checkmark", true);
-  defineSymbol(text$6, ams, textord, "✓", "\\checkmark");
-  defineSymbol(math, ams, textord, "ℶ", "\\beth", true);
-  defineSymbol(math, ams, textord, "ℸ", "\\daleth", true);
-  defineSymbol(math, ams, textord, "ℷ", "\\gimel", true);
-  defineSymbol(math, ams, textord, "ϝ", "\\digamma", true);
-  defineSymbol(math, ams, textord, "ϰ", "\\varkappa");
-  defineSymbol(math, ams, open, "┌", "\\@ulcorner", true);
-  defineSymbol(math, ams, close, "┐", "\\@urcorner", true);
-  defineSymbol(math, ams, open, "└", "\\@llcorner", true);
-  defineSymbol(math, ams, close, "┘", "\\@lrcorner", true);
-  defineSymbol(math, ams, rel, "≦", "\\leqq", true);
-  defineSymbol(math, ams, rel, "⩽", "\\leqslant", true);
-  defineSymbol(math, ams, rel, "⪕", "\\eqslantless", true);
-  defineSymbol(math, ams, rel, "≲", "\\lesssim", true);
-  defineSymbol(math, ams, rel, "⪅", "\\lessapprox", true);
-  defineSymbol(math, ams, rel, "≊", "\\approxeq", true);
-  defineSymbol(math, ams, bin, "⋖", "\\lessdot");
-  defineSymbol(math, ams, rel, "⋘", "\\lll", true);
-  defineSymbol(math, ams, rel, "≶", "\\lessgtr", true);
-  defineSymbol(math, ams, rel, "⋚", "\\lesseqgtr", true);
-  defineSymbol(math, ams, rel, "⪋", "\\lesseqqgtr", true);
-  defineSymbol(math, ams, rel, "≑", "\\doteqdot");
-  defineSymbol(math, ams, rel, "≓", "\\risingdotseq", true);
-  defineSymbol(math, ams, rel, "≒", "\\fallingdotseq", true);
-  defineSymbol(math, ams, rel, "∽", "\\backsim", true);
-  defineSymbol(math, ams, rel, "⋍", "\\backsimeq", true);
-  defineSymbol(math, ams, rel, "⫅", "\\subseteqq", true);
-  defineSymbol(math, ams, rel, "⋐", "\\Subset", true);
-  defineSymbol(math, ams, rel, "⊏", "\\sqsubset", true);
-  defineSymbol(math, ams, rel, "≼", "\\preccurlyeq", true);
-  defineSymbol(math, ams, rel, "⋞", "\\curlyeqprec", true);
-  defineSymbol(math, ams, rel, "≾", "\\precsim", true);
-  defineSymbol(math, ams, rel, "⪷", "\\precapprox", true);
-  defineSymbol(math, ams, rel, "⊲", "\\vartriangleleft");
-  defineSymbol(math, ams, rel, "⊴", "\\trianglelefteq");
-  defineSymbol(math, ams, rel, "⊨", "\\vDash", true);
-  defineSymbol(math, ams, rel, "⊪", "\\Vvdash", true);
-  defineSymbol(math, ams, rel, "⌣", "\\smallsmile");
-  defineSymbol(math, ams, rel, "⌢", "\\smallfrown");
-  defineSymbol(math, ams, rel, "≏", "\\bumpeq", true);
-  defineSymbol(math, ams, rel, "≎", "\\Bumpeq", true);
-  defineSymbol(math, ams, rel, "≧", "\\geqq", true);
-  defineSymbol(math, ams, rel, "⩾", "\\geqslant", true);
-  defineSymbol(math, ams, rel, "⪖", "\\eqslantgtr", true);
-  defineSymbol(math, ams, rel, "≳", "\\gtrsim", true);
-  defineSymbol(math, ams, rel, "⪆", "\\gtrapprox", true);
-  defineSymbol(math, ams, bin, "⋗", "\\gtrdot");
-  defineSymbol(math, ams, rel, "⋙", "\\ggg", true);
-  defineSymbol(math, ams, rel, "≷", "\\gtrless", true);
-  defineSymbol(math, ams, rel, "⋛", "\\gtreqless", true);
-  defineSymbol(math, ams, rel, "⪌", "\\gtreqqless", true);
-  defineSymbol(math, ams, rel, "≖", "\\eqcirc", true);
-  defineSymbol(math, ams, rel, "≗", "\\circeq", true);
-  defineSymbol(math, ams, rel, "≜", "\\triangleq", true);
-  defineSymbol(math, ams, rel, "∼", "\\thicksim");
-  defineSymbol(math, ams, rel, "≈", "\\thickapprox");
-  defineSymbol(math, ams, rel, "⫆", "\\supseteqq", true);
-  defineSymbol(math, ams, rel, "⋑", "\\Supset", true);
-  defineSymbol(math, ams, rel, "⊐", "\\sqsupset", true);
-  defineSymbol(math, ams, rel, "≽", "\\succcurlyeq", true);
-  defineSymbol(math, ams, rel, "⋟", "\\curlyeqsucc", true);
-  defineSymbol(math, ams, rel, "≿", "\\succsim", true);
-  defineSymbol(math, ams, rel, "⪸", "\\succapprox", true);
-  defineSymbol(math, ams, rel, "⊳", "\\vartriangleright");
-  defineSymbol(math, ams, rel, "⊵", "\\trianglerighteq");
-  defineSymbol(math, ams, rel, "⊩", "\\Vdash", true);
-  defineSymbol(math, ams, rel, "∣", "\\shortmid");
-  defineSymbol(math, ams, rel, "∥", "\\shortparallel");
-  defineSymbol(math, ams, rel, "≬", "\\between", true);
-  defineSymbol(math, ams, rel, "⋔", "\\pitchfork", true);
-  defineSymbol(math, ams, rel, "∝", "\\varpropto");
-  defineSymbol(math, ams, rel, "◀", "\\blacktriangleleft");
-  defineSymbol(math, ams, rel, "∴", "\\therefore", true);
-  defineSymbol(math, ams, rel, "∍", "\\backepsilon");
-  defineSymbol(math, ams, rel, "▶", "\\blacktriangleright");
-  defineSymbol(math, ams, rel, "∵", "\\because", true);
-  defineSymbol(math, ams, rel, "⋘", "\\llless");
-  defineSymbol(math, ams, rel, "⋙", "\\gggtr");
-  defineSymbol(math, ams, bin, "⊲", "\\lhd");
-  defineSymbol(math, ams, bin, "⊳", "\\rhd");
-  defineSymbol(math, ams, rel, "≂", "\\eqsim", true);
-  defineSymbol(math, main, rel, "⋈", "\\Join");
-  defineSymbol(math, ams, rel, "≑", "\\Doteq", true);
-  defineSymbol(math, ams, bin, "∔", "\\dotplus", true);
-  defineSymbol(math, ams, bin, "∖", "\\smallsetminus");
-  defineSymbol(math, ams, bin, "⋒", "\\Cap", true);
-  defineSymbol(math, ams, bin, "⋓", "\\Cup", true);
-  defineSymbol(math, ams, bin, "⩞", "\\doublebarwedge", true);
-  defineSymbol(math, ams, bin, "⊟", "\\boxminus", true);
-  defineSymbol(math, ams, bin, "⊞", "\\boxplus", true);
-  defineSymbol(math, ams, bin, "⋇", "\\divideontimes", true);
-  defineSymbol(math, ams, bin, "⋉", "\\ltimes", true);
-  defineSymbol(math, ams, bin, "⋊", "\\rtimes", true);
-  defineSymbol(math, ams, bin, "⋋", "\\leftthreetimes", true);
-  defineSymbol(math, ams, bin, "⋌", "\\rightthreetimes", true);
-  defineSymbol(math, ams, bin, "⋏", "\\curlywedge", true);
-  defineSymbol(math, ams, bin, "⋎", "\\curlyvee", true);
-  defineSymbol(math, ams, bin, "⊝", "\\circleddash", true);
-  defineSymbol(math, ams, bin, "⊛", "\\circledast", true);
-  defineSymbol(math, ams, bin, "⋅", "\\centerdot");
-  defineSymbol(math, ams, bin, "⊺", "\\intercal", true);
-  defineSymbol(math, ams, bin, "⋒", "\\doublecap");
-  defineSymbol(math, ams, bin, "⋓", "\\doublecup");
-  defineSymbol(math, ams, bin, "⊠", "\\boxtimes", true);
-  defineSymbol(math, ams, rel, "⇢", "\\dashrightarrow", true);
-  defineSymbol(math, ams, rel, "⇠", "\\dashleftarrow", true);
-  defineSymbol(math, ams, rel, "⇇", "\\leftleftarrows", true);
-  defineSymbol(math, ams, rel, "⇆", "\\leftrightarrows", true);
-  defineSymbol(math, ams, rel, "⇚", "\\Lleftarrow", true);
-  defineSymbol(math, ams, rel, "↞", "\\twoheadleftarrow", true);
-  defineSymbol(math, ams, rel, "↢", "\\leftarrowtail", true);
-  defineSymbol(math, ams, rel, "↫", "\\looparrowleft", true);
-  defineSymbol(math, ams, rel, "⇋", "\\leftrightharpoons", true);
-  defineSymbol(math, ams, rel, "↶", "\\curvearrowleft", true);
-  defineSymbol(math, ams, rel, "↺", "\\circlearrowleft", true);
-  defineSymbol(math, ams, rel, "↰", "\\Lsh", true);
-  defineSymbol(math, ams, rel, "⇈", "\\upuparrows", true);
-  defineSymbol(math, ams, rel, "↿", "\\upharpoonleft", true);
-  defineSymbol(math, ams, rel, "⇃", "\\downharpoonleft", true);
-  defineSymbol(math, main, rel, "⊶", "\\origof", true);
-  defineSymbol(math, main, rel, "⊷", "\\imageof", true);
-  defineSymbol(math, ams, rel, "⊸", "\\multimap", true);
-  defineSymbol(math, ams, rel, "↭", "\\leftrightsquigarrow", true);
-  defineSymbol(math, ams, rel, "⇉", "\\rightrightarrows", true);
-  defineSymbol(math, ams, rel, "⇄", "\\rightleftarrows", true);
-  defineSymbol(math, ams, rel, "↠", "\\twoheadrightarrow", true);
-  defineSymbol(math, ams, rel, "↣", "\\rightarrowtail", true);
-  defineSymbol(math, ams, rel, "↬", "\\looparrowright", true);
-  defineSymbol(math, ams, rel, "↷", "\\curvearrowright", true);
-  defineSymbol(math, ams, rel, "↻", "\\circlearrowright", true);
-  defineSymbol(math, ams, rel, "↱", "\\Rsh", true);
-  defineSymbol(math, ams, rel, "⇊", "\\downdownarrows", true);
-  defineSymbol(math, ams, rel, "↾", "\\upharpoonright", true);
-  defineSymbol(math, ams, rel, "⇂", "\\downharpoonright", true);
-  defineSymbol(math, ams, rel, "⇝", "\\rightsquigarrow", true);
-  defineSymbol(math, ams, rel, "⇝", "\\leadsto");
-  defineSymbol(math, ams, rel, "⇛", "\\Rrightarrow", true);
-  defineSymbol(math, ams, rel, "↾", "\\restriction");
-  defineSymbol(math, main, textord, "‘", "`");
+  defineSymbol(math, main, rel, "\u27F5", "\\longleftarrow", true);
+  defineSymbol(math, main, rel, "\u21D0", "\\Leftarrow", true);
+  defineSymbol(math, main, rel, "\u27F8", "\\Longleftarrow", true);
+  defineSymbol(math, main, rel, "\u27F6", "\\longrightarrow", true);
+  defineSymbol(math, main, rel, "\u21D2", "\\Rightarrow", true);
+  defineSymbol(math, main, rel, "\u27F9", "\\Longrightarrow", true);
+  defineSymbol(math, main, rel, "\u2194", "\\leftrightarrow", true);
+  defineSymbol(math, main, rel, "\u27F7", "\\longleftrightarrow", true);
+  defineSymbol(math, main, rel, "\u21D4", "\\Leftrightarrow", true);
+  defineSymbol(math, main, rel, "\u27FA", "\\Longleftrightarrow", true);
+  defineSymbol(math, main, rel, "\u21A6", "\\mapsto", true);
+  defineSymbol(math, main, rel, "\u27FC", "\\longmapsto", true);
+  defineSymbol(math, main, rel, "\u2197", "\\nearrow", true);
+  defineSymbol(math, main, rel, "\u21A9", "\\hookleftarrow", true);
+  defineSymbol(math, main, rel, "\u21AA", "\\hookrightarrow", true);
+  defineSymbol(math, main, rel, "\u2198", "\\searrow", true);
+  defineSymbol(math, main, rel, "\u21BC", "\\leftharpoonup", true);
+  defineSymbol(math, main, rel, "\u21C0", "\\rightharpoonup", true);
+  defineSymbol(math, main, rel, "\u2199", "\\swarrow", true);
+  defineSymbol(math, main, rel, "\u21BD", "\\leftharpoondown", true);
+  defineSymbol(math, main, rel, "\u21C1", "\\rightharpoondown", true);
+  defineSymbol(math, main, rel, "\u2196", "\\nwarrow", true);
+  defineSymbol(math, main, rel, "\u21CC", "\\rightleftharpoons", true);
+  defineSymbol(math, ams, rel, "\u226E", "\\nless", true);
+  defineSymbol(math, ams, rel, "\uE010", "\\@nleqslant");
+  defineSymbol(math, ams, rel, "\uE011", "\\@nleqq");
+  defineSymbol(math, ams, rel, "\u2A87", "\\lneq", true);
+  defineSymbol(math, ams, rel, "\u2268", "\\lneqq", true);
+  defineSymbol(math, ams, rel, "\uE00C", "\\@lvertneqq");
+  defineSymbol(math, ams, rel, "\u22E6", "\\lnsim", true);
+  defineSymbol(math, ams, rel, "\u2A89", "\\lnapprox", true);
+  defineSymbol(math, ams, rel, "\u2280", "\\nprec", true);
+  defineSymbol(math, ams, rel, "\u22E0", "\\npreceq", true);
+  defineSymbol(math, ams, rel, "\u22E8", "\\precnsim", true);
+  defineSymbol(math, ams, rel, "\u2AB9", "\\precnapprox", true);
+  defineSymbol(math, ams, rel, "\u2241", "\\nsim", true);
+  defineSymbol(math, ams, rel, "\uE006", "\\@nshortmid");
+  defineSymbol(math, ams, rel, "\u2224", "\\nmid", true);
+  defineSymbol(math, ams, rel, "\u22AC", "\\nvdash", true);
+  defineSymbol(math, ams, rel, "\u22AD", "\\nvDash", true);
+  defineSymbol(math, ams, rel, "\u22EA", "\\ntriangleleft");
+  defineSymbol(math, ams, rel, "\u22EC", "\\ntrianglelefteq", true);
+  defineSymbol(math, ams, rel, "\u228A", "\\subsetneq", true);
+  defineSymbol(math, ams, rel, "\uE01A", "\\@varsubsetneq");
+  defineSymbol(math, ams, rel, "\u2ACB", "\\subsetneqq", true);
+  defineSymbol(math, ams, rel, "\uE017", "\\@varsubsetneqq");
+  defineSymbol(math, ams, rel, "\u226F", "\\ngtr", true);
+  defineSymbol(math, ams, rel, "\uE00F", "\\@ngeqslant");
+  defineSymbol(math, ams, rel, "\uE00E", "\\@ngeqq");
+  defineSymbol(math, ams, rel, "\u2A88", "\\gneq", true);
+  defineSymbol(math, ams, rel, "\u2269", "\\gneqq", true);
+  defineSymbol(math, ams, rel, "\uE00D", "\\@gvertneqq");
+  defineSymbol(math, ams, rel, "\u22E7", "\\gnsim", true);
+  defineSymbol(math, ams, rel, "\u2A8A", "\\gnapprox", true);
+  defineSymbol(math, ams, rel, "\u2281", "\\nsucc", true);
+  defineSymbol(math, ams, rel, "\u22E1", "\\nsucceq", true);
+  defineSymbol(math, ams, rel, "\u22E9", "\\succnsim", true);
+  defineSymbol(math, ams, rel, "\u2ABA", "\\succnapprox", true);
+  defineSymbol(math, ams, rel, "\u2246", "\\ncong", true);
+  defineSymbol(math, ams, rel, "\uE007", "\\@nshortparallel");
+  defineSymbol(math, ams, rel, "\u2226", "\\nparallel", true);
+  defineSymbol(math, ams, rel, "\u22AF", "\\nVDash", true);
+  defineSymbol(math, ams, rel, "\u22EB", "\\ntriangleright");
+  defineSymbol(math, ams, rel, "\u22ED", "\\ntrianglerighteq", true);
+  defineSymbol(math, ams, rel, "\uE018", "\\@nsupseteqq");
+  defineSymbol(math, ams, rel, "\u228B", "\\supsetneq", true);
+  defineSymbol(math, ams, rel, "\uE01B", "\\@varsupsetneq");
+  defineSymbol(math, ams, rel, "\u2ACC", "\\supsetneqq", true);
+  defineSymbol(math, ams, rel, "\uE019", "\\@varsupsetneqq");
+  defineSymbol(math, ams, rel, "\u22AE", "\\nVdash", true);
+  defineSymbol(math, ams, rel, "\u2AB5", "\\precneqq", true);
+  defineSymbol(math, ams, rel, "\u2AB6", "\\succneqq", true);
+  defineSymbol(math, ams, rel, "\uE016", "\\@nsubseteqq");
+  defineSymbol(math, ams, bin, "\u22B4", "\\unlhd");
+  defineSymbol(math, ams, bin, "\u22B5", "\\unrhd");
+  defineSymbol(math, ams, rel, "\u219A", "\\nleftarrow", true);
+  defineSymbol(math, ams, rel, "\u219B", "\\nrightarrow", true);
+  defineSymbol(math, ams, rel, "\u21CD", "\\nLeftarrow", true);
+  defineSymbol(math, ams, rel, "\u21CF", "\\nRightarrow", true);
+  defineSymbol(math, ams, rel, "\u21AE", "\\nleftrightarrow", true);
+  defineSymbol(math, ams, rel, "\u21CE", "\\nLeftrightarrow", true);
+  defineSymbol(math, ams, rel, "\u25B3", "\\vartriangle");
+  defineSymbol(math, ams, textord, "\u210F", "\\hslash");
+  defineSymbol(math, ams, textord, "\u25BD", "\\triangledown");
+  defineSymbol(math, ams, textord, "\u25CA", "\\lozenge");
+  defineSymbol(math, ams, textord, "\u24C8", "\\circledS");
+  defineSymbol(math, ams, textord, "\xAE", "\\circledR");
+  defineSymbol(text$6, ams, textord, "\xAE", "\\circledR");
+  defineSymbol(math, ams, textord, "\u2221", "\\measuredangle", true);
+  defineSymbol(math, ams, textord, "\u2204", "\\nexists");
+  defineSymbol(math, ams, textord, "\u2127", "\\mho");
+  defineSymbol(math, ams, textord, "\u2132", "\\Finv", true);
+  defineSymbol(math, ams, textord, "\u2141", "\\Game", true);
+  defineSymbol(math, ams, textord, "\u2035", "\\backprime");
+  defineSymbol(math, ams, textord, "\u25B2", "\\blacktriangle");
+  defineSymbol(math, ams, textord, "\u25BC", "\\blacktriangledown");
+  defineSymbol(math, ams, textord, "\u25A0", "\\blacksquare");
+  defineSymbol(math, ams, textord, "\u29EB", "\\blacklozenge");
+  defineSymbol(math, ams, textord, "\u2605", "\\bigstar");
+  defineSymbol(math, ams, textord, "\u2222", "\\sphericalangle", true);
+  defineSymbol(math, ams, textord, "\u2201", "\\complement", true);
+  defineSymbol(math, ams, textord, "\xF0", "\\eth", true);
+  defineSymbol(text$6, main, textord, "\xF0", "\xF0");
+  defineSymbol(math, ams, textord, "\u2571", "\\diagup");
+  defineSymbol(math, ams, textord, "\u2572", "\\diagdown");
+  defineSymbol(math, ams, textord, "\u25A1", "\\square");
+  defineSymbol(math, ams, textord, "\u25A1", "\\Box");
+  defineSymbol(math, ams, textord, "\u25CA", "\\Diamond");
+  defineSymbol(math, ams, textord, "\xA5", "\\yen", true);
+  defineSymbol(text$6, ams, textord, "\xA5", "\\yen", true);
+  defineSymbol(math, ams, textord, "\u2713", "\\checkmark", true);
+  defineSymbol(text$6, ams, textord, "\u2713", "\\checkmark");
+  defineSymbol(math, ams, textord, "\u2136", "\\beth", true);
+  defineSymbol(math, ams, textord, "\u2138", "\\daleth", true);
+  defineSymbol(math, ams, textord, "\u2137", "\\gimel", true);
+  defineSymbol(math, ams, textord, "\u03DD", "\\digamma", true);
+  defineSymbol(math, ams, textord, "\u03F0", "\\varkappa");
+  defineSymbol(math, ams, open, "\u250C", "\\@ulcorner", true);
+  defineSymbol(math, ams, close, "\u2510", "\\@urcorner", true);
+  defineSymbol(math, ams, open, "\u2514", "\\@llcorner", true);
+  defineSymbol(math, ams, close, "\u2518", "\\@lrcorner", true);
+  defineSymbol(math, ams, rel, "\u2266", "\\leqq", true);
+  defineSymbol(math, ams, rel, "\u2A7D", "\\leqslant", true);
+  defineSymbol(math, ams, rel, "\u2A95", "\\eqslantless", true);
+  defineSymbol(math, ams, rel, "\u2272", "\\lesssim", true);
+  defineSymbol(math, ams, rel, "\u2A85", "\\lessapprox", true);
+  defineSymbol(math, ams, rel, "\u224A", "\\approxeq", true);
+  defineSymbol(math, ams, bin, "\u22D6", "\\lessdot");
+  defineSymbol(math, ams, rel, "\u22D8", "\\lll", true);
+  defineSymbol(math, ams, rel, "\u2276", "\\lessgtr", true);
+  defineSymbol(math, ams, rel, "\u22DA", "\\lesseqgtr", true);
+  defineSymbol(math, ams, rel, "\u2A8B", "\\lesseqqgtr", true);
+  defineSymbol(math, ams, rel, "\u2251", "\\doteqdot");
+  defineSymbol(math, ams, rel, "\u2253", "\\risingdotseq", true);
+  defineSymbol(math, ams, rel, "\u2252", "\\fallingdotseq", true);
+  defineSymbol(math, ams, rel, "\u223D", "\\backsim", true);
+  defineSymbol(math, ams, rel, "\u22CD", "\\backsimeq", true);
+  defineSymbol(math, ams, rel, "\u2AC5", "\\subseteqq", true);
+  defineSymbol(math, ams, rel, "\u22D0", "\\Subset", true);
+  defineSymbol(math, ams, rel, "\u228F", "\\sqsubset", true);
+  defineSymbol(math, ams, rel, "\u227C", "\\preccurlyeq", true);
+  defineSymbol(math, ams, rel, "\u22DE", "\\curlyeqprec", true);
+  defineSymbol(math, ams, rel, "\u227E", "\\precsim", true);
+  defineSymbol(math, ams, rel, "\u2AB7", "\\precapprox", true);
+  defineSymbol(math, ams, rel, "\u22B2", "\\vartriangleleft");
+  defineSymbol(math, ams, rel, "\u22B4", "\\trianglelefteq");
+  defineSymbol(math, ams, rel, "\u22A8", "\\vDash", true);
+  defineSymbol(math, ams, rel, "\u22AA", "\\Vvdash", true);
+  defineSymbol(math, ams, rel, "\u2323", "\\smallsmile");
+  defineSymbol(math, ams, rel, "\u2322", "\\smallfrown");
+  defineSymbol(math, ams, rel, "\u224F", "\\bumpeq", true);
+  defineSymbol(math, ams, rel, "\u224E", "\\Bumpeq", true);
+  defineSymbol(math, ams, rel, "\u2267", "\\geqq", true);
+  defineSymbol(math, ams, rel, "\u2A7E", "\\geqslant", true);
+  defineSymbol(math, ams, rel, "\u2A96", "\\eqslantgtr", true);
+  defineSymbol(math, ams, rel, "\u2273", "\\gtrsim", true);
+  defineSymbol(math, ams, rel, "\u2A86", "\\gtrapprox", true);
+  defineSymbol(math, ams, bin, "\u22D7", "\\gtrdot");
+  defineSymbol(math, ams, rel, "\u22D9", "\\ggg", true);
+  defineSymbol(math, ams, rel, "\u2277", "\\gtrless", true);
+  defineSymbol(math, ams, rel, "\u22DB", "\\gtreqless", true);
+  defineSymbol(math, ams, rel, "\u2A8C", "\\gtreqqless", true);
+  defineSymbol(math, ams, rel, "\u2256", "\\eqcirc", true);
+  defineSymbol(math, ams, rel, "\u2257", "\\circeq", true);
+  defineSymbol(math, ams, rel, "\u225C", "\\triangleq", true);
+  defineSymbol(math, ams, rel, "\u223C", "\\thicksim");
+  defineSymbol(math, ams, rel, "\u2248", "\\thickapprox");
+  defineSymbol(math, ams, rel, "\u2AC6", "\\supseteqq", true);
+  defineSymbol(math, ams, rel, "\u22D1", "\\Supset", true);
+  defineSymbol(math, ams, rel, "\u2290", "\\sqsupset", true);
+  defineSymbol(math, ams, rel, "\u227D", "\\succcurlyeq", true);
+  defineSymbol(math, ams, rel, "\u22DF", "\\curlyeqsucc", true);
+  defineSymbol(math, ams, rel, "\u227F", "\\succsim", true);
+  defineSymbol(math, ams, rel, "\u2AB8", "\\succapprox", true);
+  defineSymbol(math, ams, rel, "\u22B3", "\\vartriangleright");
+  defineSymbol(math, ams, rel, "\u22B5", "\\trianglerighteq");
+  defineSymbol(math, ams, rel, "\u22A9", "\\Vdash", true);
+  defineSymbol(math, ams, rel, "\u2223", "\\shortmid");
+  defineSymbol(math, ams, rel, "\u2225", "\\shortparallel");
+  defineSymbol(math, ams, rel, "\u226C", "\\between", true);
+  defineSymbol(math, ams, rel, "\u22D4", "\\pitchfork", true);
+  defineSymbol(math, ams, rel, "\u221D", "\\varpropto");
+  defineSymbol(math, ams, rel, "\u25C0", "\\blacktriangleleft");
+  defineSymbol(math, ams, rel, "\u2234", "\\therefore", true);
+  defineSymbol(math, ams, rel, "\u220D", "\\backepsilon");
+  defineSymbol(math, ams, rel, "\u25B6", "\\blacktriangleright");
+  defineSymbol(math, ams, rel, "\u2235", "\\because", true);
+  defineSymbol(math, ams, rel, "\u22D8", "\\llless");
+  defineSymbol(math, ams, rel, "\u22D9", "\\gggtr");
+  defineSymbol(math, ams, bin, "\u22B2", "\\lhd");
+  defineSymbol(math, ams, bin, "\u22B3", "\\rhd");
+  defineSymbol(math, ams, rel, "\u2242", "\\eqsim", true);
+  defineSymbol(math, main, rel, "\u22C8", "\\Join");
+  defineSymbol(math, ams, rel, "\u2251", "\\Doteq", true);
+  defineSymbol(math, ams, bin, "\u2214", "\\dotplus", true);
+  defineSymbol(math, ams, bin, "\u2216", "\\smallsetminus");
+  defineSymbol(math, ams, bin, "\u22D2", "\\Cap", true);
+  defineSymbol(math, ams, bin, "\u22D3", "\\Cup", true);
+  defineSymbol(math, ams, bin, "\u2A5E", "\\doublebarwedge", true);
+  defineSymbol(math, ams, bin, "\u229F", "\\boxminus", true);
+  defineSymbol(math, ams, bin, "\u229E", "\\boxplus", true);
+  defineSymbol(math, ams, bin, "\u22C7", "\\divideontimes", true);
+  defineSymbol(math, ams, bin, "\u22C9", "\\ltimes", true);
+  defineSymbol(math, ams, bin, "\u22CA", "\\rtimes", true);
+  defineSymbol(math, ams, bin, "\u22CB", "\\leftthreetimes", true);
+  defineSymbol(math, ams, bin, "\u22CC", "\\rightthreetimes", true);
+  defineSymbol(math, ams, bin, "\u22CF", "\\curlywedge", true);
+  defineSymbol(math, ams, bin, "\u22CE", "\\curlyvee", true);
+  defineSymbol(math, ams, bin, "\u229D", "\\circleddash", true);
+  defineSymbol(math, ams, bin, "\u229B", "\\circledast", true);
+  defineSymbol(math, ams, bin, "\u22C5", "\\centerdot");
+  defineSymbol(math, ams, bin, "\u22BA", "\\intercal", true);
+  defineSymbol(math, ams, bin, "\u22D2", "\\doublecap");
+  defineSymbol(math, ams, bin, "\u22D3", "\\doublecup");
+  defineSymbol(math, ams, bin, "\u22A0", "\\boxtimes", true);
+  defineSymbol(math, ams, rel, "\u21E2", "\\dashrightarrow", true);
+  defineSymbol(math, ams, rel, "\u21E0", "\\dashleftarrow", true);
+  defineSymbol(math, ams, rel, "\u21C7", "\\leftleftarrows", true);
+  defineSymbol(math, ams, rel, "\u21C6", "\\leftrightarrows", true);
+  defineSymbol(math, ams, rel, "\u21DA", "\\Lleftarrow", true);
+  defineSymbol(math, ams, rel, "\u219E", "\\twoheadleftarrow", true);
+  defineSymbol(math, ams, rel, "\u21A2", "\\leftarrowtail", true);
+  defineSymbol(math, ams, rel, "\u21AB", "\\looparrowleft", true);
+  defineSymbol(math, ams, rel, "\u21CB", "\\leftrightharpoons", true);
+  defineSymbol(math, ams, rel, "\u21B6", "\\curvearrowleft", true);
+  defineSymbol(math, ams, rel, "\u21BA", "\\circlearrowleft", true);
+  defineSymbol(math, ams, rel, "\u21B0", "\\Lsh", true);
+  defineSymbol(math, ams, rel, "\u21C8", "\\upuparrows", true);
+  defineSymbol(math, ams, rel, "\u21BF", "\\upharpoonleft", true);
+  defineSymbol(math, ams, rel, "\u21C3", "\\downharpoonleft", true);
+  defineSymbol(math, main, rel, "\u22B6", "\\origof", true);
+  defineSymbol(math, main, rel, "\u22B7", "\\imageof", true);
+  defineSymbol(math, ams, rel, "\u22B8", "\\multimap", true);
+  defineSymbol(math, ams, rel, "\u21AD", "\\leftrightsquigarrow", true);
+  defineSymbol(math, ams, rel, "\u21C9", "\\rightrightarrows", true);
+  defineSymbol(math, ams, rel, "\u21C4", "\\rightleftarrows", true);
+  defineSymbol(math, ams, rel, "\u21A0", "\\twoheadrightarrow", true);
+  defineSymbol(math, ams, rel, "\u21A3", "\\rightarrowtail", true);
+  defineSymbol(math, ams, rel, "\u21AC", "\\looparrowright", true);
+  defineSymbol(math, ams, rel, "\u21B7", "\\curvearrowright", true);
+  defineSymbol(math, ams, rel, "\u21BB", "\\circlearrowright", true);
+  defineSymbol(math, ams, rel, "\u21B1", "\\Rsh", true);
+  defineSymbol(math, ams, rel, "\u21CA", "\\downdownarrows", true);
+  defineSymbol(math, ams, rel, "\u21BE", "\\upharpoonright", true);
+  defineSymbol(math, ams, rel, "\u21C2", "\\downharpoonright", true);
+  defineSymbol(math, ams, rel, "\u21DD", "\\rightsquigarrow", true);
+  defineSymbol(math, ams, rel, "\u21DD", "\\leadsto");
+  defineSymbol(math, ams, rel, "\u21DB", "\\Rrightarrow", true);
+  defineSymbol(math, ams, rel, "\u21BE", "\\restriction");
+  defineSymbol(math, main, textord, "\u2018", "`");
   defineSymbol(math, main, textord, "$", "\\$");
   defineSymbol(text$6, main, textord, "$", "\\$");
   defineSymbol(text$6, main, textord, "$", "\\textdollar");
@@ -21155,146 +21155,146 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   defineSymbol(math, main, textord, "_", "\\_");
   defineSymbol(text$6, main, textord, "_", "\\_");
   defineSymbol(text$6, main, textord, "_", "\\textunderscore");
-  defineSymbol(math, main, textord, "∠", "\\angle", true);
-  defineSymbol(math, main, textord, "∞", "\\infty", true);
-  defineSymbol(math, main, textord, "′", "\\prime");
-  defineSymbol(math, main, textord, "△", "\\triangle");
-  defineSymbol(math, main, textord, "Γ", "\\Gamma", true);
-  defineSymbol(math, main, textord, "Δ", "\\Delta", true);
-  defineSymbol(math, main, textord, "Θ", "\\Theta", true);
-  defineSymbol(math, main, textord, "Λ", "\\Lambda", true);
-  defineSymbol(math, main, textord, "Ξ", "\\Xi", true);
-  defineSymbol(math, main, textord, "Π", "\\Pi", true);
-  defineSymbol(math, main, textord, "Σ", "\\Sigma", true);
-  defineSymbol(math, main, textord, "Υ", "\\Upsilon", true);
-  defineSymbol(math, main, textord, "Φ", "\\Phi", true);
-  defineSymbol(math, main, textord, "Ψ", "\\Psi", true);
-  defineSymbol(math, main, textord, "Ω", "\\Omega", true);
-  defineSymbol(math, main, textord, "A", "Α");
-  defineSymbol(math, main, textord, "B", "Β");
-  defineSymbol(math, main, textord, "E", "Ε");
-  defineSymbol(math, main, textord, "Z", "Ζ");
-  defineSymbol(math, main, textord, "H", "Η");
-  defineSymbol(math, main, textord, "I", "Ι");
-  defineSymbol(math, main, textord, "K", "Κ");
-  defineSymbol(math, main, textord, "M", "Μ");
-  defineSymbol(math, main, textord, "N", "Ν");
-  defineSymbol(math, main, textord, "O", "Ο");
-  defineSymbol(math, main, textord, "P", "Ρ");
-  defineSymbol(math, main, textord, "T", "Τ");
-  defineSymbol(math, main, textord, "X", "Χ");
-  defineSymbol(math, main, textord, "¬", "\\neg", true);
-  defineSymbol(math, main, textord, "¬", "\\lnot");
-  defineSymbol(math, main, textord, "⊤", "\\top");
-  defineSymbol(math, main, textord, "⊥", "\\bot");
-  defineSymbol(math, main, textord, "∅", "\\emptyset");
-  defineSymbol(math, ams, textord, "∅", "\\varnothing");
-  defineSymbol(math, main, mathord, "α", "\\alpha", true);
-  defineSymbol(math, main, mathord, "β", "\\beta", true);
-  defineSymbol(math, main, mathord, "γ", "\\gamma", true);
-  defineSymbol(math, main, mathord, "δ", "\\delta", true);
-  defineSymbol(math, main, mathord, "ϵ", "\\epsilon", true);
-  defineSymbol(math, main, mathord, "ζ", "\\zeta", true);
-  defineSymbol(math, main, mathord, "η", "\\eta", true);
-  defineSymbol(math, main, mathord, "θ", "\\theta", true);
-  defineSymbol(math, main, mathord, "ι", "\\iota", true);
-  defineSymbol(math, main, mathord, "κ", "\\kappa", true);
-  defineSymbol(math, main, mathord, "λ", "\\lambda", true);
-  defineSymbol(math, main, mathord, "μ", "\\mu", true);
-  defineSymbol(math, main, mathord, "ν", "\\nu", true);
-  defineSymbol(math, main, mathord, "ξ", "\\xi", true);
-  defineSymbol(math, main, mathord, "ο", "\\omicron", true);
-  defineSymbol(math, main, mathord, "π", "\\pi", true);
-  defineSymbol(math, main, mathord, "ρ", "\\rho", true);
-  defineSymbol(math, main, mathord, "σ", "\\sigma", true);
-  defineSymbol(math, main, mathord, "τ", "\\tau", true);
-  defineSymbol(math, main, mathord, "υ", "\\upsilon", true);
-  defineSymbol(math, main, mathord, "ϕ", "\\phi", true);
-  defineSymbol(math, main, mathord, "χ", "\\chi", true);
-  defineSymbol(math, main, mathord, "ψ", "\\psi", true);
-  defineSymbol(math, main, mathord, "ω", "\\omega", true);
-  defineSymbol(math, main, mathord, "ε", "\\varepsilon", true);
-  defineSymbol(math, main, mathord, "ϑ", "\\vartheta", true);
-  defineSymbol(math, main, mathord, "ϖ", "\\varpi", true);
-  defineSymbol(math, main, mathord, "ϱ", "\\varrho", true);
-  defineSymbol(math, main, mathord, "ς", "\\varsigma", true);
-  defineSymbol(math, main, mathord, "φ", "\\varphi", true);
-  defineSymbol(math, main, bin, "∗", "*", true);
+  defineSymbol(math, main, textord, "\u2220", "\\angle", true);
+  defineSymbol(math, main, textord, "\u221E", "\\infty", true);
+  defineSymbol(math, main, textord, "\u2032", "\\prime");
+  defineSymbol(math, main, textord, "\u25B3", "\\triangle");
+  defineSymbol(math, main, textord, "\u0393", "\\Gamma", true);
+  defineSymbol(math, main, textord, "\u0394", "\\Delta", true);
+  defineSymbol(math, main, textord, "\u0398", "\\Theta", true);
+  defineSymbol(math, main, textord, "\u039B", "\\Lambda", true);
+  defineSymbol(math, main, textord, "\u039E", "\\Xi", true);
+  defineSymbol(math, main, textord, "\u03A0", "\\Pi", true);
+  defineSymbol(math, main, textord, "\u03A3", "\\Sigma", true);
+  defineSymbol(math, main, textord, "\u03A5", "\\Upsilon", true);
+  defineSymbol(math, main, textord, "\u03A6", "\\Phi", true);
+  defineSymbol(math, main, textord, "\u03A8", "\\Psi", true);
+  defineSymbol(math, main, textord, "\u03A9", "\\Omega", true);
+  defineSymbol(math, main, textord, "A", "\u0391");
+  defineSymbol(math, main, textord, "B", "\u0392");
+  defineSymbol(math, main, textord, "E", "\u0395");
+  defineSymbol(math, main, textord, "Z", "\u0396");
+  defineSymbol(math, main, textord, "H", "\u0397");
+  defineSymbol(math, main, textord, "I", "\u0399");
+  defineSymbol(math, main, textord, "K", "\u039A");
+  defineSymbol(math, main, textord, "M", "\u039C");
+  defineSymbol(math, main, textord, "N", "\u039D");
+  defineSymbol(math, main, textord, "O", "\u039F");
+  defineSymbol(math, main, textord, "P", "\u03A1");
+  defineSymbol(math, main, textord, "T", "\u03A4");
+  defineSymbol(math, main, textord, "X", "\u03A7");
+  defineSymbol(math, main, textord, "\xAC", "\\neg", true);
+  defineSymbol(math, main, textord, "\xAC", "\\lnot");
+  defineSymbol(math, main, textord, "\u22A4", "\\top");
+  defineSymbol(math, main, textord, "\u22A5", "\\bot");
+  defineSymbol(math, main, textord, "\u2205", "\\emptyset");
+  defineSymbol(math, ams, textord, "\u2205", "\\varnothing");
+  defineSymbol(math, main, mathord, "\u03B1", "\\alpha", true);
+  defineSymbol(math, main, mathord, "\u03B2", "\\beta", true);
+  defineSymbol(math, main, mathord, "\u03B3", "\\gamma", true);
+  defineSymbol(math, main, mathord, "\u03B4", "\\delta", true);
+  defineSymbol(math, main, mathord, "\u03F5", "\\epsilon", true);
+  defineSymbol(math, main, mathord, "\u03B6", "\\zeta", true);
+  defineSymbol(math, main, mathord, "\u03B7", "\\eta", true);
+  defineSymbol(math, main, mathord, "\u03B8", "\\theta", true);
+  defineSymbol(math, main, mathord, "\u03B9", "\\iota", true);
+  defineSymbol(math, main, mathord, "\u03BA", "\\kappa", true);
+  defineSymbol(math, main, mathord, "\u03BB", "\\lambda", true);
+  defineSymbol(math, main, mathord, "\u03BC", "\\mu", true);
+  defineSymbol(math, main, mathord, "\u03BD", "\\nu", true);
+  defineSymbol(math, main, mathord, "\u03BE", "\\xi", true);
+  defineSymbol(math, main, mathord, "\u03BF", "\\omicron", true);
+  defineSymbol(math, main, mathord, "\u03C0", "\\pi", true);
+  defineSymbol(math, main, mathord, "\u03C1", "\\rho", true);
+  defineSymbol(math, main, mathord, "\u03C3", "\\sigma", true);
+  defineSymbol(math, main, mathord, "\u03C4", "\\tau", true);
+  defineSymbol(math, main, mathord, "\u03C5", "\\upsilon", true);
+  defineSymbol(math, main, mathord, "\u03D5", "\\phi", true);
+  defineSymbol(math, main, mathord, "\u03C7", "\\chi", true);
+  defineSymbol(math, main, mathord, "\u03C8", "\\psi", true);
+  defineSymbol(math, main, mathord, "\u03C9", "\\omega", true);
+  defineSymbol(math, main, mathord, "\u03B5", "\\varepsilon", true);
+  defineSymbol(math, main, mathord, "\u03D1", "\\vartheta", true);
+  defineSymbol(math, main, mathord, "\u03D6", "\\varpi", true);
+  defineSymbol(math, main, mathord, "\u03F1", "\\varrho", true);
+  defineSymbol(math, main, mathord, "\u03C2", "\\varsigma", true);
+  defineSymbol(math, main, mathord, "\u03C6", "\\varphi", true);
+  defineSymbol(math, main, bin, "\u2217", "*", true);
   defineSymbol(math, main, bin, "+", "+");
-  defineSymbol(math, main, bin, "−", "-", true);
-  defineSymbol(math, main, bin, "⋅", "\\cdot", true);
-  defineSymbol(math, main, bin, "∘", "\\circ", true);
-  defineSymbol(math, main, bin, "÷", "\\div", true);
-  defineSymbol(math, main, bin, "±", "\\pm", true);
-  defineSymbol(math, main, bin, "×", "\\times", true);
-  defineSymbol(math, main, bin, "∩", "\\cap", true);
-  defineSymbol(math, main, bin, "∪", "\\cup", true);
-  defineSymbol(math, main, bin, "∖", "\\setminus", true);
-  defineSymbol(math, main, bin, "∧", "\\land");
-  defineSymbol(math, main, bin, "∨", "\\lor");
-  defineSymbol(math, main, bin, "∧", "\\wedge", true);
-  defineSymbol(math, main, bin, "∨", "\\vee", true);
-  defineSymbol(math, main, textord, "√", "\\surd");
-  defineSymbol(math, main, open, "⟨", "\\langle", true);
-  defineSymbol(math, main, open, "∣", "\\lvert");
-  defineSymbol(math, main, open, "∥", "\\lVert");
+  defineSymbol(math, main, bin, "\u2212", "-", true);
+  defineSymbol(math, main, bin, "\u22C5", "\\cdot", true);
+  defineSymbol(math, main, bin, "\u2218", "\\circ", true);
+  defineSymbol(math, main, bin, "\xF7", "\\div", true);
+  defineSymbol(math, main, bin, "\xB1", "\\pm", true);
+  defineSymbol(math, main, bin, "\xD7", "\\times", true);
+  defineSymbol(math, main, bin, "\u2229", "\\cap", true);
+  defineSymbol(math, main, bin, "\u222A", "\\cup", true);
+  defineSymbol(math, main, bin, "\u2216", "\\setminus", true);
+  defineSymbol(math, main, bin, "\u2227", "\\land");
+  defineSymbol(math, main, bin, "\u2228", "\\lor");
+  defineSymbol(math, main, bin, "\u2227", "\\wedge", true);
+  defineSymbol(math, main, bin, "\u2228", "\\vee", true);
+  defineSymbol(math, main, textord, "\u221A", "\\surd");
+  defineSymbol(math, main, open, "\u27E8", "\\langle", true);
+  defineSymbol(math, main, open, "\u2223", "\\lvert");
+  defineSymbol(math, main, open, "\u2225", "\\lVert");
   defineSymbol(math, main, close, "?", "?");
   defineSymbol(math, main, close, "!", "!");
-  defineSymbol(math, main, close, "⟩", "\\rangle", true);
-  defineSymbol(math, main, close, "∣", "\\rvert");
-  defineSymbol(math, main, close, "∥", "\\rVert");
+  defineSymbol(math, main, close, "\u27E9", "\\rangle", true);
+  defineSymbol(math, main, close, "\u2223", "\\rvert");
+  defineSymbol(math, main, close, "\u2225", "\\rVert");
   defineSymbol(math, main, rel, "=", "=");
   defineSymbol(math, main, rel, ":", ":");
-  defineSymbol(math, main, rel, "≈", "\\approx", true);
-  defineSymbol(math, main, rel, "≅", "\\cong", true);
-  defineSymbol(math, main, rel, "≥", "\\ge");
-  defineSymbol(math, main, rel, "≥", "\\geq", true);
-  defineSymbol(math, main, rel, "←", "\\gets");
+  defineSymbol(math, main, rel, "\u2248", "\\approx", true);
+  defineSymbol(math, main, rel, "\u2245", "\\cong", true);
+  defineSymbol(math, main, rel, "\u2265", "\\ge");
+  defineSymbol(math, main, rel, "\u2265", "\\geq", true);
+  defineSymbol(math, main, rel, "\u2190", "\\gets");
   defineSymbol(math, main, rel, ">", "\\gt", true);
-  defineSymbol(math, main, rel, "∈", "\\in", true);
-  defineSymbol(math, main, rel, "", "\\@not");
-  defineSymbol(math, main, rel, "⊂", "\\subset", true);
-  defineSymbol(math, main, rel, "⊃", "\\supset", true);
-  defineSymbol(math, main, rel, "⊆", "\\subseteq", true);
-  defineSymbol(math, main, rel, "⊇", "\\supseteq", true);
-  defineSymbol(math, ams, rel, "⊈", "\\nsubseteq", true);
-  defineSymbol(math, ams, rel, "⊉", "\\nsupseteq", true);
-  defineSymbol(math, main, rel, "⊨", "\\models");
-  defineSymbol(math, main, rel, "←", "\\leftarrow", true);
-  defineSymbol(math, main, rel, "≤", "\\le");
-  defineSymbol(math, main, rel, "≤", "\\leq", true);
+  defineSymbol(math, main, rel, "\u2208", "\\in", true);
+  defineSymbol(math, main, rel, "\uE020", "\\@not");
+  defineSymbol(math, main, rel, "\u2282", "\\subset", true);
+  defineSymbol(math, main, rel, "\u2283", "\\supset", true);
+  defineSymbol(math, main, rel, "\u2286", "\\subseteq", true);
+  defineSymbol(math, main, rel, "\u2287", "\\supseteq", true);
+  defineSymbol(math, ams, rel, "\u2288", "\\nsubseteq", true);
+  defineSymbol(math, ams, rel, "\u2289", "\\nsupseteq", true);
+  defineSymbol(math, main, rel, "\u22A8", "\\models");
+  defineSymbol(math, main, rel, "\u2190", "\\leftarrow", true);
+  defineSymbol(math, main, rel, "\u2264", "\\le");
+  defineSymbol(math, main, rel, "\u2264", "\\leq", true);
   defineSymbol(math, main, rel, "<", "\\lt", true);
-  defineSymbol(math, main, rel, "→", "\\rightarrow", true);
-  defineSymbol(math, main, rel, "→", "\\to");
-  defineSymbol(math, ams, rel, "≱", "\\ngeq", true);
-  defineSymbol(math, ams, rel, "≰", "\\nleq", true);
-  defineSymbol(math, main, spacing, " ", "\\ ");
-  defineSymbol(math, main, spacing, " ", "\\space");
-  defineSymbol(math, main, spacing, " ", "\\nobreakspace");
-  defineSymbol(text$6, main, spacing, " ", "\\ ");
-  defineSymbol(text$6, main, spacing, " ", " ");
-  defineSymbol(text$6, main, spacing, " ", "\\space");
-  defineSymbol(text$6, main, spacing, " ", "\\nobreakspace");
+  defineSymbol(math, main, rel, "\u2192", "\\rightarrow", true);
+  defineSymbol(math, main, rel, "\u2192", "\\to");
+  defineSymbol(math, ams, rel, "\u2271", "\\ngeq", true);
+  defineSymbol(math, ams, rel, "\u2270", "\\nleq", true);
+  defineSymbol(math, main, spacing, "\xA0", "\\ ");
+  defineSymbol(math, main, spacing, "\xA0", "\\space");
+  defineSymbol(math, main, spacing, "\xA0", "\\nobreakspace");
+  defineSymbol(text$6, main, spacing, "\xA0", "\\ ");
+  defineSymbol(text$6, main, spacing, "\xA0", " ");
+  defineSymbol(text$6, main, spacing, "\xA0", "\\space");
+  defineSymbol(text$6, main, spacing, "\xA0", "\\nobreakspace");
   defineSymbol(math, main, spacing, null, "\\nobreak");
   defineSymbol(math, main, spacing, null, "\\allowbreak");
   defineSymbol(math, main, punct, ",", ",");
   defineSymbol(math, main, punct, ";", ";");
-  defineSymbol(math, ams, bin, "⊼", "\\barwedge", true);
-  defineSymbol(math, ams, bin, "⊻", "\\veebar", true);
-  defineSymbol(math, main, bin, "⊙", "\\odot", true);
-  defineSymbol(math, main, bin, "⊕", "\\oplus", true);
-  defineSymbol(math, main, bin, "⊗", "\\otimes", true);
-  defineSymbol(math, main, textord, "∂", "\\partial", true);
-  defineSymbol(math, main, bin, "⊘", "\\oslash", true);
-  defineSymbol(math, ams, bin, "⊚", "\\circledcirc", true);
-  defineSymbol(math, ams, bin, "⊡", "\\boxdot", true);
-  defineSymbol(math, main, bin, "△", "\\bigtriangleup");
-  defineSymbol(math, main, bin, "▽", "\\bigtriangledown");
-  defineSymbol(math, main, bin, "†", "\\dagger");
-  defineSymbol(math, main, bin, "⋄", "\\diamond");
-  defineSymbol(math, main, bin, "⋆", "\\star");
-  defineSymbol(math, main, bin, "◃", "\\triangleleft");
-  defineSymbol(math, main, bin, "▹", "\\triangleright");
+  defineSymbol(math, ams, bin, "\u22BC", "\\barwedge", true);
+  defineSymbol(math, ams, bin, "\u22BB", "\\veebar", true);
+  defineSymbol(math, main, bin, "\u2299", "\\odot", true);
+  defineSymbol(math, main, bin, "\u2295", "\\oplus", true);
+  defineSymbol(math, main, bin, "\u2297", "\\otimes", true);
+  defineSymbol(math, main, textord, "\u2202", "\\partial", true);
+  defineSymbol(math, main, bin, "\u2298", "\\oslash", true);
+  defineSymbol(math, ams, bin, "\u229A", "\\circledcirc", true);
+  defineSymbol(math, ams, bin, "\u22A1", "\\boxdot", true);
+  defineSymbol(math, main, bin, "\u25B3", "\\bigtriangleup");
+  defineSymbol(math, main, bin, "\u25BD", "\\bigtriangledown");
+  defineSymbol(math, main, bin, "\u2020", "\\dagger");
+  defineSymbol(math, main, bin, "\u22C4", "\\diamond");
+  defineSymbol(math, main, bin, "\u22C6", "\\star");
+  defineSymbol(math, main, bin, "\u25C3", "\\triangleleft");
+  defineSymbol(math, main, bin, "\u25B9", "\\triangleright");
   defineSymbol(math, main, open, "{", "\\{");
   defineSymbol(text$6, main, textord, "{", "\\{");
   defineSymbol(text$6, main, textord, "{", "\\textbraceleft");
@@ -21311,117 +21311,117 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   defineSymbol(math, main, close, ")", "\\rparen", true);
   defineSymbol(text$6, main, textord, "<", "\\textless", true);
   defineSymbol(text$6, main, textord, ">", "\\textgreater", true);
-  defineSymbol(math, main, open, "⌊", "\\lfloor", true);
-  defineSymbol(math, main, close, "⌋", "\\rfloor", true);
-  defineSymbol(math, main, open, "⌈", "\\lceil", true);
-  defineSymbol(math, main, close, "⌉", "\\rceil", true);
+  defineSymbol(math, main, open, "\u230A", "\\lfloor", true);
+  defineSymbol(math, main, close, "\u230B", "\\rfloor", true);
+  defineSymbol(math, main, open, "\u2308", "\\lceil", true);
+  defineSymbol(math, main, close, "\u2309", "\\rceil", true);
   defineSymbol(math, main, textord, "\\", "\\backslash");
-  defineSymbol(math, main, textord, "∣", "|");
-  defineSymbol(math, main, textord, "∣", "\\vert");
+  defineSymbol(math, main, textord, "\u2223", "|");
+  defineSymbol(math, main, textord, "\u2223", "\\vert");
   defineSymbol(text$6, main, textord, "|", "\\textbar", true);
-  defineSymbol(math, main, textord, "∥", "\\|");
-  defineSymbol(math, main, textord, "∥", "\\Vert");
-  defineSymbol(text$6, main, textord, "∥", "\\textbardbl");
+  defineSymbol(math, main, textord, "\u2225", "\\|");
+  defineSymbol(math, main, textord, "\u2225", "\\Vert");
+  defineSymbol(text$6, main, textord, "\u2225", "\\textbardbl");
   defineSymbol(text$6, main, textord, "~", "\\textasciitilde");
   defineSymbol(text$6, main, textord, "\\", "\\textbackslash");
   defineSymbol(text$6, main, textord, "^", "\\textasciicircum");
-  defineSymbol(math, main, rel, "↑", "\\uparrow", true);
-  defineSymbol(math, main, rel, "⇑", "\\Uparrow", true);
-  defineSymbol(math, main, rel, "↓", "\\downarrow", true);
-  defineSymbol(math, main, rel, "⇓", "\\Downarrow", true);
-  defineSymbol(math, main, rel, "↕", "\\updownarrow", true);
-  defineSymbol(math, main, rel, "⇕", "\\Updownarrow", true);
-  defineSymbol(math, main, op, "∐", "\\coprod");
-  defineSymbol(math, main, op, "⋁", "\\bigvee");
-  defineSymbol(math, main, op, "⋀", "\\bigwedge");
-  defineSymbol(math, main, op, "⨄", "\\biguplus");
-  defineSymbol(math, main, op, "⋂", "\\bigcap");
-  defineSymbol(math, main, op, "⋃", "\\bigcup");
-  defineSymbol(math, main, op, "∫", "\\int");
-  defineSymbol(math, main, op, "∫", "\\intop");
-  defineSymbol(math, main, op, "∬", "\\iint");
-  defineSymbol(math, main, op, "∭", "\\iiint");
-  defineSymbol(math, main, op, "∏", "\\prod");
-  defineSymbol(math, main, op, "∑", "\\sum");
-  defineSymbol(math, main, op, "⨂", "\\bigotimes");
-  defineSymbol(math, main, op, "⨁", "\\bigoplus");
-  defineSymbol(math, main, op, "⨀", "\\bigodot");
-  defineSymbol(math, main, op, "∮", "\\oint");
-  defineSymbol(math, main, op, "∯", "\\oiint");
-  defineSymbol(math, main, op, "∰", "\\oiiint");
-  defineSymbol(math, main, op, "⨆", "\\bigsqcup");
-  defineSymbol(math, main, op, "∫", "\\smallint");
-  defineSymbol(text$6, main, inner, "…", "\\textellipsis");
-  defineSymbol(math, main, inner, "…", "\\mathellipsis");
-  defineSymbol(text$6, main, inner, "…", "\\ldots", true);
-  defineSymbol(math, main, inner, "…", "\\ldots", true);
-  defineSymbol(math, main, inner, "⋯", "\\@cdots", true);
-  defineSymbol(math, main, inner, "⋱", "\\ddots", true);
-  defineSymbol(math, main, textord, "⋮", "\\varvdots");
-  defineSymbol(math, main, accent, "ˊ", "\\acute");
-  defineSymbol(math, main, accent, "ˋ", "\\grave");
-  defineSymbol(math, main, accent, "¨", "\\ddot");
+  defineSymbol(math, main, rel, "\u2191", "\\uparrow", true);
+  defineSymbol(math, main, rel, "\u21D1", "\\Uparrow", true);
+  defineSymbol(math, main, rel, "\u2193", "\\downarrow", true);
+  defineSymbol(math, main, rel, "\u21D3", "\\Downarrow", true);
+  defineSymbol(math, main, rel, "\u2195", "\\updownarrow", true);
+  defineSymbol(math, main, rel, "\u21D5", "\\Updownarrow", true);
+  defineSymbol(math, main, op, "\u2210", "\\coprod");
+  defineSymbol(math, main, op, "\u22C1", "\\bigvee");
+  defineSymbol(math, main, op, "\u22C0", "\\bigwedge");
+  defineSymbol(math, main, op, "\u2A04", "\\biguplus");
+  defineSymbol(math, main, op, "\u22C2", "\\bigcap");
+  defineSymbol(math, main, op, "\u22C3", "\\bigcup");
+  defineSymbol(math, main, op, "\u222B", "\\int");
+  defineSymbol(math, main, op, "\u222B", "\\intop");
+  defineSymbol(math, main, op, "\u222C", "\\iint");
+  defineSymbol(math, main, op, "\u222D", "\\iiint");
+  defineSymbol(math, main, op, "\u220F", "\\prod");
+  defineSymbol(math, main, op, "\u2211", "\\sum");
+  defineSymbol(math, main, op, "\u2A02", "\\bigotimes");
+  defineSymbol(math, main, op, "\u2A01", "\\bigoplus");
+  defineSymbol(math, main, op, "\u2A00", "\\bigodot");
+  defineSymbol(math, main, op, "\u222E", "\\oint");
+  defineSymbol(math, main, op, "\u222F", "\\oiint");
+  defineSymbol(math, main, op, "\u2230", "\\oiiint");
+  defineSymbol(math, main, op, "\u2A06", "\\bigsqcup");
+  defineSymbol(math, main, op, "\u222B", "\\smallint");
+  defineSymbol(text$6, main, inner, "\u2026", "\\textellipsis");
+  defineSymbol(math, main, inner, "\u2026", "\\mathellipsis");
+  defineSymbol(text$6, main, inner, "\u2026", "\\ldots", true);
+  defineSymbol(math, main, inner, "\u2026", "\\ldots", true);
+  defineSymbol(math, main, inner, "\u22EF", "\\@cdots", true);
+  defineSymbol(math, main, inner, "\u22F1", "\\ddots", true);
+  defineSymbol(math, main, textord, "\u22EE", "\\varvdots");
+  defineSymbol(math, main, accent, "\u02CA", "\\acute");
+  defineSymbol(math, main, accent, "\u02CB", "\\grave");
+  defineSymbol(math, main, accent, "\xA8", "\\ddot");
   defineSymbol(math, main, accent, "~", "\\tilde");
-  defineSymbol(math, main, accent, "ˉ", "\\bar");
-  defineSymbol(math, main, accent, "˘", "\\breve");
-  defineSymbol(math, main, accent, "ˇ", "\\check");
+  defineSymbol(math, main, accent, "\u02C9", "\\bar");
+  defineSymbol(math, main, accent, "\u02D8", "\\breve");
+  defineSymbol(math, main, accent, "\u02C7", "\\check");
   defineSymbol(math, main, accent, "^", "\\hat");
-  defineSymbol(math, main, accent, "⃗", "\\vec");
-  defineSymbol(math, main, accent, "˙", "\\dot");
-  defineSymbol(math, main, accent, "˚", "\\mathring");
-  defineSymbol(math, main, mathord, "", "\\@imath");
-  defineSymbol(math, main, mathord, "", "\\@jmath");
-  defineSymbol(math, main, textord, "ı", "ı");
-  defineSymbol(math, main, textord, "ȷ", "ȷ");
-  defineSymbol(text$6, main, textord, "ı", "\\i", true);
-  defineSymbol(text$6, main, textord, "ȷ", "\\j", true);
-  defineSymbol(text$6, main, textord, "ß", "\\ss", true);
-  defineSymbol(text$6, main, textord, "æ", "\\ae", true);
-  defineSymbol(text$6, main, textord, "œ", "\\oe", true);
-  defineSymbol(text$6, main, textord, "ø", "\\o", true);
-  defineSymbol(text$6, main, textord, "Æ", "\\AE", true);
-  defineSymbol(text$6, main, textord, "Œ", "\\OE", true);
-  defineSymbol(text$6, main, textord, "Ø", "\\O", true);
-  defineSymbol(text$6, main, accent, "ˊ", "\\'");
-  defineSymbol(text$6, main, accent, "ˋ", "\\`");
-  defineSymbol(text$6, main, accent, "ˆ", "\\^");
-  defineSymbol(text$6, main, accent, "˜", "\\~");
-  defineSymbol(text$6, main, accent, "ˉ", "\\=");
-  defineSymbol(text$6, main, accent, "˘", "\\u");
-  defineSymbol(text$6, main, accent, "˙", "\\.");
-  defineSymbol(text$6, main, accent, "¸", "\\c");
-  defineSymbol(text$6, main, accent, "˚", "\\r");
-  defineSymbol(text$6, main, accent, "ˇ", "\\v");
-  defineSymbol(text$6, main, accent, "¨", '\\"');
-  defineSymbol(text$6, main, accent, "˝", "\\H");
-  defineSymbol(text$6, main, accent, "◯", "\\textcircled");
+  defineSymbol(math, main, accent, "\u20D7", "\\vec");
+  defineSymbol(math, main, accent, "\u02D9", "\\dot");
+  defineSymbol(math, main, accent, "\u02DA", "\\mathring");
+  defineSymbol(math, main, mathord, "\uE131", "\\@imath");
+  defineSymbol(math, main, mathord, "\uE237", "\\@jmath");
+  defineSymbol(math, main, textord, "\u0131", "\u0131");
+  defineSymbol(math, main, textord, "\u0237", "\u0237");
+  defineSymbol(text$6, main, textord, "\u0131", "\\i", true);
+  defineSymbol(text$6, main, textord, "\u0237", "\\j", true);
+  defineSymbol(text$6, main, textord, "\xDF", "\\ss", true);
+  defineSymbol(text$6, main, textord, "\xE6", "\\ae", true);
+  defineSymbol(text$6, main, textord, "\u0153", "\\oe", true);
+  defineSymbol(text$6, main, textord, "\xF8", "\\o", true);
+  defineSymbol(text$6, main, textord, "\xC6", "\\AE", true);
+  defineSymbol(text$6, main, textord, "\u0152", "\\OE", true);
+  defineSymbol(text$6, main, textord, "\xD8", "\\O", true);
+  defineSymbol(text$6, main, accent, "\u02CA", "\\'");
+  defineSymbol(text$6, main, accent, "\u02CB", "\\`");
+  defineSymbol(text$6, main, accent, "\u02C6", "\\^");
+  defineSymbol(text$6, main, accent, "\u02DC", "\\~");
+  defineSymbol(text$6, main, accent, "\u02C9", "\\=");
+  defineSymbol(text$6, main, accent, "\u02D8", "\\u");
+  defineSymbol(text$6, main, accent, "\u02D9", "\\.");
+  defineSymbol(text$6, main, accent, "\xB8", "\\c");
+  defineSymbol(text$6, main, accent, "\u02DA", "\\r");
+  defineSymbol(text$6, main, accent, "\u02C7", "\\v");
+  defineSymbol(text$6, main, accent, "\xA8", '\\"');
+  defineSymbol(text$6, main, accent, "\u02DD", "\\H");
+  defineSymbol(text$6, main, accent, "\u25EF", "\\textcircled");
   var ligatures = {
     "--": true,
     "---": true,
     "``": true,
     "''": true
   };
-  defineSymbol(text$6, main, textord, "–", "--", true);
-  defineSymbol(text$6, main, textord, "–", "\\textendash");
-  defineSymbol(text$6, main, textord, "—", "---", true);
-  defineSymbol(text$6, main, textord, "—", "\\textemdash");
-  defineSymbol(text$6, main, textord, "‘", "`", true);
-  defineSymbol(text$6, main, textord, "‘", "\\textquoteleft");
-  defineSymbol(text$6, main, textord, "’", "'", true);
-  defineSymbol(text$6, main, textord, "’", "\\textquoteright");
-  defineSymbol(text$6, main, textord, "“", "``", true);
-  defineSymbol(text$6, main, textord, "“", "\\textquotedblleft");
-  defineSymbol(text$6, main, textord, "”", "''", true);
-  defineSymbol(text$6, main, textord, "”", "\\textquotedblright");
-  defineSymbol(math, main, textord, "°", "\\degree", true);
-  defineSymbol(text$6, main, textord, "°", "\\degree");
-  defineSymbol(text$6, main, textord, "°", "\\textdegree", true);
-  defineSymbol(math, main, textord, "£", "\\pounds");
-  defineSymbol(math, main, textord, "£", "\\mathsterling", true);
-  defineSymbol(text$6, main, textord, "£", "\\pounds");
-  defineSymbol(text$6, main, textord, "£", "\\textsterling", true);
-  defineSymbol(math, ams, textord, "✠", "\\maltese");
-  defineSymbol(text$6, ams, textord, "✠", "\\maltese");
+  defineSymbol(text$6, main, textord, "\u2013", "--", true);
+  defineSymbol(text$6, main, textord, "\u2013", "\\textendash");
+  defineSymbol(text$6, main, textord, "\u2014", "---", true);
+  defineSymbol(text$6, main, textord, "\u2014", "\\textemdash");
+  defineSymbol(text$6, main, textord, "\u2018", "`", true);
+  defineSymbol(text$6, main, textord, "\u2018", "\\textquoteleft");
+  defineSymbol(text$6, main, textord, "\u2019", "'", true);
+  defineSymbol(text$6, main, textord, "\u2019", "\\textquoteright");
+  defineSymbol(text$6, main, textord, "\u201C", "``", true);
+  defineSymbol(text$6, main, textord, "\u201C", "\\textquotedblleft");
+  defineSymbol(text$6, main, textord, "\u201D", "''", true);
+  defineSymbol(text$6, main, textord, "\u201D", "\\textquotedblright");
+  defineSymbol(math, main, textord, "\xB0", "\\degree", true);
+  defineSymbol(text$6, main, textord, "\xB0", "\\degree");
+  defineSymbol(text$6, main, textord, "\xB0", "\\textdegree", true);
+  defineSymbol(math, main, textord, "\xA3", "\\pounds");
+  defineSymbol(math, main, textord, "\xA3", "\\mathsterling", true);
+  defineSymbol(text$6, main, textord, "\xA3", "\\pounds");
+  defineSymbol(text$6, main, textord, "\xA3", "\\textsterling", true);
+  defineSymbol(math, ams, textord, "\u2720", "\\maltese");
+  defineSymbol(text$6, ams, textord, "\u2720", "\\maltese");
   var mathTextSymbols = '0123456789/@."';
   for (var i$3 = 0; i$3 < mathTextSymbols.length; i$3++) {
     var ch = mathTextSymbols.charAt(i$3);
@@ -21438,22 +21438,22 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     defineSymbol(math, main, mathord, _ch2, _ch2);
     defineSymbol(text$6, main, textord, _ch2, _ch2);
   }
-  defineSymbol(math, ams, textord, "C", "ℂ");
-  defineSymbol(text$6, ams, textord, "C", "ℂ");
-  defineSymbol(math, ams, textord, "H", "ℍ");
-  defineSymbol(text$6, ams, textord, "H", "ℍ");
-  defineSymbol(math, ams, textord, "N", "ℕ");
-  defineSymbol(text$6, ams, textord, "N", "ℕ");
-  defineSymbol(math, ams, textord, "P", "ℙ");
-  defineSymbol(text$6, ams, textord, "P", "ℙ");
-  defineSymbol(math, ams, textord, "Q", "ℚ");
-  defineSymbol(text$6, ams, textord, "Q", "ℚ");
-  defineSymbol(math, ams, textord, "R", "ℝ");
-  defineSymbol(text$6, ams, textord, "R", "ℝ");
-  defineSymbol(math, ams, textord, "Z", "ℤ");
-  defineSymbol(text$6, ams, textord, "Z", "ℤ");
-  defineSymbol(math, main, mathord, "h", "ℎ");
-  defineSymbol(text$6, main, mathord, "h", "ℎ");
+  defineSymbol(math, ams, textord, "C", "\u2102");
+  defineSymbol(text$6, ams, textord, "C", "\u2102");
+  defineSymbol(math, ams, textord, "H", "\u210D");
+  defineSymbol(text$6, ams, textord, "H", "\u210D");
+  defineSymbol(math, ams, textord, "N", "\u2115");
+  defineSymbol(text$6, ams, textord, "N", "\u2115");
+  defineSymbol(math, ams, textord, "P", "\u2119");
+  defineSymbol(text$6, ams, textord, "P", "\u2119");
+  defineSymbol(math, ams, textord, "Q", "\u211A");
+  defineSymbol(text$6, ams, textord, "Q", "\u211A");
+  defineSymbol(math, ams, textord, "R", "\u211D");
+  defineSymbol(text$6, ams, textord, "R", "\u211D");
+  defineSymbol(math, ams, textord, "Z", "\u2124");
+  defineSymbol(text$6, ams, textord, "Z", "\u2124");
+  defineSymbol(math, main, mathord, "h", "\u210E");
+  defineSymbol(text$6, main, mathord, "h", "\u210E");
   var wideChar = "";
   for (var _i3 = 0; _i3 < letters.length; _i3++) {
     var _ch3 = letters.charAt(_i3);
@@ -21508,7 +21508,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     defineSymbol(math, main, mathord, _ch4, wideChar);
     defineSymbol(text$6, main, textord, _ch4, wideChar);
   }
-  var extraLatin = "ÐÞþ";
+  var extraLatin = "\xD0\xDE\xFE";
   for (var _i5 = 0; _i5 < extraLatin.length; _i5++) {
     var _ch5 = extraLatin.charAt(_i5);
     defineSymbol(math, main, mathord, _ch5, _ch5);
@@ -21897,7 +21897,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       var emptySpan = makeSpan$2([], []);
       var depthStrut = makeSpan$2(["vlist"], [emptySpan]);
       depthStrut.style.height = makeEm(-minPos);
-      var topStrut = makeSpan$2(["vlist-s"], [new SymbolNode("​")]);
+      var topStrut = makeSpan$2(["vlist-s"], [new SymbolNode("\u200B")]);
       rows = [makeSpan$2(["vlist-r"], [vlist, topStrut]), makeSpan$2(["vlist-r"], [depthStrut])];
     } else {
       rows = [makeSpan$2(["vlist-r"], [vlist])];
@@ -22522,21 +22522,21 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       this.character = void 0;
       this.width = width;
       if (width >= 0.05555 && width <= 0.05556) {
-        this.character = " ";
+        this.character = "\u200A";
       } else if (width >= 0.1666 && width <= 0.1667) {
-        this.character = " ";
+        this.character = "\u2009";
       } else if (width >= 0.2222 && width <= 0.2223) {
-        this.character = " ";
+        this.character = "\u2005";
       } else if (width >= 0.2777 && width <= 0.2778) {
-        this.character = "  ";
+        this.character = "\u2005\u200A";
       } else if (width >= -0.05556 && width <= -0.05555) {
-        this.character = " ⁣";
+        this.character = "\u200A\u2063";
       } else if (width >= -0.1667 && width <= -0.1666) {
-        this.character = " ⁣";
+        this.character = "\u2009\u2063";
       } else if (width >= -0.2223 && width <= -0.2222) {
-        this.character = " ⁣";
+        this.character = "\u205F\u2063";
       } else if (width >= -0.2778 && width <= -0.2777) {
-        this.character = " ⁣";
+        this.character = "\u2005\u2063";
       } else {
         this.character = null;
       }
@@ -22676,10 +22676,10 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           }
         } else if (lastGroup.type === "mi" && lastGroup.children.length === 1) {
           var lastChild = lastGroup.children[0];
-          if (lastChild instanceof TextNode && lastChild.text === "̸" && (_group.type === "mo" || _group.type === "mi" || _group.type === "mn")) {
+          if (lastChild instanceof TextNode && lastChild.text === "\u0338" && (_group.type === "mo" || _group.type === "mi" || _group.type === "mn")) {
             var _child = _group.children[0];
             if (_child instanceof TextNode && _child.text.length > 0) {
-              _child.text = _child.text.slice(0, 1) + "̸" + _child.text.slice(1);
+              _child.text = _child.text.slice(0, 1) + "\u0338" + _child.text.slice(1);
               groups.pop();
             }
           }
@@ -22766,48 +22766,48 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   };
   var stretchyCodePoint = {
     widehat: "^",
-    widecheck: "ˇ",
+    widecheck: "\u02C7",
     widetilde: "~",
     utilde: "~",
-    overleftarrow: "←",
-    underleftarrow: "←",
-    xleftarrow: "←",
-    overrightarrow: "→",
-    underrightarrow: "→",
-    xrightarrow: "→",
-    underbrace: "⏟",
-    overbrace: "⏞",
-    overgroup: "⏠",
-    undergroup: "⏡",
-    overleftrightarrow: "↔",
-    underleftrightarrow: "↔",
-    xleftrightarrow: "↔",
-    Overrightarrow: "⇒",
-    xRightarrow: "⇒",
-    overleftharpoon: "↼",
-    xleftharpoonup: "↼",
-    overrightharpoon: "⇀",
-    xrightharpoonup: "⇀",
-    xLeftarrow: "⇐",
-    xLeftrightarrow: "⇔",
-    xhookleftarrow: "↩",
-    xhookrightarrow: "↪",
-    xmapsto: "↦",
-    xrightharpoondown: "⇁",
-    xleftharpoondown: "↽",
-    xrightleftharpoons: "⇌",
-    xleftrightharpoons: "⇋",
-    xtwoheadleftarrow: "↞",
-    xtwoheadrightarrow: "↠",
+    overleftarrow: "\u2190",
+    underleftarrow: "\u2190",
+    xleftarrow: "\u2190",
+    overrightarrow: "\u2192",
+    underrightarrow: "\u2192",
+    xrightarrow: "\u2192",
+    underbrace: "\u23DF",
+    overbrace: "\u23DE",
+    overgroup: "\u23E0",
+    undergroup: "\u23E1",
+    overleftrightarrow: "\u2194",
+    underleftrightarrow: "\u2194",
+    xleftrightarrow: "\u2194",
+    Overrightarrow: "\u21D2",
+    xRightarrow: "\u21D2",
+    overleftharpoon: "\u21BC",
+    xleftharpoonup: "\u21BC",
+    overrightharpoon: "\u21C0",
+    xrightharpoonup: "\u21C0",
+    xLeftarrow: "\u21D0",
+    xLeftrightarrow: "\u21D4",
+    xhookleftarrow: "\u21A9",
+    xhookrightarrow: "\u21AA",
+    xmapsto: "\u21A6",
+    xrightharpoondown: "\u21C1",
+    xleftharpoondown: "\u21BD",
+    xrightleftharpoons: "\u21CC",
+    xleftrightharpoons: "\u21CB",
+    xtwoheadleftarrow: "\u219E",
+    xtwoheadrightarrow: "\u21A0",
     xlongequal: "=",
-    xtofrom: "⇄",
-    xrightleftarrows: "⇄",
-    xrightequilibrium: "⇌",
+    xtofrom: "\u21C4",
+    xrightleftarrows: "\u21C4",
+    xrightequilibrium: "\u21CC",
     // Not a perfect match.
-    xleftequilibrium: "⇋",
+    xleftequilibrium: "\u21CB",
     // None better available.
-    "\\cdrightarrow": "→",
-    "\\cdleftarrow": "←",
+    "\\cdrightarrow": "\u2192",
+    "\\cdleftarrow": "\u2190",
     "\\cdlongequal": "="
   };
   var mathMLnode = function mathMLnode2(label) {
@@ -24215,112 +24215,112 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     middle = null;
     var font = "Size1-Regular";
     if (delim === "\\uparrow") {
-      repeat = bottom = "⏐";
+      repeat = bottom = "\u23D0";
     } else if (delim === "\\Uparrow") {
-      repeat = bottom = "‖";
+      repeat = bottom = "\u2016";
     } else if (delim === "\\downarrow") {
-      top = repeat = "⏐";
+      top = repeat = "\u23D0";
     } else if (delim === "\\Downarrow") {
-      top = repeat = "‖";
+      top = repeat = "\u2016";
     } else if (delim === "\\updownarrow") {
       top = "\\uparrow";
-      repeat = "⏐";
+      repeat = "\u23D0";
       bottom = "\\downarrow";
     } else if (delim === "\\Updownarrow") {
       top = "\\Uparrow";
-      repeat = "‖";
+      repeat = "\u2016";
       bottom = "\\Downarrow";
     } else if (utils.contains(verts, delim)) {
-      repeat = "∣";
+      repeat = "\u2223";
       svgLabel = "vert";
       viewBoxWidth = 333;
     } else if (utils.contains(doubleVerts, delim)) {
-      repeat = "∥";
+      repeat = "\u2225";
       svgLabel = "doublevert";
       viewBoxWidth = 556;
     } else if (delim === "[" || delim === "\\lbrack") {
-      top = "⎡";
-      repeat = "⎢";
-      bottom = "⎣";
+      top = "\u23A1";
+      repeat = "\u23A2";
+      bottom = "\u23A3";
       font = "Size4-Regular";
       svgLabel = "lbrack";
       viewBoxWidth = 667;
     } else if (delim === "]" || delim === "\\rbrack") {
-      top = "⎤";
-      repeat = "⎥";
-      bottom = "⎦";
+      top = "\u23A4";
+      repeat = "\u23A5";
+      bottom = "\u23A6";
       font = "Size4-Regular";
       svgLabel = "rbrack";
       viewBoxWidth = 667;
-    } else if (delim === "\\lfloor" || delim === "⌊") {
-      repeat = top = "⎢";
-      bottom = "⎣";
+    } else if (delim === "\\lfloor" || delim === "\u230A") {
+      repeat = top = "\u23A2";
+      bottom = "\u23A3";
       font = "Size4-Regular";
       svgLabel = "lfloor";
       viewBoxWidth = 667;
-    } else if (delim === "\\lceil" || delim === "⌈") {
-      top = "⎡";
-      repeat = bottom = "⎢";
+    } else if (delim === "\\lceil" || delim === "\u2308") {
+      top = "\u23A1";
+      repeat = bottom = "\u23A2";
       font = "Size4-Regular";
       svgLabel = "lceil";
       viewBoxWidth = 667;
-    } else if (delim === "\\rfloor" || delim === "⌋") {
-      repeat = top = "⎥";
-      bottom = "⎦";
+    } else if (delim === "\\rfloor" || delim === "\u230B") {
+      repeat = top = "\u23A5";
+      bottom = "\u23A6";
       font = "Size4-Regular";
       svgLabel = "rfloor";
       viewBoxWidth = 667;
-    } else if (delim === "\\rceil" || delim === "⌉") {
-      top = "⎤";
-      repeat = bottom = "⎥";
+    } else if (delim === "\\rceil" || delim === "\u2309") {
+      top = "\u23A4";
+      repeat = bottom = "\u23A5";
       font = "Size4-Regular";
       svgLabel = "rceil";
       viewBoxWidth = 667;
     } else if (delim === "(" || delim === "\\lparen") {
-      top = "⎛";
-      repeat = "⎜";
-      bottom = "⎝";
+      top = "\u239B";
+      repeat = "\u239C";
+      bottom = "\u239D";
       font = "Size4-Regular";
       svgLabel = "lparen";
       viewBoxWidth = 875;
     } else if (delim === ")" || delim === "\\rparen") {
-      top = "⎞";
-      repeat = "⎟";
-      bottom = "⎠";
+      top = "\u239E";
+      repeat = "\u239F";
+      bottom = "\u23A0";
       font = "Size4-Regular";
       svgLabel = "rparen";
       viewBoxWidth = 875;
     } else if (delim === "\\{" || delim === "\\lbrace") {
-      top = "⎧";
-      middle = "⎨";
-      bottom = "⎩";
-      repeat = "⎪";
+      top = "\u23A7";
+      middle = "\u23A8";
+      bottom = "\u23A9";
+      repeat = "\u23AA";
       font = "Size4-Regular";
     } else if (delim === "\\}" || delim === "\\rbrace") {
-      top = "⎫";
-      middle = "⎬";
-      bottom = "⎭";
-      repeat = "⎪";
+      top = "\u23AB";
+      middle = "\u23AC";
+      bottom = "\u23AD";
+      repeat = "\u23AA";
       font = "Size4-Regular";
-    } else if (delim === "\\lgroup" || delim === "⟮") {
-      top = "⎧";
-      bottom = "⎩";
-      repeat = "⎪";
+    } else if (delim === "\\lgroup" || delim === "\u27EE") {
+      top = "\u23A7";
+      bottom = "\u23A9";
+      repeat = "\u23AA";
       font = "Size4-Regular";
-    } else if (delim === "\\rgroup" || delim === "⟯") {
-      top = "⎫";
-      bottom = "⎭";
-      repeat = "⎪";
+    } else if (delim === "\\rgroup" || delim === "\u27EF") {
+      top = "\u23AB";
+      bottom = "\u23AD";
+      repeat = "\u23AA";
       font = "Size4-Regular";
-    } else if (delim === "\\lmoustache" || delim === "⎰") {
-      top = "⎧";
-      bottom = "⎭";
-      repeat = "⎪";
+    } else if (delim === "\\lmoustache" || delim === "\u23B0") {
+      top = "\u23A7";
+      bottom = "\u23AD";
+      repeat = "\u23AA";
       font = "Size4-Regular";
-    } else if (delim === "\\rmoustache" || delim === "⎱") {
-      top = "⎫";
-      bottom = "⎩";
-      repeat = "⎪";
+    } else if (delim === "\\rmoustache" || delim === "\u23B1") {
+      top = "\u23AB";
+      bottom = "\u23A9";
+      repeat = "\u23AA";
       font = "Size4-Regular";
     }
     var topMetrics = getMetrics(top, font, mode);
@@ -24453,14 +24453,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       ruleWidth: (options2.fontMetrics().sqrtRuleThickness + extraViniculum) * sizeMultiplier
     };
   };
-  var stackLargeDelimiters = ["(", "\\lparen", ")", "\\rparen", "[", "\\lbrack", "]", "\\rbrack", "\\{", "\\lbrace", "\\}", "\\rbrace", "\\lfloor", "\\rfloor", "⌊", "⌋", "\\lceil", "\\rceil", "⌈", "⌉", "\\surd"];
-  var stackAlwaysDelimiters = ["\\uparrow", "\\downarrow", "\\updownarrow", "\\Uparrow", "\\Downarrow", "\\Updownarrow", "|", "\\|", "\\vert", "\\Vert", "\\lvert", "\\rvert", "\\lVert", "\\rVert", "\\lgroup", "\\rgroup", "⟮", "⟯", "\\lmoustache", "\\rmoustache", "⎰", "⎱"];
+  var stackLargeDelimiters = ["(", "\\lparen", ")", "\\rparen", "[", "\\lbrack", "]", "\\rbrack", "\\{", "\\lbrace", "\\}", "\\rbrace", "\\lfloor", "\\rfloor", "\u230A", "\u230B", "\\lceil", "\\rceil", "\u2308", "\u2309", "\\surd"];
+  var stackAlwaysDelimiters = ["\\uparrow", "\\downarrow", "\\updownarrow", "\\Uparrow", "\\Downarrow", "\\Updownarrow", "|", "\\|", "\\vert", "\\Vert", "\\lvert", "\\rvert", "\\lVert", "\\rVert", "\\lgroup", "\\rgroup", "\u27EE", "\u27EF", "\\lmoustache", "\\rmoustache", "\u23B0", "\u23B1"];
   var stackNeverDelimiters = ["<", ">", "\\langle", "\\rangle", "/", "\\backslash", "\\lt", "\\gt"];
   var sizeToMaxHeight = [0, 1.2, 1.8, 2.4, 3];
   var makeSizedDelim = function makeSizedDelim2(delim, size, options2, mode, classes) {
-    if (delim === "<" || delim === "\\lt" || delim === "⟨") {
+    if (delim === "<" || delim === "\\lt" || delim === "\u27E8") {
       delim = "\\langle";
-    } else if (delim === ">" || delim === "\\gt" || delim === "⟩") {
+    } else if (delim === ">" || delim === "\\gt" || delim === "\u27E9") {
       delim = "\\rangle";
     }
     if (utils.contains(stackLargeDelimiters, delim) || utils.contains(stackNeverDelimiters, delim)) {
@@ -24559,9 +24559,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return sequence[sequence.length - 1];
   };
   var makeCustomSizedDelim = function makeCustomSizedDelim2(delim, height, center, options2, mode, classes) {
-    if (delim === "<" || delim === "\\lt" || delim === "⟨") {
+    if (delim === "<" || delim === "\\lt" || delim === "\u27E8") {
       delim = "\\langle";
-    } else if (delim === ">" || delim === "\\gt" || delim === "⟩") {
+    } else if (delim === ">" || delim === "\\gt" || delim === "\u27E9") {
       delim = "\\rangle";
     }
     var sequence;
@@ -24674,7 +24674,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       size: 4
     }
   };
-  var delimiters = ["(", "\\lparen", ")", "\\rparen", "[", "\\lbrack", "]", "\\rbrack", "\\{", "\\lbrace", "\\}", "\\rbrace", "\\lfloor", "\\rfloor", "⌊", "⌋", "\\lceil", "\\rceil", "⌈", "⌉", "<", ">", "\\langle", "⟨", "\\rangle", "⟩", "\\lt", "\\gt", "\\lvert", "\\rvert", "\\lVert", "\\rVert", "\\lgroup", "\\rgroup", "⟮", "⟯", "\\lmoustache", "\\rmoustache", "⎰", "⎱", "/", "\\backslash", "|", "\\vert", "\\|", "\\Vert", "\\uparrow", "\\Uparrow", "\\downarrow", "\\Downarrow", "\\updownarrow", "\\Updownarrow", "."];
+  var delimiters = ["(", "\\lparen", ")", "\\rparen", "[", "\\lbrack", "]", "\\rbrack", "\\{", "\\lbrace", "\\}", "\\rbrace", "\\lfloor", "\\rfloor", "\u230A", "\u230B", "\\lceil", "\\rceil", "\u2308", "\u2309", "<", ">", "\\langle", "\u27E8", "\\rangle", "\u27E9", "\\lt", "\\gt", "\\lvert", "\\rvert", "\\lVert", "\\rVert", "\\lgroup", "\\rgroup", "\u27EE", "\u27EF", "\\lmoustache", "\\rmoustache", "\u23B0", "\u23B1", "/", "\\backslash", "|", "\\vert", "\\|", "\\Vert", "\\uparrow", "\\Uparrow", "\\downarrow", "\\Downarrow", "\\updownarrow", "\\Updownarrow", "."];
   function checkDelimiter(delim, context) {
     var symDelim = checkSymbolNodeType(delim);
     if (symDelim && utils.contains(delimiters, symDelim.text)) {
@@ -27493,7 +27493,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       node2 = new MathNode("mo", buildExpression(group.body, options2));
     } else {
       node2 = new MathNode("mi", [new TextNode(group.name.slice(1))]);
-      var operator = new MathNode("mo", [makeText("⁡", "text")]);
+      var operator = new MathNode("mo", [makeText("\u2061", "text")]);
       if (group.parentIsSupSub) {
         node2 = new MathNode("mrow", [node2, operator]);
       } else {
@@ -27503,22 +27503,22 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     return node2;
   };
   var singleCharBigOps = {
-    "∏": "\\prod",
-    "∐": "\\coprod",
-    "∑": "\\sum",
-    "⋀": "\\bigwedge",
-    "⋁": "\\bigvee",
-    "⋂": "\\bigcap",
-    "⋃": "\\bigcup",
-    "⨀": "\\bigodot",
-    "⨁": "\\bigoplus",
-    "⨂": "\\bigotimes",
-    "⨄": "\\biguplus",
-    "⨆": "\\bigsqcup"
+    "\u220F": "\\prod",
+    "\u2210": "\\coprod",
+    "\u2211": "\\sum",
+    "\u22C0": "\\bigwedge",
+    "\u22C1": "\\bigvee",
+    "\u22C2": "\\bigcap",
+    "\u22C3": "\\bigcup",
+    "\u2A00": "\\bigodot",
+    "\u2A01": "\\bigoplus",
+    "\u2A02": "\\bigotimes",
+    "\u2A04": "\\biguplus",
+    "\u2A06": "\\bigsqcup"
   };
   defineFunction({
     type: "op",
-    names: ["\\coprod", "\\bigvee", "\\bigwedge", "\\biguplus", "\\bigcap", "\\bigcup", "\\intop", "\\prod", "\\sum", "\\bigotimes", "\\bigoplus", "\\bigodot", "\\bigsqcup", "\\smallint", "∏", "∐", "∑", "⋀", "⋁", "⋂", "⋃", "⨀", "⨁", "⨂", "⨄", "⨆"],
+    names: ["\\coprod", "\\bigvee", "\\bigwedge", "\\biguplus", "\\bigcap", "\\bigcup", "\\intop", "\\prod", "\\sum", "\\bigotimes", "\\bigoplus", "\\bigodot", "\\bigsqcup", "\\smallint", "\u220F", "\u2210", "\u2211", "\u22C0", "\u22C1", "\u22C2", "\u22C3", "\u2A00", "\u2A01", "\u2A02", "\u2A04", "\u2A06"],
     props: {
       numArgs: 0
     },
@@ -27568,12 +27568,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     mathmlBuilder: mathmlBuilder$1
   });
   var singleCharIntegrals = {
-    "∫": "\\int",
-    "∬": "\\iint",
-    "∭": "\\iiint",
-    "∮": "\\oint",
-    "∯": "\\oiint",
-    "∰": "\\oiiint"
+    "\u222B": "\\int",
+    "\u222C": "\\iint",
+    "\u222D": "\\iiint",
+    "\u222E": "\\oint",
+    "\u222F": "\\oiint",
+    "\u2230": "\\oiiint"
   };
   defineFunction({
     type: "op",
@@ -27623,7 +27623,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   });
   defineFunction({
     type: "op",
-    names: ["\\int", "\\iint", "\\iiint", "\\oint", "\\oiint", "\\oiiint", "∫", "∬", "∭", "∮", "∯", "∰"],
+    names: ["\\int", "\\iint", "\\iiint", "\\oint", "\\oiint", "\\oiiint", "\u222B", "\u222C", "\u222D", "\u222E", "\u222F", "\u2230"],
     props: {
       numArgs: 0
     },
@@ -27728,7 +27728,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     }
     var identifier = new mathMLTree.MathNode("mi", expression);
     identifier.setAttribute("mathvariant", "normal");
-    var operator = new mathMLTree.MathNode("mo", [makeText("⁡", "text")]);
+    var operator = new mathMLTree.MathNode("mo", [makeText("\u2061", "text")]);
     if (group.parentIsSupSub) {
       return new mathMLTree.MathNode("mrow", [identifier, operator]);
     } else {
@@ -27812,7 +27812,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return buildCommon.makeSpan(["mord", "overline"], [vlist], options2);
     },
     mathmlBuilder(group, options2) {
-      var operator = new mathMLTree.MathNode("mo", [new mathMLTree.TextNode("‾")]);
+      var operator = new mathMLTree.MathNode("mo", [new mathMLTree.TextNode("\u203E")]);
       operator.setAttribute("stretchy", "true");
       var node2 = new mathMLTree.MathNode("mover", [buildGroup(group.body, options2), operator]);
       node2.setAttribute("accent", "true");
@@ -28596,7 +28596,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     mathmlBuilder(group, options2) {
       var node2;
       if (regularSpace.hasOwnProperty(group.text)) {
-        node2 = new mathMLTree.MathNode("mtext", [new mathMLTree.TextNode(" ")]);
+        node2 = new mathMLTree.MathNode("mtext", [new mathMLTree.TextNode("\xA0")]);
       } else if (cssSpace.hasOwnProperty(group.text)) {
         return new mathMLTree.MathNode("mspace");
       } else {
@@ -28731,7 +28731,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return buildCommon.makeSpan(["mord", "underline"], [vlist], options2);
     },
     mathmlBuilder(group, options2) {
-      var operator = new mathMLTree.MathNode("mo", [new mathMLTree.TextNode("‾")]);
+      var operator = new mathMLTree.MathNode("mo", [new mathMLTree.TextNode("\u203E")]);
       operator.setAttribute("stretchy", "true");
       var node2 = new mathMLTree.MathNode("munder", [buildGroup(group.body, options2), operator]);
       node2.setAttribute("accentunder", "true");
@@ -28804,18 +28804,18 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       return node2;
     }
   });
-  var makeVerb = (group) => group.body.replace(/ /g, group.star ? "␣" : " ");
+  var makeVerb = (group) => group.body.replace(/ /g, group.star ? "\u2423" : "\xA0");
   var functions = _functions;
   var spaceRegexString = "[ \r\n	]";
   var controlWordRegexString = "\\\\[a-zA-Z@]+";
   var controlSymbolRegexString = "\\\\[^\uD800-\uDFFF]";
   var controlWordWhitespaceRegexString = "(" + controlWordRegexString + ")" + spaceRegexString + "*";
   var controlSpaceRegexString = "\\\\(\n|[ \r	]+\n?)[ \r	]*";
-  var combiningDiacriticalMarkString = "[̀-ͯ]";
+  var combiningDiacriticalMarkString = "[\u0300-\u036F]";
   var combiningDiacriticalMarksEndRegex = new RegExp(combiningDiacriticalMarkString + "+$");
   var tokenRegexString = "(" + spaceRegexString + "+)|" + // whitespace
   (controlSpaceRegexString + "|") + // \whitespace
-  "([!-\\[\\]-‧‪-퟿豈-￿]" + // single codepoint
+  "([!-\\[\\]-\u2027\u202A-\uD7FF\uF900-\uFFFF]" + // single codepoint
   (combiningDiacriticalMarkString + "*") + // ...plus accents
   "|[\uD800-\uDBFF][\uDC00-\uDFFF]" + // surrogate pair
   (combiningDiacriticalMarkString + "*") + // ...plus accents
@@ -29162,56 +29162,56 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   defineMacro("\\rq", "'");
   defineMacro("\\aa", "\\r a");
   defineMacro("\\AA", "\\r A");
-  defineMacro("\\textcopyright", "\\html@mathml{\\textcircled{c}}{\\char`©}");
+  defineMacro("\\textcopyright", "\\html@mathml{\\textcircled{c}}{\\char`\xA9}");
   defineMacro("\\copyright", "\\TextOrMath{\\textcopyright}{\\text{\\textcopyright}}");
-  defineMacro("\\textregistered", "\\html@mathml{\\textcircled{\\scriptsize R}}{\\char`®}");
-  defineMacro("ℬ", "\\mathscr{B}");
-  defineMacro("ℰ", "\\mathscr{E}");
-  defineMacro("ℱ", "\\mathscr{F}");
-  defineMacro("ℋ", "\\mathscr{H}");
-  defineMacro("ℐ", "\\mathscr{I}");
-  defineMacro("ℒ", "\\mathscr{L}");
-  defineMacro("ℳ", "\\mathscr{M}");
-  defineMacro("ℛ", "\\mathscr{R}");
-  defineMacro("ℭ", "\\mathfrak{C}");
-  defineMacro("ℌ", "\\mathfrak{H}");
-  defineMacro("ℨ", "\\mathfrak{Z}");
+  defineMacro("\\textregistered", "\\html@mathml{\\textcircled{\\scriptsize R}}{\\char`\xAE}");
+  defineMacro("\u212C", "\\mathscr{B}");
+  defineMacro("\u2130", "\\mathscr{E}");
+  defineMacro("\u2131", "\\mathscr{F}");
+  defineMacro("\u210B", "\\mathscr{H}");
+  defineMacro("\u2110", "\\mathscr{I}");
+  defineMacro("\u2112", "\\mathscr{L}");
+  defineMacro("\u2133", "\\mathscr{M}");
+  defineMacro("\u211B", "\\mathscr{R}");
+  defineMacro("\u212D", "\\mathfrak{C}");
+  defineMacro("\u210C", "\\mathfrak{H}");
+  defineMacro("\u2128", "\\mathfrak{Z}");
   defineMacro("\\Bbbk", "\\Bbb{k}");
-  defineMacro("·", "\\cdotp");
+  defineMacro("\xB7", "\\cdotp");
   defineMacro("\\llap", "\\mathllap{\\textrm{#1}}");
   defineMacro("\\rlap", "\\mathrlap{\\textrm{#1}}");
   defineMacro("\\clap", "\\mathclap{\\textrm{#1}}");
   defineMacro("\\mathstrut", "\\vphantom{(}");
   defineMacro("\\underbar", "\\underline{\\text{#1}}");
   defineMacro("\\not", '\\html@mathml{\\mathrel{\\mathrlap\\@not}}{\\char"338}');
-  defineMacro("\\neq", "\\html@mathml{\\mathrel{\\not=}}{\\mathrel{\\char`≠}}");
+  defineMacro("\\neq", "\\html@mathml{\\mathrel{\\not=}}{\\mathrel{\\char`\u2260}}");
   defineMacro("\\ne", "\\neq");
-  defineMacro("≠", "\\neq");
-  defineMacro("\\notin", "\\html@mathml{\\mathrel{{\\in}\\mathllap{/\\mskip1mu}}}{\\mathrel{\\char`∉}}");
-  defineMacro("∉", "\\notin");
-  defineMacro("≘", "\\html@mathml{\\mathrel{=\\kern{-1em}\\raisebox{0.4em}{$\\scriptsize\\frown$}}}{\\mathrel{\\char`≘}}");
-  defineMacro("≙", "\\html@mathml{\\stackrel{\\tiny\\wedge}{=}}{\\mathrel{\\char`≘}}");
-  defineMacro("≚", "\\html@mathml{\\stackrel{\\tiny\\vee}{=}}{\\mathrel{\\char`≚}}");
-  defineMacro("≛", "\\html@mathml{\\stackrel{\\scriptsize\\star}{=}}{\\mathrel{\\char`≛}}");
-  defineMacro("≝", "\\html@mathml{\\stackrel{\\tiny\\mathrm{def}}{=}}{\\mathrel{\\char`≝}}");
-  defineMacro("≞", "\\html@mathml{\\stackrel{\\tiny\\mathrm{m}}{=}}{\\mathrel{\\char`≞}}");
-  defineMacro("≟", "\\html@mathml{\\stackrel{\\tiny?}{=}}{\\mathrel{\\char`≟}}");
-  defineMacro("⟂", "\\perp");
-  defineMacro("‼", "\\mathclose{!\\mkern-0.8mu!}");
-  defineMacro("∌", "\\notni");
-  defineMacro("⌜", "\\ulcorner");
-  defineMacro("⌝", "\\urcorner");
-  defineMacro("⌞", "\\llcorner");
-  defineMacro("⌟", "\\lrcorner");
-  defineMacro("©", "\\copyright");
-  defineMacro("®", "\\textregistered");
-  defineMacro("️", "\\textregistered");
+  defineMacro("\u2260", "\\neq");
+  defineMacro("\\notin", "\\html@mathml{\\mathrel{{\\in}\\mathllap{/\\mskip1mu}}}{\\mathrel{\\char`\u2209}}");
+  defineMacro("\u2209", "\\notin");
+  defineMacro("\u2258", "\\html@mathml{\\mathrel{=\\kern{-1em}\\raisebox{0.4em}{$\\scriptsize\\frown$}}}{\\mathrel{\\char`\u2258}}");
+  defineMacro("\u2259", "\\html@mathml{\\stackrel{\\tiny\\wedge}{=}}{\\mathrel{\\char`\u2258}}");
+  defineMacro("\u225A", "\\html@mathml{\\stackrel{\\tiny\\vee}{=}}{\\mathrel{\\char`\u225A}}");
+  defineMacro("\u225B", "\\html@mathml{\\stackrel{\\scriptsize\\star}{=}}{\\mathrel{\\char`\u225B}}");
+  defineMacro("\u225D", "\\html@mathml{\\stackrel{\\tiny\\mathrm{def}}{=}}{\\mathrel{\\char`\u225D}}");
+  defineMacro("\u225E", "\\html@mathml{\\stackrel{\\tiny\\mathrm{m}}{=}}{\\mathrel{\\char`\u225E}}");
+  defineMacro("\u225F", "\\html@mathml{\\stackrel{\\tiny?}{=}}{\\mathrel{\\char`\u225F}}");
+  defineMacro("\u27C2", "\\perp");
+  defineMacro("\u203C", "\\mathclose{!\\mkern-0.8mu!}");
+  defineMacro("\u220C", "\\notni");
+  defineMacro("\u231C", "\\ulcorner");
+  defineMacro("\u231D", "\\urcorner");
+  defineMacro("\u231E", "\\llcorner");
+  defineMacro("\u231F", "\\lrcorner");
+  defineMacro("\xA9", "\\copyright");
+  defineMacro("\xAE", "\\textregistered");
+  defineMacro("\uFE0F", "\\textregistered");
   defineMacro("\\ulcorner", '\\html@mathml{\\@ulcorner}{\\mathop{\\char"231c}}');
   defineMacro("\\urcorner", '\\html@mathml{\\@urcorner}{\\mathop{\\char"231d}}');
   defineMacro("\\llcorner", '\\html@mathml{\\@llcorner}{\\mathop{\\char"231e}}');
   defineMacro("\\lrcorner", '\\html@mathml{\\@lrcorner}{\\mathop{\\char"231f}}');
   defineMacro("\\vdots", "\\mathord{\\varvdots\\rule{0pt}{15pt}}");
-  defineMacro("⋮", "\\vdots");
+  defineMacro("\u22EE", "\\vdots");
   defineMacro("\\varGamma", "\\mathit{\\Gamma}");
   defineMacro("\\varDelta", "\\mathit{\\Delta}");
   defineMacro("\\varTheta", "\\mathit{\\Theta}");
@@ -29404,11 +29404,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   defineMacro("\\Colonapprox", '\\html@mathml{\\mathrel{\\dblcolon\\mathrel{\\mkern-1.2mu}\\approx}}{\\mathop{\\char"2237\\char"2248}}');
   defineMacro("\\colonsim", '\\html@mathml{\\mathrel{\\vcentcolon\\mathrel{\\mkern-1.2mu}\\sim}}{\\mathop{\\char"3a\\char"223c}}');
   defineMacro("\\Colonsim", '\\html@mathml{\\mathrel{\\dblcolon\\mathrel{\\mkern-1.2mu}\\sim}}{\\mathop{\\char"2237\\char"223c}}');
-  defineMacro("∷", "\\dblcolon");
-  defineMacro("∹", "\\eqcolon");
-  defineMacro("≔", "\\coloneqq");
-  defineMacro("≕", "\\eqqcolon");
-  defineMacro("⩴", "\\Coloneqq");
+  defineMacro("\u2237", "\\dblcolon");
+  defineMacro("\u2239", "\\eqcolon");
+  defineMacro("\u2254", "\\coloneqq");
+  defineMacro("\u2255", "\\eqqcolon");
+  defineMacro("\u2A74", "\\Coloneqq");
   defineMacro("\\ratio", "\\vcentcolon");
   defineMacro("\\coloncolon", "\\dblcolon");
   defineMacro("\\colonequals", "\\coloneqq");
@@ -29425,7 +29425,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   defineMacro("\\simcoloncolon", "\\mathrel{\\sim\\mathrel{\\mkern-1.2mu}\\dblcolon}");
   defineMacro("\\approxcolon", "\\mathrel{\\approx\\mathrel{\\mkern-1.2mu}\\vcentcolon}");
   defineMacro("\\approxcoloncolon", "\\mathrel{\\approx\\mathrel{\\mkern-1.2mu}\\dblcolon}");
-  defineMacro("\\notni", "\\html@mathml{\\not\\ni}{\\mathrel{\\char`∌}}");
+  defineMacro("\\notni", "\\html@mathml{\\not\\ni}{\\mathrel{\\char`\u220C}}");
   defineMacro("\\limsup", "\\DOTSB\\operatorname*{lim\\,sup}");
   defineMacro("\\liminf", "\\DOTSB\\operatorname*{lim\\,inf}");
   defineMacro("\\injlim", "\\DOTSB\\operatorname*{inj\\,lim}");
@@ -29434,32 +29434,32 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   defineMacro("\\varliminf", "\\DOTSB\\operatorname*{\\underline{lim}}");
   defineMacro("\\varinjlim", "\\DOTSB\\operatorname*{\\underrightarrow{lim}}");
   defineMacro("\\varprojlim", "\\DOTSB\\operatorname*{\\underleftarrow{lim}}");
-  defineMacro("\\gvertneqq", "\\html@mathml{\\@gvertneqq}{≩}");
-  defineMacro("\\lvertneqq", "\\html@mathml{\\@lvertneqq}{≨}");
-  defineMacro("\\ngeqq", "\\html@mathml{\\@ngeqq}{≱}");
-  defineMacro("\\ngeqslant", "\\html@mathml{\\@ngeqslant}{≱}");
-  defineMacro("\\nleqq", "\\html@mathml{\\@nleqq}{≰}");
-  defineMacro("\\nleqslant", "\\html@mathml{\\@nleqslant}{≰}");
-  defineMacro("\\nshortmid", "\\html@mathml{\\@nshortmid}{∤}");
-  defineMacro("\\nshortparallel", "\\html@mathml{\\@nshortparallel}{∦}");
-  defineMacro("\\nsubseteqq", "\\html@mathml{\\@nsubseteqq}{⊈}");
-  defineMacro("\\nsupseteqq", "\\html@mathml{\\@nsupseteqq}{⊉}");
-  defineMacro("\\varsubsetneq", "\\html@mathml{\\@varsubsetneq}{⊊}");
-  defineMacro("\\varsubsetneqq", "\\html@mathml{\\@varsubsetneqq}{⫋}");
-  defineMacro("\\varsupsetneq", "\\html@mathml{\\@varsupsetneq}{⊋}");
-  defineMacro("\\varsupsetneqq", "\\html@mathml{\\@varsupsetneqq}{⫌}");
-  defineMacro("\\imath", "\\html@mathml{\\@imath}{ı}");
-  defineMacro("\\jmath", "\\html@mathml{\\@jmath}{ȷ}");
-  defineMacro("\\llbracket", "\\html@mathml{\\mathopen{[\\mkern-3.2mu[}}{\\mathopen{\\char`⟦}}");
-  defineMacro("\\rrbracket", "\\html@mathml{\\mathclose{]\\mkern-3.2mu]}}{\\mathclose{\\char`⟧}}");
-  defineMacro("⟦", "\\llbracket");
-  defineMacro("⟧", "\\rrbracket");
-  defineMacro("\\lBrace", "\\html@mathml{\\mathopen{\\{\\mkern-3.2mu[}}{\\mathopen{\\char`⦃}}");
-  defineMacro("\\rBrace", "\\html@mathml{\\mathclose{]\\mkern-3.2mu\\}}}{\\mathclose{\\char`⦄}}");
-  defineMacro("⦃", "\\lBrace");
-  defineMacro("⦄", "\\rBrace");
-  defineMacro("\\minuso", "\\mathbin{\\html@mathml{{\\mathrlap{\\mathchoice{\\kern{0.145em}}{\\kern{0.145em}}{\\kern{0.1015em}}{\\kern{0.0725em}}\\circ}{-}}}{\\char`⦵}}");
-  defineMacro("⦵", "\\minuso");
+  defineMacro("\\gvertneqq", "\\html@mathml{\\@gvertneqq}{\u2269}");
+  defineMacro("\\lvertneqq", "\\html@mathml{\\@lvertneqq}{\u2268}");
+  defineMacro("\\ngeqq", "\\html@mathml{\\@ngeqq}{\u2271}");
+  defineMacro("\\ngeqslant", "\\html@mathml{\\@ngeqslant}{\u2271}");
+  defineMacro("\\nleqq", "\\html@mathml{\\@nleqq}{\u2270}");
+  defineMacro("\\nleqslant", "\\html@mathml{\\@nleqslant}{\u2270}");
+  defineMacro("\\nshortmid", "\\html@mathml{\\@nshortmid}{\u2224}");
+  defineMacro("\\nshortparallel", "\\html@mathml{\\@nshortparallel}{\u2226}");
+  defineMacro("\\nsubseteqq", "\\html@mathml{\\@nsubseteqq}{\u2288}");
+  defineMacro("\\nsupseteqq", "\\html@mathml{\\@nsupseteqq}{\u2289}");
+  defineMacro("\\varsubsetneq", "\\html@mathml{\\@varsubsetneq}{\u228A}");
+  defineMacro("\\varsubsetneqq", "\\html@mathml{\\@varsubsetneqq}{\u2ACB}");
+  defineMacro("\\varsupsetneq", "\\html@mathml{\\@varsupsetneq}{\u228B}");
+  defineMacro("\\varsupsetneqq", "\\html@mathml{\\@varsupsetneqq}{\u2ACC}");
+  defineMacro("\\imath", "\\html@mathml{\\@imath}{\u0131}");
+  defineMacro("\\jmath", "\\html@mathml{\\@jmath}{\u0237}");
+  defineMacro("\\llbracket", "\\html@mathml{\\mathopen{[\\mkern-3.2mu[}}{\\mathopen{\\char`\u27E6}}");
+  defineMacro("\\rrbracket", "\\html@mathml{\\mathclose{]\\mkern-3.2mu]}}{\\mathclose{\\char`\u27E7}}");
+  defineMacro("\u27E6", "\\llbracket");
+  defineMacro("\u27E7", "\\rrbracket");
+  defineMacro("\\lBrace", "\\html@mathml{\\mathopen{\\{\\mkern-3.2mu[}}{\\mathopen{\\char`\u2983}}");
+  defineMacro("\\rBrace", "\\html@mathml{\\mathclose{]\\mkern-3.2mu\\}}}{\\mathclose{\\char`\u2984}}");
+  defineMacro("\u2983", "\\lBrace");
+  defineMacro("\u2984", "\\rBrace");
+  defineMacro("\\minuso", "\\mathbin{\\html@mathml{{\\mathrlap{\\mathchoice{\\kern{0.145em}}{\\kern{0.145em}}{\\kern{0.1015em}}{\\kern{0.0725em}}\\circ}{-}}}{\\char`\u29B5}}");
+  defineMacro("\u29B5", "\\minuso");
   defineMacro("\\darr", "\\downarrow");
   defineMacro("\\dArr", "\\Downarrow");
   defineMacro("\\Darr", "\\Downarrow");
@@ -30022,502 +30022,502 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   }
   var unicodeSubRegEx = /^[₊₋₌₍₎₀₁₂₃₄₅₆₇₈₉ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓᵦᵧᵨᵩᵪ]/;
   var uSubsAndSups = Object.freeze({
-    "₊": "+",
-    "₋": "-",
-    "₌": "=",
-    "₍": "(",
-    "₎": ")",
-    "₀": "0",
-    "₁": "1",
-    "₂": "2",
-    "₃": "3",
-    "₄": "4",
-    "₅": "5",
-    "₆": "6",
-    "₇": "7",
-    "₈": "8",
-    "₉": "9",
-    "ₐ": "a",
-    "ₑ": "e",
-    "ₕ": "h",
-    "ᵢ": "i",
-    "ⱼ": "j",
-    "ₖ": "k",
-    "ₗ": "l",
-    "ₘ": "m",
-    "ₙ": "n",
-    "ₒ": "o",
-    "ₚ": "p",
-    "ᵣ": "r",
-    "ₛ": "s",
-    "ₜ": "t",
-    "ᵤ": "u",
-    "ᵥ": "v",
-    "ₓ": "x",
-    "ᵦ": "β",
-    "ᵧ": "γ",
-    "ᵨ": "ρ",
-    "ᵩ": "ϕ",
-    "ᵪ": "χ",
-    "⁺": "+",
-    "⁻": "-",
-    "⁼": "=",
-    "⁽": "(",
-    "⁾": ")",
-    "⁰": "0",
-    "¹": "1",
-    "²": "2",
-    "³": "3",
-    "⁴": "4",
-    "⁵": "5",
-    "⁶": "6",
-    "⁷": "7",
-    "⁸": "8",
-    "⁹": "9",
-    "ᴬ": "A",
-    "ᴮ": "B",
-    "ᴰ": "D",
-    "ᴱ": "E",
-    "ᴳ": "G",
-    "ᴴ": "H",
-    "ᴵ": "I",
-    "ᴶ": "J",
-    "ᴷ": "K",
-    "ᴸ": "L",
-    "ᴹ": "M",
-    "ᴺ": "N",
-    "ᴼ": "O",
-    "ᴾ": "P",
-    "ᴿ": "R",
-    "ᵀ": "T",
-    "ᵁ": "U",
-    "ⱽ": "V",
-    "ᵂ": "W",
-    "ᵃ": "a",
-    "ᵇ": "b",
-    "ᶜ": "c",
-    "ᵈ": "d",
-    "ᵉ": "e",
-    "ᶠ": "f",
-    "ᵍ": "g",
-    "ʰ": "h",
-    "ⁱ": "i",
-    "ʲ": "j",
-    "ᵏ": "k",
-    "ˡ": "l",
-    "ᵐ": "m",
-    "ⁿ": "n",
-    "ᵒ": "o",
-    "ᵖ": "p",
-    "ʳ": "r",
-    "ˢ": "s",
-    "ᵗ": "t",
-    "ᵘ": "u",
-    "ᵛ": "v",
-    "ʷ": "w",
-    "ˣ": "x",
-    "ʸ": "y",
-    "ᶻ": "z",
-    "ᵝ": "β",
-    "ᵞ": "γ",
-    "ᵟ": "δ",
-    "ᵠ": "ϕ",
-    "ᵡ": "χ",
-    "ᶿ": "θ"
+    "\u208A": "+",
+    "\u208B": "-",
+    "\u208C": "=",
+    "\u208D": "(",
+    "\u208E": ")",
+    "\u2080": "0",
+    "\u2081": "1",
+    "\u2082": "2",
+    "\u2083": "3",
+    "\u2084": "4",
+    "\u2085": "5",
+    "\u2086": "6",
+    "\u2087": "7",
+    "\u2088": "8",
+    "\u2089": "9",
+    "\u2090": "a",
+    "\u2091": "e",
+    "\u2095": "h",
+    "\u1D62": "i",
+    "\u2C7C": "j",
+    "\u2096": "k",
+    "\u2097": "l",
+    "\u2098": "m",
+    "\u2099": "n",
+    "\u2092": "o",
+    "\u209A": "p",
+    "\u1D63": "r",
+    "\u209B": "s",
+    "\u209C": "t",
+    "\u1D64": "u",
+    "\u1D65": "v",
+    "\u2093": "x",
+    "\u1D66": "\u03B2",
+    "\u1D67": "\u03B3",
+    "\u1D68": "\u03C1",
+    "\u1D69": "\u03D5",
+    "\u1D6A": "\u03C7",
+    "\u207A": "+",
+    "\u207B": "-",
+    "\u207C": "=",
+    "\u207D": "(",
+    "\u207E": ")",
+    "\u2070": "0",
+    "\xB9": "1",
+    "\xB2": "2",
+    "\xB3": "3",
+    "\u2074": "4",
+    "\u2075": "5",
+    "\u2076": "6",
+    "\u2077": "7",
+    "\u2078": "8",
+    "\u2079": "9",
+    "\u1D2C": "A",
+    "\u1D2E": "B",
+    "\u1D30": "D",
+    "\u1D31": "E",
+    "\u1D33": "G",
+    "\u1D34": "H",
+    "\u1D35": "I",
+    "\u1D36": "J",
+    "\u1D37": "K",
+    "\u1D38": "L",
+    "\u1D39": "M",
+    "\u1D3A": "N",
+    "\u1D3C": "O",
+    "\u1D3E": "P",
+    "\u1D3F": "R",
+    "\u1D40": "T",
+    "\u1D41": "U",
+    "\u2C7D": "V",
+    "\u1D42": "W",
+    "\u1D43": "a",
+    "\u1D47": "b",
+    "\u1D9C": "c",
+    "\u1D48": "d",
+    "\u1D49": "e",
+    "\u1DA0": "f",
+    "\u1D4D": "g",
+    "\u02B0": "h",
+    "\u2071": "i",
+    "\u02B2": "j",
+    "\u1D4F": "k",
+    "\u02E1": "l",
+    "\u1D50": "m",
+    "\u207F": "n",
+    "\u1D52": "o",
+    "\u1D56": "p",
+    "\u02B3": "r",
+    "\u02E2": "s",
+    "\u1D57": "t",
+    "\u1D58": "u",
+    "\u1D5B": "v",
+    "\u02B7": "w",
+    "\u02E3": "x",
+    "\u02B8": "y",
+    "\u1DBB": "z",
+    "\u1D5D": "\u03B2",
+    "\u1D5E": "\u03B3",
+    "\u1D5F": "\u03B4",
+    "\u1D60": "\u03D5",
+    "\u1D61": "\u03C7",
+    "\u1DBF": "\u03B8"
   });
   var unicodeAccents = {
-    "́": {
+    "\u0301": {
       "text": "\\'",
       "math": "\\acute"
     },
-    "̀": {
+    "\u0300": {
       "text": "\\`",
       "math": "\\grave"
     },
-    "̈": {
+    "\u0308": {
       "text": '\\"',
       "math": "\\ddot"
     },
-    "̃": {
+    "\u0303": {
       "text": "\\~",
       "math": "\\tilde"
     },
-    "̄": {
+    "\u0304": {
       "text": "\\=",
       "math": "\\bar"
     },
-    "̆": {
+    "\u0306": {
       "text": "\\u",
       "math": "\\breve"
     },
-    "̌": {
+    "\u030C": {
       "text": "\\v",
       "math": "\\check"
     },
-    "̂": {
+    "\u0302": {
       "text": "\\^",
       "math": "\\hat"
     },
-    "̇": {
+    "\u0307": {
       "text": "\\.",
       "math": "\\dot"
     },
-    "̊": {
+    "\u030A": {
       "text": "\\r",
       "math": "\\mathring"
     },
-    "̋": {
+    "\u030B": {
       "text": "\\H"
     },
-    "̧": {
+    "\u0327": {
       "text": "\\c"
     }
   };
   var unicodeSymbols = {
-    "á": "á",
-    "à": "à",
-    "ä": "ä",
-    "ǟ": "ǟ",
-    "ã": "ã",
-    "ā": "ā",
-    "ă": "ă",
-    "ắ": "ắ",
-    "ằ": "ằ",
-    "ẵ": "ẵ",
-    "ǎ": "ǎ",
-    "â": "â",
-    "ấ": "ấ",
-    "ầ": "ầ",
-    "ẫ": "ẫ",
-    "ȧ": "ȧ",
-    "ǡ": "ǡ",
-    "å": "å",
-    "ǻ": "ǻ",
-    "ḃ": "ḃ",
-    "ć": "ć",
-    "ḉ": "ḉ",
-    "č": "č",
-    "ĉ": "ĉ",
-    "ċ": "ċ",
-    "ç": "ç",
-    "ď": "ď",
-    "ḋ": "ḋ",
-    "ḑ": "ḑ",
-    "é": "é",
-    "è": "è",
-    "ë": "ë",
-    "ẽ": "ẽ",
-    "ē": "ē",
-    "ḗ": "ḗ",
-    "ḕ": "ḕ",
-    "ĕ": "ĕ",
-    "ḝ": "ḝ",
-    "ě": "ě",
-    "ê": "ê",
-    "ế": "ế",
-    "ề": "ề",
-    "ễ": "ễ",
-    "ė": "ė",
-    "ȩ": "ȩ",
-    "ḟ": "ḟ",
-    "ǵ": "ǵ",
-    "ḡ": "ḡ",
-    "ğ": "ğ",
-    "ǧ": "ǧ",
-    "ĝ": "ĝ",
-    "ġ": "ġ",
-    "ģ": "ģ",
-    "ḧ": "ḧ",
-    "ȟ": "ȟ",
-    "ĥ": "ĥ",
-    "ḣ": "ḣ",
-    "ḩ": "ḩ",
-    "í": "í",
-    "ì": "ì",
-    "ï": "ï",
-    "ḯ": "ḯ",
-    "ĩ": "ĩ",
-    "ī": "ī",
-    "ĭ": "ĭ",
-    "ǐ": "ǐ",
-    "î": "î",
-    "ǰ": "ǰ",
-    "ĵ": "ĵ",
-    "ḱ": "ḱ",
-    "ǩ": "ǩ",
-    "ķ": "ķ",
-    "ĺ": "ĺ",
-    "ľ": "ľ",
-    "ļ": "ļ",
-    "ḿ": "ḿ",
-    "ṁ": "ṁ",
-    "ń": "ń",
-    "ǹ": "ǹ",
-    "ñ": "ñ",
-    "ň": "ň",
-    "ṅ": "ṅ",
-    "ņ": "ņ",
-    "ó": "ó",
-    "ò": "ò",
-    "ö": "ö",
-    "ȫ": "ȫ",
-    "õ": "õ",
-    "ṍ": "ṍ",
-    "ṏ": "ṏ",
-    "ȭ": "ȭ",
-    "ō": "ō",
-    "ṓ": "ṓ",
-    "ṑ": "ṑ",
-    "ŏ": "ŏ",
-    "ǒ": "ǒ",
-    "ô": "ô",
-    "ố": "ố",
-    "ồ": "ồ",
-    "ỗ": "ỗ",
-    "ȯ": "ȯ",
-    "ȱ": "ȱ",
-    "ő": "ő",
-    "ṕ": "ṕ",
-    "ṗ": "ṗ",
-    "ŕ": "ŕ",
-    "ř": "ř",
-    "ṙ": "ṙ",
-    "ŗ": "ŗ",
-    "ś": "ś",
-    "ṥ": "ṥ",
-    "š": "š",
-    "ṧ": "ṧ",
-    "ŝ": "ŝ",
-    "ṡ": "ṡ",
-    "ş": "ş",
-    "ẗ": "ẗ",
-    "ť": "ť",
-    "ṫ": "ṫ",
-    "ţ": "ţ",
-    "ú": "ú",
-    "ù": "ù",
-    "ü": "ü",
-    "ǘ": "ǘ",
-    "ǜ": "ǜ",
-    "ǖ": "ǖ",
-    "ǚ": "ǚ",
-    "ũ": "ũ",
-    "ṹ": "ṹ",
-    "ū": "ū",
-    "ṻ": "ṻ",
-    "ŭ": "ŭ",
-    "ǔ": "ǔ",
-    "û": "û",
-    "ů": "ů",
-    "ű": "ű",
-    "ṽ": "ṽ",
-    "ẃ": "ẃ",
-    "ẁ": "ẁ",
-    "ẅ": "ẅ",
-    "ŵ": "ŵ",
-    "ẇ": "ẇ",
-    "ẘ": "ẘ",
-    "ẍ": "ẍ",
-    "ẋ": "ẋ",
-    "ý": "ý",
-    "ỳ": "ỳ",
-    "ÿ": "ÿ",
-    "ỹ": "ỹ",
-    "ȳ": "ȳ",
-    "ŷ": "ŷ",
-    "ẏ": "ẏ",
-    "ẙ": "ẙ",
-    "ź": "ź",
-    "ž": "ž",
-    "ẑ": "ẑ",
-    "ż": "ż",
-    "Á": "Á",
-    "À": "À",
-    "Ä": "Ä",
-    "Ǟ": "Ǟ",
-    "Ã": "Ã",
-    "Ā": "Ā",
-    "Ă": "Ă",
-    "Ắ": "Ắ",
-    "Ằ": "Ằ",
-    "Ẵ": "Ẵ",
-    "Ǎ": "Ǎ",
-    "Â": "Â",
-    "Ấ": "Ấ",
-    "Ầ": "Ầ",
-    "Ẫ": "Ẫ",
-    "Ȧ": "Ȧ",
-    "Ǡ": "Ǡ",
-    "Å": "Å",
-    "Ǻ": "Ǻ",
-    "Ḃ": "Ḃ",
-    "Ć": "Ć",
-    "Ḉ": "Ḉ",
-    "Č": "Č",
-    "Ĉ": "Ĉ",
-    "Ċ": "Ċ",
-    "Ç": "Ç",
-    "Ď": "Ď",
-    "Ḋ": "Ḋ",
-    "Ḑ": "Ḑ",
-    "É": "É",
-    "È": "È",
-    "Ë": "Ë",
-    "Ẽ": "Ẽ",
-    "Ē": "Ē",
-    "Ḗ": "Ḗ",
-    "Ḕ": "Ḕ",
-    "Ĕ": "Ĕ",
-    "Ḝ": "Ḝ",
-    "Ě": "Ě",
-    "Ê": "Ê",
-    "Ế": "Ế",
-    "Ề": "Ề",
-    "Ễ": "Ễ",
-    "Ė": "Ė",
-    "Ȩ": "Ȩ",
-    "Ḟ": "Ḟ",
-    "Ǵ": "Ǵ",
-    "Ḡ": "Ḡ",
-    "Ğ": "Ğ",
-    "Ǧ": "Ǧ",
-    "Ĝ": "Ĝ",
-    "Ġ": "Ġ",
-    "Ģ": "Ģ",
-    "Ḧ": "Ḧ",
-    "Ȟ": "Ȟ",
-    "Ĥ": "Ĥ",
-    "Ḣ": "Ḣ",
-    "Ḩ": "Ḩ",
-    "Í": "Í",
-    "Ì": "Ì",
-    "Ï": "Ï",
-    "Ḯ": "Ḯ",
-    "Ĩ": "Ĩ",
-    "Ī": "Ī",
-    "Ĭ": "Ĭ",
-    "Ǐ": "Ǐ",
-    "Î": "Î",
-    "İ": "İ",
-    "Ĵ": "Ĵ",
-    "Ḱ": "Ḱ",
-    "Ǩ": "Ǩ",
-    "Ķ": "Ķ",
-    "Ĺ": "Ĺ",
-    "Ľ": "Ľ",
-    "Ļ": "Ļ",
-    "Ḿ": "Ḿ",
-    "Ṁ": "Ṁ",
-    "Ń": "Ń",
-    "Ǹ": "Ǹ",
-    "Ñ": "Ñ",
-    "Ň": "Ň",
-    "Ṅ": "Ṅ",
-    "Ņ": "Ņ",
-    "Ó": "Ó",
-    "Ò": "Ò",
-    "Ö": "Ö",
-    "Ȫ": "Ȫ",
-    "Õ": "Õ",
-    "Ṍ": "Ṍ",
-    "Ṏ": "Ṏ",
-    "Ȭ": "Ȭ",
-    "Ō": "Ō",
-    "Ṓ": "Ṓ",
-    "Ṑ": "Ṑ",
-    "Ŏ": "Ŏ",
-    "Ǒ": "Ǒ",
-    "Ô": "Ô",
-    "Ố": "Ố",
-    "Ồ": "Ồ",
-    "Ỗ": "Ỗ",
-    "Ȯ": "Ȯ",
-    "Ȱ": "Ȱ",
-    "Ő": "Ő",
-    "Ṕ": "Ṕ",
-    "Ṗ": "Ṗ",
-    "Ŕ": "Ŕ",
-    "Ř": "Ř",
-    "Ṙ": "Ṙ",
-    "Ŗ": "Ŗ",
-    "Ś": "Ś",
-    "Ṥ": "Ṥ",
-    "Š": "Š",
-    "Ṧ": "Ṧ",
-    "Ŝ": "Ŝ",
-    "Ṡ": "Ṡ",
-    "Ş": "Ş",
-    "Ť": "Ť",
-    "Ṫ": "Ṫ",
-    "Ţ": "Ţ",
-    "Ú": "Ú",
-    "Ù": "Ù",
-    "Ü": "Ü",
-    "Ǘ": "Ǘ",
-    "Ǜ": "Ǜ",
-    "Ǖ": "Ǖ",
-    "Ǚ": "Ǚ",
-    "Ũ": "Ũ",
-    "Ṹ": "Ṹ",
-    "Ū": "Ū",
-    "Ṻ": "Ṻ",
-    "Ŭ": "Ŭ",
-    "Ǔ": "Ǔ",
-    "Û": "Û",
-    "Ů": "Ů",
-    "Ű": "Ű",
-    "Ṽ": "Ṽ",
-    "Ẃ": "Ẃ",
-    "Ẁ": "Ẁ",
-    "Ẅ": "Ẅ",
-    "Ŵ": "Ŵ",
-    "Ẇ": "Ẇ",
-    "Ẍ": "Ẍ",
-    "Ẋ": "Ẋ",
-    "Ý": "Ý",
-    "Ỳ": "Ỳ",
-    "Ÿ": "Ÿ",
-    "Ỹ": "Ỹ",
-    "Ȳ": "Ȳ",
-    "Ŷ": "Ŷ",
-    "Ẏ": "Ẏ",
-    "Ź": "Ź",
-    "Ž": "Ž",
-    "Ẑ": "Ẑ",
-    "Ż": "Ż",
-    "ά": "ά",
-    "ὰ": "ὰ",
-    "ᾱ": "ᾱ",
-    "ᾰ": "ᾰ",
-    "έ": "έ",
-    "ὲ": "ὲ",
-    "ή": "ή",
-    "ὴ": "ὴ",
-    "ί": "ί",
-    "ὶ": "ὶ",
-    "ϊ": "ϊ",
-    "ΐ": "ΐ",
-    "ῒ": "ῒ",
-    "ῑ": "ῑ",
-    "ῐ": "ῐ",
-    "ό": "ό",
-    "ὸ": "ὸ",
-    "ύ": "ύ",
-    "ὺ": "ὺ",
-    "ϋ": "ϋ",
-    "ΰ": "ΰ",
-    "ῢ": "ῢ",
-    "ῡ": "ῡ",
-    "ῠ": "ῠ",
-    "ώ": "ώ",
-    "ὼ": "ὼ",
-    "Ύ": "Ύ",
-    "Ὺ": "Ὺ",
-    "Ϋ": "Ϋ",
-    "Ῡ": "Ῡ",
-    "Ῠ": "Ῠ",
-    "Ώ": "Ώ",
-    "Ὼ": "Ὼ"
+    "\xE1": "a\u0301",
+    "\xE0": "a\u0300",
+    "\xE4": "a\u0308",
+    "\u01DF": "a\u0308\u0304",
+    "\xE3": "a\u0303",
+    "\u0101": "a\u0304",
+    "\u0103": "a\u0306",
+    "\u1EAF": "a\u0306\u0301",
+    "\u1EB1": "a\u0306\u0300",
+    "\u1EB5": "a\u0306\u0303",
+    "\u01CE": "a\u030C",
+    "\xE2": "a\u0302",
+    "\u1EA5": "a\u0302\u0301",
+    "\u1EA7": "a\u0302\u0300",
+    "\u1EAB": "a\u0302\u0303",
+    "\u0227": "a\u0307",
+    "\u01E1": "a\u0307\u0304",
+    "\xE5": "a\u030A",
+    "\u01FB": "a\u030A\u0301",
+    "\u1E03": "b\u0307",
+    "\u0107": "c\u0301",
+    "\u1E09": "c\u0327\u0301",
+    "\u010D": "c\u030C",
+    "\u0109": "c\u0302",
+    "\u010B": "c\u0307",
+    "\xE7": "c\u0327",
+    "\u010F": "d\u030C",
+    "\u1E0B": "d\u0307",
+    "\u1E11": "d\u0327",
+    "\xE9": "e\u0301",
+    "\xE8": "e\u0300",
+    "\xEB": "e\u0308",
+    "\u1EBD": "e\u0303",
+    "\u0113": "e\u0304",
+    "\u1E17": "e\u0304\u0301",
+    "\u1E15": "e\u0304\u0300",
+    "\u0115": "e\u0306",
+    "\u1E1D": "e\u0327\u0306",
+    "\u011B": "e\u030C",
+    "\xEA": "e\u0302",
+    "\u1EBF": "e\u0302\u0301",
+    "\u1EC1": "e\u0302\u0300",
+    "\u1EC5": "e\u0302\u0303",
+    "\u0117": "e\u0307",
+    "\u0229": "e\u0327",
+    "\u1E1F": "f\u0307",
+    "\u01F5": "g\u0301",
+    "\u1E21": "g\u0304",
+    "\u011F": "g\u0306",
+    "\u01E7": "g\u030C",
+    "\u011D": "g\u0302",
+    "\u0121": "g\u0307",
+    "\u0123": "g\u0327",
+    "\u1E27": "h\u0308",
+    "\u021F": "h\u030C",
+    "\u0125": "h\u0302",
+    "\u1E23": "h\u0307",
+    "\u1E29": "h\u0327",
+    "\xED": "i\u0301",
+    "\xEC": "i\u0300",
+    "\xEF": "i\u0308",
+    "\u1E2F": "i\u0308\u0301",
+    "\u0129": "i\u0303",
+    "\u012B": "i\u0304",
+    "\u012D": "i\u0306",
+    "\u01D0": "i\u030C",
+    "\xEE": "i\u0302",
+    "\u01F0": "j\u030C",
+    "\u0135": "j\u0302",
+    "\u1E31": "k\u0301",
+    "\u01E9": "k\u030C",
+    "\u0137": "k\u0327",
+    "\u013A": "l\u0301",
+    "\u013E": "l\u030C",
+    "\u013C": "l\u0327",
+    "\u1E3F": "m\u0301",
+    "\u1E41": "m\u0307",
+    "\u0144": "n\u0301",
+    "\u01F9": "n\u0300",
+    "\xF1": "n\u0303",
+    "\u0148": "n\u030C",
+    "\u1E45": "n\u0307",
+    "\u0146": "n\u0327",
+    "\xF3": "o\u0301",
+    "\xF2": "o\u0300",
+    "\xF6": "o\u0308",
+    "\u022B": "o\u0308\u0304",
+    "\xF5": "o\u0303",
+    "\u1E4D": "o\u0303\u0301",
+    "\u1E4F": "o\u0303\u0308",
+    "\u022D": "o\u0303\u0304",
+    "\u014D": "o\u0304",
+    "\u1E53": "o\u0304\u0301",
+    "\u1E51": "o\u0304\u0300",
+    "\u014F": "o\u0306",
+    "\u01D2": "o\u030C",
+    "\xF4": "o\u0302",
+    "\u1ED1": "o\u0302\u0301",
+    "\u1ED3": "o\u0302\u0300",
+    "\u1ED7": "o\u0302\u0303",
+    "\u022F": "o\u0307",
+    "\u0231": "o\u0307\u0304",
+    "\u0151": "o\u030B",
+    "\u1E55": "p\u0301",
+    "\u1E57": "p\u0307",
+    "\u0155": "r\u0301",
+    "\u0159": "r\u030C",
+    "\u1E59": "r\u0307",
+    "\u0157": "r\u0327",
+    "\u015B": "s\u0301",
+    "\u1E65": "s\u0301\u0307",
+    "\u0161": "s\u030C",
+    "\u1E67": "s\u030C\u0307",
+    "\u015D": "s\u0302",
+    "\u1E61": "s\u0307",
+    "\u015F": "s\u0327",
+    "\u1E97": "t\u0308",
+    "\u0165": "t\u030C",
+    "\u1E6B": "t\u0307",
+    "\u0163": "t\u0327",
+    "\xFA": "u\u0301",
+    "\xF9": "u\u0300",
+    "\xFC": "u\u0308",
+    "\u01D8": "u\u0308\u0301",
+    "\u01DC": "u\u0308\u0300",
+    "\u01D6": "u\u0308\u0304",
+    "\u01DA": "u\u0308\u030C",
+    "\u0169": "u\u0303",
+    "\u1E79": "u\u0303\u0301",
+    "\u016B": "u\u0304",
+    "\u1E7B": "u\u0304\u0308",
+    "\u016D": "u\u0306",
+    "\u01D4": "u\u030C",
+    "\xFB": "u\u0302",
+    "\u016F": "u\u030A",
+    "\u0171": "u\u030B",
+    "\u1E7D": "v\u0303",
+    "\u1E83": "w\u0301",
+    "\u1E81": "w\u0300",
+    "\u1E85": "w\u0308",
+    "\u0175": "w\u0302",
+    "\u1E87": "w\u0307",
+    "\u1E98": "w\u030A",
+    "\u1E8D": "x\u0308",
+    "\u1E8B": "x\u0307",
+    "\xFD": "y\u0301",
+    "\u1EF3": "y\u0300",
+    "\xFF": "y\u0308",
+    "\u1EF9": "y\u0303",
+    "\u0233": "y\u0304",
+    "\u0177": "y\u0302",
+    "\u1E8F": "y\u0307",
+    "\u1E99": "y\u030A",
+    "\u017A": "z\u0301",
+    "\u017E": "z\u030C",
+    "\u1E91": "z\u0302",
+    "\u017C": "z\u0307",
+    "\xC1": "A\u0301",
+    "\xC0": "A\u0300",
+    "\xC4": "A\u0308",
+    "\u01DE": "A\u0308\u0304",
+    "\xC3": "A\u0303",
+    "\u0100": "A\u0304",
+    "\u0102": "A\u0306",
+    "\u1EAE": "A\u0306\u0301",
+    "\u1EB0": "A\u0306\u0300",
+    "\u1EB4": "A\u0306\u0303",
+    "\u01CD": "A\u030C",
+    "\xC2": "A\u0302",
+    "\u1EA4": "A\u0302\u0301",
+    "\u1EA6": "A\u0302\u0300",
+    "\u1EAA": "A\u0302\u0303",
+    "\u0226": "A\u0307",
+    "\u01E0": "A\u0307\u0304",
+    "\xC5": "A\u030A",
+    "\u01FA": "A\u030A\u0301",
+    "\u1E02": "B\u0307",
+    "\u0106": "C\u0301",
+    "\u1E08": "C\u0327\u0301",
+    "\u010C": "C\u030C",
+    "\u0108": "C\u0302",
+    "\u010A": "C\u0307",
+    "\xC7": "C\u0327",
+    "\u010E": "D\u030C",
+    "\u1E0A": "D\u0307",
+    "\u1E10": "D\u0327",
+    "\xC9": "E\u0301",
+    "\xC8": "E\u0300",
+    "\xCB": "E\u0308",
+    "\u1EBC": "E\u0303",
+    "\u0112": "E\u0304",
+    "\u1E16": "E\u0304\u0301",
+    "\u1E14": "E\u0304\u0300",
+    "\u0114": "E\u0306",
+    "\u1E1C": "E\u0327\u0306",
+    "\u011A": "E\u030C",
+    "\xCA": "E\u0302",
+    "\u1EBE": "E\u0302\u0301",
+    "\u1EC0": "E\u0302\u0300",
+    "\u1EC4": "E\u0302\u0303",
+    "\u0116": "E\u0307",
+    "\u0228": "E\u0327",
+    "\u1E1E": "F\u0307",
+    "\u01F4": "G\u0301",
+    "\u1E20": "G\u0304",
+    "\u011E": "G\u0306",
+    "\u01E6": "G\u030C",
+    "\u011C": "G\u0302",
+    "\u0120": "G\u0307",
+    "\u0122": "G\u0327",
+    "\u1E26": "H\u0308",
+    "\u021E": "H\u030C",
+    "\u0124": "H\u0302",
+    "\u1E22": "H\u0307",
+    "\u1E28": "H\u0327",
+    "\xCD": "I\u0301",
+    "\xCC": "I\u0300",
+    "\xCF": "I\u0308",
+    "\u1E2E": "I\u0308\u0301",
+    "\u0128": "I\u0303",
+    "\u012A": "I\u0304",
+    "\u012C": "I\u0306",
+    "\u01CF": "I\u030C",
+    "\xCE": "I\u0302",
+    "\u0130": "I\u0307",
+    "\u0134": "J\u0302",
+    "\u1E30": "K\u0301",
+    "\u01E8": "K\u030C",
+    "\u0136": "K\u0327",
+    "\u0139": "L\u0301",
+    "\u013D": "L\u030C",
+    "\u013B": "L\u0327",
+    "\u1E3E": "M\u0301",
+    "\u1E40": "M\u0307",
+    "\u0143": "N\u0301",
+    "\u01F8": "N\u0300",
+    "\xD1": "N\u0303",
+    "\u0147": "N\u030C",
+    "\u1E44": "N\u0307",
+    "\u0145": "N\u0327",
+    "\xD3": "O\u0301",
+    "\xD2": "O\u0300",
+    "\xD6": "O\u0308",
+    "\u022A": "O\u0308\u0304",
+    "\xD5": "O\u0303",
+    "\u1E4C": "O\u0303\u0301",
+    "\u1E4E": "O\u0303\u0308",
+    "\u022C": "O\u0303\u0304",
+    "\u014C": "O\u0304",
+    "\u1E52": "O\u0304\u0301",
+    "\u1E50": "O\u0304\u0300",
+    "\u014E": "O\u0306",
+    "\u01D1": "O\u030C",
+    "\xD4": "O\u0302",
+    "\u1ED0": "O\u0302\u0301",
+    "\u1ED2": "O\u0302\u0300",
+    "\u1ED6": "O\u0302\u0303",
+    "\u022E": "O\u0307",
+    "\u0230": "O\u0307\u0304",
+    "\u0150": "O\u030B",
+    "\u1E54": "P\u0301",
+    "\u1E56": "P\u0307",
+    "\u0154": "R\u0301",
+    "\u0158": "R\u030C",
+    "\u1E58": "R\u0307",
+    "\u0156": "R\u0327",
+    "\u015A": "S\u0301",
+    "\u1E64": "S\u0301\u0307",
+    "\u0160": "S\u030C",
+    "\u1E66": "S\u030C\u0307",
+    "\u015C": "S\u0302",
+    "\u1E60": "S\u0307",
+    "\u015E": "S\u0327",
+    "\u0164": "T\u030C",
+    "\u1E6A": "T\u0307",
+    "\u0162": "T\u0327",
+    "\xDA": "U\u0301",
+    "\xD9": "U\u0300",
+    "\xDC": "U\u0308",
+    "\u01D7": "U\u0308\u0301",
+    "\u01DB": "U\u0308\u0300",
+    "\u01D5": "U\u0308\u0304",
+    "\u01D9": "U\u0308\u030C",
+    "\u0168": "U\u0303",
+    "\u1E78": "U\u0303\u0301",
+    "\u016A": "U\u0304",
+    "\u1E7A": "U\u0304\u0308",
+    "\u016C": "U\u0306",
+    "\u01D3": "U\u030C",
+    "\xDB": "U\u0302",
+    "\u016E": "U\u030A",
+    "\u0170": "U\u030B",
+    "\u1E7C": "V\u0303",
+    "\u1E82": "W\u0301",
+    "\u1E80": "W\u0300",
+    "\u1E84": "W\u0308",
+    "\u0174": "W\u0302",
+    "\u1E86": "W\u0307",
+    "\u1E8C": "X\u0308",
+    "\u1E8A": "X\u0307",
+    "\xDD": "Y\u0301",
+    "\u1EF2": "Y\u0300",
+    "\u0178": "Y\u0308",
+    "\u1EF8": "Y\u0303",
+    "\u0232": "Y\u0304",
+    "\u0176": "Y\u0302",
+    "\u1E8E": "Y\u0307",
+    "\u0179": "Z\u0301",
+    "\u017D": "Z\u030C",
+    "\u1E90": "Z\u0302",
+    "\u017B": "Z\u0307",
+    "\u03AC": "\u03B1\u0301",
+    "\u1F70": "\u03B1\u0300",
+    "\u1FB1": "\u03B1\u0304",
+    "\u1FB0": "\u03B1\u0306",
+    "\u03AD": "\u03B5\u0301",
+    "\u1F72": "\u03B5\u0300",
+    "\u03AE": "\u03B7\u0301",
+    "\u1F74": "\u03B7\u0300",
+    "\u03AF": "\u03B9\u0301",
+    "\u1F76": "\u03B9\u0300",
+    "\u03CA": "\u03B9\u0308",
+    "\u0390": "\u03B9\u0308\u0301",
+    "\u1FD2": "\u03B9\u0308\u0300",
+    "\u1FD1": "\u03B9\u0304",
+    "\u1FD0": "\u03B9\u0306",
+    "\u03CC": "\u03BF\u0301",
+    "\u1F78": "\u03BF\u0300",
+    "\u03CD": "\u03C5\u0301",
+    "\u1F7A": "\u03C5\u0300",
+    "\u03CB": "\u03C5\u0308",
+    "\u03B0": "\u03C5\u0308\u0301",
+    "\u1FE2": "\u03C5\u0308\u0300",
+    "\u1FE1": "\u03C5\u0304",
+    "\u1FE0": "\u03C5\u0306",
+    "\u03CE": "\u03C9\u0301",
+    "\u1F7C": "\u03C9\u0300",
+    "\u038E": "\u03A5\u0301",
+    "\u1FEA": "\u03A5\u0300",
+    "\u03AB": "\u03A5\u0308",
+    "\u1FE9": "\u03A5\u0304",
+    "\u1FE8": "\u03A5\u0306",
+    "\u038F": "\u03A9\u0301",
+    "\u1FFA": "\u03A9\u0300"
   };
   class Parser {
     constructor(input, settings) {
@@ -31240,9 +31240,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       if (match) {
         text2 = text2.substring(0, match.index);
         if (text2 === "i") {
-          text2 = "ı";
+          text2 = "\u0131";
         } else if (text2 === "j") {
-          text2 = "ȷ";
+          text2 = "\u0237";
         }
       }
       var symbol;
@@ -34394,7 +34394,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   instance.hasLoadedNamespace;
   instance.loadNamespaces;
   instance.loadLanguages;
-  const title$8 = "ChatGPT Exporter";
+  const title$8 = "ChatGPT Helper";
   const ExportHelper$8 = "Export";
   const Setting$8 = "Setting";
   const Language$8 = "Language";
@@ -34477,9 +34477,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Batch progress": "Batch {{current}}/{{total}}",
     "All conversations": "All conversations",
     "Load more conversations": "Load {{n}} more",
-    "Load more conversations remaining": "Load {{n}} more · {{remaining}} left"
+    "Load more conversations remaining": "Load {{n}} more \xB7 {{remaining}} left"
   };
-  const title$7 = "ChatGPT Exporter";
+  const title$7 = "ChatGPT Helper";
   const ExportHelper$7 = "Exportar";
   const Setting$7 = "Ajustes";
   const Language$7 = "Idioma";
@@ -34499,7 +34499,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Setting: Setting$7,
     Language: Language$7,
     "Copy Text": "Copiar Texto",
-    "Copied!": "¡Copiado!",
+    "Copied!": "\xA1Copiado!",
     Screenshot: Screenshot$7,
     Markdown: Markdown$7,
     HTML: HTML$7,
@@ -34514,42 +34514,42 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Preview: Preview$7,
     "File Name": "Nombre del Archivo",
     "Export All": "Exportar Todos",
-    "Exporter Settings": "Ajustes De Exportación",
+    "Exporter Settings": "Ajustes De Exportaci\xF3n",
     "Export Dialog Title": "Exportar Conversaciones",
-    "Invalid File Format": "Formato de archivo inválido",
-    "Export from official export file": "Exportar desde archivo de exportación oficial",
+    "Invalid File Format": "Formato de archivo inv\xE1lido",
+    "Export from official export file": "Exportar desde archivo de exportaci\xF3n oficial",
     "Export from API": "Exportar desde API",
     "Available variables": "Variables Disponibles",
     "Conversation Timestamp": "Marca de Tiempo",
-    "Conversation Timestamp Description": "Aparecerá en la página.",
+    "Conversation Timestamp Description": "Aparecer\xE1 en la p\xE1gina.",
     "Enable on HTML": "Habilitar en archivos HTML",
     "Enable on Markdown": "Habilitar en archivos Markdown",
     "Use 24-hour format": "Usar formato de 24 horas (ej. 23:59)",
-    "Export Format": "Formato de Exportación",
+    "Export Format": "Formato de Exportaci\xF3n",
     "Export Metadata": "Exportar Metadatos",
-    "Export Metadata Description": "Añadir Metadatos a los archivos Markdown y HTML exportados.",
+    "Export Metadata Description": "A\xF1adir Metadatos a los archivos Markdown y HTML exportados.",
     "Export Thinking Process": "Exportar Proceso de Pensamiento",
     "Export Thinking Process Description": "Incluir el proceso de pensamiento/razonamiento del modelo en los archivos Markdown y HTML exportados.",
     "OpenAI Official Format": "Formato Oficial de OpenAI",
-    "Conversation Archive Alert": "¿Estás seguro que quieres archivar todas las conversaciones seleccionadas?",
-    "Conversation Archived Message": "Todos las conversaciones seleccionadas se han archivado. Por favor refresca la página para ver los cambios.",
-    "Conversation Delete Alert": "¿Estás seguro que quieres borrar todas las conversaciones seleccionadas?",
-    "Conversation Deleted Message": "Todos las conversaciones seleccionadas se han borrado. Por favor refresca la página para ver los cambios.",
-    "Please start a conversation first": "Por favor empieza una conversación antes.",
+    "Conversation Archive Alert": "\xBFEst\xE1s seguro que quieres archivar todas las conversaciones seleccionadas?",
+    "Conversation Archived Message": "Todos las conversaciones seleccionadas se han archivado. Por favor refresca la p\xE1gina para ver los cambios.",
+    "Conversation Delete Alert": "\xBFEst\xE1s seguro que quieres borrar todas las conversaciones seleccionadas?",
+    "Conversation Deleted Message": "Todos las conversaciones seleccionadas se han borrado. Por favor refresca la p\xE1gina para ver los cambios.",
+    "Please start a conversation first": "Por favor empieza una conversaci\xF3n antes.",
     "Select Project": "Seleccionar proyecto",
     "(no project)": "(sin proyecto)",
-    "Export All Limit": "Límite de Exportar Todos",
-    "Export All Limit Description": "Establece el número máximo de conversaciones a cargar en el diálogo 'Exportar Todos'.",
+    "Export All Limit": "L\xEDmite de Exportar Todos",
+    "Export All Limit Description": "Establece el n\xFAmero m\xE1ximo de conversaciones a cargar en el di\xE1logo 'Exportar Todos'.",
     "Select a source to load conversations": "Selecciona un proyecto arriba para cargar conversaciones.",
     Search: Search$7,
-    "Last 100": "Últimas 100",
+    "Last 100": "\xDAltimas 100",
     "No results": "Sin resultados"
   };
-  const title$6 = "Exportateur ChatGPT";
+  const title$6 = "ChatGPT Helper";
   const ExportHelper$6 = "Exporter";
-  const Setting$6 = "Paramètre";
+  const Setting$6 = "Param\xE8tre";
   const Language$6 = "Langue";
-  const Screenshot$6 = "Capture d'écran";
+  const Screenshot$6 = "Capture d'\xE9cran";
   const Markdown$6 = "Markdown";
   const HTML$6 = "HTML";
   const Archive$6 = "Archiver";
@@ -34557,7 +34557,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
   const Delete$6 = "Supprimer";
   const Export$6 = "Exporter";
   const Loading$6 = "Chargement";
-  const Preview$6 = "Aperçu";
+  const Preview$6 = "Aper\xE7u";
   const Search$6 = "Rechercher";
   const fr = {
     title: title$6,
@@ -34565,7 +34565,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Setting: Setting$6,
     Language: Language$6,
     "Copy Text": "Copier le texte",
-    "Copied!": "Copié !",
+    "Copied!": "Copi\xE9 !",
     Screenshot: Screenshot$6,
     Markdown: Markdown$6,
     HTML: HTML$6,
@@ -34573,14 +34573,14 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Archive: Archive$6,
     Save: Save$6,
     Delete: Delete$6,
-    "Select All": "Tout sélectionner",
+    "Select All": "Tout s\xE9lectionner",
     Export: Export$6,
     "Error": "Erreur",
     Loading: Loading$6,
     Preview: Preview$6,
     "File Name": "Nom du fichier",
     "Export All": "Tout exporter",
-    "Exporter Settings": "Paramètres de l'exportateur",
+    "Exporter Settings": "Param\xE8tres de l'exportateur",
     "Export Dialog Title": "Exporter les conversations",
     "Invalid File Format": "Format de fichier invalide",
     "Export from official export file": "Exporter depuis un fichier officiel",
@@ -34592,26 +34592,26 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Enable on Markdown": "Activer sur les fichiers Markdown",
     "Use 24-hour format": "Utiliser le format 24 heures (ex. 23:59)",
     "Export Format": "Format d'exportation",
-    "Export Metadata": "Exporter les métadonnées",
-    "Export Metadata Description": "Ajouter des métadonnées aux fichiers Markdown et HTML exportés.",
-    "Export Thinking Process": "Exporter le processus de réflexion",
-    "Export Thinking Process Description": "Inclure le processus de réflexion/raisonnement du modèle dans les fichiers Markdown et HTML exportés.",
+    "Export Metadata": "Exporter les m\xE9tadonn\xE9es",
+    "Export Metadata Description": "Ajouter des m\xE9tadonn\xE9es aux fichiers Markdown et HTML export\xE9s.",
+    "Export Thinking Process": "Exporter le processus de r\xE9flexion",
+    "Export Thinking Process Description": "Inclure le processus de r\xE9flexion/raisonnement du mod\xE8le dans les fichiers Markdown et HTML export\xE9s.",
     "OpenAI Official Format": "Format officiel OpenAI",
-    "Conversation Archive Alert": "Êtes-vous sûr de vouloir archiver toutes les conversations sélectionnées ?",
-    "Conversation Archived Message": "Toutes les conversations sélectionnées ont été archivées. Veuillez actualiser la page pour voir les changements.",
-    "Conversation Delete Alert": "Êtes-vous sûr de vouloir supprimer toutes les conversations sélectionnées ?",
-    "Conversation Deleted Message": "Toutes les conversations sélectionnées ont été supprimées. Veuillez actualiser la page pour voir les changements.",
+    "Conversation Archive Alert": "\xCAtes-vous s\xFBr de vouloir archiver toutes les conversations s\xE9lectionn\xE9es ?",
+    "Conversation Archived Message": "Toutes les conversations s\xE9lectionn\xE9es ont \xE9t\xE9 archiv\xE9es. Veuillez actualiser la page pour voir les changements.",
+    "Conversation Delete Alert": "\xCAtes-vous s\xFBr de vouloir supprimer toutes les conversations s\xE9lectionn\xE9es ?",
+    "Conversation Deleted Message": "Toutes les conversations s\xE9lectionn\xE9es ont \xE9t\xE9 supprim\xE9es. Veuillez actualiser la page pour voir les changements.",
     "Please start a conversation first": "Veuillez commencer une conversation d'abord.",
-    "Select Project": "Sélectionner un projet",
+    "Select Project": "S\xE9lectionner un projet",
     "(no project)": "(aucun projet)",
     "Export All Limit": "Limite d'Exportation Multiple",
-    "Export All Limit Description": "Définit le nombre maximal de conversations à charger dans la boîte de dialogue 'Tout exporter'.",
-    "Select a source to load conversations": "Sélectionnez un projet ci-dessus pour charger les conversations.",
+    "Export All Limit Description": "D\xE9finit le nombre maximal de conversations \xE0 charger dans la bo\xEEte de dialogue 'Tout exporter'.",
+    "Select a source to load conversations": "S\xE9lectionnez un projet ci-dessus pour charger les conversations.",
     Search: Search$6,
-    "Last 100": "100 dernières",
-    "No results": "Aucun résultat"
+    "Last 100": "100 derni\xE8res",
+    "No results": "Aucun r\xE9sultat"
   };
-  const title$5 = "ChatGPT Exporter";
+  const title$5 = "ChatGPT Helper";
   const ExportHelper$5 = "Ekspor";
   const Setting$5 = "Pengaturan";
   const Language$5 = "Bahasa";
@@ -34677,27 +34677,27 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "Last 100": "100 Terakhir",
     "No results": "Tidak ada hasil"
   };
-  const title$4 = "ChatGPTエクスポーター";
-  const ExportHelper$4 = "エクスポート";
-  const Setting$4 = "設定";
-  const Language$4 = "言語";
-  const Screenshot$4 = "スクリーンショット";
+  const title$4 = "ChatGPT Helper";
+  const ExportHelper$4 = "\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8";
+  const Setting$4 = "\u8A2D\u5B9A";
+  const Language$4 = "\u8A00\u8A9E";
+  const Screenshot$4 = "\u30B9\u30AF\u30EA\u30FC\u30F3\u30B7\u30E7\u30C3\u30C8";
   const Markdown$4 = "Markdown";
   const HTML$4 = "HTML";
-  const Archive$4 = "アーカイブ";
-  const Save$4 = "保存";
-  const Delete$4 = "削除";
-  const Export$4 = "エクスポート";
-  const Loading$4 = "読み込み中";
-  const Preview$4 = "プレビュー";
-  const Search$4 = "検索";
+  const Archive$4 = "\u30A2\u30FC\u30AB\u30A4\u30D6";
+  const Save$4 = "\u4FDD\u5B58";
+  const Delete$4 = "\u524A\u9664";
+  const Export$4 = "\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8";
+  const Loading$4 = "\u8AAD\u307F\u8FBC\u307F\u4E2D";
+  const Preview$4 = "\u30D7\u30EC\u30D3\u30E5\u30FC";
+  const Search$4 = "\u691C\u7D22";
   const ja_JP = {
     title: title$4,
     ExportHelper: ExportHelper$4,
     Setting: Setting$4,
     Language: Language$4,
-    "Copy Text": "テキストをコピー",
-    "Copied!": "コピーしました！",
+    "Copy Text": "\u30C6\u30AD\u30B9\u30C8\u3092\u30B3\u30D4\u30FC",
+    "Copied!": "\u30B3\u30D4\u30FC\u3057\u307E\u3057\u305F\uFF01",
     Screenshot: Screenshot$4,
     Markdown: Markdown$4,
     HTML: HTML$4,
@@ -34705,65 +34705,65 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Archive: Archive$4,
     Save: Save$4,
     Delete: Delete$4,
-    "Select All": "すべて選択",
+    "Select All": "\u3059\u3079\u3066\u9078\u629E",
     Export: Export$4,
-    "Error": "エラー",
+    "Error": "\u30A8\u30E9\u30FC",
     Loading: Loading$4,
     Preview: Preview$4,
-    "File Name": "ファイル名",
-    "Export All": "すべてエクスポート",
-    "Exporter Settings": "エクスポーター設定",
-    "Export Dialog Title": "会話をエクスポート",
-    "Invalid File Format": "無効なファイル形式",
-    "Export from official export file": "公式エクスポートファイルからエクスポートする",
-    "Export from API": "APIからエクスポートする",
-    "Available variables": "使用可能な変数",
-    "Conversation Timestamp": "会話のタイムスタンプ",
-    "Conversation Timestamp Description": "ページに表示されます。",
-    "Enable on HTML": "HTML ファイルで有効にする",
-    "Enable on Markdown": "Markdown ファイルで有効にする",
-    "Use 24-hour format": "24時間形式を使用する (例: 23:59)",
-    "Export Format": "エクスポートフォーマット",
-    "Export Metadata": "メタデータをエクスポート",
-    "Export Metadata Description": "エクスポートされたMarkdownおよびHTMLファイルにメタデータを追加します。",
-    "Export Thinking Process": "思考プロセスをエクスポート",
-    "Export Thinking Process Description": "エクスポートされたMarkdownおよびHTMLファイルにモデルの思考・推論プロセスを含めます。",
-    "OpenAI Official Format": "OpenAI公式フォーマット",
-    "Conversation Archive Alert": "選択したすべての会話をアーカイブしてもよろしいですか？",
-    "Conversation Archived Message": "選択したすべての会話がアーカイブされました。変更を表示するには、ページを更新してください。",
-    "Conversation Delete Alert": "選択したすべての会話を削除してもよろしいですか？",
-    "Conversation Deleted Message": "選択したすべての会話が削除されました。変更を表示するには、ページを更新してください。",
-    "Please start a conversation first": "まず会話を開始してください。",
-    "Select Project": "プロジェクトを選択",
-    "(no project)": "（プロジェクトなし）",
-    "Export All Limit": "すべてエクスポートの上限",
-    "Export All Limit Description": "「すべてエクスポート」ダイアログで読み込む会話の最大数を設定します。",
-    "Select a source to load conversations": "上からプロジェクトを選択して会話を読み込んでください。",
+    "File Name": "\u30D5\u30A1\u30A4\u30EB\u540D",
+    "Export All": "\u3059\u3079\u3066\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8",
+    "Exporter Settings": "\u30A8\u30AF\u30B9\u30DD\u30FC\u30BF\u30FC\u8A2D\u5B9A",
+    "Export Dialog Title": "\u4F1A\u8A71\u3092\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8",
+    "Invalid File Format": "\u7121\u52B9\u306A\u30D5\u30A1\u30A4\u30EB\u5F62\u5F0F",
+    "Export from official export file": "\u516C\u5F0F\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u30D5\u30A1\u30A4\u30EB\u304B\u3089\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u3059\u308B",
+    "Export from API": "API\u304B\u3089\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u3059\u308B",
+    "Available variables": "\u4F7F\u7528\u53EF\u80FD\u306A\u5909\u6570",
+    "Conversation Timestamp": "\u4F1A\u8A71\u306E\u30BF\u30A4\u30E0\u30B9\u30BF\u30F3\u30D7",
+    "Conversation Timestamp Description": "\u30DA\u30FC\u30B8\u306B\u8868\u793A\u3055\u308C\u307E\u3059\u3002",
+    "Enable on HTML": "HTML \u30D5\u30A1\u30A4\u30EB\u3067\u6709\u52B9\u306B\u3059\u308B",
+    "Enable on Markdown": "Markdown \u30D5\u30A1\u30A4\u30EB\u3067\u6709\u52B9\u306B\u3059\u308B",
+    "Use 24-hour format": "24\u6642\u9593\u5F62\u5F0F\u3092\u4F7F\u7528\u3059\u308B (\u4F8B: 23:59)",
+    "Export Format": "\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u30D5\u30A9\u30FC\u30DE\u30C3\u30C8",
+    "Export Metadata": "\u30E1\u30BF\u30C7\u30FC\u30BF\u3092\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8",
+    "Export Metadata Description": "\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u3055\u308C\u305FMarkdown\u304A\u3088\u3073HTML\u30D5\u30A1\u30A4\u30EB\u306B\u30E1\u30BF\u30C7\u30FC\u30BF\u3092\u8FFD\u52A0\u3057\u307E\u3059\u3002",
+    "Export Thinking Process": "\u601D\u8003\u30D7\u30ED\u30BB\u30B9\u3092\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8",
+    "Export Thinking Process Description": "\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u3055\u308C\u305FMarkdown\u304A\u3088\u3073HTML\u30D5\u30A1\u30A4\u30EB\u306B\u30E2\u30C7\u30EB\u306E\u601D\u8003\u30FB\u63A8\u8AD6\u30D7\u30ED\u30BB\u30B9\u3092\u542B\u3081\u307E\u3059\u3002",
+    "OpenAI Official Format": "OpenAI\u516C\u5F0F\u30D5\u30A9\u30FC\u30DE\u30C3\u30C8",
+    "Conversation Archive Alert": "\u9078\u629E\u3057\u305F\u3059\u3079\u3066\u306E\u4F1A\u8A71\u3092\u30A2\u30FC\u30AB\u30A4\u30D6\u3057\u3066\u3082\u3088\u308D\u3057\u3044\u3067\u3059\u304B\uFF1F",
+    "Conversation Archived Message": "\u9078\u629E\u3057\u305F\u3059\u3079\u3066\u306E\u4F1A\u8A71\u304C\u30A2\u30FC\u30AB\u30A4\u30D6\u3055\u308C\u307E\u3057\u305F\u3002\u5909\u66F4\u3092\u8868\u793A\u3059\u308B\u306B\u306F\u3001\u30DA\u30FC\u30B8\u3092\u66F4\u65B0\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
+    "Conversation Delete Alert": "\u9078\u629E\u3057\u305F\u3059\u3079\u3066\u306E\u4F1A\u8A71\u3092\u524A\u9664\u3057\u3066\u3082\u3088\u308D\u3057\u3044\u3067\u3059\u304B\uFF1F",
+    "Conversation Deleted Message": "\u9078\u629E\u3057\u305F\u3059\u3079\u3066\u306E\u4F1A\u8A71\u304C\u524A\u9664\u3055\u308C\u307E\u3057\u305F\u3002\u5909\u66F4\u3092\u8868\u793A\u3059\u308B\u306B\u306F\u3001\u30DA\u30FC\u30B8\u3092\u66F4\u65B0\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
+    "Please start a conversation first": "\u307E\u305A\u4F1A\u8A71\u3092\u958B\u59CB\u3057\u3066\u304F\u3060\u3055\u3044\u3002",
+    "Select Project": "\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u3092\u9078\u629E",
+    "(no project)": "\uFF08\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u306A\u3057\uFF09",
+    "Export All Limit": "\u3059\u3079\u3066\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u306E\u4E0A\u9650",
+    "Export All Limit Description": "\u300C\u3059\u3079\u3066\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u300D\u30C0\u30A4\u30A2\u30ED\u30B0\u3067\u8AAD\u307F\u8FBC\u3080\u4F1A\u8A71\u306E\u6700\u5927\u6570\u3092\u8A2D\u5B9A\u3057\u307E\u3059\u3002",
+    "Select a source to load conversations": "\u4E0A\u304B\u3089\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u3092\u9078\u629E\u3057\u3066\u4F1A\u8A71\u3092\u8AAD\u307F\u8FBC\u3093\u3067\u304F\u3060\u3055\u3044\u3002",
     Search: Search$4,
-    "Last 100": "最新100件",
-    "No results": "結果なし"
+    "Last 100": "\u6700\u65B0100\u4EF6",
+    "No results": "\u7D50\u679C\u306A\u3057"
   };
-  const title$3 = "ChatGPT Exporter";
+  const title$3 = "ChatGPT Helper";
   const ExportHelper$3 = "Export";
-  const Setting$3 = "Параметры";
-  const Language$3 = "Язык";
-  const Screenshot$3 = "Скриншот";
+  const Setting$3 = "\u041F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\u044B";
+  const Language$3 = "\u042F\u0437\u044B\u043A";
+  const Screenshot$3 = "\u0421\u043A\u0440\u0438\u043D\u0448\u043E\u0442";
   const Markdown$3 = "Markdown";
   const HTML$3 = "HTML";
-  const Archive$3 = "Архивировать";
-  const Save$3 = "Сохранить";
-  const Delete$3 = "Удалить";
-  const Export$3 = "Экспорт";
-  const Loading$3 = "Загрузка";
-  const Preview$3 = "Предпросмотр";
-  const Search$3 = "Поиск";
+  const Archive$3 = "\u0410\u0440\u0445\u0438\u0432\u0438\u0440\u043E\u0432\u0430\u0442\u044C";
+  const Save$3 = "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C";
+  const Delete$3 = "\u0423\u0434\u0430\u043B\u0438\u0442\u044C";
+  const Export$3 = "\u042D\u043A\u0441\u043F\u043E\u0440\u0442";
+  const Loading$3 = "\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430";
+  const Preview$3 = "\u041F\u0440\u0435\u0434\u043F\u0440\u043E\u0441\u043C\u043E\u0442\u0440";
+  const Search$3 = "\u041F\u043E\u0438\u0441\u043A";
   const ru = {
     title: title$3,
     ExportHelper: ExportHelper$3,
     Setting: Setting$3,
     Language: Language$3,
-    "Copy Text": "Копировать текст",
-    "Copied!": "Скопировано!",
+    "Copy Text": "\u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0442\u0435\u043A\u0441\u0442",
+    "Copied!": "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043E!",
     Screenshot: Screenshot$3,
     Markdown: Markdown$3,
     HTML: HTML$3,
@@ -34771,57 +34771,57 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Archive: Archive$3,
     Save: Save$3,
     Delete: Delete$3,
-    "Select All": "Выбрать все",
+    "Select All": "\u0412\u044B\u0431\u0440\u0430\u0442\u044C \u0432\u0441\u0435",
     Export: Export$3,
-    "Error": "Ошибка",
+    "Error": "\u041E\u0448\u0438\u0431\u043A\u0430",
     Loading: Loading$3,
     Preview: Preview$3,
-    "File Name": "Имя файла",
-    "Export All": "Экспортировать все",
-    "Exporter Settings": "Параметры экспорта",
-    "Export Dialog Title": "Экспортировать беседы",
-    "Invalid File Format": "Неверный формат файла",
-    "Export from official export file": "Экспорт из официального файла",
-    "Export from API": "Экспорт из API",
-    "Available variables": "Доступные переменные",
-    "Conversation Timestamp": "Временная метка разговора",
-    "Conversation Timestamp Description": "Будет отображаться на странице.",
-    "Enable on HTML": "Включить для HTML-файлов",
-    "Enable on Markdown": "Включить для файлов Markdown",
-    "Use 24-hour format": "Использовать 24-часовой формат (например, 23:59)",
-    "Export Format": "Формат экспорта",
-    "Export Metadata": "Экспорт метаданных",
-    "Export Metadata Description": "Добавляйте метаданные в экспортированные файлы Markdown и HTML.",
-    "Export Thinking Process": "Экспорт процесса мышления",
-    "Export Thinking Process Description": "Включить процесс мышления/рассуждения модели в экспортированные файлы Markdown и HTML.",
-    "OpenAI Official Format": "Официальный формат OpenAI",
-    "Conversation Archive Alert": "Вы уверены, что хотите архивировать все выбранные разговоры?",
-    "Conversation Archived Message": "Все выбранные разговоры были заархивированы. Пожалуйста, обновите страницу, чтобы увидеть изменения.",
-    "Conversation Delete Alert": "Вы уверены, что хотите удалить все выбранные разговоры?",
-    "Conversation Deleted Message": "Все выбранные разговоры были удалены. Пожалуйста, обновите страницу, чтобы увидеть изменения.",
-    "Please start a conversation first": "Пожалуйста, начните разговор первым.",
-    "Select Project": "Выберите проект",
-    "(no project)": "(нет проекта)",
-    "Export All Limit": "Лимит экспорта всех",
-    "Export All Limit Description": "Установите максимальное количество бесед для загрузки в диалоге 'Экспортировать все'.",
-    "Select a source to load conversations": "Выберите проект выше, чтобы загрузить беседы.",
+    "File Name": "\u0418\u043C\u044F \u0444\u0430\u0439\u043B\u0430",
+    "Export All": "\u042D\u043A\u0441\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0432\u0441\u0435",
+    "Exporter Settings": "\u041F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\u044B \u044D\u043A\u0441\u043F\u043E\u0440\u0442\u0430",
+    "Export Dialog Title": "\u042D\u043A\u0441\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0431\u0435\u0441\u0435\u0434\u044B",
+    "Invalid File Format": "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u0444\u043E\u0440\u043C\u0430\u0442 \u0444\u0430\u0439\u043B\u0430",
+    "Export from official export file": "\u042D\u043A\u0441\u043F\u043E\u0440\u0442 \u0438\u0437 \u043E\u0444\u0438\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0433\u043E \u0444\u0430\u0439\u043B\u0430",
+    "Export from API": "\u042D\u043A\u0441\u043F\u043E\u0440\u0442 \u0438\u0437 API",
+    "Available variables": "\u0414\u043E\u0441\u0442\u0443\u043F\u043D\u044B\u0435 \u043F\u0435\u0440\u0435\u043C\u0435\u043D\u043D\u044B\u0435",
+    "Conversation Timestamp": "\u0412\u0440\u0435\u043C\u0435\u043D\u043D\u0430\u044F \u043C\u0435\u0442\u043A\u0430 \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440\u0430",
+    "Conversation Timestamp Description": "\u0411\u0443\u0434\u0435\u0442 \u043E\u0442\u043E\u0431\u0440\u0430\u0436\u0430\u0442\u044C\u0441\u044F \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0435.",
+    "Enable on HTML": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0434\u043B\u044F HTML-\u0444\u0430\u0439\u043B\u043E\u0432",
+    "Enable on Markdown": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0434\u043B\u044F \u0444\u0430\u0439\u043B\u043E\u0432 Markdown",
+    "Use 24-hour format": "\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C 24-\u0447\u0430\u0441\u043E\u0432\u043E\u0439 \u0444\u043E\u0440\u043C\u0430\u0442 (\u043D\u0430\u043F\u0440\u0438\u043C\u0435\u0440, 23:59)",
+    "Export Format": "\u0424\u043E\u0440\u043C\u0430\u0442 \u044D\u043A\u0441\u043F\u043E\u0440\u0442\u0430",
+    "Export Metadata": "\u042D\u043A\u0441\u043F\u043E\u0440\u0442 \u043C\u0435\u0442\u0430\u0434\u0430\u043D\u043D\u044B\u0445",
+    "Export Metadata Description": "\u0414\u043E\u0431\u0430\u0432\u043B\u044F\u0439\u0442\u0435 \u043C\u0435\u0442\u0430\u0434\u0430\u043D\u043D\u044B\u0435 \u0432 \u044D\u043A\u0441\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0435 \u0444\u0430\u0439\u043B\u044B Markdown \u0438 HTML.",
+    "Export Thinking Process": "\u042D\u043A\u0441\u043F\u043E\u0440\u0442 \u043F\u0440\u043E\u0446\u0435\u0441\u0441\u0430 \u043C\u044B\u0448\u043B\u0435\u043D\u0438\u044F",
+    "Export Thinking Process Description": "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u043F\u0440\u043E\u0446\u0435\u0441\u0441 \u043C\u044B\u0448\u043B\u0435\u043D\u0438\u044F/\u0440\u0430\u0441\u0441\u0443\u0436\u0434\u0435\u043D\u0438\u044F \u043C\u043E\u0434\u0435\u043B\u0438 \u0432 \u044D\u043A\u0441\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0435 \u0444\u0430\u0439\u043B\u044B Markdown \u0438 HTML.",
+    "OpenAI Official Format": "\u041E\u0444\u0438\u0446\u0438\u0430\u043B\u044C\u043D\u044B\u0439 \u0444\u043E\u0440\u043C\u0430\u0442 OpenAI",
+    "Conversation Archive Alert": "\u0412\u044B \u0443\u0432\u0435\u0440\u0435\u043D\u044B, \u0447\u0442\u043E \u0445\u043E\u0442\u0438\u0442\u0435 \u0430\u0440\u0445\u0438\u0432\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0432\u0441\u0435 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440\u044B?",
+    "Conversation Archived Message": "\u0412\u0441\u0435 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440\u044B \u0431\u044B\u043B\u0438 \u0437\u0430\u0430\u0440\u0445\u0438\u0432\u0438\u0440\u043E\u0432\u0430\u043D\u044B. \u041F\u043E\u0436\u0430\u043B\u0443\u0439\u0441\u0442\u0430, \u043E\u0431\u043D\u043E\u0432\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443, \u0447\u0442\u043E\u0431\u044B \u0443\u0432\u0438\u0434\u0435\u0442\u044C \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u044F.",
+    "Conversation Delete Alert": "\u0412\u044B \u0443\u0432\u0435\u0440\u0435\u043D\u044B, \u0447\u0442\u043E \u0445\u043E\u0442\u0438\u0442\u0435 \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u0432\u0441\u0435 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440\u044B?",
+    "Conversation Deleted Message": "\u0412\u0441\u0435 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440\u044B \u0431\u044B\u043B\u0438 \u0443\u0434\u0430\u043B\u0435\u043D\u044B. \u041F\u043E\u0436\u0430\u043B\u0443\u0439\u0441\u0442\u0430, \u043E\u0431\u043D\u043E\u0432\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443, \u0447\u0442\u043E\u0431\u044B \u0443\u0432\u0438\u0434\u0435\u0442\u044C \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u044F.",
+    "Please start a conversation first": "\u041F\u043E\u0436\u0430\u043B\u0443\u0439\u0441\u0442\u0430, \u043D\u0430\u0447\u043D\u0438\u0442\u0435 \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440 \u043F\u0435\u0440\u0432\u044B\u043C.",
+    "Select Project": "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u0440\u043E\u0435\u043A\u0442",
+    "(no project)": "(\u043D\u0435\u0442 \u043F\u0440\u043E\u0435\u043A\u0442\u0430)",
+    "Export All Limit": "\u041B\u0438\u043C\u0438\u0442 \u044D\u043A\u0441\u043F\u043E\u0440\u0442\u0430 \u0432\u0441\u0435\u0445",
+    "Export All Limit Description": "\u0423\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u0435 \u043C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\u043E\u0435 \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u0431\u0435\u0441\u0435\u0434 \u0434\u043B\u044F \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438 \u0432 \u0434\u0438\u0430\u043B\u043E\u0433\u0435 '\u042D\u043A\u0441\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0432\u0441\u0435'.",
+    "Select a source to load conversations": "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u0440\u043E\u0435\u043A\u0442 \u0432\u044B\u0448\u0435, \u0447\u0442\u043E\u0431\u044B \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u0431\u0435\u0441\u0435\u0434\u044B.",
     Search: Search$3,
-    "Last 100": "Последние 100",
-    "No results": "Нет результатов"
+    "Last 100": "\u041F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0435 100",
+    "No results": "\u041D\u0435\u0442 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u043E\u0432"
   };
-  const title$2 = "ChatGPT Exporter";
-  const ExportHelper$2 = "Dışa Aktar";
+  const title$2 = "ChatGPT Helper";
+  const ExportHelper$2 = "D\u0131\u015Fa Aktar";
   const Setting$2 = "Ayarlar";
   const Language$2 = "Dil";
-  const Screenshot$2 = "Ekran Alıntısı";
+  const Screenshot$2 = "Ekran Al\u0131nt\u0131s\u0131";
   const Markdown$2 = "Markdown";
   const HTML$2 = "HTML";
-  const Archive$2 = "Arşiv";
+  const Archive$2 = "Ar\u015Fiv";
   const Save$2 = "Kaydet";
   const Delete$2 = "Sil";
-  const Export$2 = "Dışa Aktar";
-  const Loading$2 = "Yükleniyor";
-  const Preview$2 = "Önizleme";
+  const Export$2 = "D\u0131\u015Fa Aktar";
+  const Loading$2 = "Y\xFCkleniyor";
+  const Preview$2 = "\xD6nizleme";
   const Search$2 = "Ara";
   const tr_TR = {
     title: title$2,
@@ -34829,7 +34829,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Setting: Setting$2,
     Language: Language$2,
     "Copy Text": "Metni Kopyala",
-    "Copied!": "Kopyalandı!",
+    "Copied!": "Kopyaland\u0131!",
     Screenshot: Screenshot$2,
     Markdown: Markdown$2,
     HTML: HTML$2,
@@ -34837,65 +34837,65 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Archive: Archive$2,
     Save: Save$2,
     Delete: Delete$2,
-    "Select All": "Tümünü Seç",
+    "Select All": "T\xFCm\xFCn\xFC Se\xE7",
     Export: Export$2,
     "Error": "Hata",
     Loading: Loading$2,
     Preview: Preview$2,
-    "File Name": "Dosya Adı",
-    "Export All": "Tümünü Dışa Aktar",
-    "Exporter Settings": "Dışa Aktarma Ayarları",
-    "Export Dialog Title": "Konuşmaları Dışa Aktar",
-    "Invalid File Format": "Dosya Biçimi Geçersiz",
-    "Export from official export file": "Resmi dışa aktarma dosyasından dışa aktar",
-    "Export from API": "API'den dışa aktar",
-    "Available variables": "Kullanılabilir değişkenler",
-    "Conversation Timestamp": "Konuşma zaman bilgisi",
-    "Conversation Timestamp Description": "Sayfada gösterilir.",
-    "Enable on HTML": "HTML dosyalarında etkinleştir",
-    "Enable on Markdown": "Markdown dosyalarında etkinleştir",
-    "Use 24-hour format": "24 saat biçimini kullan (örn. 23:59)",
-    "Export Format": "Dışa Aktarma Formatı",
-    "Export Metadata": "Üst veriyi dışa aktar",
-    "Export Metadata Description": "Dışa aktarılan Markdown ve HTML dosyalarına üst veri ekle",
-    "Export Thinking Process": "Düşünme Sürecini Dışa Aktar",
-    "Export Thinking Process Description": "Dışa aktarılan Markdown ve HTML dosyalarına modelin düşünme/akıl yürütme sürecini dahil et.",
+    "File Name": "Dosya Ad\u0131",
+    "Export All": "T\xFCm\xFCn\xFC D\u0131\u015Fa Aktar",
+    "Exporter Settings": "D\u0131\u015Fa Aktarma Ayarlar\u0131",
+    "Export Dialog Title": "Konu\u015Fmalar\u0131 D\u0131\u015Fa Aktar",
+    "Invalid File Format": "Dosya Bi\xE7imi Ge\xE7ersiz",
+    "Export from official export file": "Resmi d\u0131\u015Fa aktarma dosyas\u0131ndan d\u0131\u015Fa aktar",
+    "Export from API": "API'den d\u0131\u015Fa aktar",
+    "Available variables": "Kullan\u0131labilir de\u011Fi\u015Fkenler",
+    "Conversation Timestamp": "Konu\u015Fma zaman bilgisi",
+    "Conversation Timestamp Description": "Sayfada g\xF6sterilir.",
+    "Enable on HTML": "HTML dosyalar\u0131nda etkinle\u015Ftir",
+    "Enable on Markdown": "Markdown dosyalar\u0131nda etkinle\u015Ftir",
+    "Use 24-hour format": "24 saat bi\xE7imini kullan (\xF6rn. 23:59)",
+    "Export Format": "D\u0131\u015Fa Aktarma Format\u0131",
+    "Export Metadata": "\xDCst veriyi d\u0131\u015Fa aktar",
+    "Export Metadata Description": "D\u0131\u015Fa aktar\u0131lan Markdown ve HTML dosyalar\u0131na \xFCst veri ekle",
+    "Export Thinking Process": "D\xFC\u015F\xFCnme S\xFCrecini D\u0131\u015Fa Aktar",
+    "Export Thinking Process Description": "D\u0131\u015Fa aktar\u0131lan Markdown ve HTML dosyalar\u0131na modelin d\xFC\u015F\xFCnme/ak\u0131l y\xFCr\xFCtme s\xFCrecini dahil et.",
     "OpenAI Official Format": "OpenAI Resmi Format",
-    "Conversation Archive Alert": "Seçilen tüm konuşmaları arşivlemek istediğinizden emin misiniz?",
-    "Conversation Archived Message": "Seçilen tüm konuşmalar arşivlendi. Değişiklikleri görmek için sayfayı yenileyin.",
-    "Conversation Delete Alert": "Seçilen tüm konuşmaları silmek istediğinizden emin misiniz?",
-    "Conversation Deleted Message": "Seçilen tüm konuşmalar silindi. Değişiklikleri görmek için sayfayı yenileyin.",
-    "Please start a conversation first": "Lütfen önce bir konuşma başlatın.",
-    "Select Project": "Proje Seç",
+    "Conversation Archive Alert": "Se\xE7ilen t\xFCm konu\u015Fmalar\u0131 ar\u015Fivlemek istedi\u011Finizden emin misiniz?",
+    "Conversation Archived Message": "Se\xE7ilen t\xFCm konu\u015Fmalar ar\u015Fivlendi. De\u011Fi\u015Fiklikleri g\xF6rmek i\xE7in sayfay\u0131 yenileyin.",
+    "Conversation Delete Alert": "Se\xE7ilen t\xFCm konu\u015Fmalar\u0131 silmek istedi\u011Finizden emin misiniz?",
+    "Conversation Deleted Message": "Se\xE7ilen t\xFCm konu\u015Fmalar silindi. De\u011Fi\u015Fiklikleri g\xF6rmek i\xE7in sayfay\u0131 yenileyin.",
+    "Please start a conversation first": "L\xFCtfen \xF6nce bir konu\u015Fma ba\u015Flat\u0131n.",
+    "Select Project": "Proje Se\xE7",
     "(no project)": "(proje yok)",
-    "Export All Limit": "Tümünü Dışa Aktarma Limiti",
-    "Export All Limit Description": "'Tümünü Dışa Aktar' iletişim kutusunda yüklenecek maksimum konuşma sayısını ayarlayın.",
-    "Select a source to load conversations": "Konuşmaları yüklemek için yukarıdan bir proje seçin.",
+    "Export All Limit": "T\xFCm\xFCn\xFC D\u0131\u015Fa Aktarma Limiti",
+    "Export All Limit Description": "'T\xFCm\xFCn\xFC D\u0131\u015Fa Aktar' ileti\u015Fim kutusunda y\xFCklenecek maksimum konu\u015Fma say\u0131s\u0131n\u0131 ayarlay\u0131n.",
+    "Select a source to load conversations": "Konu\u015Fmalar\u0131 y\xFCklemek i\xE7in yukar\u0131dan bir proje se\xE7in.",
     Search: Search$2,
     "Last 100": "Son 100",
-    "No results": "Sonuç yok"
+    "No results": "Sonu\xE7 yok"
   };
-  const title$1 = "ChatGPT Exporter";
-  const ExportHelper$1 = "导出助手";
-  const Setting$1 = "设置";
-  const Language$1 = "语言";
-  const Screenshot$1 = "截屏";
+  const title$1 = "ChatGPT Helper";
+  const ExportHelper$1 = "\u5BFC\u51FA\u52A9\u624B";
+  const Setting$1 = "\u8BBE\u7F6E";
+  const Language$1 = "\u8BED\u8A00";
+  const Screenshot$1 = "\u622A\u5C4F";
   const Markdown$1 = "Markdown";
   const HTML$1 = "HTML";
-  const Archive$1 = "归档";
-  const Save$1 = "保存";
-  const Delete$1 = "删除";
-  const Export$1 = "导出";
-  const Loading$1 = "加载中";
-  const Preview$1 = "预览";
-  const Search$1 = "搜索";
+  const Archive$1 = "\u5F52\u6863";
+  const Save$1 = "\u4FDD\u5B58";
+  const Delete$1 = "\u5220\u9664";
+  const Export$1 = "\u5BFC\u51FA";
+  const Loading$1 = "\u52A0\u8F7D\u4E2D";
+  const Preview$1 = "\u9884\u89C8";
+  const Search$1 = "\u641C\u7D22";
   const zh_Hans = {
     title: title$1,
     ExportHelper: ExportHelper$1,
     Setting: Setting$1,
     Language: Language$1,
-    "Copy Text": "复制文字",
-    "Copied!": "已复制!",
+    "Copy Text": "\u590D\u5236\u6587\u5B57",
+    "Copied!": "\u5DF2\u590D\u5236!",
     Screenshot: Screenshot$1,
     Markdown: Markdown$1,
     HTML: HTML$1,
@@ -34903,65 +34903,65 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Archive: Archive$1,
     Save: Save$1,
     Delete: Delete$1,
-    "Select All": "全选",
+    "Select All": "\u5168\u9009",
     Export: Export$1,
-    "Error": "错误",
+    "Error": "\u9519\u8BEF",
     Loading: Loading$1,
     Preview: Preview$1,
-    "File Name": "文件名",
-    "Export All": "批量导出",
-    "Exporter Settings": "导出设置",
-    "Export Dialog Title": "导出对话",
-    "Invalid File Format": "无效的文件格式",
-    "Export from official export file": "从官方导出文件导出",
-    "Export from API": "从 API 导出",
-    "Available variables": "可用变量",
-    "Conversation Timestamp": "对话时间戳",
-    "Conversation Timestamp Description": "会显示在页面上。",
-    "Enable on HTML": "在 HTML 文件上启用",
-    "Enable on Markdown": "在 Markdown 文件上启用",
-    "Use 24-hour format": "使用24小时制 (例如 23:59)",
-    "Export Format": "导出格式",
-    "Export Metadata": "导出元数据",
-    "Export Metadata Description": "会添加至 Markdown 以及 HTML 导出。",
-    "Export Thinking Process": "导出思考过程",
-    "Export Thinking Process Description": "在导出的 Markdown 和 HTML 文件中包含模型的思考/推理过程。",
-    "OpenAI Official Format": "OpenAI 官方格式",
-    "Conversation Archive Alert": "确定要归档所有选取的对话？",
-    "Conversation Archived Message": "所有所选的对话已归档。请刷新页面。",
-    "Conversation Delete Alert": "确定要删除所有选取的对话？",
-    "Conversation Deleted Message": "所有所选的对话已删除。请刷新页面。",
-    "Please start a conversation first": "请先开始对话。",
-    "Select Project": "选择项目",
-    "(no project)": "（无项目）",
-    "Export All Limit": "批量导出上限",
-    "Export All Limit Description": "设置“批量导出”对话框中加载的最大对话数量。",
-    "Select a source to load conversations": "请在上方选择一个项目以加载对话。",
+    "File Name": "\u6587\u4EF6\u540D",
+    "Export All": "\u6279\u91CF\u5BFC\u51FA",
+    "Exporter Settings": "\u5BFC\u51FA\u8BBE\u7F6E",
+    "Export Dialog Title": "\u5BFC\u51FA\u5BF9\u8BDD",
+    "Invalid File Format": "\u65E0\u6548\u7684\u6587\u4EF6\u683C\u5F0F",
+    "Export from official export file": "\u4ECE\u5B98\u65B9\u5BFC\u51FA\u6587\u4EF6\u5BFC\u51FA",
+    "Export from API": "\u4ECE API \u5BFC\u51FA",
+    "Available variables": "\u53EF\u7528\u53D8\u91CF",
+    "Conversation Timestamp": "\u5BF9\u8BDD\u65F6\u95F4\u6233",
+    "Conversation Timestamp Description": "\u4F1A\u663E\u793A\u5728\u9875\u9762\u4E0A\u3002",
+    "Enable on HTML": "\u5728 HTML \u6587\u4EF6\u4E0A\u542F\u7528",
+    "Enable on Markdown": "\u5728 Markdown \u6587\u4EF6\u4E0A\u542F\u7528",
+    "Use 24-hour format": "\u4F7F\u752824\u5C0F\u65F6\u5236 (\u4F8B\u5982 23:59)",
+    "Export Format": "\u5BFC\u51FA\u683C\u5F0F",
+    "Export Metadata": "\u5BFC\u51FA\u5143\u6570\u636E",
+    "Export Metadata Description": "\u4F1A\u6DFB\u52A0\u81F3 Markdown \u4EE5\u53CA HTML \u5BFC\u51FA\u3002",
+    "Export Thinking Process": "\u5BFC\u51FA\u601D\u8003\u8FC7\u7A0B",
+    "Export Thinking Process Description": "\u5728\u5BFC\u51FA\u7684 Markdown \u548C HTML \u6587\u4EF6\u4E2D\u5305\u542B\u6A21\u578B\u7684\u601D\u8003/\u63A8\u7406\u8FC7\u7A0B\u3002",
+    "OpenAI Official Format": "OpenAI \u5B98\u65B9\u683C\u5F0F",
+    "Conversation Archive Alert": "\u786E\u5B9A\u8981\u5F52\u6863\u6240\u6709\u9009\u53D6\u7684\u5BF9\u8BDD\uFF1F",
+    "Conversation Archived Message": "\u6240\u6709\u6240\u9009\u7684\u5BF9\u8BDD\u5DF2\u5F52\u6863\u3002\u8BF7\u5237\u65B0\u9875\u9762\u3002",
+    "Conversation Delete Alert": "\u786E\u5B9A\u8981\u5220\u9664\u6240\u6709\u9009\u53D6\u7684\u5BF9\u8BDD\uFF1F",
+    "Conversation Deleted Message": "\u6240\u6709\u6240\u9009\u7684\u5BF9\u8BDD\u5DF2\u5220\u9664\u3002\u8BF7\u5237\u65B0\u9875\u9762\u3002",
+    "Please start a conversation first": "\u8BF7\u5148\u5F00\u59CB\u5BF9\u8BDD\u3002",
+    "Select Project": "\u9009\u62E9\u9879\u76EE",
+    "(no project)": "\uFF08\u65E0\u9879\u76EE\uFF09",
+    "Export All Limit": "\u6279\u91CF\u5BFC\u51FA\u4E0A\u9650",
+    "Export All Limit Description": "\u8BBE\u7F6E\u201C\u6279\u91CF\u5BFC\u51FA\u201D\u5BF9\u8BDD\u6846\u4E2D\u52A0\u8F7D\u7684\u6700\u5927\u5BF9\u8BDD\u6570\u91CF\u3002",
+    "Select a source to load conversations": "\u8BF7\u5728\u4E0A\u65B9\u9009\u62E9\u4E00\u4E2A\u9879\u76EE\u4EE5\u52A0\u8F7D\u5BF9\u8BDD\u3002",
     Search: Search$1,
-    "Last 100": "最新 100 条",
-    "No results": "无结果"
+    "Last 100": "\u6700\u65B0 100 \u6761",
+    "No results": "\u65E0\u7ED3\u679C"
   };
-  const title = "ChatGPT Exporter";
+  const title = "ChatGPT Helper";
   const ExportHelper = "Export";
-  const Setting = "設定";
-  const Language = "語言";
-  const Screenshot = "截圖";
+  const Setting = "\u8A2D\u5B9A";
+  const Language = "\u8A9E\u8A00";
+  const Screenshot = "\u622A\u5716";
   const Markdown = "Markdown";
   const HTML = "HTML";
-  const Archive = "封存";
-  const Save = "保存";
-  const Delete = "刪除";
-  const Export = "匯出";
-  const Loading = "載入中";
-  const Preview = "預覽";
-  const Search = "搜尋";
+  const Archive = "\u5C01\u5B58";
+  const Save = "\u4FDD\u5B58";
+  const Delete = "\u522A\u9664";
+  const Export = "\u532F\u51FA";
+  const Loading = "\u8F09\u5165\u4E2D";
+  const Preview = "\u9810\u89BD";
+  const Search = "\u641C\u5C0B";
   const zh_Hant = {
     title,
     ExportHelper,
     Setting,
     Language,
-    "Copy Text": "複製文字",
-    "Copied!": "已複製!",
+    "Copy Text": "\u8907\u88FD\u6587\u5B57",
+    "Copied!": "\u5DF2\u8907\u88FD!",
     Screenshot,
     Markdown,
     HTML,
@@ -34969,43 +34969,43 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     Archive,
     Save,
     Delete,
-    "Select All": "全選",
+    "Select All": "\u5168\u9078",
     Export,
-    "Error": "錯誤",
+    "Error": "\u932F\u8AA4",
     Loading,
     Preview,
-    "File Name": "檔案名稱",
-    "Export All": "批量匯出",
-    "Exporter Settings": "設定",
-    "Export Dialog Title": "匯出對話",
-    "Invalid File Format": "無效的檔案格式",
-    "Export from official export file": "從官方匯出檔案匯出",
-    "Export from API": "從 API 匯出",
-    "Available variables": "可用變數",
-    "Conversation Timestamp": "對話時間戳",
-    "Conversation Timestamp Description": "會顯示在頁面上。",
-    "Enable on HTML": "在 HTML 檔案上啟用",
-    "Enable on Markdown": "在 Markdown 檔案上啟用",
-    "Use 24-hour format": "使用24小時制 (例如 23:59)",
-    "Export Format": "匯出格式",
-    "Export Metadata": "匯出元資料",
-    "Export Metadata Description": "會添加至 Markdown 以及 HTML 匯出。",
-    "Export Thinking Process": "匯出思考過程",
-    "Export Thinking Process Description": "在匯出的 Markdown 和 HTML 檔案中包含模型的思考/推理過程。",
-    "OpenAI Official Format": "OpenAI 官方格式",
-    "Conversation Archive Alert": "確定要封存所有選取的對話？",
-    "Conversation Archived Message": "所有選取的對話已封存。請重新整理頁面。",
-    "Conversation Delete Alert": "確定要刪除所有選取的對話？",
-    "Conversation Deleted Message": "所有選取的對話已刪除。請重新整理頁面。",
-    "Please start a conversation first": "請先開始對話。",
-    "Select Project": "選擇專案",
-    "(no project)": "（無專案）",
-    "Export All Limit": "批量匯出上限",
-    "Export All Limit Description": "設定「批量匯出」對話方塊中載入的最大對話數量。",
-    "Select a source to load conversations": "請在上方選擇一個專案以載入對話。",
+    "File Name": "\u6A94\u6848\u540D\u7A31",
+    "Export All": "\u6279\u91CF\u532F\u51FA",
+    "Exporter Settings": "\u8A2D\u5B9A",
+    "Export Dialog Title": "\u532F\u51FA\u5C0D\u8A71",
+    "Invalid File Format": "\u7121\u6548\u7684\u6A94\u6848\u683C\u5F0F",
+    "Export from official export file": "\u5F9E\u5B98\u65B9\u532F\u51FA\u6A94\u6848\u532F\u51FA",
+    "Export from API": "\u5F9E API \u532F\u51FA",
+    "Available variables": "\u53EF\u7528\u8B8A\u6578",
+    "Conversation Timestamp": "\u5C0D\u8A71\u6642\u9593\u6233",
+    "Conversation Timestamp Description": "\u6703\u986F\u793A\u5728\u9801\u9762\u4E0A\u3002",
+    "Enable on HTML": "\u5728 HTML \u6A94\u6848\u4E0A\u555F\u7528",
+    "Enable on Markdown": "\u5728 Markdown \u6A94\u6848\u4E0A\u555F\u7528",
+    "Use 24-hour format": "\u4F7F\u752824\u5C0F\u6642\u5236 (\u4F8B\u5982 23:59)",
+    "Export Format": "\u532F\u51FA\u683C\u5F0F",
+    "Export Metadata": "\u532F\u51FA\u5143\u8CC7\u6599",
+    "Export Metadata Description": "\u6703\u6DFB\u52A0\u81F3 Markdown \u4EE5\u53CA HTML \u532F\u51FA\u3002",
+    "Export Thinking Process": "\u532F\u51FA\u601D\u8003\u904E\u7A0B",
+    "Export Thinking Process Description": "\u5728\u532F\u51FA\u7684 Markdown \u548C HTML \u6A94\u6848\u4E2D\u5305\u542B\u6A21\u578B\u7684\u601D\u8003/\u63A8\u7406\u904E\u7A0B\u3002",
+    "OpenAI Official Format": "OpenAI \u5B98\u65B9\u683C\u5F0F",
+    "Conversation Archive Alert": "\u78BA\u5B9A\u8981\u5C01\u5B58\u6240\u6709\u9078\u53D6\u7684\u5C0D\u8A71\uFF1F",
+    "Conversation Archived Message": "\u6240\u6709\u9078\u53D6\u7684\u5C0D\u8A71\u5DF2\u5C01\u5B58\u3002\u8ACB\u91CD\u65B0\u6574\u7406\u9801\u9762\u3002",
+    "Conversation Delete Alert": "\u78BA\u5B9A\u8981\u522A\u9664\u6240\u6709\u9078\u53D6\u7684\u5C0D\u8A71\uFF1F",
+    "Conversation Deleted Message": "\u6240\u6709\u9078\u53D6\u7684\u5C0D\u8A71\u5DF2\u522A\u9664\u3002\u8ACB\u91CD\u65B0\u6574\u7406\u9801\u9762\u3002",
+    "Please start a conversation first": "\u8ACB\u5148\u958B\u59CB\u5C0D\u8A71\u3002",
+    "Select Project": "\u9078\u64C7\u5C08\u6848",
+    "(no project)": "\uFF08\u7121\u5C08\u6848\uFF09",
+    "Export All Limit": "\u6279\u91CF\u532F\u51FA\u4E0A\u9650",
+    "Export All Limit Description": "\u8A2D\u5B9A\u300C\u6279\u91CF\u532F\u51FA\u300D\u5C0D\u8A71\u65B9\u584A\u4E2D\u8F09\u5165\u7684\u6700\u5927\u5C0D\u8A71\u6578\u91CF\u3002",
+    "Select a source to load conversations": "\u8ACB\u5728\u4E0A\u65B9\u9078\u64C7\u4E00\u500B\u5C08\u6848\u4EE5\u8F09\u5165\u5C0D\u8A71\u3002",
     Search,
-    "Last 100": "最新 100 條",
-    "No results": "無結果"
+    "Last 100": "\u6700\u65B0 100 \u689D",
+    "No results": "\u7121\u7D50\u679C"
   };
   class GMStorage {
     static get(key2) {
@@ -35117,12 +35117,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     resource: en_US
   };
   const ES = {
-    name: "Español",
+    name: "Espan\u0303ol",
     code: "es",
     resource: es
   };
   const FR = {
-    name: "Français",
+    name: "Fran\xE7ais",
     code: "fr",
     resource: fr
   };
@@ -35132,27 +35132,27 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     resource: id_ID
   };
   const JA_JP = {
-    name: "日本語",
+    name: "\u65E5\u672C\u8A9E",
     code: "ja-JP",
     resource: ja_JP
   };
   const RU = {
-    name: "Русский",
+    name: "\u0420\u0443\u0441\u0441\u043A\u0438\u0439",
     code: "ru",
     resource: ru
   };
   const TR_TR = {
-    name: "Türkçe",
+    name: "T\xFCrk\xE7e",
     code: "tr-TR",
     resource: tr_TR
   };
   const ZH_Hans = {
-    name: "简体中文",
+    name: "\u7B80\u4F53\u4E2D\u6587",
     code: "zh-Hans",
     resource: zh_Hans
   };
   const ZH_Hant = {
-    name: "繁體中文",
+    name: "\u7E41\u9AD4\u4E2D\u6587",
     code: "zh-Hant",
     resource: zh_Hant
   };
@@ -35292,35 +35292,54 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
         {{headStyles}}
 
         :root {
-            --page-text: #0d0d0d;
-            --page-bg: #fff;
-            --td-borders: #374151;\r
-            --th-borders: #4b5563;\r
-            --tw-prose-code: var(--page-text);\r
-            --tw-prose-counters: #9b9b9b;\r
-            --tw-prose-headings: var(--page-text);\r
-            --tw-prose-hr: rgba(0,0,0,.25);\r
-            --tw-prose-links: var(--page-text);\r
-            --tw-prose-quotes: var(--page-text);\r
-            --meta-title: #616c77;\r
-        }\r
+            --page-text: #111111;
+            --page-muted: #6b7280;
+            --page-soft: #8a918c;
+            --page-bg: #f6f5f1;
+            --page-surface: #fffefa;
+            --page-surface-elevated: #ffffff;
+            --page-border: #e4e1da;
+            --page-border-strong: #d5d1c8;
+            --brand: #10a37f;
+            --brand-text: #0f7f68;
+            --code-bg: #151817;
+            --td-borders: #d5d1c8;
+            --th-borders: #c2bdb2;
+            --tw-prose-code: var(--page-text);
+            --tw-prose-counters: #8a918c;
+            --tw-prose-headings: var(--page-text);
+            --tw-prose-hr: var(--page-border);
+            --tw-prose-links: var(--brand-text);
+            --tw-prose-quotes: var(--page-text);
+            --meta-title: #69716d;
+        }
+
+        [data-theme="dark"] {
+            --page-text: #ececec;
+            --page-muted: #a8aaa6;
+            --page-soft: #8d938d;
+            --page-bg: #171817;
+            --page-surface: #20211f;
+            --page-surface-elevated: #262724;
+            --page-border: #373a35;
+            --page-border-strong: #4a4e47;
+            --brand: #11b78d;
+            --brand-text: #6de2c2;
+            --code-bg: #0d0f0e;
+            --td-borders: #4a4e47;
+            --th-borders: #5b6058;
+            --tw-prose-code: var(--page-text);
+            --tw-prose-counters: #929790;
+            --tw-prose-headings: var(--page-text);
+            --tw-prose-hr: var(--page-border);
+            --tw-prose-links: var(--brand-text);
+            --tw-prose-quotes: var(--page-text);
+            --meta-title: #a8aaa6;
+        }
 \r
-        [data-theme="dark"] {\r
-            --page-text: #ececec;\r
-            --page-bg: #212121;\r
-            --tw-prose-code: var(--page-text);\r
-            --tw-prose-counters: #9b9b9b;\r
-            --tw-prose-headings: var(--page-text);\r
-            --tw-prose-hr: hsla(0,0%,100%,.25);\r
-            --tw-prose-links: var(--page-text);\r
-            --tw-prose-quotes: var(--page-text);\r
-            --meta-title: #959faa;\r
-        }\r
-\r
-        * {\r
-            box-sizing: border-box;\r
-            font-size: 16px;\r
-        }\r
+        * {
+            box-sizing: border-box;
+        }
 \r
         ::-webkit-scrollbar {\r
             height: 1rem;\r
@@ -35350,12 +35369,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             background-color: rgba(236,236,241,var(--tw-bg-opacity))\r
         }\r
 \r
-        .dark ::-webkit-scrollbar-thumb {\r
+        [data-theme="dark"] ::-webkit-scrollbar-thumb {
             --tw-bg-opacity: 1;\r
             background-color: rgba(86,88,105,var(--tw-bg-opacity))\r
         }\r
 \r
-        .dark ::-webkit-scrollbar-thumb:hover {\r
+        [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
             --tw-bg-opacity: 1;\r
             background-color: rgba(172,172,190,var(--tw-bg-opacity))\r
         }\r
@@ -35370,15 +35389,17 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             }\r
         }\r
 \r
-        body {\r
-            font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;\r
-            font-size: 14px;\r
-            line-height: 1.5;\r
-            color: var(--page-text);\r
-            background-color: var(--page-bg);\r
-            margin: 0;\r
-            padding: 0;\r
-        }\r
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            font-size: 16px;
+            line-height: 1.55;
+            color: var(--page-text);
+            background:
+                radial-gradient(circle at top left, color-mix(in srgb, var(--brand) 8%, transparent), transparent 28rem),
+                var(--page-bg);
+            margin: 0;
+            padding: 0;
+        }
 \r
         [data-theme="light"] .sun {\r
             display: none;\r
@@ -35388,16 +35409,23 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             display: none;\r
         }\r
 \r
-        .toggle {\r
-            display: inline-flex;\r
-            justify-content: center;\r
-            align-items: center;\r
-            width: 32px;\r
-            height: 32px;\r
-            border-radius: 4px;\r
-            background-color: #fff;\r
-            border: 1px solid #e2e8f0;\r
-        }\r
+        .toggle {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            color: var(--page-text);
+            background-color: var(--page-surface-elevated);
+            border: 1px solid var(--page-border);
+            cursor: pointer;
+        }
+
+        .toggle:hover {
+            border-color: var(--page-border-strong);
+            background-color: color-mix(in srgb, var(--page-surface-elevated) 86%, var(--brand) 14%);
+        }
 \r
         [data-width="narrow"] .width-toggle .expand {\r
             display: block;\r
@@ -35407,41 +35435,56 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             display: block;\r
         }\r
 \r
-        .width-toggle {\r
-            display: inline-flex;\r
-            justify-content: center;\r
-            align-items: center;\r
-            width: 32px;\r
-            height: 32px;\r
-            border-radius: 4px;\r
-            background-color: #fff;\r
-            border: 1px solid #e2e8f0;\r
-            margin-left: 8px;\r
-            cursor: pointer;\r
-        }\r
+        .width-toggle {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            color: var(--page-text);
+            background-color: var(--page-surface-elevated);
+            border: 1px solid var(--page-border);
+            margin-left: 8px;
+            cursor: pointer;
+        }
 \r
         .width-toggle svg {\r
             display: none;\r
         }\r
 \r
-        .metadata_container {\r
-            display: flex;\r
-            flex-direction: column;\r
-            margin-top: 8px;\r
-            padding-left: 1rem;\r
-        }\r
+        details {
+            margin-top: 1rem;
+            border: 1px solid var(--page-border);
+            border-radius: 8px;
+            background: var(--page-surface-elevated);
+        }
+
+        details summary {
+            cursor: pointer;
+            padding: 0.75rem 0.875rem;
+            color: var(--page-muted);
+            font-weight: 650;
+        }
+
+        .metadata_container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 0 0.875rem 0.875rem;
+        }
 \r
-        .metadata_item {\r
-            display: flex;\r
-            flex-direction: row;\r
-            align-items: center;\r
-            border-radius: 16px;\r
-            padding: 4px 0.5rem;\r
-        }\r
-\r
-        .metadata_item:hover {\r
-            background-color: rgba(0,0,0,.1);\r
-        }\r
+        .metadata_item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            border-radius: 6px;
+            padding: 0.35rem 0.5rem;
+        }
+
+        .metadata_item:hover {
+            background-color: color-mix(in srgb, var(--page-surface-elevated) 82%, var(--page-text) 8%);
+        }
 \r
         .metadata_item > div:first-child {\r
             flex: 0 1 100px;\r
@@ -35452,12 +35495,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             flex: 1;\r
         }\r
 \r
-        a {\r
-            color: var(--tw-prose-links);\r
-            font-size: 0.8rem;\r
-            text-decoration-line: underline;\r
-            text-underline-offset: 2px;\r
-        }\r
+        a {
+            color: var(--tw-prose-links);
+            text-decoration-line: underline;
+            text-underline-offset: 3px;
+        }
 \r
         .conversation-content > p:first-child,\r
         ol:first-child {\r
@@ -35477,27 +35519,30 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             content: "\`";\r
         }\r
 \r
-        hr {\r
-            width: 100%;\r
-            height: 0;\r
-            border: 1px solid var(--tw-prose-hr);\r
-            margin-bottom: 1em;\r
-            margin-top: 1em;\r
-        }\r
-\r
-        pre {\r
-            color: #ffffff;\r
-            background-color: #000000;\r
-            overflow-x: auto;\r
-            margin: 0 0 1rem 0;\r
-            border-radius: 0.375rem;\r
-        }\r
-\r
-        pre>code {\r
-            font-family: Söhne Mono, Monaco, Andale Mono, Ubuntu Mono, monospace !important;\r
-            font-weight: 400;\r
-            font-size: .875em;\r
-            line-height: 1.7142857;\r
+        hr {
+            width: 100%;
+            height: 0;
+            border: 0;
+            border-top: 1px solid var(--tw-prose-hr);
+            margin-bottom: 1em;
+            margin-top: 1em;
+        }
+
+        pre {
+            color: #ffffff;
+            background-color: var(--code-bg);
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--page-border);
+            border-radius: 8px;
+            padding: 0.75rem 0.875rem;
+        }
+
+        pre>code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Monaco, monospace !important;
+            font-weight: 400;
+            font-size: .875em;
+            line-height: 1.7142857;
         }\r
 \r
         h1, h2, h3, h4, h5, h6 {\r
@@ -35505,13 +35550,13 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             margin: 0;\r
         }\r
 \r
-        h1 {\r
-            font-size: 2.25em;\r
-            font-weight: 600;\r
-            line-height: 1.1111111;\r
-            margin-bottom: 0.8888889em;\r
-            margin-top: 0;\r
-        }\r
+        h1 {
+            font-size: clamp(1.9rem, 4vw, 3.25rem);
+            font-weight: 760;
+            line-height: 1.08;
+            margin-bottom: 0.35em;
+            margin-top: 0;
+        }
 \r
         h2 {\r
             font-size: 1.5em;\r
@@ -35545,16 +35590,16 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             font-weight: 600;\r
         }\r
 \r
-        blockquote {\r
-            border-left: 2px solid rgba(142,142,160,1);\r
-            color: var(--tw-prose-quotes);\r
-            font-style: italic;\r
-            font-style: normal;\r
-            font-weight: 500;\r
-            line-height: 1rem;\r
-            margin: 1.6em 0;\r
-            padding-left: 1em;\r
-            quotes: "\\201C""\\201D""\\2018""\\2019";\r
+        blockquote {
+            border-left: 3px solid var(--page-border-strong);
+            color: var(--tw-prose-quotes);
+            font-style: italic;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 1.55;
+            margin: 1.6em 0;
+            padding-left: 1em;
+            quotes: "\\201C""\\201D""\\2018""\\2019";
         }\r
 \r
         blockquote p:first-of-type:before {\r
@@ -35596,12 +35641,12 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             border-bottom-width: 1px;\r
         }\r
 \r
-        table th {\r
-            background-color: rgba(236,236,241,.2);\r
-            border-bottom-width: 1px;\r
-            border-left-width: 1px;\r
-            border-top-width: 1px;\r
-            padding: 0.25rem 0.75rem;\r
+        table th {
+            background-color: color-mix(in srgb, var(--page-surface-elevated) 86%, var(--page-text) 8%);
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-top-width: 1px;
+            padding: 0.45rem 0.75rem;
         }\r
 \r
         table th:first-child {\r
@@ -35630,11 +35675,11 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             border-bottom-right-radius: 0.375rem;\r
         }\r
 \r
-        table td {\r
-            border-bottom-width: 1px;\r
-            border-left-width: 1px;\r
-            padding: 0.25rem 0.75rem;\r
-        }\r
+        table td {
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            padding: 0.45rem 0.75rem;
+        }
 \r
         table td:last-child {\r
             border-right-width: 1px;\r
@@ -35644,90 +35689,137 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             accent-color: #2563eb;\r
         }\r
 \r
-        .conversation {\r
-            margin: 0 auto;\r
-            padding: 1rem;\r
-            max-width: 64rem;\r
-        }\r
+        .export-shell {
+            width: min(100%, 1180px);
+            margin: 0 auto;
+            padding: clamp(1rem, 2.5vw, 2rem);
+        }
+
+        .conversation {
+            margin: 0 auto;
+            max-width: 60rem;
+        }
+
+        [data-width="narrow"] .conversation {
+            max-width: 60rem;
+        }
+
+        [data-width="wide"] .conversation {
+            max-width: 100%;
+        }
+
+        .conversation-header {
+            margin-bottom: 1.25rem;
+            padding: clamp(1.25rem, 3vw, 2rem);
+            border: 1px solid var(--page-border);
+            border-radius: 8px;
+            background: var(--page-surface);
+        }
+
+        .export-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.35rem;
+        }
+
+        .export-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            color: var(--page-muted);
+            font-size: 0.8rem;
+            font-weight: 760;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .export-brand-mark {
+            display: inline-flex;
+            width: 1.3rem;
+            height: 1.3rem;
+            border-radius: 6px;
+            background: var(--brand);
+        }
+
+        .export-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .conversation-title {
+            margin: 0;
+        }
+
+        .conversation-title a {
+            color: var(--page-text);
+            text-decoration: none;
+        }
+
+        .conversation-title a:hover {
+            color: var(--brand-text);
+        }
+
+        .conversation-export {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .export-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 1.75rem;
+            padding: 0.25rem 0.6rem;
+            border: 1px solid var(--page-border);
+            border-radius: 999px;
+            color: var(--page-muted);
+            background: var(--page-surface-elevated);
+            font-size: 0.78rem;
+            line-height: 1.25;
+        }
+
+        .conversation-item {
+            display: grid;
+            grid-template-columns: 2.25rem minmax(0, 1fr);
+            gap: 0.85rem;
+            position: relative;
+            padding: 1.15rem clamp(0.85rem, 2vw, 1.5rem);
+            border: 1px solid var(--page-border);
+            border-top-width: 0;
+            background: var(--page-surface);
+        }
+
+        .conversation-item:first-of-type {
+            border-top-width: 1px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .conversation-item:last-child {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .author {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 0.1rem;
+        }
 \r
-        [data-width="narrow"] .conversation {\r
-            max-width: 64rem;\r
-        }\r
-\r
-        [data-width="wide"] .conversation {\r
-            max-width: 90%;\r
-        }\r
-\r
-        @media (min-width: 1280px) {\r
-            .conversation {\r
-                max-width: 48rem;\r
-            }\r
-        }\r
-\r
-        @media (min-width: 1024px) {\r
-            .conversation {\r
-                max-width: 40rem;\r
-            }\r
-        }\r
-\r
-        @media (min-width: 768px) {\r
-            .conversation {\r
-                max-width: 48rem;\r
-            }\r
-        }\r
-\r
-        .conversation-header {\r
-            margin-bottom: 1rem;\r
-        }\r
-\r
-        .conversation-header h1 {\r
-            margin: 0;\r
-        }\r
-\r
-        .conversation-header h1 a {\r
-            font-size: 1.5rem;\r
-        }\r
-\r
-        .conversation-header .conversation-export {\r
-            margin-top: 0.5rem;\r
-            font-size: 0.8rem;\r
-        }\r
-\r
-        .conversation-header p {\r
-            margin-top: 0.5rem;\r
-            font-size: 0.8rem;\r
-        }\r
-\r
-        .conversation-item {\r
-            display: flex;\r
-            position: relative;\r
-            padding: 1rem;\r
-            border-left: 1px solid rgba(0,0,0,.1);\r
-            border-right: 1px solid rgba(0,0,0,.1);\r
-            border-bottom: 1px solid rgba(0,0,0,.1);\r
-        }\r
-\r
-        .conversation-item:first-of-type {\r
-            border-top: 1px solid rgba(0,0,0,.1);\r
-        }\r
-\r
-        .author {\r
-            display: flex;\r
-            flex: 0 0 30px;\r
-            justify-content: center;\r
-            align-items: center;\r
-            width: 30px;\r
-            height: 30px;\r
-            border-radius: 0.125rem;\r
-            margin-right: 1rem;\r
-            overflow: hidden;\r
-        }\r
-\r
-        .author svg {\r
-            color: #fff;\r
-            width: 22px;\r
-            height: 22px;\r
-        }\r
+        .author svg {
+            color: #fff;
+            width: 1.35rem;
+            height: 1.35rem;
+        }
 \r
         .author img {\r
             content: url({{avatar}});\r
@@ -35739,9 +35831,9 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             background-color: rgb(16, 163, 127);\r
         }\r
 \r
-        .author.GPT-4 {\r
-            background-color: black;\r
-        }\r
+        .author.GPT-4 {
+            background-color: #111111;
+        }
 \r
         .conversation-content-wrapper {\r
             display: flex;\r
@@ -35751,60 +35843,78 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             flex-direction: column;\r
         }\r
 \r
-        .thinking {\r
-            font-size: 0.875rem;\r
-            line-height: 1.5;\r
-            margin-bottom: 0.75rem;\r
-            border: 1px solid #d1d5db;\r
-            border-radius: 0.5rem;\r
-            padding: 0.5rem 0.75rem;\r
-        }\r
-\r
-        .thinking summary {\r
-            cursor: pointer;\r
-            font-weight: 500;\r
-            color: #6b7280;\r
-        }\r
-\r
-        .thinking p {\r
-            margin: 0.5rem 0;\r
-            color: #6b7280;\r
-        }\r
-\r
-        .dark .thinking {\r
-            border-color: #4b5563;\r
-        }\r
-\r
-        .dark .thinking summary,\r
-        .dark .thinking p {\r
-            color: #9ca3af;\r
-        }\r
-\r
-        .conversation-content {\r
-            font-size: 1rem;\r
-            line-height: 1.5;\r
-        }\r
-\r
-        .conversation-content p {\r
-            white-space: pre-wrap;\r
-            line-height: 28px;\r
-        }\r
+        .thinking {
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--page-border);
+            border-radius: 8px;
+            background: color-mix(in srgb, var(--page-surface-elevated) 88%, var(--brand) 8%);
+            padding: 0.6rem 0.75rem;
+        }
+
+        .thinking summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--page-muted);
+        }
+
+        .thinking p {
+            margin: 0.5rem 0;
+            color: var(--page-muted);
+        }
+
+        .conversation-content {
+            font-size: 1rem;
+            line-height: 1.65;
+        }
+
+        .conversation-content p {
+            white-space: pre-wrap;
+            line-height: 1.75;
+        }
 \r
         .conversation-content img, .conversation-content video {\r
-            display: block;\r
-            max-width: 100%;\r
-            height: auto;\r
-            margin-bottom: 2em;\r
-            margin-top: 2em;\r
-        }\r
-\r
-        .time {\r
-            position: absolute;\r
-            right: 8px;\r
-            bottom: 0;\r
-            font-size: 0.8rem;\r
-            color: #acacbe\r
-        }\r
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 1.5em;
+            margin-top: 1.5em;
+            border-radius: 8px;
+        }
+
+        .time {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 0.75rem;
+            color: var(--page-soft);
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 640px) {
+            .export-topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .conversation-item {
+                grid-template-columns: 1.9rem minmax(0, 1fr);
+                gap: 0.65rem;
+            }
+
+            .author {
+                width: 1.9rem;
+                height: 1.9rem;
+                border-radius: 7px;
+            }
+
+            .time {
+                position: static;
+                grid-column: 2;
+                margin-top: -0.4rem;
+            }
+        }
 \r
     </style>\r
 </head>\r
@@ -35815,33 +35925,43 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             <path d="M37.5324 16.8707C37.9808 15.5241 38.1363 14.0974 37.9886 12.6859C37.8409 11.2744 37.3934 9.91076 36.676 8.68622C35.6126 6.83404 33.9882 5.3676 32.0373 4.4985C30.0864 3.62941 27.9098 3.40259 25.8215 3.85078C24.8796 2.7893 23.7219 1.94125 22.4257 1.36341C21.1295 0.785575 19.7249 0.491269 18.3058 0.500197C16.1708 0.495044 14.0893 1.16803 12.3614 2.42214C10.6335 3.67624 9.34853 5.44666 8.6917 7.47815C7.30085 7.76286 5.98686 8.3414 4.8377 9.17505C3.68854 10.0087 2.73073 11.0782 2.02839 12.312C0.956464 14.1591 0.498905 16.2988 0.721698 18.4228C0.944492 20.5467 1.83612 22.5449 3.268 24.1293C2.81966 25.4759 2.66413 26.9026 2.81182 28.3141C2.95951 29.7256 3.40701 31.0892 4.12437 32.3138C5.18791 34.1659 6.8123 35.6322 8.76321 36.5013C10.7141 37.3704 12.8907 37.5973 14.9789 37.1492C15.9208 38.2107 17.0786 39.0587 18.3747 39.6366C19.6709 40.2144 21.0755 40.5087 22.4946 40.4998C24.6307 40.5054 26.7133 39.8321 28.4418 38.5772C30.1704 37.3223 31.4556 35.5506 32.1119 33.5179C33.5027 33.2332 34.8167 32.6547 35.9659 31.821C37.115 30.9874 38.0728 29.9178 38.7752 28.684C39.8458 26.8371 40.3023 24.6979 40.0789 22.5748C39.8556 20.4517 38.9639 18.4544 37.5324 16.8707ZM22.4978 37.8849C20.7443 37.8874 19.0459 37.2733 17.6994 36.1501C17.7601 36.117 17.8666 36.0586 17.936 36.0161L25.9004 31.4156C26.1003 31.3019 26.2663 31.137 26.3813 30.9378C26.4964 30.7386 26.5563 30.5124 26.5549 30.2825V19.0542L29.9213 20.998C29.9389 21.0068 29.9541 21.0198 29.9656 21.0359C29.977 21.052 29.9842 21.0707 29.9867 21.0902V30.3889C29.9842 32.375 29.1946 34.2791 27.7909 35.6841C26.3872 37.0892 24.4838 37.8806 22.4978 37.8849ZM6.39227 31.0064C5.51397 29.4888 5.19742 27.7107 5.49804 25.9832C5.55718 26.0187 5.66048 26.0818 5.73461 26.1244L13.699 30.7248C13.8975 30.8408 14.1233 30.902 14.3532 30.902C14.583 30.902 14.8088 30.8408 15.0073 30.7248L24.731 25.1103V28.9979C24.7321 29.0177 24.7283 29.0376 24.7199 29.0556C24.7115 29.0736 24.6988 29.0893 24.6829 29.1012L16.6317 33.7497C14.9096 34.7416 12.8643 35.0097 10.9447 34.4954C9.02506 33.9811 7.38785 32.7263 6.39227 31.0064ZM4.29707 13.6194C5.17156 12.0998 6.55279 10.9364 8.19885 10.3327C8.19885 10.4013 8.19491 10.5228 8.19491 10.6071V19.808C8.19351 20.0378 8.25334 20.2638 8.36823 20.4629C8.48312 20.6619 8.64893 20.8267 8.84863 20.9404L18.5723 26.5542L15.206 28.4979C15.1894 28.5089 15.1703 28.5155 15.1505 28.5173C15.1307 28.5191 15.1107 28.516 15.0924 28.5082L7.04046 23.8557C5.32135 22.8601 4.06716 21.2235 3.55289 19.3046C3.03862 17.3858 3.30624 15.3413 4.29707 13.6194ZM31.955 20.0556L22.2312 14.4411L25.5976 12.4981C25.6142 12.4872 25.6333 12.4805 25.6531 12.4787C25.6729 12.4769 25.6928 12.4801 25.7111 12.4879L33.7631 17.1364C34.9967 17.849 36.0017 18.8982 36.6606 20.1613C37.3194 21.4244 37.6047 22.849 37.4832 24.2684C37.3617 25.6878 36.8382 27.0432 35.9743 28.1759C35.1103 29.3086 33.9415 30.1717 32.6047 30.6641C32.6047 30.5947 32.6047 30.4733 32.6047 30.3889V21.188C32.6066 20.9586 32.5474 20.7328 32.4332 20.5338C32.319 20.3348 32.154 20.1698 31.955 20.0556ZM35.3055 15.0128C35.2464 14.9765 35.1431 14.9142 35.069 14.8717L27.1045 10.2712C26.906 10.1554 26.6803 10.0943 26.4504 10.0943C26.2206 10.0943 25.9948 10.1554 25.7963 10.2712L16.0726 15.8858V11.9982C16.0715 11.9783 16.0753 11.9585 16.0837 11.9405C16.0921 11.9225 16.1048 11.9068 16.1207 11.8949L24.1719 7.25025C25.4053 6.53903 26.8158 6.19376 28.2383 6.25482C29.6608 6.31589 31.0364 6.78077 32.2044 7.59508C33.3723 8.40939 34.2842 9.53945 34.8334 10.8531C35.3826 12.1667 35.5464 13.6095 35.3055 15.0128ZM14.2424 21.9419L10.8752 19.9981C10.8576 19.9893 10.8423 19.9763 10.8309 19.9602C10.8195 19.9441 10.8122 19.9254 10.8098 19.9058V10.6071C10.8107 9.18295 11.2173 7.78848 11.9819 6.58696C12.7466 5.38544 13.8377 4.42659 15.1275 3.82264C16.4173 3.21869 17.8524 2.99464 19.2649 3.1767C20.6775 3.35876 22.0089 3.93941 23.1034 4.85067C23.0427 4.88379 22.937 4.94215 22.8668 4.98473L14.9024 9.58517C14.7025 9.69878 14.5366 9.86356 14.4215 10.0626C14.3065 10.2616 14.2466 10.4877 14.2479 10.7175L14.2424 21.9419ZM16.071 17.9991L20.4018 15.4978L24.7325 17.9975V22.9985L20.4018 25.4983L16.071 22.9985V17.9991Z" fill="currentColor"></path>\r
         </symbol>\r
     </svg>\r
-    <div class="conversation">\r
-        <div class="conversation-header">\r
-            <h1>\r
-                <a href="{{source}}" target="_blank" rel="noopener noreferrer">{{title}}</a>\r
-                <button class="toggle">\r
-                    <svg class="sun" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>\r
-                    <svg class="moon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>\r
-                </button>\r
-                <button class="toggle width-toggle">\r
-                    <svg class="expand" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="display: block;">\r
-                        <path d="M3 12h18M6 8l-4 4 4 4M18 8l4 4-4 4"></path>\r
-                    </svg>\r
-                    <svg class="narrow" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="display: none;">\r
-                        <path d="M3 12h7M14 12h7M6 16l4-4-4-4M18 16l-4-4 4-4"></path>\r
-                    </svg>\r
-                </button>\r
-            </h1>\r
-            <div class="conversation-export">\r
-                <p>Exported by\r
-                <a href="https://github.com/pionxzh/chatgpt-exporter.git">ChatGPT Exporter</a>\r
-                at {{time}}</p>\r
-            </div>\r
-            {{details}}\r
-        </div>\r
-\r
-        {{content}}\r
-    </div>\r
+    <main class="export-shell">
+    <div class="conversation">
+        <div class="conversation-header">
+            <div class="export-topbar">
+                <div class="export-brand">
+                    <span class="export-brand-mark" aria-hidden="true"></span>
+                    <span>ChatGPT Helper Export</span>
+                </div>
+                <div class="export-controls" aria-label="Export display controls">
+                    <button class="toggle" type="button" title="Toggle theme" aria-label="Toggle theme">
+                        <svg class="sun" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        <svg class="moon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </button>
+                    <button class="toggle width-toggle" type="button" title="Toggle content width" aria-label="Toggle content width">
+                        <svg class="expand" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                            <path d="M3 12h18M6 8l-4 4 4 4M18 8l4 4-4 4"></path>
+                        </svg>
+                        <svg class="narrow" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                            <path d="M3 12h7M14 12h7M6 16l4-4-4-4M18 16l-4-4 4-4"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <h1 class="conversation-title">
+                <a href="{{source}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
+            </h1>
+            <div class="conversation-export">
+                <span class="export-pill">Exported by ChatGPT Helper</span>
+                <time class="export-pill" datetime="{{time}}">{{time}}</time>
+                <a class="export-pill" href="{{source}}" target="_blank" rel="noopener noreferrer">Open source conversation</a>
+            </div>
+            {{details}}
+        </div>
+
+        {{content}}
+    </div>
+    </main>
 \r
 \r
     <script>\r
@@ -37492,258 +37612,258 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     "yuml"
   ];
   const characterEntitiesHtml4 = {
-    nbsp: " ",
-    iexcl: "¡",
-    cent: "¢",
-    pound: "£",
-    curren: "¤",
-    yen: "¥",
-    brvbar: "¦",
-    sect: "§",
-    uml: "¨",
-    copy: "©",
-    ordf: "ª",
-    laquo: "«",
-    not: "¬",
-    shy: "­",
-    reg: "®",
-    macr: "¯",
-    deg: "°",
-    plusmn: "±",
-    sup2: "²",
-    sup3: "³",
-    acute: "´",
-    micro: "µ",
-    para: "¶",
-    middot: "·",
-    cedil: "¸",
-    sup1: "¹",
-    ordm: "º",
-    raquo: "»",
-    frac14: "¼",
-    frac12: "½",
-    frac34: "¾",
-    iquest: "¿",
-    Agrave: "À",
-    Aacute: "Á",
-    Acirc: "Â",
-    Atilde: "Ã",
-    Auml: "Ä",
-    Aring: "Å",
-    AElig: "Æ",
-    Ccedil: "Ç",
-    Egrave: "È",
-    Eacute: "É",
-    Ecirc: "Ê",
-    Euml: "Ë",
-    Igrave: "Ì",
-    Iacute: "Í",
-    Icirc: "Î",
-    Iuml: "Ï",
-    ETH: "Ð",
-    Ntilde: "Ñ",
-    Ograve: "Ò",
-    Oacute: "Ó",
-    Ocirc: "Ô",
-    Otilde: "Õ",
-    Ouml: "Ö",
-    times: "×",
-    Oslash: "Ø",
-    Ugrave: "Ù",
-    Uacute: "Ú",
-    Ucirc: "Û",
-    Uuml: "Ü",
-    Yacute: "Ý",
-    THORN: "Þ",
-    szlig: "ß",
-    agrave: "à",
-    aacute: "á",
-    acirc: "â",
-    atilde: "ã",
-    auml: "ä",
-    aring: "å",
-    aelig: "æ",
-    ccedil: "ç",
-    egrave: "è",
-    eacute: "é",
-    ecirc: "ê",
-    euml: "ë",
-    igrave: "ì",
-    iacute: "í",
-    icirc: "î",
-    iuml: "ï",
-    eth: "ð",
-    ntilde: "ñ",
-    ograve: "ò",
-    oacute: "ó",
-    ocirc: "ô",
-    otilde: "õ",
-    ouml: "ö",
-    divide: "÷",
-    oslash: "ø",
-    ugrave: "ù",
-    uacute: "ú",
-    ucirc: "û",
-    uuml: "ü",
-    yacute: "ý",
-    thorn: "þ",
-    yuml: "ÿ",
-    fnof: "ƒ",
-    Alpha: "Α",
-    Beta: "Β",
-    Gamma: "Γ",
-    Delta: "Δ",
-    Epsilon: "Ε",
-    Zeta: "Ζ",
-    Eta: "Η",
-    Theta: "Θ",
-    Iota: "Ι",
-    Kappa: "Κ",
-    Lambda: "Λ",
-    Mu: "Μ",
-    Nu: "Ν",
-    Xi: "Ξ",
-    Omicron: "Ο",
-    Pi: "Π",
-    Rho: "Ρ",
-    Sigma: "Σ",
-    Tau: "Τ",
-    Upsilon: "Υ",
-    Phi: "Φ",
-    Chi: "Χ",
-    Psi: "Ψ",
-    Omega: "Ω",
-    alpha: "α",
-    beta: "β",
-    gamma: "γ",
-    delta: "δ",
-    epsilon: "ε",
-    zeta: "ζ",
-    eta: "η",
-    theta: "θ",
-    iota: "ι",
-    kappa: "κ",
-    lambda: "λ",
-    mu: "μ",
-    nu: "ν",
-    xi: "ξ",
-    omicron: "ο",
-    pi: "π",
-    rho: "ρ",
-    sigmaf: "ς",
-    sigma: "σ",
-    tau: "τ",
-    upsilon: "υ",
-    phi: "φ",
-    chi: "χ",
-    psi: "ψ",
-    omega: "ω",
-    thetasym: "ϑ",
-    upsih: "ϒ",
-    piv: "ϖ",
-    bull: "•",
-    hellip: "…",
-    prime: "′",
-    Prime: "″",
-    oline: "‾",
-    frasl: "⁄",
-    weierp: "℘",
-    image: "ℑ",
-    real: "ℜ",
-    trade: "™",
-    alefsym: "ℵ",
-    larr: "←",
-    uarr: "↑",
-    rarr: "→",
-    darr: "↓",
-    harr: "↔",
-    crarr: "↵",
-    lArr: "⇐",
-    uArr: "⇑",
-    rArr: "⇒",
-    dArr: "⇓",
-    hArr: "⇔",
-    forall: "∀",
-    part: "∂",
-    exist: "∃",
-    empty: "∅",
-    nabla: "∇",
-    isin: "∈",
-    notin: "∉",
-    ni: "∋",
-    prod: "∏",
-    sum: "∑",
-    minus: "−",
-    lowast: "∗",
-    radic: "√",
-    prop: "∝",
-    infin: "∞",
-    ang: "∠",
-    and: "∧",
-    or: "∨",
-    cap: "∩",
-    cup: "∪",
-    int: "∫",
-    there4: "∴",
-    sim: "∼",
-    cong: "≅",
-    asymp: "≈",
-    ne: "≠",
-    equiv: "≡",
-    le: "≤",
-    ge: "≥",
-    sub: "⊂",
-    sup: "⊃",
-    nsub: "⊄",
-    sube: "⊆",
-    supe: "⊇",
-    oplus: "⊕",
-    otimes: "⊗",
-    perp: "⊥",
-    sdot: "⋅",
-    lceil: "⌈",
-    rceil: "⌉",
-    lfloor: "⌊",
-    rfloor: "⌋",
-    lang: "〈",
-    rang: "〉",
-    loz: "◊",
-    spades: "♠",
-    clubs: "♣",
-    hearts: "♥",
-    diams: "♦",
+    nbsp: "\xA0",
+    iexcl: "\xA1",
+    cent: "\xA2",
+    pound: "\xA3",
+    curren: "\xA4",
+    yen: "\xA5",
+    brvbar: "\xA6",
+    sect: "\xA7",
+    uml: "\xA8",
+    copy: "\xA9",
+    ordf: "\xAA",
+    laquo: "\xAB",
+    not: "\xAC",
+    shy: "\xAD",
+    reg: "\xAE",
+    macr: "\xAF",
+    deg: "\xB0",
+    plusmn: "\xB1",
+    sup2: "\xB2",
+    sup3: "\xB3",
+    acute: "\xB4",
+    micro: "\xB5",
+    para: "\xB6",
+    middot: "\xB7",
+    cedil: "\xB8",
+    sup1: "\xB9",
+    ordm: "\xBA",
+    raquo: "\xBB",
+    frac14: "\xBC",
+    frac12: "\xBD",
+    frac34: "\xBE",
+    iquest: "\xBF",
+    Agrave: "\xC0",
+    Aacute: "\xC1",
+    Acirc: "\xC2",
+    Atilde: "\xC3",
+    Auml: "\xC4",
+    Aring: "\xC5",
+    AElig: "\xC6",
+    Ccedil: "\xC7",
+    Egrave: "\xC8",
+    Eacute: "\xC9",
+    Ecirc: "\xCA",
+    Euml: "\xCB",
+    Igrave: "\xCC",
+    Iacute: "\xCD",
+    Icirc: "\xCE",
+    Iuml: "\xCF",
+    ETH: "\xD0",
+    Ntilde: "\xD1",
+    Ograve: "\xD2",
+    Oacute: "\xD3",
+    Ocirc: "\xD4",
+    Otilde: "\xD5",
+    Ouml: "\xD6",
+    times: "\xD7",
+    Oslash: "\xD8",
+    Ugrave: "\xD9",
+    Uacute: "\xDA",
+    Ucirc: "\xDB",
+    Uuml: "\xDC",
+    Yacute: "\xDD",
+    THORN: "\xDE",
+    szlig: "\xDF",
+    agrave: "\xE0",
+    aacute: "\xE1",
+    acirc: "\xE2",
+    atilde: "\xE3",
+    auml: "\xE4",
+    aring: "\xE5",
+    aelig: "\xE6",
+    ccedil: "\xE7",
+    egrave: "\xE8",
+    eacute: "\xE9",
+    ecirc: "\xEA",
+    euml: "\xEB",
+    igrave: "\xEC",
+    iacute: "\xED",
+    icirc: "\xEE",
+    iuml: "\xEF",
+    eth: "\xF0",
+    ntilde: "\xF1",
+    ograve: "\xF2",
+    oacute: "\xF3",
+    ocirc: "\xF4",
+    otilde: "\xF5",
+    ouml: "\xF6",
+    divide: "\xF7",
+    oslash: "\xF8",
+    ugrave: "\xF9",
+    uacute: "\xFA",
+    ucirc: "\xFB",
+    uuml: "\xFC",
+    yacute: "\xFD",
+    thorn: "\xFE",
+    yuml: "\xFF",
+    fnof: "\u0192",
+    Alpha: "\u0391",
+    Beta: "\u0392",
+    Gamma: "\u0393",
+    Delta: "\u0394",
+    Epsilon: "\u0395",
+    Zeta: "\u0396",
+    Eta: "\u0397",
+    Theta: "\u0398",
+    Iota: "\u0399",
+    Kappa: "\u039A",
+    Lambda: "\u039B",
+    Mu: "\u039C",
+    Nu: "\u039D",
+    Xi: "\u039E",
+    Omicron: "\u039F",
+    Pi: "\u03A0",
+    Rho: "\u03A1",
+    Sigma: "\u03A3",
+    Tau: "\u03A4",
+    Upsilon: "\u03A5",
+    Phi: "\u03A6",
+    Chi: "\u03A7",
+    Psi: "\u03A8",
+    Omega: "\u03A9",
+    alpha: "\u03B1",
+    beta: "\u03B2",
+    gamma: "\u03B3",
+    delta: "\u03B4",
+    epsilon: "\u03B5",
+    zeta: "\u03B6",
+    eta: "\u03B7",
+    theta: "\u03B8",
+    iota: "\u03B9",
+    kappa: "\u03BA",
+    lambda: "\u03BB",
+    mu: "\u03BC",
+    nu: "\u03BD",
+    xi: "\u03BE",
+    omicron: "\u03BF",
+    pi: "\u03C0",
+    rho: "\u03C1",
+    sigmaf: "\u03C2",
+    sigma: "\u03C3",
+    tau: "\u03C4",
+    upsilon: "\u03C5",
+    phi: "\u03C6",
+    chi: "\u03C7",
+    psi: "\u03C8",
+    omega: "\u03C9",
+    thetasym: "\u03D1",
+    upsih: "\u03D2",
+    piv: "\u03D6",
+    bull: "\u2022",
+    hellip: "\u2026",
+    prime: "\u2032",
+    Prime: "\u2033",
+    oline: "\u203E",
+    frasl: "\u2044",
+    weierp: "\u2118",
+    image: "\u2111",
+    real: "\u211C",
+    trade: "\u2122",
+    alefsym: "\u2135",
+    larr: "\u2190",
+    uarr: "\u2191",
+    rarr: "\u2192",
+    darr: "\u2193",
+    harr: "\u2194",
+    crarr: "\u21B5",
+    lArr: "\u21D0",
+    uArr: "\u21D1",
+    rArr: "\u21D2",
+    dArr: "\u21D3",
+    hArr: "\u21D4",
+    forall: "\u2200",
+    part: "\u2202",
+    exist: "\u2203",
+    empty: "\u2205",
+    nabla: "\u2207",
+    isin: "\u2208",
+    notin: "\u2209",
+    ni: "\u220B",
+    prod: "\u220F",
+    sum: "\u2211",
+    minus: "\u2212",
+    lowast: "\u2217",
+    radic: "\u221A",
+    prop: "\u221D",
+    infin: "\u221E",
+    ang: "\u2220",
+    and: "\u2227",
+    or: "\u2228",
+    cap: "\u2229",
+    cup: "\u222A",
+    int: "\u222B",
+    there4: "\u2234",
+    sim: "\u223C",
+    cong: "\u2245",
+    asymp: "\u2248",
+    ne: "\u2260",
+    equiv: "\u2261",
+    le: "\u2264",
+    ge: "\u2265",
+    sub: "\u2282",
+    sup: "\u2283",
+    nsub: "\u2284",
+    sube: "\u2286",
+    supe: "\u2287",
+    oplus: "\u2295",
+    otimes: "\u2297",
+    perp: "\u22A5",
+    sdot: "\u22C5",
+    lceil: "\u2308",
+    rceil: "\u2309",
+    lfloor: "\u230A",
+    rfloor: "\u230B",
+    lang: "\u2329",
+    rang: "\u232A",
+    loz: "\u25CA",
+    spades: "\u2660",
+    clubs: "\u2663",
+    hearts: "\u2665",
+    diams: "\u2666",
     quot: '"',
     amp: "&",
     lt: "<",
     gt: ">",
-    OElig: "Œ",
-    oelig: "œ",
-    Scaron: "Š",
-    scaron: "š",
-    Yuml: "Ÿ",
-    circ: "ˆ",
-    tilde: "˜",
-    ensp: " ",
-    emsp: " ",
-    thinsp: " ",
-    zwnj: "‌",
-    zwj: "‍",
-    lrm: "‎",
-    rlm: "‏",
-    ndash: "–",
-    mdash: "—",
-    lsquo: "‘",
-    rsquo: "’",
-    sbquo: "‚",
-    ldquo: "“",
-    rdquo: "”",
-    bdquo: "„",
-    dagger: "†",
-    Dagger: "‡",
-    permil: "‰",
-    lsaquo: "‹",
-    rsaquo: "›",
-    euro: "€"
+    OElig: "\u0152",
+    oelig: "\u0153",
+    Scaron: "\u0160",
+    scaron: "\u0161",
+    Yuml: "\u0178",
+    circ: "\u02C6",
+    tilde: "\u02DC",
+    ensp: "\u2002",
+    emsp: "\u2003",
+    thinsp: "\u2009",
+    zwnj: "\u200C",
+    zwj: "\u200D",
+    lrm: "\u200E",
+    rlm: "\u200F",
+    ndash: "\u2013",
+    mdash: "\u2014",
+    lsquo: "\u2018",
+    rsquo: "\u2019",
+    sbquo: "\u201A",
+    ldquo: "\u201C",
+    rdquo: "\u201D",
+    bdquo: "\u201E",
+    dagger: "\u2020",
+    Dagger: "\u2021",
+    permil: "\u2030",
+    lsaquo: "\u2039",
+    rsaquo: "\u203A",
+    euro: "\u20AC"
   };
   const dangerous = [
     "cent",
@@ -42094,7 +42214,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       code2 > 64975 && code2 < 65008 || (code2 & 65535) === 65535 || (code2 & 65535) === 65534 || // Out of range
       code2 > 1114111
     ) {
-      return "�";
+      return "\uFFFD";
     }
     return String.fromCharCode(code2);
   }
@@ -42456,7 +42576,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           "Cannot close `" + token.type + "` (" + stringifyPosition({
             start: token.start,
             end: token.end
-          }) + "): it’s not open"
+          }) + "): it\u2019s not open"
         );
       } else if (open2[0].type !== token.type) {
         if (onExitError) {
@@ -44255,7 +44375,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           replace2 = String.fromCharCode(code2, next);
           skip = 1;
         } else {
-          replace2 = "�";
+          replace2 = "\uFFFD";
         }
       } else {
         replace2 = String.fromCharCode(code2);
@@ -44989,7 +45109,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
             className: ["data-footnote-backref"],
             ariaLabel: state.footnoteBackLabel
           },
-          children: [{ type: "text", value: "↩" }]
+          children: [{ type: "text", value: "\u21A9" }]
         };
         if (referenceIndex > 1) {
           backReference.children.push({
@@ -47407,7 +47527,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
           if (!isCodeBlock && matches) {
             let index2 = 0;
             input = input.replace(LatexRegex2, () => {
-              return `╬${index2++}╬`;
+              return `\u256C${index2++}\u256C`;
             });
             input = input.replace(/^\\\[(.+)\\\]$/gm, "$$$$$1$$$$").replace(/\\\[/g, "$$").replace(/\\\]/g, "$$").replace(/\\\(/g, "$").replace(/\\\)/g, "$");
           }
@@ -47554,7 +47674,7 @@ ${content2.text}
         return content2.parts?.map((part) => {
           if (typeof part === "string") return postProcess(part);
           if (part.content_type === "image_asset_pointer") return `<img src="${part.asset_pointer}" height="${part.height}" width="${part.width}" />`;
-          if (part.content_type === "audio_transcription") return `<div style="font-style: italic; opacity: 0.65;">“${part.text}”</div>`;
+          if (part.content_type === "audio_transcription") return `<div style="font-style: italic; opacity: 0.65;">\u201C${part.text}\u201D</div>`;
           if (part.content_type === "audio_asset_pointer") return null;
           if (part.content_type === "real_time_user_audio_video_asset_pointer") return null;
           return postProcess("[Unsupported multimodal content]");
@@ -47899,7 +48019,7 @@ ${_metaList.join("\n")}
           if (!isCodeBlock && matches) {
             let index2 = 0;
             input = input.replace(LatexRegex$1, () => {
-              return `╬${index2++}╬`;
+              return `\u256C${index2++}\u256C`;
             });
           }
           let transformed = toMarkdown(fromMarkdown(input));
@@ -48081,7 +48201,7 @@ ${body2}
     if (matches) {
       let index2 = 0;
       content2 = content2.replace(LatexRegex, () => {
-        return `╬${index2++}╬`;
+        return `\u256C${index2++}\u256C`;
       });
     }
     if (message.author.role === "assistant") {
@@ -48566,9 +48686,9 @@ ${content2}`;
     return result;
   }
   function formatConvDate(time) {
-    if (!time) return "—";
+    if (!time) return "\u2014";
     const ms = typeof time === "number" ? time * 1e3 : new Date(time).getTime();
-    if (Number.isNaN(ms) || ms === 0) return "—";
+    if (Number.isNaN(ms) || ms === 0) return "\u2014";
     const d2 = new Date(ms);
     const diffDays = Math.floor((Date.now() - ms) / 864e5);
     if (diffDays === 0) return "Today";
@@ -48717,7 +48837,7 @@ ${content2}`;
               title: `Select 100 conversations starting at position #${skipFirst + 1}`,
               disabled: disabled || conversations.length === 0 || skipFirst >= filtered.length,
               onClick: () => setSelected(filtered.slice(skipFirst, skipFirst + EXPORT_OPERATION_BATCH)),
-              children: "→ 100"
+              children: "\u2192 100"
             }
           ),
           /* @__PURE__ */ u$5("span", { className: "text-sm font-medium tabular-nums text-gray-500 dark:text-gray-400", children: [
@@ -48742,7 +48862,7 @@ ${content2}`;
             },
             children: [
               "Title ",
-              sortField === "title" ? sortDir === "asc" ? "↑" : "↓" : "↕"
+              sortField === "title" ? sortDir === "asc" ? "\u2191" : "\u2193" : "\u2195"
             ]
           }
         ),
@@ -48760,7 +48880,7 @@ ${content2}`;
             },
             children: [
               "Created ",
-              sortField === "create_time" ? sortDir === "asc" ? "↑" : "↓" : "↕"
+              sortField === "create_time" ? sortDir === "asc" ? "\u2191" : "\u2193" : "\u2195"
             ]
           }
         ),
@@ -48778,7 +48898,7 @@ ${content2}`;
             },
             children: [
               "Updated ",
-              sortField === "update_time" ? sortDir === "asc" ? "↑" : "↓" : "↕"
+              sortField === "update_time" ? sortDir === "asc" ? "\u2191" : "\u2193" : "\u2195"
             ]
           }
         )
@@ -48827,12 +48947,12 @@ ${content2}`;
                     }
                   }
                 ),
-                c2.is_starred && /* @__PURE__ */ u$5("span", { title: "Starred", style: { color: "#f59e0b", flexShrink: 0 }, children: "★" }),
+                c2.is_starred && /* @__PURE__ */ u$5("span", { title: "Starred", style: { color: "#f59e0b", flexShrink: 0 }, children: "\u2605" }),
                 /* @__PURE__ */ u$5(
                   "span",
                   {
                     className: `SelectItemMeta${sortField === "create_time" ? " SelectItemMetaActive" : ""}`,
-                    title: `Created: ${c2.create_time ?? "—"}`,
+                    title: `Created: ${c2.create_time ?? "\u2014"}`,
                     children: formatConvDate(c2.create_time)
                   }
                 ),
@@ -48840,7 +48960,7 @@ ${content2}`;
                   "span",
                   {
                     className: `SelectItemMeta${sortField === "update_time" ? " SelectItemMetaActive" : ""}`,
-                    title: `Updated: ${c2.update_time ?? "—"}`,
+                    title: `Updated: ${c2.update_time ?? "\u2014"}`,
                     children: formatConvDate(c2.update_time)
                   }
                 )
@@ -49129,12 +49249,12 @@ ${content2}`;
         setProbeStatus("error");
       }
     }, []);
-    const probeLabel = probeStatus === "testing" ? "⏳ Testing…" : probeStatus === "ok" ? "✅ API ready" : probeStatus === "rate_limited" ? `🚫 Rate limited${probeRetryAfterSecs != null ? ` · wait ${probeRetryAfterSecs}s` : ""}` : probeStatus === "error" ? "⚠️ Error" : null;
+    const probeLabel = probeStatus === "testing" ? "\u23F3 Testing\u2026" : probeStatus === "ok" ? "\u2705 API ready" : probeStatus === "rate_limited" ? `\u{1F6AB} Rate limited${probeRetryAfterSecs != null ? ` \xB7 wait ${probeRetryAfterSecs}s` : ""}` : probeStatus === "error" ? "\u26A0\uFE0F Error" : null;
     return /* @__PURE__ */ u$5(S$3, { children: [
       /* @__PURE__ */ u$5(Title, { className: "DialogTitle", children: t2("Export Dialog Title") }),
       /* @__PURE__ */ u$5("div", { className: "flex items-center text-gray-600 dark:text-gray-300 flex justify-between border-b-[1px] pb-3 mb-3 dark:border-gray-700", children: [
         t2("Export from official export file"),
-        " (conversations.json) ",
+        " (conversations.json)\xA0",
         /* @__PURE__ */ u$5("div", { className: "flex items-center gap-2", children: [
           exportSource === "API" && /* @__PURE__ */ u$5(
             "button",
@@ -49214,11 +49334,11 @@ ${content2}`;
         /* @__PURE__ */ u$5("button", { className: "Button red", disabled: disabled || exportSource === "Local", onClick: deleteAll, children: t2("Delete") }),
         /* @__PURE__ */ u$5("button", { className: "Button green", disabled, onClick: exportAll, children: t2("Export") })
       ] }),
-      totalBatches > 1 && !processing && /* @__PURE__ */ u$5("p", { className: "mt-1.5 text-xs text-right text-gray-400 dark:text-gray-500", children: `${totalBatches} downloads · 100 conversations each` }),
+      totalBatches > 1 && !processing && /* @__PURE__ */ u$5("p", { className: "mt-1.5 text-xs text-right text-gray-400 dark:text-gray-500", children: `${totalBatches} downloads \xB7 100 conversations each` }),
       processing && /* @__PURE__ */ u$5(S$3, { children: [
         /* @__PURE__ */ u$5("div", { className: "mt-2 mb-1 justify-between flex items-center gap-2", children: [
-          /* @__PURE__ */ u$5("span", { className: "truncate text-sm text-gray-600 dark:text-gray-300", children: progress.currentStatus === "rate_limited" ? `⏳ Rate limited — waiting ${progress.rateLimitWaitSecs ?? "…"}s` : progress.currentName }),
-          /* @__PURE__ */ u$5("span", { className: "shrink-0 tabular-nums text-sm text-gray-500 dark:text-gray-400", children: progress.totalBatches > 1 ? `${t2("Batch progress").replace("{{current}}", String(progress.batchIndex + 1)).replace("{{total}}", String(progress.totalBatches))} · ${progress.completed}/${progress.total}` : `${progress.completed}/${progress.total}` })
+          /* @__PURE__ */ u$5("span", { className: "truncate text-sm text-gray-600 dark:text-gray-300", children: progress.currentStatus === "rate_limited" ? `\u23F3 Rate limited \u2014 waiting ${progress.rateLimitWaitSecs ?? "\u2026"}s` : progress.currentName }),
+          /* @__PURE__ */ u$5("span", { className: "shrink-0 tabular-nums text-sm text-gray-500 dark:text-gray-400", children: progress.totalBatches > 1 ? `${t2("Batch progress").replace("{{current}}", String(progress.batchIndex + 1)).replace("{{total}}", String(progress.totalBatches))} \xB7 ${progress.completed}/${progress.total}` : `${progress.completed}/${progress.total}` })
         ] }),
         /* @__PURE__ */ u$5("div", { className: "w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700", children: /* @__PURE__ */ u$5(
           "div",
@@ -49246,7 +49366,7 @@ ${content2}`;
               cursor: "pointer",
               fontWeight: 600
             },
-            title: "Stop the export — any batches already downloaded are kept",
+            title: "Stop the export \u2014 any batches already downloaded are kept",
             onClick: cancelExport,
             children: "Cancel"
           }
@@ -49716,6 +49836,30 @@ ${content2}`;
   function Variable({ name, title: title2 }) {
     return /* @__PURE__ */ u$5("strong", { className: "cursor-help select-all whitespace-nowrap", title: title2, children: name });
   }
+  function SettingsSection({ id, title: title2, action, defaultOpen = true, children }) {
+    const [open2, setOpen] = d$3(defaultOpen);
+    const panelId = `${id}-panel`;
+    return /* @__PURE__ */ u$5("div", { className: "settings-section", children: [
+      /* @__PURE__ */ u$5("dt", { className: "settings-section-header", children: [
+        /* @__PURE__ */ u$5(
+          "button",
+          {
+            type: "button",
+            className: "settings-section-trigger",
+            "aria-expanded": open2,
+            "aria-controls": panelId,
+            onClick: () => setOpen((value) => !value),
+            children: [
+              /* @__PURE__ */ u$5("span", { className: `settings-section-chevron${open2 ? " open" : ""}`, "aria-hidden": "true", children: ">" }),
+              /* @__PURE__ */ u$5("span", { children: title2 })
+            ]
+          }
+        ),
+        action && /* @__PURE__ */ u$5("div", { className: "settings-section-action", children: action })
+      ] }),
+      open2 && /* @__PURE__ */ u$5("dd", { id: panelId, className: "settings-section-panel", children })
+    ] });
+  }
   const SettingDialog = ({
     open: open2,
     onOpenChange,
@@ -49766,83 +49910,78 @@ ${content2}`;
             /* @__PURE__ */ u$5(Content, { className: "DialogContent", children: [
               /* @__PURE__ */ u$5(Title, { className: "DialogTitle", children: t2("Exporter Settings") }),
               /* @__PURE__ */ u$5("div", { className: "DialogBody", children: [
-                /* @__PURE__ */ u$5("dl", { className: "space-y-6", children: [
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ u$5("div", { children: [
-                    /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("File Name") }),
-                    /* @__PURE__ */ u$5("dd", { children: [
-                      /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
-                        t2("Available variables"),
-                        ":",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{title}", title: title2 }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{date}", title: date }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{timestamp}", title: timestamp$1 }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{chat_id}", title: chatId }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{create_time}", title: unixTimestampToISOString(createTime) }),
-                        ",",
-                        " ",
-                        /* @__PURE__ */ u$5(Variable, { name: "{update_time}", title: unixTimestampToISOString(updateTime) })
-                      ] }),
-                      /* @__PURE__ */ u$5("input", { className: "Input mt-4", id: "filename", value: format, onChange: (e2) => setFormat(e2.currentTarget.value) }),
-                      /* @__PURE__ */ u$5("p", { className: "mt-1 text-sm text-gray-700 dark:text-gray-300", children: [
-                        t2("Preview"),
-                        ":",
-                        " ",
-                        /* @__PURE__ */ u$5("span", { className: "select-all", style: { "text-decoration": "underline", "text-underline-offset": 4 }, children: preview })
-                      ] })
-                    ] })
-                  ] }) }),
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
-                    /* @__PURE__ */ u$5("div", { children: [
-                      /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Export Thinking Process") }),
-                      /* @__PURE__ */ u$5("dd", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Export Thinking Process Description") })
-                    ] }),
-                    /* @__PURE__ */ u$5("div", { className: "absolute right-4", children: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableThinking, onCheckedUpdate: setEnableThinking }) })
-                  ] }),
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: /* @__PURE__ */ u$5("div", { children: [
-                    /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: [
-                      t2("Export All Limit"),
-                      " "
-                    ] }),
-                    /* @__PURE__ */ u$5("dd", { className: "text-sm text-gray-700 dark:text-gray-300 mt-2", children: [
-                      t2("Export All Limit Description"),
+                /* @__PURE__ */ u$5("dl", { className: "settings-sections", children: [
+                  /* @__PURE__ */ u$5(SettingsSection, { id: "filename", title: t2("File Name"), children: [
+                    /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
+                      t2("Available variables"),
+                      ":",
                       " ",
-                      /* @__PURE__ */ u$5("div", { className: "flex items-center gap-4 mt-3", children: [
-                        /* @__PURE__ */ u$5(
-                          "input",
-                          {
-                            type: "range",
-                            min: "100",
-                            max: "20000",
-                            step: "100",
-                            value: exportAllLimit,
-                            onChange: (e2) => setExportAllLimit(
-                              Number.parseInt(
-                                e2.currentTarget.value,
-                                10
-                              )
-                            ),
-                            className: "flex-grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700",
-                            id: "exportAllLimitSlider"
-                          }
-                        ),
-                        /* @__PURE__ */ u$5("span", { className: "font-medium text-gray-900 dark:text-gray-300 w-12 text-right", children: exportAllLimit })
-                      ] })
+                      /* @__PURE__ */ u$5(Variable, { name: "{title}", title: title2 }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{date}", title: date }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{timestamp}", title: timestamp$1 }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{chat_id}", title: chatId }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{create_time}", title: unixTimestampToISOString(createTime) }),
+                      ",",
+                      " ",
+                      /* @__PURE__ */ u$5(Variable, { name: "{update_time}", title: unixTimestampToISOString(updateTime) })
+                    ] }),
+                    /* @__PURE__ */ u$5("input", { className: "Input mt-4", id: "filename-input", value: format, onChange: (e2) => setFormat(e2.currentTarget.value) }),
+                    /* @__PURE__ */ u$5("p", { className: "mt-1 text-sm text-gray-700 dark:text-gray-300", children: [
+                      t2("Preview"),
+                      ":",
+                      " ",
+                      /* @__PURE__ */ u$5("span", { className: "select-all", style: { "text-decoration": "underline", "text-underline-offset": 4 }, children: preview })
                     ] })
-                  ] }) }),
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
-                    /* @__PURE__ */ u$5("div", { children: [
-                      /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Conversation Timestamp") }),
-                      /* @__PURE__ */ u$5("dd", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
-                        t2("Conversation Timestamp Description"),
+                  ] }),
+                  /* @__PURE__ */ u$5(
+                    SettingsSection,
+                    {
+                      id: "thinking",
+                      title: t2("Export Thinking Process"),
+                      action: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableThinking, onCheckedUpdate: setEnableThinking }),
+                      children: /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Export Thinking Process Description") })
+                    }
+                  ),
+                  /* @__PURE__ */ u$5(SettingsSection, { id: "export-all-limit", title: t2("Export All Limit"), children: [
+                    /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Export All Limit Description") }),
+                    /* @__PURE__ */ u$5("div", { className: "flex items-center gap-4 mt-3", children: [
+                      /* @__PURE__ */ u$5(
+                        "input",
+                        {
+                          type: "range",
+                          min: "100",
+                          max: "20000",
+                          step: "100",
+                          value: exportAllLimit,
+                          onChange: (e2) => setExportAllLimit(
+                            Number.parseInt(
+                              e2.currentTarget.value,
+                              10
+                            )
+                          ),
+                          className: "flex-grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700",
+                          id: "exportAllLimitSlider"
+                        }
+                      ),
+                      /* @__PURE__ */ u$5("span", { className: "font-medium text-gray-900 dark:text-gray-300 w-12 text-right", children: exportAllLimit })
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ u$5(
+                    SettingsSection,
+                    {
+                      id: "conversation-timestamp",
+                      title: t2("Conversation Timestamp"),
+                      action: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableTimestamp, onCheckedUpdate: setEnableTimestamp }),
+                      children: [
+                        /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Conversation Timestamp Description") }),
                         enableTimestamp && /* @__PURE__ */ u$5(S$3, { children: [
                           /* @__PURE__ */ u$5("div", { className: "mt-2", children: /* @__PURE__ */ u$5(
                             Toggle,
@@ -49869,15 +50008,17 @@ ${content2}`;
                             }
                           ) })
                         ] })
-                      ] })
-                    ] }),
-                    /* @__PURE__ */ u$5("div", { className: "absolute right-4", children: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableTimestamp, onCheckedUpdate: setEnableTimestamp }) })
-                  ] }),
-                  /* @__PURE__ */ u$5("div", { className: "relative flex bg-white dark:bg-white/5 rounded p-4", children: [
-                    /* @__PURE__ */ u$5("div", { children: [
-                      /* @__PURE__ */ u$5("dt", { className: "text-md font-medium text-gray-800 dark:text-white", children: t2("Export Metadata") }),
-                      /* @__PURE__ */ u$5("dd", { className: "text-sm text-gray-700 dark:text-gray-300", children: [
-                        t2("Export Metadata Description"),
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ u$5(
+                    SettingsSection,
+                    {
+                      id: "export-metadata",
+                      title: t2("Export Metadata"),
+                      action: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableMeta, onCheckedUpdate: setEnableMeta }),
+                      children: [
+                        /* @__PURE__ */ u$5("p", { className: "text-sm text-gray-700 dark:text-gray-300", children: t2("Export Metadata Description") }),
                         enableMeta && /* @__PURE__ */ u$5(S$3, { children: [
                           /* @__PURE__ */ u$5("p", { className: "mt-2 text-sm text-gray-700 dark:text-gray-300", children: [
                             t2("Available variables"),
@@ -49919,7 +50060,7 @@ ${content2}`;
                                 }
                               }
                             ),
-                            /* @__PURE__ */ u$5("span", { className: "mx-2", children: "→" }),
+                            /* @__PURE__ */ u$5("span", { className: "mx-2", children: "->" }),
                             /* @__PURE__ */ u$5(
                               "input",
                               {
@@ -49952,10 +50093,9 @@ ${content2}`;
                             }
                           ) })
                         ] })
-                      ] })
-                    ] }),
-                    /* @__PURE__ */ u$5("div", { className: "absolute right-4", children: /* @__PURE__ */ u$5(Toggle, { label: "", checked: enableMeta, onCheckedUpdate: setEnableMeta }) })
-                  ] })
+                      ]
+                    }
+                  )
                 ] }),
                 /* @__PURE__ */ u$5("div", { className: "flex mt-6", style: { justifyContent: "flex-end" }, children: /* @__PURE__ */ u$5(Close, { asChild: true, children: /* @__PURE__ */ u$5("button", { className: "Button green font-bold", children: t2("Save") }) }) })
               ] }),
@@ -50238,8 +50378,8 @@ ${content2}`;
       try {
         R$2(/* @__PURE__ */ u$5(DirectMenu, { container }), container);
       } catch (error2) {
-        console.error("[ChatGPT Exporter] Failed to render DirectMenu:", error2);
-        container.appendChild(document.createElement("div")).textContent = `导出功能加载失败: ${error2.message}`;
+        console.error("[ChatGPT Helper Export] Failed to render DirectMenu:", error2);
+        container.appendChild(document.createElement("div")).textContent = `\u5BFC\u51FA\u529F\u80FD\u52A0\u8F7D\u5931\u8D25: ${error2.message}`;
       }
       return container;
     };
