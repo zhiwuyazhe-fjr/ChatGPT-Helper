@@ -124,10 +124,13 @@
             settingsTitle: '设置',
             readingHistory: '阅读历史',
             settingsGroupGeneral: '通用',
+            settingsGroupTabs: '标签页',
             settingsGroupReadingNavigation: '阅读与导航',
             settingsGroupContentProcessing: '内容处理',
-            settingsGroupTabPrivacy: '标签页与隐私',
+            settingsGroupBrowserTab: '浏览器标签页',
             settingsGroupQuickButtons: '快捷按钮',
+            settingsShowTab: '显示“{name}”',
+            tabOrderUpdated: '标签页顺序已更新',
             language: '界面语言',
             autoDetect: '自动检测',
             chinese: '简体中文',
@@ -135,7 +138,6 @@
             languageChanged: '语言已更改',
             themeToggle: '切换主题',
             newChatInTab: '新标签页开启对话',
-            dragToReorder: '拖动改变顺序',
             noAnchor: '暂无锚点',
             noAnchorAutoHint: '暂无锚点（点击顶部/底部按钮可自动生成）',
             setAnchor: '设置锚点',
@@ -198,7 +200,6 @@
             aboutShare: '分享给朋友',
             aboutAuthorTitle: '关于作者',
             aboutAuthorBio: 'TJU | CS 在读\nAI 工具探索者\n长期 ChatGPT 使用者',
-            aboutFooterNote: '兼容 chatgpt.com 与 chat.openai.com · 本地设置与解析 · 面向高频工作流',
             aboutRepoButton: 'GitHub 仓库',
             aboutRepoLabel: '项目仓库',
             aboutAuthorGithub: '作者 GitHub',
@@ -381,17 +382,19 @@
             settingsTitle: 'Settings',
             readingHistory: 'Reading History',
             settingsGroupGeneral: 'General',
+            settingsGroupTabs: 'Tabs',
             settingsGroupReadingNavigation: 'Reading & Navigation',
             settingsGroupContentProcessing: 'Content Processing',
-            settingsGroupTabPrivacy: 'Tabs & Privacy',
+            settingsGroupBrowserTab: 'Browser Tab',
             settingsGroupQuickButtons: 'Quick Buttons',
+            settingsShowTab: 'Show "{name}"',
+            tabOrderUpdated: 'Tab order updated',
             language: 'Interface Language',
             autoDetect: 'Auto Detect',
             chinese: '简体中文',
             english: 'English',
             themeToggle: 'Switch Theme',
             newChatInTab: 'Open Chat in New Tab',
-            dragToReorder: 'Drag to reorder',
             noAnchor: 'No anchor',
             noAnchorAutoHint: 'No anchor yet. Click Top or Bottom to create one automatically.',
             setAnchor: 'Set Anchor',
@@ -454,7 +457,6 @@
             aboutShare: 'Share with Friends',
             aboutAuthorTitle: 'About the Author',
             aboutAuthorBio: 'TJU | Computer Science student\nAI tool builder\nLong-time ChatGPT user',
-            aboutFooterNote: 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com · Local-first, no conversation uploads',
             aboutRepoButton: 'GitHub Repository',
             aboutRepoLabel: 'Repository',
             aboutAuthorGithub: 'Author GitHub',
@@ -634,7 +636,7 @@
     const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
     const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
     const EXTENSION_NAME = 'ChatGPT Helper';
-    const EXTENSION_VERSION = '2.4.2';
+    const EXTENSION_VERSION = '2.4.3';
     const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
     const EXTENSION_LICENSE = 'MIT';
     const THEME_HOST_ATTRS = [
@@ -913,6 +915,7 @@
         const fallbackSvg = createHelperLogoSvg();
         fallbackSvg.classList.add('chatgpt-helper-logo-fallback-svg');
 
+        // 优先展示现有品牌 Logo（icons/logo.svg），加载失败时才回退到内联 SVG
         const svgImg = createElement('img', {
             className: 'chatgpt-helper-logo-svg',
             alt: '',

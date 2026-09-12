@@ -110,9 +110,15 @@
                 className: 'chatgpt-helper-settings-scroll chatgpt-helper-settings-compact'
             });
 
+            // 恢复重建前的滚动位置，避免修改配置后视图跳回顶部
+            const restoreScrollTop = this.settingsScrollTop;
+            this.settingsScrollTop = null;
+
             const rerenderSettings = () => {
                 const panel = this.panel?.querySelector('#settings-content');
                 if (!panel) return;
+                const scrollEl = panel.querySelector('.chatgpt-helper-settings-compact');
+                this.settingsScrollTop = scrollEl ? scrollEl.scrollTop : null;
                 clearElement(panel);
                 this.renderSettings(panel);
             };
@@ -326,13 +332,14 @@
                 return row;
             };
 
-            const getCollapsedSettingsSections = () => {
-                if (!this.collapsedSettingsSections) this.collapsedSettingsSections = new Set();
-                return this.collapsedSettingsSections;
+            const getExpandedSettingsSections = () => {
+                if (!this.expandedSettingsSections) this.expandedSettingsSections = new Set();
+                return this.expandedSettingsSections;
             };
-            const createCollapsibleSettingsSection = (id, title, content) => {
-                const collapsedSections = getCollapsedSettingsSections();
-                const isCollapsed = collapsedSections.has(id);
+            // 手风琴式分组：默认全部折叠，点击标题展开
+            const createCollapsibleSettingsSection = (id, title, content, options = {}) => {
+                const expandedSections = getExpandedSettingsSections();
+                const isCollapsed = !expandedSections.has(id);
                 const listId = `chatgpt-helper-settings-${id}-list`;
                 const sectionClass = isCollapsed
                     ? 'chatgpt-helper-settings-compact-section collapsed'
@@ -355,12 +362,18 @@
                 trigger.appendChild(createElement('span', {
                     className: 'chatgpt-helper-settings-compact-title-text'
                 }, title));
+                if (options.count != null) {
+                    trigger.appendChild(createElement('span', {
+                        className: 'chatgpt-helper-settings-compact-title-count',
+                        'aria-hidden': 'true'
+                    }, String(options.count)));
+                }
                 trigger.addEventListener('click', () => {
                     const nextCollapsed = !section.classList.contains('collapsed');
                     section.classList.toggle('collapsed', nextCollapsed);
                     trigger.setAttribute('aria-expanded', String(!nextCollapsed));
-                    if (nextCollapsed) collapsedSections.add(id);
-                    else collapsedSections.delete(id);
+                    if (nextCollapsed) expandedSections.delete(id);
+                    else expandedSections.add(id);
                 });
                 header.appendChild(trigger);
                 section.appendChild(header);
@@ -371,26 +384,76 @@
             };
             const createCompactSection = (id, title, items) => createCollapsibleSettingsSection(id, title, () => {
                 const list = createElement('div', { className: 'chatgpt-helper-settings-compact-list' });
-                items.filter(Boolean).forEach((item) => list.appendChild(createCompactRow(item)));
+                items.filter(Boolean).forEach((item) => list.appendChild(item instanceof Node ? item : createCompactRow(item)));
                 return list;
-            });
+            }, { count: items.filter(Boolean).length });
 
             const defaultTabOrder = ['prompts', 'outline', 'conversations', 'export'];
-            const getTabLabel = (tabId) => tabId === 'prompts' ? this.t('tabPrompts') :
-                tabId === 'outline' ? this.t('tabOutline') :
-                    tabId === 'conversations' ? this.t('tabConversations') :
-                        tabId === 'export' ? this.t('tabExport') : tabId;
+            const createTabOrderRows = () => {
+                const order = this.getTabOrder();
+                return order.map((tabId, index) => {
+                    const def = TAB_DEFINITIONS[tabId];
+                    const row = createElement('div', {
+                        className: 'chatgpt-helper-settings-compact-row chatgpt-helper-settings-quick-button-row'
+                    });
+                    const label = createElement('div', {
+                        className: 'chatgpt-helper-settings-compact-label chatgpt-helper-settings-icon-label'
+                    });
+                    const icon = createElement('span', { className: 'chatgpt-helper-inline-icon-wrap' });
+                    icon.appendChild(createSvgIconNode(def?.iconName || 'list', {
+                        size: 14,
+                        className: 'chatgpt-helper-inline-icon'
+                    }));
+                    label.appendChild(icon);
+                    label.appendChild(createElement('span', {}, this.getTabLabel(tabId)));
+
+                    const controls = createElement('div', { className: 'chatgpt-helper-settings-compact-controls' });
+                    const move = (delta) => {
+                        const currentOrder = this.getTabOrder();
+                        const nextIndex = index + delta;
+                        if (nextIndex < 0 || nextIndex >= currentOrder.length) return;
+                        const next = [...currentOrder];
+                        [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+                        this.settings.tabOrder = next;
+                        this.saveSettings();
+                        this.rebuildTabBar();
+                        this.showToast(this.t('tabOrderUpdated') || 'Tab order updated');
+                        rerenderSettings();
+                    };
+                    const upBtn = createElement('button', {
+                        className: 'prompt-panel-btn chatgpt-helper-order-btn',
+                        title: this.t('moveUp') || 'Move Up',
+                        type: 'button'
+                    });
+                    upBtn.appendChild(createSvgIconNode('arrowUp', { size: 14 }));
+                    upBtn.disabled = index === 0;
+                    upBtn.addEventListener('click', () => move(-1));
+                    const downBtn = createElement('button', {
+                        className: 'prompt-panel-btn chatgpt-helper-order-btn',
+                        title: this.t('moveDown') || 'Move Down',
+                        type: 'button'
+                    });
+                    downBtn.appendChild(createSvgIconNode('arrowDown', { size: 14 }));
+                    downBtn.disabled = index === order.length - 1;
+                    downBtn.addEventListener('click', () => move(1));
+                    controls.appendChild(upBtn);
+                    controls.appendChild(downBtn);
+                    row.appendChild(label);
+                    row.appendChild(controls);
+                    return row;
+                });
+            };
             const createTabVisibilityItem = (tabId) => ({
-                label: getTabLabel(tabId),
+                label: (this.t('settingsShowTab') || 'Show "{name}"').replace('{name}', this.getTabLabel(tabId)),
                 type: 'toggle',
                 value: this.settings.tabOrder?.includes(tabId) !== false,
                 onChange: (val) => {
                     if (!Array.isArray(this.settings.tabOrder) || this.settings.tabOrder.length === 0) {
-                        this.settings.tabOrder = [...defaultTabOrder];
+                        this.settings.tabOrder = this.getTabOrder();
                     }
                     if (val) {
                         const next = [...this.settings.tabOrder, tabId]
-                            .filter((id, index, arr) => defaultTabOrder.includes(id) && arr.indexOf(id) === index)
+                            .filter((id, index, arr) => arr.indexOf(id) === index)
                             .sort((a, b) => defaultTabOrder.indexOf(a) - defaultTabOrder.indexOf(b));
                         this.settings.tabOrder = next;
                     } else {
@@ -402,10 +465,12 @@
                         this.settings.tabOrder = next;
                         if (this.currentTab === tabId) {
                             this.currentTab = next[0];
+                            this.switchTab(this.currentTab);
                         }
                     }
                     this.saveSettings();
-                    this.createUI();
+                    this.rebuildTabBar();
+                    rerenderSettings();
                     return true;
                 }
             });
@@ -422,9 +487,9 @@
                 return orderedIds.map(id => ({ id, enabled: true }));
             };
             const createQuickButtonsSection = () => {
+                const order = getQuickButtonOrder();
                 return createCollapsibleSettingsSection('quick-buttons', this.t('settingsGroupQuickButtons') || 'Quick Buttons', () => {
                     const list = createElement('div', { className: 'chatgpt-helper-settings-compact-list' });
-                    const order = getQuickButtonOrder();
                     order.forEach((btnConfig, index) => {
                         const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
                         if (!def) return;
@@ -477,7 +542,7 @@
                         list.appendChild(row);
                     });
                     return list;
-                });
+                }, { count: order.length });
             };
 
             const sections = [
@@ -520,7 +585,13 @@
                         }
                     }
                 ]),
-                createQuickButtonsSection(),
+                createCompactSection('tabs', this.t('settingsGroupTabs') || 'Tabs', [
+                    ...createTabOrderRows(),
+                    createTabVisibilityItem('prompts'),
+                    createTabVisibilityItem('outline'),
+                    createTabVisibilityItem('conversations'),
+                    createTabVisibilityItem('export')
+                ]),
                 createCompactSection('reading-navigation', this.t('settingsGroupReadingNavigation') || 'Reading & Navigation', [
                     {
                         label: this.t('preventAutoScrollLabel') || 'Prevent Auto Scroll',
@@ -617,11 +688,7 @@
                         }
                     }
                 ]),
-                createCompactSection('tab-privacy', this.t('settingsGroupTabPrivacy') || 'Tabs & Privacy', [
-                    createTabVisibilityItem('prompts'),
-                    createTabVisibilityItem('outline'),
-                    createTabVisibilityItem('conversations'),
-                    createTabVisibilityItem('export'),
+                createCompactSection('browser-tab', this.t('settingsGroupBrowserTab') || 'Browser Tab', [
                     {
                         label: this.t('tabAutoRenameLabel') || 'Auto Rename Tab',
                         type: 'toggle',
@@ -701,7 +768,8 @@
                             if (this.tabRenameManager) this.tabRenameManager.updateTabName(true);
                         }
                     } : null
-                ])
+                ]),
+                createQuickButtonsSection()
             ];
 
             sections.forEach(section => settingsContent.appendChild(section));
@@ -722,6 +790,10 @@
             settingsContent.appendChild(aboutFooter);
 
             container.appendChild(settingsContent);
+
+            if (restoreScrollTop != null) {
+                settingsContent.scrollTop = restoreScrollTop;
+            }
         }
     });
 })();

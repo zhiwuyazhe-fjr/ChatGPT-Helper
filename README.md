@@ -10,13 +10,13 @@
     <a href="https://chromewebstore.google.com/detail/chatgpt-helper/cepillehamimekfahfbgigbpfcaphpca">
       <img src="https://img.shields.io/badge/Chrome_Web_Store-立即安装-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Chrome Web Store">
     </a>
-    <a href="artifacts/chatgpt-helper-2.4.2-chrome.zip">
+    <a href="artifacts/chatgpt-helper-2.4.3-chrome.zip">
       <img src="https://img.shields.io/badge/本地安装包-下载_ZIP-111827?style=for-the-badge&logo=googlechrome&logoColor=white" alt="下载本地安装包">
     </a>
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Version-2.4.2-10A37F?style=flat-square" alt="Version 2.4.2">
+    <img src="https://img.shields.io/badge/Version-2.4.3-10A37F?style=flat-square" alt="Version 2.4.3">
     <img src="https://img.shields.io/badge/Manifest-V3-34A853?style=flat-square" alt="Manifest V3">
     <img src="https://img.shields.io/badge/Data-Local--first-7C3AED?style=flat-square" alt="Local-first">
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-F59E0B?style=flat-square" alt="MIT License"></a>
@@ -117,7 +117,7 @@ ChatGPT Helper 将经常分散在不同位置的操作收拢到一个安静、�
 
 ### 本地安装包 · 解压即用
 
-下载 **[chatgpt-helper-2.4.2-chrome.zip](artifacts/chatgpt-helper-2.4.2-chrome.zip)**，然后：
+下载 **[chatgpt-helper-2.4.3-chrome.zip](artifacts/chatgpt-helper-2.4.3-chrome.zip)**，然后：
 
 1. 解压 ZIP；
 2. 打开 `chrome://extensions/`；
@@ -194,11 +194,11 @@ npm run package
 
 ```text
 artifacts/
-├── chatgpt-helper-2.4.2-unpacked/   # 可直接在 Chrome 中加载
-└── chatgpt-helper-2.4.2-chrome.zip  # 提供给用户下载和解压
+├── chatgpt-helper-2.4.3-unpacked/   # 可直接在 Chrome 中加载
+└── chatgpt-helper-2.4.3-chrome.zip  # 提供给用户下载和解压
 ```
 
-它可以安全删除；再次执行 `npm run package` 会完整重建。仓库中原有的 2.4.1、旧 2.4.2 商店包已经清理，避免历史文件混淆。
+它可以安全删除；再次执行 `npm run package` 会完整重建。仓库中原有的 2.4.1、2.4.2 商店包已经清理，避免历史文件混淆。
 
 <details>
 <summary><strong>查看源码目录</strong></summary>

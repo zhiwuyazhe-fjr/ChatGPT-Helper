@@ -120,10 +120,13 @@
         settingsTitle: "\u8BBE\u7F6E",
         readingHistory: "\u9605\u8BFB\u5386\u53F2",
         settingsGroupGeneral: "\u901A\u7528",
+        settingsGroupTabs: "\u6807\u7B7E\u9875",
         settingsGroupReadingNavigation: "\u9605\u8BFB\u4E0E\u5BFC\u822A",
         settingsGroupContentProcessing: "\u5185\u5BB9\u5904\u7406",
-        settingsGroupTabPrivacy: "\u6807\u7B7E\u9875\u4E0E\u9690\u79C1",
+        settingsGroupBrowserTab: "\u6D4F\u89C8\u5668\u6807\u7B7E\u9875",
         settingsGroupQuickButtons: "\u5FEB\u6377\u6309\u94AE",
+        settingsShowTab: "\u663E\u793A\u201C{name}\u201D",
+        tabOrderUpdated: "\u6807\u7B7E\u9875\u987A\u5E8F\u5DF2\u66F4\u65B0",
         language: "\u754C\u9762\u8BED\u8A00",
         autoDetect: "\u81EA\u52A8\u68C0\u6D4B",
         chinese: "\u7B80\u4F53\u4E2D\u6587",
@@ -131,7 +134,6 @@
         languageChanged: "\u8BED\u8A00\u5DF2\u66F4\u6539",
         themeToggle: "\u5207\u6362\u4E3B\u9898",
         newChatInTab: "\u65B0\u6807\u7B7E\u9875\u5F00\u542F\u5BF9\u8BDD",
-        dragToReorder: "\u62D6\u52A8\u6539\u53D8\u987A\u5E8F",
         noAnchor: "\u6682\u65E0\u951A\u70B9",
         noAnchorAutoHint: "\u6682\u65E0\u951A\u70B9\uFF08\u70B9\u51FB\u9876\u90E8/\u5E95\u90E8\u6309\u94AE\u53EF\u81EA\u52A8\u751F\u6210\uFF09",
         setAnchor: "\u8BBE\u7F6E\u951A\u70B9",
@@ -194,7 +196,6 @@
         aboutShare: "\u5206\u4EAB\u7ED9\u670B\u53CB",
         aboutAuthorTitle: "\u5173\u4E8E\u4F5C\u8005",
         aboutAuthorBio: "TJU | CS \u5728\u8BFB\nAI \u5DE5\u5177\u63A2\u7D22\u8005\n\u957F\u671F ChatGPT \u4F7F\u7528\u8005",
-        aboutFooterNote: "\u517C\u5BB9 chatgpt.com \u4E0E chat.openai.com \xB7 \u672C\u5730\u8BBE\u7F6E\u4E0E\u89E3\u6790 \xB7 \u9762\u5411\u9AD8\u9891\u5DE5\u4F5C\u6D41",
         aboutRepoButton: "GitHub \u4ED3\u5E93",
         aboutRepoLabel: "\u9879\u76EE\u4ED3\u5E93",
         aboutAuthorGithub: "\u4F5C\u8005 GitHub",
@@ -377,17 +378,19 @@
         settingsTitle: "Settings",
         readingHistory: "Reading History",
         settingsGroupGeneral: "General",
+        settingsGroupTabs: "Tabs",
         settingsGroupReadingNavigation: "Reading & Navigation",
         settingsGroupContentProcessing: "Content Processing",
-        settingsGroupTabPrivacy: "Tabs & Privacy",
+        settingsGroupBrowserTab: "Browser Tab",
         settingsGroupQuickButtons: "Quick Buttons",
+        settingsShowTab: 'Show "{name}"',
+        tabOrderUpdated: "Tab order updated",
         language: "Interface Language",
         autoDetect: "Auto Detect",
         chinese: "\u7B80\u4F53\u4E2D\u6587",
         english: "English",
         themeToggle: "Switch Theme",
         newChatInTab: "Open Chat in New Tab",
-        dragToReorder: "Drag to reorder",
         noAnchor: "No anchor",
         noAnchorAutoHint: "No anchor yet. Click Top or Bottom to create one automatically.",
         setAnchor: "Set Anchor",
@@ -450,7 +453,6 @@
         aboutShare: "Share with Friends",
         aboutAuthorTitle: "About the Author",
         aboutAuthorBio: "TJU | Computer Science student\nAI tool builder\nLong-time ChatGPT user",
-        aboutFooterNote: "Works on chatgpt.com, chat.openai.com, and new.oaifree.com \xB7 Local-first, no conversation uploads",
         aboutRepoButton: "GitHub Repository",
         aboutRepoLabel: "Repository",
         aboutAuthorGithub: "Author GitHub",
@@ -619,7 +621,7 @@
     const REPO_URL = "https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper";
     const AUTHOR_GITHUB_URL = "https://github.com/zhiwuyazhe-fjr";
     const EXTENSION_NAME = "ChatGPT Helper";
-    const EXTENSION_VERSION = "2.4.2";
+    const EXTENSION_VERSION = "2.4.3";
     const EXTENSION_AUTHOR = "zhiwuyazhe_fjr";
     const EXTENSION_LICENSE = "MIT";
     const THEME_HOST_ATTRS = [
@@ -8553,6 +8555,7 @@
         dialog.setAttribute("aria-labelledby", titleId);
         dialog.setAttribute("aria-describedby", descriptionId);
         const header = createElement("div", { className: "chatgpt-helper-about-header" });
+        header.appendChild(createElement("div", { className: "chatgpt-helper-about-hero-glow", "aria-hidden": "true" }));
         const titleWrap = createElement("div", { className: "chatgpt-helper-about-title-wrap" });
         titleWrap.appendChild(createHelperLogoNode({
           size: 44,
@@ -8634,14 +8637,16 @@
         );
         const featureList = createElement("ul", { className: "chatgpt-helper-about-feature-list" });
         [
-          this.t("aboutFeaturePrompts") || "Prompt management and quick insertion",
-          this.t("aboutFeatureOutline") || "Automatic outline generation and navigation",
-          this.t("aboutFeatureConversations") || "Conversation organization and batch actions",
-          this.t("aboutFeatureExport") || "Multi-format export and reading-position tools"
+          { icon: "edit", label: this.t("aboutFeaturePrompts") || "Prompt management and quick insertion" },
+          { icon: "list", label: this.t("aboutFeatureOutline") || "Automatic outline generation and navigation" },
+          { icon: "message", label: this.t("aboutFeatureConversations") || "Conversation organization and batch actions" },
+          { icon: "export", label: this.t("aboutFeatureExport") || "Multi-format export and reading-position tools" }
         ].forEach((feature, index) => {
           const item = createElement("li", { className: "chatgpt-helper-about-feature-item" });
-          item.appendChild(createElement("span", { className: "chatgpt-helper-about-feature-index" }, String(index + 1).padStart(2, "0")));
-          item.appendChild(createElement("span", {}, feature));
+          const featureIcon = createElement("span", { className: "chatgpt-helper-about-feature-icon" });
+          featureIcon.appendChild(createSvgIconNode(feature.icon, { size: 14, strokeWidth: "2.2" }));
+          item.appendChild(featureIcon);
+          item.appendChild(createElement("span", { className: "chatgpt-helper-about-feature-label" }, feature.label));
           featureList.appendChild(item);
         });
         const featuresSection = createSection(
@@ -8661,6 +8666,9 @@
           }
         );
         const authorBody = createElement("div", { className: "chatgpt-helper-about-author-block" });
+        const authorAvatar = createElement("div", { className: "chatgpt-helper-about-avatar" });
+        authorAvatar.appendChild(createSvgIconNode("user", { size: 22, strokeWidth: "2" }));
+        authorBody.appendChild(authorAvatar);
         authorBody.appendChild(createElement("p", { className: "chatgpt-helper-about-section-text chatgpt-helper-about-author-bio" }, this.t("aboutAuthorBio") || "Author bio coming soon"));
         const authorActions = createActionRow();
         authorActions.appendChild(createActionButton(
@@ -8690,7 +8698,6 @@
         shell.appendChild(sideStack);
         body.appendChild(shell);
         const footer = createElement("div", { className: "chatgpt-helper-about-footer" });
-        footer.appendChild(createElement("div", { className: "chatgpt-helper-about-footer-note" }, this.t("aboutFooterNote") || "Works on chatgpt.com, chat.openai.com, and new.oaifree.com \xB7 Local-first, no conversation uploads"));
         const footerActions = createElement("div", { className: "chatgpt-helper-about-footer-actions" });
         footerActions.appendChild(createActionButton(
           this.t("aboutRepoButton") || "GitHub Repository",
@@ -9620,41 +9627,26 @@
                     background: var(--gh-bg, #ffffff);
                 }
 
-                .chatgpt-helper-tab-drag-handle {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: move;
-                    user-select: none;
-                    color: var(--gh-text-secondary, #6b7280);
-                    font-size: 12px;
-                    line-height: 1;
-                    padding: 2px 4px;
-                    margin-right: 4px;
-                    opacity: 0.5;
-                    transition: opacity 0.2s;
-                    letter-spacing: 0;
+                .chatgpt-helper-tab-label {
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                 }
 
-                .chatgpt-helper-tab:hover .chatgpt-helper-tab-drag-handle {
-                    opacity: 1;
+                /* \u6781\u7A84\u9762\u677F\uFF1ATab \u53EA\u663E\u793A\u56FE\u6807 */
+                #chatgpt-helper-tabs.icons-only .chatgpt-helper-tab-label {
+                    display: none;
                 }
 
-                .chatgpt-helper-tab-drag-handle:hover {
-                    opacity: 1;
-                    color: var(--gh-primary, #10a37f);
+                #chatgpt-helper-tabs.icons-only .chatgpt-helper-tab {
+                    gap: 0;
+                    --tab-padding-h: 0px;
                 }
 
-                .chatgpt-helper-tab.dragging {
-                    opacity: 0.5;
-                }
-
-                .chatgpt-helper-tab.drag-before {
-                    border-left: 2px solid var(--gh-primary, #10a37f);
-                }
-
-                .chatgpt-helper-tab.drag-after {
-                    border-right: 2px solid var(--gh-primary, #10a37f);
+                #chatgpt-helper-tabs.icons-only .chatgpt-helper-tab-icon {
+                    width: 16px;
+                    height: 16px;
                 }
 
                 /* \u9762\u677F\u5185\u5BB9 */
@@ -11377,7 +11369,16 @@
                 }
 
                 .chatgpt-helper-settings-compact-section {
-                    margin: 0 0 14px;
+                    margin: 0 0 10px;
+                    border: 1px solid var(--gh-panel-line, #e5e7eb);
+                    border-radius: 12px;
+                    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), transparent 4%);
+                    overflow: hidden;
+                    transition: border-color 0.16s ease;
+                }
+
+                .chatgpt-helper-settings-compact-section:hover {
+                    border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 58%);
                 }
 
                 .chatgpt-helper-settings-compact-section:last-of-type {
@@ -11386,23 +11387,23 @@
 
                 .chatgpt-helper-settings-compact-title {
                     padding: 0;
-                    font-size: 11px;
+                    font-size: 12.5px;
                     line-height: 1.2;
-                    font-weight: 700;
-                    color: color-mix(in srgb, var(--gh-text-secondary, #6b7280), var(--gh-text, #111827) 20%);
-                    letter-spacing: 0.04em;
-                    text-transform: uppercase;
+                    font-weight: 650;
+                    color: var(--gh-text, #111827);
+                    letter-spacing: 0.01em;
+                    text-transform: none;
                 }
 
                 .chatgpt-helper-settings-compact-title-btn {
                     width: 100%;
                     display: flex;
                     align-items: center;
-                    gap: 6px;
+                    gap: 7px;
                     border: 0;
-                    border-radius: 6px;
+                    border-radius: 0;
                     background: transparent;
-                    padding: 6px 2px 5px;
+                    padding: 10px 12px;
                     color: inherit;
                     cursor: pointer;
                     font: inherit;
@@ -11410,6 +11411,10 @@
                     line-height: inherit;
                     text-align: left;
                     text-transform: inherit;
+                }
+
+                .chatgpt-helper-settings-compact-section:not(.collapsed) .chatgpt-helper-settings-compact-title-btn {
+                    color: color-mix(in srgb, var(--gh-primary, #10a37f), var(--gh-text, #111827) 28%);
                 }
 
                 .chatgpt-helper-settings-compact-title-btn:hover {
@@ -11441,6 +11446,21 @@
                     display: none;
                 }
 
+                .chatgpt-helper-settings-compact-title-count {
+                    margin-left: auto;
+                    min-width: 20px;
+                    padding: 2px 7px;
+                    border-radius: 999px;
+                    text-align: center;
+                    font-size: 10.5px;
+                    font-weight: 650;
+                    line-height: 1.3;
+                    font-variant-numeric: tabular-nums;
+                    letter-spacing: 0;
+                    color: var(--gh-text-secondary, #6b7280);
+                    background: color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 24%);
+                }
+
                 .chatgpt-helper-settings-compact-title-text {
                     min-width: 0;
                     overflow: hidden;
@@ -11449,7 +11469,8 @@
                 }
 
                 .chatgpt-helper-settings-compact-list {
-                    border-top: 1px solid var(--gh-border, #e5e7eb);
+                    border-top: 1px solid var(--gh-panel-muted-line, #e5e7eb);
+                    padding: 0 10px 4px;
                 }
 
                 .chatgpt-helper-settings-compact-row {
@@ -11755,12 +11776,12 @@
                     align-items: center;
                     justify-content: center;
                     padding: 16px;
-                    background: rgba(15, 23, 42, 0.46);
-                    backdrop-filter: blur(6px);
-                    -webkit-backdrop-filter: blur(6px);
+                    background: rgba(9, 14, 26, 0.58);
+                    backdrop-filter: blur(8px) saturate(1.05);
+                    -webkit-backdrop-filter: blur(8px) saturate(1.05);
                     opacity: 0;
                     pointer-events: none;
-                    transition: opacity 0.18s var(--gh-fast-ease, ease);
+                    transition: opacity 0.2s var(--gh-fast-ease, ease);
                 }
 
                 #chatgpt-helper-about-modal.open {
@@ -11769,18 +11790,21 @@
                 }
 
                 .chatgpt-helper-about-dialog {
-                    width: min(820px, calc(100vw - 32px));
-                    max-height: min(760px, calc(100vh - 32px));
+                    width: min(840px, calc(100vw - 32px));
+                    max-height: min(780px, calc(100vh - 32px));
                     display: flex;
                     flex-direction: column;
                     overflow: hidden;
-                    border-radius: 14px;
+                    border-radius: 18px;
                     border: 1px solid var(--gh-panel-line, rgba(226, 232, 240, 0.9));
                     background: var(--gh-panel-surface, #ffffff);
                     color: var(--gh-text, #0f172a);
-                    box-shadow: 0 22px 58px rgba(15, 23, 42, 0.26), inset 0 1px 0 rgba(255,255,255,0.7);
-                    transform: translateY(8px) scale(0.99);
-                    transition: transform 0.22s var(--gh-fast-ease, ease), box-shadow 0.22s var(--gh-fast-ease, ease);
+                    box-shadow:
+                        0 32px 80px rgba(2, 8, 23, 0.42),
+                        0 8px 24px rgba(2, 8, 23, 0.18),
+                        inset 0 1px 0 color-mix(in srgb, #ffffff, transparent 78%);
+                    transform: translateY(10px) scale(0.985);
+                    transition: transform 0.24s var(--gh-fast-ease, ease), box-shadow 0.24s var(--gh-fast-ease, ease);
                 }
 
                 #chatgpt-helper-about-modal.open .chatgpt-helper-about-dialog {
@@ -11789,27 +11813,48 @@
 
                 .chatgpt-helper-about-header {
                     position: relative;
+                    overflow: hidden;
                     display: flex;
                     align-items: center;
                     justify-content: flex-start;
-                    gap: 12px;
-                    padding: 15px 18px 14px;
+                    gap: 14px;
+                    padding: 20px 22px 18px;
                     border-bottom: 1px solid var(--gh-panel-line, rgba(226, 232, 240, 0.9));
-                    background: var(--gh-panel-subtle, #f8fafc);
+                    background:
+                        radial-gradient(120% 160% at 88% -20%, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 84%) 0%, transparent 56%),
+                        radial-gradient(90% 140% at 8% 130%, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 90%) 0%, transparent 52%),
+                        var(--gh-panel-subtle, #f8fafc);
+                }
+
+                .chatgpt-helper-about-hero-glow {
+                    position: absolute;
+                    top: -70px;
+                    right: 60px;
+                    width: 190px;
+                    height: 190px;
+                    border-radius: 50%;
+                    background: radial-gradient(circle, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 82%) 0%, transparent 68%);
+                    filter: blur(6px);
+                    pointer-events: none;
                 }
 
                 .chatgpt-helper-about-title-wrap {
+                    position: relative;
                     display: flex;
-                    align-items: flex-start;
-                    gap: 12px;
+                    align-items: center;
+                    gap: 15px;
                     min-width: 0;
                     padding-right: 46px;
                 }
 
                 .chatgpt-helper-about-logo {
-                    border-radius: 999px;
+                    flex: 0 0 auto;
+                    border-radius: 14px;
                     background: #ffffff;
-                    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08), 0 6px 16px rgba(15, 23, 42, 0.08);
+                    box-shadow:
+                        0 0 0 1px color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 82%),
+                        0 10px 26px color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 78%),
+                        0 2px 8px rgba(15, 23, 42, 0.10);
                 }
 
                 .chatgpt-helper-logo-fallback-svg,
@@ -11844,105 +11889,145 @@
 
                 .chatgpt-helper-about-name {
                     margin: 0;
-                    font-size: 23px;
-                    font-weight: 700;
+                    font-size: 22px;
+                    font-weight: 750;
                     line-height: 1.18;
                     color: var(--gh-text, #0f172a);
-                    letter-spacing: 0;
+                    letter-spacing: -0.01em;
                 }
 
                 .chatgpt-helper-about-tagline {
-                    margin: 4px 0 0;
-                    font-size: 12.5px;
-                    line-height: 1.38;
+                    margin: 5px 0 0;
+                    font-size: 12.8px;
+                    line-height: 1.45;
                     color: var(--gh-text-secondary, #475569);
-                    max-width: 520px;
+                    max-width: 540px;
                 }
 
                 .chatgpt-helper-about-badge {
-                    padding: 3px 8px;
-                    border-radius: 7px;
-                    border: 1px solid color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 72%);
-                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 90%);
+                    padding: 3px 10px;
+                    border-radius: 999px;
+                    border: 1px solid color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 68%);
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 88%);
                     font-size: 11.5px;
-                    font-weight: 650;
-                    line-height: 1.2;
-                    letter-spacing: 0;
-                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 38%);
+                    font-weight: 700;
+                    line-height: 1.4;
+                    letter-spacing: 0.02em;
+                    font-variant-numeric: tabular-nums;
+                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 42%);
+                    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff, transparent 72%);
                 }
 
                 .chatgpt-helper-about-close {
                     position: absolute;
-                    top: 14px;
-                    right: 14px;
+                    top: 16px;
+                    right: 16px;
                     width: 32px;
                     height: 32px;
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
+                    border-radius: 9px;
+                    border: 1px solid transparent;
+                    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), transparent 30%);
+                    color: var(--gh-text-secondary, #475569);
                     cursor: pointer;
+                    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+                }
+
+                .chatgpt-helper-about-close:hover {
+                    background: var(--gh-control-bg-hover, rgba(248,250,252,0.96));
+                    border-color: var(--gh-control-border, rgba(203, 213, 225, 0.9));
+                    color: var(--gh-text, #0f172a);
+                    transform: rotate(90deg);
                 }
 
                 .chatgpt-helper-about-body {
                     flex: 1;
                     overflow: auto;
-                    padding: 0 18px;
+                    padding: 0 20px;
+                    scrollbar-width: thin;
+                    scrollbar-color: color-mix(in srgb, var(--gh-text-secondary, #64748b), transparent 62%) transparent;
+                }
+
+                .chatgpt-helper-about-body::-webkit-scrollbar {
+                    width: 8px;
+                }
+
+                .chatgpt-helper-about-body::-webkit-scrollbar-thumb {
+                    border-radius: 999px;
+                    background: color-mix(in srgb, var(--gh-text-secondary, #64748b), transparent 62%);
                 }
 
                 .chatgpt-helper-about-shell {
                     width: 100%;
                     max-width: none;
                     margin: 0 auto;
-                    padding: 14px 0;
+                    padding: 16px 0 6px;
                     display: grid;
-                    grid-template-columns: minmax(0, 1fr) 300px;
-                    gap: 13px;
+                    grid-template-columns: minmax(0, 1fr) 296px;
+                    gap: 14px;
                 }
 
                 .chatgpt-helper-about-main-stack,
                 .chatgpt-helper-about-side-stack {
                     display: grid;
                     align-content: start;
-                    gap: 12px;
+                    gap: 14px;
                 }
 
                 .chatgpt-helper-about-section {
                     position: relative;
-                    padding: 12px 13px;
+                    padding: 14px 15px;
                     border: 1px solid var(--gh-panel-line, rgba(226, 232, 240, 0.9));
-                    border-radius: 10px;
-                    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), var(--gh-panel-subtle, #f8fafc) 24%);
-                    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff, transparent 64%);
+                    border-radius: 14px;
+                    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), var(--gh-panel-subtle, #f8fafc) 30%);
+                    box-shadow:
+                        var(--gh-panel-card-shadow, none),
+                        inset 0 1px 0 color-mix(in srgb, #ffffff, transparent 70%);
                 }
 
                 .chatgpt-helper-about-section.compact {
-                    padding-bottom: 12px;
+                    padding-bottom: 14px;
                 }
 
                 .chatgpt-helper-about-section.featured {
-                    border-left: 3px solid color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 12%);
-                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-panel-card, #ffffff) 94%);
-                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-panel-line, #e2e8f0) 70%);
-                    border-left-color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 12%);
+                    overflow: hidden;
+                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-panel-line, #e2e8f0) 62%);
+                    background:
+                        linear-gradient(150deg, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 92%) 0%, transparent 46%),
+                        color-mix(in srgb, var(--gh-panel-card, #ffffff), var(--gh-panel-subtle, #f8fafc) 30%);
+                }
+
+                .chatgpt-helper-about-section.featured::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 12px;
+                    bottom: 12px;
+                    width: 3px;
+                    border-radius: 999px;
+                    background: linear-gradient(180deg, var(--gh-primary, #3b82f6), color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 55%));
                 }
 
                 .chatgpt-helper-about-section-head {
                     display: flex;
                     align-items: center;
-                    gap: 8px;
-                    margin-bottom: 7px;
+                    gap: 9px;
+                    margin-bottom: 9px;
                 }
 
                 .chatgpt-helper-about-section-icon {
-                    width: 20px;
-                    height: 20px;
+                    width: 24px;
+                    height: 24px;
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
-                    border-radius: 6px;
-                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 18%);
-                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 91%);
-                    border: 1px solid color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 78%);
+                    border-radius: 8px;
+                    color: var(--gh-primary, #3b82f6);
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 88%);
+                    border: 1px solid color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 76%);
+                    box-shadow: inset 0 1px 0 color-mix(in srgb, #ffffff, transparent 76%);
                 }
 
                 .chatgpt-helper-about-section-title {
@@ -11956,7 +12041,7 @@
 
                 .chatgpt-helper-about-section-text {
                     font-size: 12.5px;
-                    line-height: 1.56;
+                    line-height: 1.6;
                     color: var(--gh-text-secondary, #334155);
                     white-space: pre-wrap;
                     margin: 0;
@@ -11971,7 +12056,7 @@
                     margin: 0;
                     color: var(--gh-text, #0f172a);
                     font-size: 12.8px;
-                    line-height: 1.55;
+                    line-height: 1.6;
                     font-weight: 560;
                 }
 
@@ -11979,38 +12064,48 @@
                     list-style: none;
                     display: grid;
                     grid-template-columns: repeat(2, minmax(0, 1fr));
-                    gap: 7px;
+                    gap: 8px;
                     padding: 0;
                     margin: 0;
                 }
 
                 .chatgpt-helper-about-feature-item {
                     display: flex;
-                    align-items: flex-start;
-                    gap: 8px;
+                    align-items: center;
+                    gap: 10px;
                     min-width: 0;
                     color: var(--gh-text-secondary, #334155);
                     font-size: 12.5px;
-                    line-height: 1.42;
-                    padding: 8px 9px;
-                    min-height: 42px;
-                    border-radius: 8px;
-                    border: 1px solid color-mix(in srgb, var(--gh-panel-line, #e2e8f0), transparent 18%);
-                    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), var(--gh-panel-subtle, #f8fafc) 34%);
+                    line-height: 1.45;
+                    font-weight: 530;
+                    padding: 10px 11px;
+                    min-height: 46px;
+                    border-radius: 11px;
+                    border: 1px solid color-mix(in srgb, var(--gh-panel-line, #e2e8f0), transparent 22%);
+                    background: color-mix(in srgb, var(--gh-panel-card, #ffffff), transparent 42%);
+                    transition: border-color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
                 }
 
-                .chatgpt-helper-about-feature-index {
+                .chatgpt-helper-about-feature-item:hover {
+                    border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 52%);
+                    transform: translateY(-1px);
+                    box-shadow: 0 8px 18px color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 88%);
+                }
+
+                .chatgpt-helper-about-feature-icon {
                     flex: 0 0 auto;
-                    width: 22px;
-                    margin-top: 1px;
-                    font-size: 10.5px;
-                    line-height: 1.35;
-                    font-weight: 760;
-                    font-variant-numeric: tabular-nums;
-                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 16%);
+                    width: 26px;
+                    height: 26px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 8px;
+                    color: var(--gh-primary, #3b82f6);
+                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 88%);
+                    border: 1px solid color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 80%);
                 }
 
-                .chatgpt-helper-about-feature-item > span:last-child {
+                .chatgpt-helper-about-feature-label {
                     min-width: 0;
                 }
 
@@ -12027,17 +12122,17 @@
                 }
 
                 .chatgpt-helper-about-link-btn {
-                    min-height: 31px;
+                    min-height: 32px;
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
                     gap: 6px;
                     min-width: 0;
-                    padding: 0 9px;
-                    border-radius: 8px;
+                    padding: 0 10px;
+                    border-radius: 9px;
                     border: 1px solid var(--gh-control-border, rgba(203, 213, 225, 0.9));
                     cursor: pointer;
-                    font-size: 11.8px;
+                    font-size: 12px;
                     font-weight: 650;
                     letter-spacing: 0;
                     transition:
@@ -12071,8 +12166,9 @@
 
                 .chatgpt-helper-about-link-btn.primary {
                     color: #ffffff;
-                    background: color-mix(in srgb, var(--gh-primary, #3b82f6), #1f2937 10%);
+                    background: linear-gradient(135deg, var(--gh-primary, #3b82f6), color-mix(in srgb, var(--gh-primary, #3b82f6), #1f2937 18%));
                     border-color: color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 36%);
+                    box-shadow: 0 8px 18px color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 76%);
                 }
 
                 .chatgpt-helper-about-link-btn.primary svg {
@@ -12080,7 +12176,7 @@
                 }
 
                 .chatgpt-helper-about-link-btn.primary:hover {
-                    background: color-mix(in srgb, var(--gh-primary-hover, #2563eb), var(--gh-primary, #3b82f6) 56%);
+                    background: linear-gradient(135deg, var(--gh-primary-hover, #2563eb), color-mix(in srgb, var(--gh-primary, #3b82f6), #1f2937 10%));
                 }
 
                 .chatgpt-helper-about-link-btn.disabled,
@@ -12094,29 +12190,46 @@
                 .chatgpt-helper-about-author-block {
                     display: flex;
                     flex-direction: column;
-                    gap: 6px;
+                    align-items: center;
+                    text-align: center;
+                    gap: 9px;
+                }
+
+                .chatgpt-helper-about-avatar {
+                    width: 46px;
+                    height: 46px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    color: color-mix(in srgb, var(--gh-primary, #3b82f6), var(--gh-text, #0f172a) 24%);
+                    background:
+                        linear-gradient(140deg, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 82%) 0%, transparent 60%),
+                        var(--gh-panel-card, #ffffff);
+                    border: 1px solid color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 68%);
+                    box-shadow:
+                        0 8px 20px color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 84%),
+                        inset 0 1px 0 color-mix(in srgb, #ffffff, transparent 72%);
                 }
 
                 .chatgpt-helper-about-author-bio {
                     margin-bottom: 0;
+                    line-height: 1.7;
+                }
+
+                .chatgpt-helper-about-author-block .chatgpt-helper-about-actions {
+                    width: 100%;
                 }
 
                 .chatgpt-helper-about-footer {
                     display: flex;
                     align-items: center;
-                    justify-content: space-between;
+                    justify-content: flex-end;
                     gap: 14px;
-                    padding: 10px 18px 12px;
+                    padding: 12px 20px 14px;
                     text-align: left;
                     border-top: 1px solid var(--gh-panel-line, rgba(226, 232, 240, 0.9));
                     background: var(--gh-panel-subtle, #f8fafc);
-                }
-
-                .chatgpt-helper-about-footer-note {
-                    font-size: 11.8px;
-                    line-height: 1.45;
-                    color: var(--gh-text-secondary, #475569);
-                    margin: 0;
                 }
 
                 .chatgpt-helper-about-footer-actions {
@@ -12129,19 +12242,28 @@
 
                 .chatgpt-helper-about-footer-actions .chatgpt-helper-about-link-btn {
                     min-height: 30px;
-                    padding: 0 10px;
-                }
-
-                .chatgpt-helper-about-footer-text {
-                    font-size: 11.8px;
-                    color: var(--gh-text-secondary, #475569);
-                    white-space: nowrap;
+                    padding: 0 11px;
                 }
 
                 .chatgpt-helper-about-link-btn:focus-visible,
                 .chatgpt-helper-about-close:focus-visible {
                     outline: 2px solid var(--gh-focus-ring, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 66%)) !important;
                     outline-offset: 2px;
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-header {
+                    background:
+                        radial-gradient(120% 160% at 88% -20%, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 86%) 0%, transparent 56%),
+                        radial-gradient(90% 140% at 8% 130%, color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 92%) 0%, transparent 52%),
+                        color-mix(in srgb, var(--gh-bg, #202123), #ffffff 3%);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-logo {
+                    background: color-mix(in srgb, var(--gh-bg, #202123), #ffffff 6%);
+                }
+
+                body[data-gh-mode="dark"] .chatgpt-helper-about-section.featured::before {
+                    opacity: 0.8;
                 }
 
                 @media (max-width: 640px) {
@@ -12160,7 +12282,7 @@
                     }
 
                     .chatgpt-helper-about-body {
-                        padding: 0 16px;
+                        padding: 0 14px;
                     }
 
                     .chatgpt-helper-about-shell {
@@ -12185,7 +12307,7 @@
                     }
 
                     .chatgpt-helper-about-name {
-                        font-size: 21px;
+                        font-size: 20px;
                     }
 
                     .chatgpt-helper-about-feature-list {
@@ -12200,21 +12322,11 @@
                         width: 100%;
                     }
 
-                    .chatgpt-helper-about-footer {
-                        align-items: flex-start;
-                        flex-direction: column;
-                        gap: 4px;
-                    }
-
                     .chatgpt-helper-about-footer-actions {
                         width: 100%;
                         display: grid;
                         grid-template-columns: repeat(2, minmax(0, 1fr));
                         gap: 7px;
-                    }
-
-                    .chatgpt-helper-about-footer-text {
-                        white-space: normal;
                     }
                 }
 
@@ -12802,26 +12914,16 @@
                         var(--gh-panel-card-shadow);
                 }
 
-                .chatgpt-helper-tab-drag-handle,
-                .chatgpt-helper-prompt-drag-handle::before {
-                    letter-spacing: 0;
+                /* \u6781\u7A84\u9762\u677F\uFF1A\u5E95\u90E8\u5BFC\u822A\u53EA\u663E\u793A\u56FE\u6807 */
+                .scroll-nav-container.icons-only .chatgpt-helper-nav-label {
+                    display: none;
                 }
 
-                .chatgpt-helper-tab-drag-handle {
-                    margin-right: 2px;
-                    padding: 1px 2px;
-                    opacity: 0.35;
-                    color: color-mix(in srgb, var(--gh-text-secondary), transparent 18%);
-                }
-
-                .chatgpt-helper-tab:hover .chatgpt-helper-tab-drag-handle {
-                    opacity: 0.72;
-                }
-
-                .chatgpt-helper-tab.drag-before,
-                .chatgpt-helper-tab.drag-after {
-                    border-color: var(--gh-primary);
-                    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gh-primary), transparent 38%);
+                .scroll-nav-container.icons-only .scroll-nav-btn {
+                    gap: 0;
+                    padding: 8px 0;
+                    flex: 0 0 auto;
+                    min-width: 40px;
                 }
 
                 #chatgpt-helper-content,
@@ -15018,6 +15120,11 @@
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
                 }
 
+                /* \u6781\u7A84\u9762\u677F\uFF1A\u9690\u85CF\u201C\u6DFB\u52A0\u65B0\u63D0\u793A\u8BCD\u201D\u6309\u94AE\uFF0C\u53EA\u4FDD\u7559\u641C\u7D22\u6846 */
+                .chatgpt-helper-prompt-toolbar.compact .chatgpt-helper-add-btn {
+                    display: none;
+                }
+
                 .chatgpt-helper-prompt-search-bar {
                     position: relative;
                     flex: 1 1 auto;
@@ -15594,6 +15701,7 @@
         }
         const updateSpacing = () => {
           const width = tabsContainer.getBoundingClientRect().width;
+          tabsContainer.classList.toggle("icons-only", width < 300);
           if (width < 300) {
             const ratio = Math.max(0.3, (width - 200) / 100);
             tabsContainer.style.setProperty("--tab-padding-h", `${Math.max(4, 8 * ratio)}px`);
@@ -15684,6 +15792,50 @@
         this.headerSpacingObserver = new ResizeObserver(() => scheduleHeaderUpdateSpacing());
         this.headerSpacingObserver.observe(headerEl);
       },
+      initScrollNavResponsive(navEl) {
+        if (!navEl) return;
+        if (this.scrollNavObserver) {
+          this.scrollNavObserver.disconnect();
+          this.scrollNavObserver = null;
+        }
+        const updateMode = () => {
+          const width = navEl.getBoundingClientRect().width;
+          navEl.classList.toggle("icons-only", width < 250);
+        };
+        updateMode();
+        let navRafId = null;
+        const scheduleUpdate = () => {
+          if (navRafId) return;
+          navRafId = requestAnimationFrame(() => {
+            navRafId = null;
+            updateMode();
+          });
+        };
+        this.scrollNavObserver = new ResizeObserver(() => scheduleUpdate());
+        this.scrollNavObserver.observe(navEl);
+      },
+      initPromptToolbarResponsive(toolbarEl) {
+        if (!toolbarEl) return;
+        if (this.promptToolbarObserver) {
+          this.promptToolbarObserver.disconnect();
+          this.promptToolbarObserver = null;
+        }
+        const updateMode = () => {
+          const width = toolbarEl.getBoundingClientRect().width;
+          toolbarEl.classList.toggle("compact", width < 300);
+        };
+        updateMode();
+        let toolbarRafId = null;
+        const scheduleUpdate = () => {
+          if (toolbarRafId) return;
+          toolbarRafId = requestAnimationFrame(() => {
+            toolbarRafId = null;
+            updateMode();
+          });
+        };
+        this.promptToolbarObserver = new ResizeObserver(() => scheduleUpdate());
+        this.promptToolbarObserver.observe(toolbarEl);
+      },
       updateCollapseButtonState() {
         const collapseBtn = document.getElementById("chatgpt-helper-collapse-btn");
         if (!collapseBtn) return;
@@ -15692,8 +15844,61 @@
         collapseBtn.title = nextTitle;
         collapseBtn.setAttribute("aria-label", nextTitle);
       },
+      getTabOrder() {
+        const defaultTabOrder = ["prompts", "outline", "conversations", "export"];
+        const savedOrder = Array.isArray(this.settings.tabOrder) && this.settings.tabOrder.length > 0 ? this.settings.tabOrder.filter((tabId) => defaultTabOrder.includes(tabId)) : [];
+        return savedOrder.length > 0 ? savedOrder : [...defaultTabOrder];
+      },
+      getTabLabel(tabId) {
+        return tabId === "prompts" ? this.t("tabPrompts") : tabId === "outline" ? this.t("tabOutline") : tabId === "conversations" ? this.t("tabConversations") : tabId === "export" ? this.t("tabExport") : tabId === "settings" ? this.t("tabSettings") : tabId;
+      },
+      renderTabBar(tabsEl) {
+        if (!tabsEl) return;
+        clearElement(tabsEl);
+        const tabOrder = this.getTabOrder();
+        if (!tabOrder.includes(this.currentTab) && this.currentTab !== "settings") {
+          this.currentTab = tabOrder[0] || "prompts";
+        }
+        tabOrder.forEach((tabId) => {
+          const def = TAB_DEFINITIONS[tabId];
+          if (!def) return;
+          const tab = createElement("button", {
+            className: `chatgpt-helper-tab ${this.currentTab === tabId ? "active" : ""}`,
+            "data-tab": tabId,
+            id: `${tabId}-tab`,
+            type: "button",
+            role: "tab",
+            "aria-selected": String(this.currentTab === tabId),
+            "aria-controls": `${tabId}-content`,
+            title: this.getTabLabel(tabId)
+          });
+          tab.appendChild(createSvgIconNode(def.iconName || "list", {
+            size: 15,
+            className: "chatgpt-helper-tab-icon"
+          }));
+          tab.appendChild(createElement("span", { className: "chatgpt-helper-tab-label" }, this.getTabLabel(tabId)));
+          tab.addEventListener("click", () => this.switchTab(tabId));
+          tabsEl.appendChild(tab);
+        });
+      },
+      rebuildTabBar() {
+        if (!this.panel) return;
+        const tabs = this.panel.querySelector("#chatgpt-helper-tabs");
+        if (!tabs) return;
+        this.renderTabBar(tabs);
+        this.initTabResponsiveSpacing(tabs);
+      },
       createUI() {
         if (!this.panel) return;
+        try {
+          if (this.currentTab === "settings") {
+            const settingsScroll = this.panel.querySelector("#settings-content .chatgpt-helper-settings-compact");
+            this.settingsScrollTop = settingsScroll ? settingsScroll.scrollTop : null;
+          } else {
+            this.settingsScrollTop = null;
+          }
+        } catch (e) {
+        }
         clearElement(this.panel);
         const header = createElement("div", { id: "chatgpt-helper-header" });
         const title = createElement("div", { id: "chatgpt-helper-title" });
@@ -15799,112 +16004,7 @@
         this.initHeaderResponsiveSpacing(header);
         const tabs = createElement("div", { id: "chatgpt-helper-tabs" });
         tabs.setAttribute("role", "tablist");
-        const defaultTabOrder = ["prompts", "outline", "conversations", "export"];
-        const tabOrder = Array.isArray(this.settings.tabOrder) && this.settings.tabOrder.length > 0 ? this.settings.tabOrder.filter((tabId) => defaultTabOrder.includes(tabId)) : [...defaultTabOrder];
-        if (!tabOrder.includes(this.currentTab) && this.currentTab !== "settings") {
-          this.currentTab = tabOrder[0] || "prompts";
-        }
-        tabOrder.forEach((tabId) => {
-          if (tabId === "settings") return;
-          const def = TAB_DEFINITIONS[tabId];
-          if (!def) return;
-          const tab = createElement("button", {
-            className: `chatgpt-helper-tab ${this.currentTab === tabId ? "active" : ""}`,
-            "data-tab": tabId,
-            id: `${tabId}-tab`,
-            type: "button",
-            role: "tab",
-            "aria-selected": String(this.currentTab === tabId),
-            "aria-controls": `${tabId}-content`
-          });
-          const dragHandle = createElement("span", {
-            className: "chatgpt-helper-tab-drag-handle",
-            draggable: true
-          });
-          dragHandle.innerHTML = "\u22EE&nbsp;\u22EE";
-          dragHandle.setAttribute("title", this.t("dragToReorder"));
-          tab.appendChild(dragHandle);
-          tab.appendChild(createSvgIconNode(def.iconName || "list", {
-            size: 15,
-            className: "chatgpt-helper-tab-icon"
-          }));
-          const tabLabel = tabId === "prompts" ? this.t("tabPrompts") : tabId === "outline" ? this.t("tabOutline") : tabId === "conversations" ? this.t("tabConversations") : tabId === "export" ? this.t("tabExport") : tabId === "settings" ? this.t("tabSettings") : def.label;
-          tab.appendChild(createElement("span", {}, tabLabel));
-          tab.addEventListener("click", () => this.switchTab(tabId));
-          dragHandle.addEventListener("dragstart", (e) => {
-            e.stopPropagation();
-            e.dataTransfer.effectAllowed = "move";
-            e.dataTransfer.setData("text/html", tabId);
-            tab.classList.add("dragging");
-            tabs.setAttribute("data-dragging", "true");
-          });
-          dragHandle.addEventListener("dragend", (e) => {
-            e.stopPropagation();
-            tab.classList.remove("dragging");
-            tabs.removeAttribute("data-dragging");
-            tabs.querySelectorAll(".chatgpt-helper-tab").forEach((t2) => {
-              t2.classList.remove("drag-over", "drag-before", "drag-after");
-            });
-          });
-          tab.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = "move";
-            const draggingTab = tabs.querySelector(".dragging");
-            if (draggingTab && draggingTab !== tab) {
-              const allTabs = Array.from(tabs.querySelectorAll(".chatgpt-helper-tab:not(.dragging)"));
-              allTabs.indexOf(tab);
-              const rect = tab.getBoundingClientRect();
-              const mouseX = e.clientX;
-              const tabCenter = rect.left + rect.width / 2;
-              tabs.querySelectorAll(".chatgpt-helper-tab").forEach((t2) => {
-                t2.classList.remove("drag-before", "drag-after");
-              });
-              if (mouseX < tabCenter) {
-                tab.classList.add("drag-before");
-              } else {
-                tab.classList.add("drag-after");
-              }
-            }
-          });
-          tab.addEventListener("dragleave", (e) => {
-            const rect = tab.getBoundingClientRect();
-            if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
-              tab.classList.remove("drag-over", "drag-before", "drag-after");
-            }
-          });
-          tab.addEventListener("drop", (e) => {
-            e.preventDefault();
-            tab.classList.remove("drag-over", "drag-before", "drag-after");
-            const draggedTabId = e.dataTransfer.getData("text/html");
-            const draggedTab = tabs.querySelector(`[data-tab="${draggedTabId}"]`);
-            if (draggedTab && draggedTab !== tab) {
-              const allTabs = Array.from(tabs.querySelectorAll(".chatgpt-helper-tab"));
-              const draggedIndex = allTabs.indexOf(draggedTab);
-              const targetIndex = allTabs.indexOf(tab);
-              const rect = tab.getBoundingClientRect();
-              const mouseX = e.clientX;
-              const tabCenter = rect.left + rect.width / 2;
-              const insertBefore = mouseX < tabCenter;
-              if (draggedIndex < targetIndex) {
-                if (insertBefore) {
-                  tabs.insertBefore(draggedTab, tab);
-                } else {
-                  tabs.insertBefore(draggedTab, tab.nextSibling);
-                }
-              } else {
-                if (insertBefore) {
-                  tabs.insertBefore(draggedTab, tab);
-                } else {
-                  tabs.insertBefore(draggedTab, tab.nextSibling);
-                }
-              }
-              const newOrder = Array.from(tabs.querySelectorAll(".chatgpt-helper-tab")).map((t2) => t2.dataset.tab);
-              this.settings.tabOrder = newOrder;
-              this.saveSettings();
-            }
-          });
-          tabs.appendChild(tab);
-        });
+        this.renderTabBar(tabs);
         this.panel.appendChild(tabs);
         this.initTabResponsiveSpacing(tabs);
         const content = createElement("div", { id: "chatgpt-helper-content" });
@@ -15933,7 +16033,7 @@
           "aria-label": this.t("outlineScrollTop")
         });
         navScrollTopBtn.appendChild(createSvgIconNode("arrowUp", { size: 15 }));
-        navScrollTopBtn.appendChild(createElement("span", {}, this.t("buttonScrollTop")));
+        navScrollTopBtn.appendChild(createElement("span", { className: "chatgpt-helper-nav-label" }, this.t("buttonScrollTop")));
         navScrollTopBtn.addEventListener("click", () => this.scrollToTop());
         const navAnchorBtn = createElement("button", {
           className: "scroll-nav-btn",
@@ -15944,7 +16044,7 @@
           style: "opacity: 0.4; cursor: default;"
         });
         navAnchorBtn.appendChild(createSvgIconNode("anchor", { size: 15 }));
-        navAnchorBtn.appendChild(createElement("span", {}, this.t("buttonBack")));
+        navAnchorBtn.appendChild(createElement("span", { className: "chatgpt-helper-nav-label" }, this.t("buttonBack")));
         navAnchorBtn.addEventListener("click", () => this.handleAnchorClick());
         const navScrollBottomBtn = createElement("button", {
           className: "scroll-nav-btn",
@@ -15954,12 +16054,13 @@
           "aria-label": this.t("outlineScrollBottom")
         });
         navScrollBottomBtn.appendChild(createSvgIconNode("arrowDown", { size: 15 }));
-        navScrollBottomBtn.appendChild(createElement("span", {}, this.t("buttonScrollBottom")));
+        navScrollBottomBtn.appendChild(createElement("span", { className: "chatgpt-helper-nav-label" }, this.t("buttonScrollBottom")));
         navScrollBottomBtn.addEventListener("click", () => this.scrollToBottom());
         scrollNavContainer.appendChild(navScrollTopBtn);
         scrollNavContainer.appendChild(navAnchorBtn);
         scrollNavContainer.appendChild(navScrollBottomBtn);
         this.panel.appendChild(scrollNavContainer);
+        this.initScrollNavResponsive(scrollNavContainer);
         this.switchTab(this.currentTab);
       },
       switchTab(tabName) {
@@ -16117,6 +16218,7 @@
         addBtn.addEventListener("click", () => this.showAddPromptDialog());
         toolbar.appendChild(addBtn);
         container.appendChild(toolbar);
+        this.initPromptToolbarResponsive(toolbar);
         const categories = this.getCategories();
         const categoryBar = createElement("div", { className: "chatgpt-helper-categories chatgpt-helper-prompt-categories" });
         const allCategoryText = this.t("allCategory");
@@ -16733,9 +16835,13 @@
         const settingsContent = createElement("div", {
           className: "chatgpt-helper-settings-scroll chatgpt-helper-settings-compact"
         });
+        const restoreScrollTop = this.settingsScrollTop;
+        this.settingsScrollTop = null;
         const rerenderSettings = () => {
           const panel = this.panel?.querySelector("#settings-content");
           if (!panel) return;
+          const scrollEl = panel.querySelector(".chatgpt-helper-settings-compact");
+          this.settingsScrollTop = scrollEl ? scrollEl.scrollTop : null;
           clearElement(panel);
           this.renderSettings(panel);
         };
@@ -16942,13 +17048,13 @@
           }
           return row;
         };
-        const getCollapsedSettingsSections = () => {
-          if (!this.collapsedSettingsSections) this.collapsedSettingsSections = /* @__PURE__ */ new Set();
-          return this.collapsedSettingsSections;
+        const getExpandedSettingsSections = () => {
+          if (!this.expandedSettingsSections) this.expandedSettingsSections = /* @__PURE__ */ new Set();
+          return this.expandedSettingsSections;
         };
-        const createCollapsibleSettingsSection = (id, title, content) => {
-          const collapsedSections = getCollapsedSettingsSections();
-          const isCollapsed = collapsedSections.has(id);
+        const createCollapsibleSettingsSection = (id, title, content, options = {}) => {
+          const expandedSections = getExpandedSettingsSections();
+          const isCollapsed = !expandedSections.has(id);
           const listId = `chatgpt-helper-settings-${id}-list`;
           const sectionClass = isCollapsed ? "chatgpt-helper-settings-compact-section collapsed" : "chatgpt-helper-settings-compact-section";
           const section = createElement("section", {
@@ -16969,12 +17075,18 @@
           trigger.appendChild(createElement("span", {
             className: "chatgpt-helper-settings-compact-title-text"
           }, title));
+          if (options.count != null) {
+            trigger.appendChild(createElement("span", {
+              className: "chatgpt-helper-settings-compact-title-count",
+              "aria-hidden": "true"
+            }, String(options.count)));
+          }
           trigger.addEventListener("click", () => {
             const nextCollapsed = !section.classList.contains("collapsed");
             section.classList.toggle("collapsed", nextCollapsed);
             trigger.setAttribute("aria-expanded", String(!nextCollapsed));
-            if (nextCollapsed) collapsedSections.add(id);
-            else collapsedSections.delete(id);
+            if (nextCollapsed) expandedSections.delete(id);
+            else expandedSections.add(id);
           });
           header.appendChild(trigger);
           section.appendChild(header);
@@ -16985,21 +17097,73 @@
         };
         const createCompactSection = (id, title, items) => createCollapsibleSettingsSection(id, title, () => {
           const list = createElement("div", { className: "chatgpt-helper-settings-compact-list" });
-          items.filter(Boolean).forEach((item) => list.appendChild(createCompactRow(item)));
+          items.filter(Boolean).forEach((item) => list.appendChild(item instanceof Node ? item : createCompactRow(item)));
           return list;
-        });
+        }, { count: items.filter(Boolean).length });
         const defaultTabOrder = ["prompts", "outline", "conversations", "export"];
-        const getTabLabel = (tabId) => tabId === "prompts" ? this.t("tabPrompts") : tabId === "outline" ? this.t("tabOutline") : tabId === "conversations" ? this.t("tabConversations") : tabId === "export" ? this.t("tabExport") : tabId;
+        const createTabOrderRows = () => {
+          const order = this.getTabOrder();
+          return order.map((tabId, index) => {
+            const def = TAB_DEFINITIONS[tabId];
+            const row = createElement("div", {
+              className: "chatgpt-helper-settings-compact-row chatgpt-helper-settings-quick-button-row"
+            });
+            const label = createElement("div", {
+              className: "chatgpt-helper-settings-compact-label chatgpt-helper-settings-icon-label"
+            });
+            const icon = createElement("span", { className: "chatgpt-helper-inline-icon-wrap" });
+            icon.appendChild(createSvgIconNode(def?.iconName || "list", {
+              size: 14,
+              className: "chatgpt-helper-inline-icon"
+            }));
+            label.appendChild(icon);
+            label.appendChild(createElement("span", {}, this.getTabLabel(tabId)));
+            const controls = createElement("div", { className: "chatgpt-helper-settings-compact-controls" });
+            const move = (delta) => {
+              const currentOrder = this.getTabOrder();
+              const nextIndex = index + delta;
+              if (nextIndex < 0 || nextIndex >= currentOrder.length) return;
+              const next = [...currentOrder];
+              [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+              this.settings.tabOrder = next;
+              this.saveSettings();
+              this.rebuildTabBar();
+              this.showToast(this.t("tabOrderUpdated") || "Tab order updated");
+              rerenderSettings();
+            };
+            const upBtn = createElement("button", {
+              className: "prompt-panel-btn chatgpt-helper-order-btn",
+              title: this.t("moveUp") || "Move Up",
+              type: "button"
+            });
+            upBtn.appendChild(createSvgIconNode("arrowUp", { size: 14 }));
+            upBtn.disabled = index === 0;
+            upBtn.addEventListener("click", () => move(-1));
+            const downBtn = createElement("button", {
+              className: "prompt-panel-btn chatgpt-helper-order-btn",
+              title: this.t("moveDown") || "Move Down",
+              type: "button"
+            });
+            downBtn.appendChild(createSvgIconNode("arrowDown", { size: 14 }));
+            downBtn.disabled = index === order.length - 1;
+            downBtn.addEventListener("click", () => move(1));
+            controls.appendChild(upBtn);
+            controls.appendChild(downBtn);
+            row.appendChild(label);
+            row.appendChild(controls);
+            return row;
+          });
+        };
         const createTabVisibilityItem = (tabId) => ({
-          label: getTabLabel(tabId),
+          label: (this.t("settingsShowTab") || 'Show "{name}"').replace("{name}", this.getTabLabel(tabId)),
           type: "toggle",
           value: this.settings.tabOrder?.includes(tabId) !== false,
           onChange: (val) => {
             if (!Array.isArray(this.settings.tabOrder) || this.settings.tabOrder.length === 0) {
-              this.settings.tabOrder = [...defaultTabOrder];
+              this.settings.tabOrder = this.getTabOrder();
             }
             if (val) {
-              const next = [...this.settings.tabOrder, tabId].filter((id, index, arr) => defaultTabOrder.includes(id) && arr.indexOf(id) === index).sort((a, b) => defaultTabOrder.indexOf(a) - defaultTabOrder.indexOf(b));
+              const next = [...this.settings.tabOrder, tabId].filter((id, index, arr) => arr.indexOf(id) === index).sort((a, b) => defaultTabOrder.indexOf(a) - defaultTabOrder.indexOf(b));
               this.settings.tabOrder = next;
             } else {
               const next = this.settings.tabOrder.filter((id) => id !== tabId);
@@ -17010,10 +17174,12 @@
               this.settings.tabOrder = next;
               if (this.currentTab === tabId) {
                 this.currentTab = next[0];
+                this.switchTab(this.currentTab);
               }
             }
             this.saveSettings();
-            this.createUI();
+            this.rebuildTabBar();
+            rerenderSettings();
             return true;
           }
         });
@@ -17026,9 +17192,9 @@
           return orderedIds.map((id) => ({ id, enabled: true }));
         };
         const createQuickButtonsSection = () => {
+          const order = getQuickButtonOrder();
           return createCollapsibleSettingsSection("quick-buttons", this.t("settingsGroupQuickButtons") || "Quick Buttons", () => {
             const list = createElement("div", { className: "chatgpt-helper-settings-compact-list" });
-            const order = getQuickButtonOrder();
             order.forEach((btnConfig, index) => {
               const def = COLLAPSED_BUTTON_DEFS[btnConfig.id];
               if (!def) return;
@@ -17080,7 +17246,7 @@
               list.appendChild(row);
             });
             return list;
-          });
+          }, { count: order.length });
         };
         const sections = [
           createCompactSection("general", this.t("settingsGroupGeneral") || "General", [
@@ -17122,7 +17288,13 @@
               }
             }
           ]),
-          createQuickButtonsSection(),
+          createCompactSection("tabs", this.t("settingsGroupTabs") || "Tabs", [
+            ...createTabOrderRows(),
+            createTabVisibilityItem("prompts"),
+            createTabVisibilityItem("outline"),
+            createTabVisibilityItem("conversations"),
+            createTabVisibilityItem("export")
+          ]),
           createCompactSection("reading-navigation", this.t("settingsGroupReadingNavigation") || "Reading & Navigation", [
             {
               label: this.t("preventAutoScrollLabel") || "Prevent Auto Scroll",
@@ -17219,11 +17391,7 @@
               }
             }
           ]),
-          createCompactSection("tab-privacy", this.t("settingsGroupTabPrivacy") || "Tabs & Privacy", [
-            createTabVisibilityItem("prompts"),
-            createTabVisibilityItem("outline"),
-            createTabVisibilityItem("conversations"),
-            createTabVisibilityItem("export"),
+          createCompactSection("browser-tab", this.t("settingsGroupBrowserTab") || "Browser Tab", [
             {
               label: this.t("tabAutoRenameLabel") || "Auto Rename Tab",
               type: "toggle",
@@ -17303,7 +17471,8 @@
                 if (this.tabRenameManager) this.tabRenameManager.updateTabName(true);
               }
             } : null
-          ])
+          ]),
+          createQuickButtonsSection()
         ];
         sections.forEach((section) => settingsContent.appendChild(section));
         const aboutFooter = createElement("div", {
@@ -17321,6 +17490,9 @@
         aboutFooter.appendChild(aboutBtn);
         settingsContent.appendChild(aboutFooter);
         container.appendChild(settingsContent);
+        if (restoreScrollTop != null) {
+          settingsContent.scrollTop = restoreScrollTop;
+        }
       }
     });
   })();

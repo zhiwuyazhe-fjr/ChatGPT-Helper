@@ -310,6 +310,8 @@
             // 更新间距的函数
             const updateSpacing = () => {
                 const width = tabsContainer.getBoundingClientRect().width;
+                // 极窄时隐藏文字，仅保留图标，避免挤压溢出
+                tabsContainer.classList.toggle('icons-only', width < 300);
                 // 根据宽度动态调整间距
                 // 当宽度小于300px时，开始减小间距
                 if (width < 300) {
@@ -429,6 +431,64 @@
             this.headerSpacingObserver.observe(headerEl);
         },
 
+        initScrollNavResponsive(navEl) {
+            if (!navEl) return;
+
+            // 如果已经初始化过，先清理旧的observer
+            if (this.scrollNavObserver) {
+                this.scrollNavObserver.disconnect();
+                this.scrollNavObserver = null;
+            }
+
+            const updateMode = () => {
+                const width = navEl.getBoundingClientRect().width;
+                // 极窄时隐藏文字，仅保留图标
+                navEl.classList.toggle('icons-only', width < 250);
+            };
+
+            updateMode();
+
+            let navRafId = null;
+            const scheduleUpdate = () => {
+                if (navRafId) return;
+                navRafId = requestAnimationFrame(() => {
+                    navRafId = null;
+                    updateMode();
+                });
+            };
+            this.scrollNavObserver = new ResizeObserver(() => scheduleUpdate());
+            this.scrollNavObserver.observe(navEl);
+        },
+
+        initPromptToolbarResponsive(toolbarEl) {
+            if (!toolbarEl) return;
+
+            // 如果已经初始化过，先清理旧的observer
+            if (this.promptToolbarObserver) {
+                this.promptToolbarObserver.disconnect();
+                this.promptToolbarObserver = null;
+            }
+
+            const updateMode = () => {
+                const width = toolbarEl.getBoundingClientRect().width;
+                // 极窄时隐藏“添加新提示词”按钮，只保留搜索框
+                toolbarEl.classList.toggle('compact', width < 300);
+            };
+
+            updateMode();
+
+            let toolbarRafId = null;
+            const scheduleUpdate = () => {
+                if (toolbarRafId) return;
+                toolbarRafId = requestAnimationFrame(() => {
+                    toolbarRafId = null;
+                    updateMode();
+                });
+            };
+            this.promptToolbarObserver = new ResizeObserver(() => scheduleUpdate());
+            this.promptToolbarObserver.observe(toolbarEl);
+        },
+
         updateCollapseButtonState() {
             const collapseBtn = document.getElementById('chatgpt-helper-collapse-btn');
             if (!collapseBtn) return;
@@ -439,8 +499,75 @@
             collapseBtn.setAttribute('aria-label', nextTitle);
         },
 
+        getTabOrder() {
+            const defaultTabOrder = ['prompts', 'outline', 'conversations', 'export'];
+            const savedOrder = Array.isArray(this.settings.tabOrder) && this.settings.tabOrder.length > 0
+                ? this.settings.tabOrder.filter(tabId => defaultTabOrder.includes(tabId))
+                : [];
+            return savedOrder.length > 0 ? savedOrder : [...defaultTabOrder];
+        },
+
+        getTabLabel(tabId) {
+            return tabId === 'prompts' ? this.t('tabPrompts') :
+                tabId === 'outline' ? this.t('tabOutline') :
+                    tabId === 'conversations' ? this.t('tabConversations') :
+                        tabId === 'export' ? this.t('tabExport') :
+                            tabId === 'settings' ? this.t('tabSettings') : tabId;
+        },
+
+        renderTabBar(tabsEl) {
+            if (!tabsEl) return;
+            clearElement(tabsEl);
+
+            const tabOrder = this.getTabOrder();
+            if (!tabOrder.includes(this.currentTab) && this.currentTab !== 'settings') {
+                this.currentTab = tabOrder[0] || 'prompts';
+            }
+
+            tabOrder.forEach(tabId => {
+                const def = TAB_DEFINITIONS[tabId];
+                if (!def) return;
+
+                const tab = createElement('button', {
+                    className: `chatgpt-helper-tab ${this.currentTab === tabId ? 'active' : ''}`,
+                    'data-tab': tabId,
+                    id: `${tabId}-tab`,
+                    type: 'button',
+                    role: 'tab',
+                    'aria-selected': String(this.currentTab === tabId),
+                    'aria-controls': `${tabId}-content`,
+                    title: this.getTabLabel(tabId)
+                });
+                tab.appendChild(createSvgIconNode(def.iconName || 'list', {
+                    size: 15,
+                    className: 'chatgpt-helper-tab-icon'
+                }));
+                tab.appendChild(createElement('span', { className: 'chatgpt-helper-tab-label' }, this.getTabLabel(tabId)));
+                tab.addEventListener('click', () => this.switchTab(tabId));
+                tabsEl.appendChild(tab);
+            });
+        },
+
+        rebuildTabBar() {
+            if (!this.panel) return;
+            const tabs = this.panel.querySelector('#chatgpt-helper-tabs');
+            if (!tabs) return;
+            this.renderTabBar(tabs);
+            this.initTabResponsiveSpacing(tabs);
+        },
+
         createUI() {
             if (!this.panel) return;
+
+            // 记录设置页滚动位置：配置变更后重建 UI 时恢复，避免视图跳回顶部
+            try {
+                if (this.currentTab === 'settings') {
+                    const settingsScroll = this.panel.querySelector('#settings-content .chatgpt-helper-settings-compact');
+                    this.settingsScrollTop = settingsScroll ? settingsScroll.scrollTop : null;
+                } else {
+                    this.settingsScrollTop = null;
+                }
+            } catch (e) { /* ignore */ }
 
             clearElement(this.panel);
 
@@ -567,152 +694,14 @@
             // 头部按钮自适应（避免拖动变窄时按钮溢出到右侧不可见）
             this.initHeaderResponsiveSpacing(header);
 
-            // Tab 导航
+            // Tab 导航（排序与显示配置已移至设置页）
             const tabs = createElement('div', { id: 'chatgpt-helper-tabs' });
             tabs.setAttribute('role', 'tablist');
-            const defaultTabOrder = ['prompts', 'outline', 'conversations', 'export'];
-            const tabOrder = Array.isArray(this.settings.tabOrder) && this.settings.tabOrder.length > 0
-                ? this.settings.tabOrder.filter(tabId => defaultTabOrder.includes(tabId))
-                : [...defaultTabOrder];
-            if (!tabOrder.includes(this.currentTab) && this.currentTab !== 'settings') {
-                this.currentTab = tabOrder[0] || 'prompts';
-            }
-
-            tabOrder.forEach(tabId => {
-                if (tabId === 'settings') return; // 设置按钮在头部
-                const def = TAB_DEFINITIONS[tabId];
-                if (!def) return;
-
-                const tab = createElement('button', {
-                    className: `chatgpt-helper-tab ${this.currentTab === tabId ? 'active' : ''}`,
-                    'data-tab': tabId,
-                    id: `${tabId}-tab`,
-                    type: 'button',
-                    role: 'tab',
-                    'aria-selected': String(this.currentTab === tabId),
-                    'aria-controls': `${tabId}-content`
-                });
-                
-                // 创建六个点的拖拽手柄
-                const dragHandle = createElement('span', {
-                    className: 'chatgpt-helper-tab-drag-handle',
-                    draggable: true
-                });
-                dragHandle.innerHTML = '⋮&nbsp;⋮';
-                dragHandle.setAttribute('title', this.t('dragToReorder'));
-                
-                tab.appendChild(dragHandle);
-                tab.appendChild(createSvgIconNode(def.iconName || 'list', {
-                    size: 15,
-                    className: 'chatgpt-helper-tab-icon'
-                }));
-                // 使用国际化文本
-                const tabLabel = tabId === 'prompts' ? this.t('tabPrompts') :
-                    tabId === 'outline' ? this.t('tabOutline') :
-                        tabId === 'conversations' ? this.t('tabConversations') :
-                            tabId === 'export' ? this.t('tabExport') :
-                                tabId === 'settings' ? this.t('tabSettings') : def.label;
-                tab.appendChild(createElement('span', {}, tabLabel));
-                tab.addEventListener('click', () => this.switchTab(tabId));
-                
-                // 拖拽事件 - 绑定到拖拽手柄
-                dragHandle.addEventListener('dragstart', (e) => {
-                    e.stopPropagation(); // 阻止事件冒泡
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/html', tabId);
-                    tab.classList.add('dragging');
-                    // 设置一个标记，表示正在拖拽
-                    tabs.setAttribute('data-dragging', 'true');
-                });
-                
-                dragHandle.addEventListener('dragend', (e) => {
-                    e.stopPropagation();
-                    tab.classList.remove('dragging');
-                    tabs.removeAttribute('data-dragging');
-                    // 移除所有拖拽相关的样式
-                    tabs.querySelectorAll('.chatgpt-helper-tab').forEach(t => {
-                        t.classList.remove('drag-over', 'drag-before', 'drag-after');
-                    });
-                });
-                
-                tab.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    const draggingTab = tabs.querySelector('.dragging');
-                    if (draggingTab && draggingTab !== tab) {
-                        const allTabs = Array.from(tabs.querySelectorAll('.chatgpt-helper-tab:not(.dragging)'));
-                        const currentIndex = allTabs.indexOf(tab);
-                        const rect = tab.getBoundingClientRect();
-                        const mouseX = e.clientX;
-                        const tabCenter = rect.left + rect.width / 2;
-                        
-                        // 清除之前的样式
-                        tabs.querySelectorAll('.chatgpt-helper-tab').forEach(t => {
-                            t.classList.remove('drag-before', 'drag-after');
-                        });
-                        
-                        if (mouseX < tabCenter) {
-                            tab.classList.add('drag-before');
-                        } else {
-                            tab.classList.add('drag-after');
-                        }
-                    }
-                });
-                
-                tab.addEventListener('dragleave', (e) => {
-                    // 只有当鼠标真正离开tab区域时才移除样式
-                    const rect = tab.getBoundingClientRect();
-                    if (e.clientX < rect.left || e.clientX > rect.right || 
-                        e.clientY < rect.top || e.clientY > rect.bottom) {
-                        tab.classList.remove('drag-over', 'drag-before', 'drag-after');
-                    }
-                });
-                
-                tab.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    tab.classList.remove('drag-over', 'drag-before', 'drag-after');
-                    const draggedTabId = e.dataTransfer.getData('text/html');
-                    const draggedTab = tabs.querySelector(`[data-tab="${draggedTabId}"]`);
-                    
-                    if (draggedTab && draggedTab !== tab) {
-                        const allTabs = Array.from(tabs.querySelectorAll('.chatgpt-helper-tab'));
-                        const draggedIndex = allTabs.indexOf(draggedTab);
-                        const targetIndex = allTabs.indexOf(tab);
-                        
-                        // 计算新的插入位置
-                        const rect = tab.getBoundingClientRect();
-                        const mouseX = e.clientX;
-                        const tabCenter = rect.left + rect.width / 2;
-                        const insertBefore = mouseX < tabCenter;
-                        
-                        // 移动DOM元素
-                        if (draggedIndex < targetIndex) {
-                            if (insertBefore) {
-                                tabs.insertBefore(draggedTab, tab);
-                            } else {
-                                tabs.insertBefore(draggedTab, tab.nextSibling);
-                            }
-                        } else {
-                            if (insertBefore) {
-                                tabs.insertBefore(draggedTab, tab);
-                            } else {
-                                tabs.insertBefore(draggedTab, tab.nextSibling);
-                            }
-                        }
-                        
-                        // 更新tabOrder
-                        const newOrder = Array.from(tabs.querySelectorAll('.chatgpt-helper-tab')).map(t => t.dataset.tab);
-                        this.settings.tabOrder = newOrder;
-                        this.saveSettings();
-                    }
-                });
-                
-                tabs.appendChild(tab);
-            });
+            this.renderTabBar(tabs);
 
             this.panel.appendChild(tabs);
 
-            // 添加响应式间距调整
+            // 添加响应式间距调整（极窄时自动只显示图标）
             this.initTabResponsiveSpacing(tabs);
 
             // 内容区域
@@ -749,7 +738,7 @@
                 'aria-label': this.t('outlineScrollTop')
             });
             navScrollTopBtn.appendChild(createSvgIconNode('arrowUp', { size: 15 }));
-            navScrollTopBtn.appendChild(createElement('span', {}, this.t('buttonScrollTop')));
+            navScrollTopBtn.appendChild(createElement('span', { className: 'chatgpt-helper-nav-label' }, this.t('buttonScrollTop')));
             navScrollTopBtn.addEventListener('click', () => this.scrollToTop());
 
             const navAnchorBtn = createElement('button', {
@@ -761,7 +750,7 @@
                 style: 'opacity: 0.4; cursor: default;'
             });
             navAnchorBtn.appendChild(createSvgIconNode('anchor', { size: 15 }));
-            navAnchorBtn.appendChild(createElement('span', {}, this.t('buttonBack')));
+            navAnchorBtn.appendChild(createElement('span', { className: 'chatgpt-helper-nav-label' }, this.t('buttonBack')));
             navAnchorBtn.addEventListener('click', () => this.handleAnchorClick());
 
             const navScrollBottomBtn = createElement('button', {
@@ -772,13 +761,16 @@
                 'aria-label': this.t('outlineScrollBottom')
             });
             navScrollBottomBtn.appendChild(createSvgIconNode('arrowDown', { size: 15 }));
-            navScrollBottomBtn.appendChild(createElement('span', {}, this.t('buttonScrollBottom')));
+            navScrollBottomBtn.appendChild(createElement('span', { className: 'chatgpt-helper-nav-label' }, this.t('buttonScrollBottom')));
             navScrollBottomBtn.addEventListener('click', () => this.scrollToBottom());
 
             scrollNavContainer.appendChild(navScrollTopBtn);
             scrollNavContainer.appendChild(navAnchorBtn);
             scrollNavContainer.appendChild(navScrollBottomBtn);
             this.panel.appendChild(scrollNavContainer);
+
+            // 底部导航按钮自适应（极窄时只显示图标）
+            this.initScrollNavResponsive(scrollNavContainer);
 
             // 初始化内容
             this.switchTab(this.currentTab);

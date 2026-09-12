@@ -117,6 +117,9 @@
 
             container.appendChild(toolbar);
 
+            // 极窄面板时隐藏“添加新提示词”按钮，只保留搜索框
+            this.initPromptToolbarResponsive(toolbar);
+
             // 分类标签
             const categories = this.getCategories();
             const categoryBar = createElement('div', { className: 'chatgpt-helper-categories chatgpt-helper-prompt-categories' });

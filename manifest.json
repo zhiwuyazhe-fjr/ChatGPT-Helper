@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT Helper",
-  "version": "2.4.2",
-  "description": "ChatGPT Helper?? ChatGPT ??????????????????????????????????",
+  "version": "2.4.3",
+  "description": "ChatGPT Helper：贴近 ChatGPT 的轻量效率面板，提供提示词管理、对话大纲、会话整理、多格式导出与阅读定位增强",
   "author": "zhiwuyazhe_fjr",
   "icons": {
     "16": "icons/icon16.png",

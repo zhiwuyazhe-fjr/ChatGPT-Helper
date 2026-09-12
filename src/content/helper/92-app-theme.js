@@ -2040,6 +2040,7 @@
             dialog.setAttribute('aria-describedby', descriptionId);
 
             const header = createElement('div', { className: 'chatgpt-helper-about-header' });
+            header.appendChild(createElement('div', { className: 'chatgpt-helper-about-hero-glow', 'aria-hidden': 'true' }));
             const titleWrap = createElement('div', { className: 'chatgpt-helper-about-title-wrap' });
             titleWrap.appendChild(createHelperLogoNode({
                 size: 44,
@@ -2130,14 +2131,16 @@
 
             const featureList = createElement('ul', { className: 'chatgpt-helper-about-feature-list' });
             [
-                this.t('aboutFeaturePrompts') || 'Prompt management and quick insertion',
-                this.t('aboutFeatureOutline') || 'Automatic outline generation and navigation',
-                this.t('aboutFeatureConversations') || 'Conversation organization and batch actions',
-                this.t('aboutFeatureExport') || 'Multi-format export and reading-position tools'
+                { icon: 'edit', label: this.t('aboutFeaturePrompts') || 'Prompt management and quick insertion' },
+                { icon: 'list', label: this.t('aboutFeatureOutline') || 'Automatic outline generation and navigation' },
+                { icon: 'message', label: this.t('aboutFeatureConversations') || 'Conversation organization and batch actions' },
+                { icon: 'export', label: this.t('aboutFeatureExport') || 'Multi-format export and reading-position tools' }
             ].forEach((feature, index) => {
                 const item = createElement('li', { className: 'chatgpt-helper-about-feature-item' });
-                item.appendChild(createElement('span', { className: 'chatgpt-helper-about-feature-index' }, String(index + 1).padStart(2, '0')));
-                item.appendChild(createElement('span', {}, feature));
+                const featureIcon = createElement('span', { className: 'chatgpt-helper-about-feature-icon' });
+                featureIcon.appendChild(createSvgIconNode(feature.icon, { size: 14, strokeWidth: '2.2' }));
+                item.appendChild(featureIcon);
+                item.appendChild(createElement('span', { className: 'chatgpt-helper-about-feature-label' }, feature.label));
                 featureList.appendChild(item);
             });
             const featuresSection = createSection(
@@ -2159,6 +2162,9 @@
             );
 
             const authorBody = createElement('div', { className: 'chatgpt-helper-about-author-block' });
+            const authorAvatar = createElement('div', { className: 'chatgpt-helper-about-avatar' });
+            authorAvatar.appendChild(createSvgIconNode('user', { size: 22, strokeWidth: '2' }));
+            authorBody.appendChild(authorAvatar);
             authorBody.appendChild(createElement('p', { className: 'chatgpt-helper-about-section-text chatgpt-helper-about-author-bio' }, this.t('aboutAuthorBio') || 'Author bio coming soon'));
             const authorActions = createActionRow();
             authorActions.appendChild(createActionButton(
@@ -2191,7 +2197,6 @@
             body.appendChild(shell);
 
             const footer = createElement('div', { className: 'chatgpt-helper-about-footer' });
-            footer.appendChild(createElement('div', { className: 'chatgpt-helper-about-footer-note' }, this.t('aboutFooterNote') || 'Works on chatgpt.com, chat.openai.com, and new.oaifree.com · Local-first, no conversation uploads'));
             const footerActions = createElement('div', { className: 'chatgpt-helper-about-footer-actions' });
             footerActions.appendChild(createActionButton(
                 this.t('aboutRepoButton') || 'GitHub Repository',
