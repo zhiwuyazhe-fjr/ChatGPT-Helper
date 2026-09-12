@@ -5889,10 +5889,15 @@
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
                 }
 
-                /* 极窄面板：隐藏“添加新提示词”按钮，只保留搜索框；卡片编辑/删除按钮一并隐藏 */
+                /* 极窄面板：隐藏“添加新提示词”按钮，只保留搜索框；卡片编辑/删除按钮一并隐藏，
+                   并回收为按钮预留的右侧空间，让标题/正文占满整行 */
                 .chatgpt-helper-content-panel.compact .chatgpt-helper-add-btn,
                 .chatgpt-helper-content-panel.compact .chatgpt-helper-prompt-actions {
                     display: none;
+                }
+
+                .chatgpt-helper-content-panel.compact .chatgpt-helper-prompt-content-wrapper {
+                    padding-right: 0 !important;
                 }
 
                 .chatgpt-helper-prompt-search-bar {

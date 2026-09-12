@@ -15056,10 +15056,15 @@
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
                 }
 
-                /* \u6781\u7A84\u9762\u677F\uFF1A\u9690\u85CF\u201C\u6DFB\u52A0\u65B0\u63D0\u793A\u8BCD\u201D\u6309\u94AE\uFF0C\u53EA\u4FDD\u7559\u641C\u7D22\u6846\uFF1B\u5361\u7247\u7F16\u8F91/\u5220\u9664\u6309\u94AE\u4E00\u5E76\u9690\u85CF */
+                /* \u6781\u7A84\u9762\u677F\uFF1A\u9690\u85CF\u201C\u6DFB\u52A0\u65B0\u63D0\u793A\u8BCD\u201D\u6309\u94AE\uFF0C\u53EA\u4FDD\u7559\u641C\u7D22\u6846\uFF1B\u5361\u7247\u7F16\u8F91/\u5220\u9664\u6309\u94AE\u4E00\u5E76\u9690\u85CF\uFF0C
+                   \u5E76\u56DE\u6536\u4E3A\u6309\u94AE\u9884\u7559\u7684\u53F3\u4FA7\u7A7A\u95F4\uFF0C\u8BA9\u6807\u9898/\u6B63\u6587\u5360\u6EE1\u6574\u884C */
                 .chatgpt-helper-content-panel.compact .chatgpt-helper-add-btn,
                 .chatgpt-helper-content-panel.compact .chatgpt-helper-prompt-actions {
                     display: none;
+                }
+
+                .chatgpt-helper-content-panel.compact .chatgpt-helper-prompt-content-wrapper {
+                    padding-right: 0 !important;
                 }
 
                 .chatgpt-helper-prompt-search-bar {
