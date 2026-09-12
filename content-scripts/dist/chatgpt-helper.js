@@ -11849,7 +11849,7 @@
 
                 .chatgpt-helper-about-logo {
                     flex: 0 0 auto;
-                    border-radius: 14px;
+                    border-radius: 50%;
                     background: #ffffff;
                     box-shadow:
                         0 0 0 1px color-mix(in srgb, var(--gh-primary, #3b82f6), transparent 82%),
