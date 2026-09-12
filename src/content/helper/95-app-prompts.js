@@ -117,8 +117,8 @@
 
             container.appendChild(toolbar);
 
-            // 极窄面板时隐藏“添加新提示词”按钮，只保留搜索框
-            this.initPromptToolbarResponsive(toolbar);
+            // 极窄面板时隐藏“添加新提示词”按钮与卡片编辑/删除按钮，只保留搜索框
+            this.initPromptsResponsive(container);
 
             // 分类标签
             const categories = this.getCategories();

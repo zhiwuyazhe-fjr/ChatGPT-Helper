@@ -50259,7 +50259,7 @@ ${content2}`;
           gap: 7px !important;
           grid-template-columns: minmax(0, 1fr) !important;
           align-content: start !important;
-          grid-auto-rows: minmax(50px, auto) !important;
+          grid-auto-rows: minmax(42px, auto) !important;
         }
         .chatgpt-helper-export-grid > .row-full,
         .chatgpt-helper-export-grid > .row-half {
@@ -50271,14 +50271,15 @@ ${content2}`;
           grid-column: auto !important;
         }
         .chatgpt-helper-export-grid .menu-item {
+          display: flex !important;
           flex-direction: row !important;
           align-items: center !important;
           justify-content: flex-start !important;
-          padding: 0 13px !important;
-          min-height: 50px !important;
+          padding: 6px 12px !important;
+          min-height: 42px !important;
           height: auto !important;
           margin: 0 !important;
-          gap: 11px !important;
+          gap: 10px !important;
           border-radius: 9px !important;
           box-shadow: none !important;
           transition: all 0.2s ease !important;
@@ -50306,8 +50307,8 @@ ${content2}`;
         }
         .chatgpt-helper-export-grid .menu-item-icon svg,
         .chatgpt-helper-export-grid .menu-item > svg {
-          width: 17px !important;
-          height: 17px !important;
+          width: 15px !important;
+          height: 15px !important;
           color: currentColor !important;
           flex-shrink: 0 !important;
         }
@@ -50318,9 +50319,9 @@ ${content2}`;
           text-overflow: ellipsis !important;
           white-space: nowrap !important;
           color: var(--gh-text, #20251f) !important;
-          font-size: 14px !important;
-          font-weight: 680 !important;
-          line-height: 1.25 !important;
+          font-size: 12.8px !important;
+          font-weight: 600 !important;
+          line-height: 1.3 !important;
         }
         .chatgpt-helper-export-grid .menu-item [class*="icon"] {
           font-size: 17px !important;

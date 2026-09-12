@@ -104,29 +104,14 @@
             container.classList.add('chatgpt-helper-export-panel');
             this.syncExporterLanguage();
 
-            // 先创建标题栏
-            const titleBar = createElement('div', {
-                className: 'chatgpt-helper-export-header',
-                id: 'chatgpt-helper-export-header'
-            });
-            titleBar.appendChild(createSvgIconNode('export', {
-                size: 16,
-                className: 'chatgpt-helper-export-header-icon'
-            }));
-            titleBar.appendChild(createElement('span', {
-                className: 'chatgpt-helper-export-header-title'
-            }, this.t('tabExport')));
-
-            // 先添加标题栏到容器
-            container.appendChild(titleBar);
-
-            // 创建导出内容容器
+            // 创建导出内容容器（标题由顶部 Tab 承担，不再重复展示）
             const exportContainer = createElement('div', {
                 className: 'chatgpt-helper-export-container',
                 id: 'chatgpt-helper-export-container',
                 style: {
                     flex: '1',
                     overflow: 'auto',
+                    overflowX: 'hidden',
                     padding: '0',
                     minHeight: '0',
                     position: 'relative',

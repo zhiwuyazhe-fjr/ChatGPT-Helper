@@ -47,8 +47,8 @@
             defaultPromptDecisionCategory: '决策',
             allCategory: '全部',
             refresh: '刷新',
-            expand: '展开',
-            collapse: '收起',
+            expand: '展开侧栏',
+            collapse: '收起侧栏',
             edit: '编辑',
             delete: '删除',
             save: '保存',
@@ -305,8 +305,8 @@
             defaultPromptDecisionCategory: 'Decision',
             allCategory: 'All',
             refresh: 'Refresh',
-            expand: 'Expand',
-            collapse: 'Collapse',
+            expand: 'Expand sidebar',
+            collapse: 'Collapse sidebar',
             edit: 'Edit',
             delete: 'Delete',
             save: 'Save',
@@ -1046,6 +1046,16 @@
         ],
         expand: [
             ['path', { d: 'm9 18 6-6-6-6' }]
+        ],
+        panelCollapse: [
+            ['rect', { x: '3', y: '4.5', width: '18', height: '15', rx: '2.5' }],
+            ['path', { d: 'M14.5 4.5v15' }],
+            ['path', { d: 'm8.5 9.5 2.5 2.5-2.5 2.5' }]
+        ],
+        panelExpand: [
+            ['rect', { x: '3', y: '4.5', width: '18', height: '15', rx: '2.5' }],
+            ['path', { d: 'M14.5 4.5v15' }],
+            ['path', { d: 'm11 9.5-2.5 2.5 2.5 2.5' }]
         ],
         pin: [
             ['path', { d: 'M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z' }],

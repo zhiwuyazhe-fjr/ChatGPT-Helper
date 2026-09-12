@@ -43,8 +43,8 @@
         defaultPromptDecisionCategory: "\u51B3\u7B56",
         allCategory: "\u5168\u90E8",
         refresh: "\u5237\u65B0",
-        expand: "\u5C55\u5F00",
-        collapse: "\u6536\u8D77",
+        expand: "\u5C55\u5F00\u4FA7\u680F",
+        collapse: "\u6536\u8D77\u4FA7\u680F",
         edit: "\u7F16\u8F91",
         delete: "\u5220\u9664",
         save: "\u4FDD\u5B58",
@@ -301,8 +301,8 @@
         defaultPromptDecisionCategory: "Decision",
         allCategory: "All",
         refresh: "Refresh",
-        expand: "Expand",
-        collapse: "Collapse",
+        expand: "Expand sidebar",
+        collapse: "Collapse sidebar",
         edit: "Edit",
         delete: "Delete",
         save: "Save",
@@ -1007,6 +1007,16 @@
       ],
       expand: [
         ["path", { d: "m9 18 6-6-6-6" }]
+      ],
+      panelCollapse: [
+        ["rect", { x: "3", y: "4.5", width: "18", height: "15", rx: "2.5" }],
+        ["path", { d: "M14.5 4.5v15" }],
+        ["path", { d: "m8.5 9.5 2.5 2.5-2.5 2.5" }]
+      ],
+      panelExpand: [
+        ["rect", { x: "3", y: "4.5", width: "18", height: "15", rx: "2.5" }],
+        ["path", { d: "M14.5 4.5v15" }],
+        ["path", { d: "m11 9.5-2.5 2.5 2.5 2.5" }]
       ],
       pin: [
         ["path", { d: "M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" }],
@@ -9682,7 +9692,7 @@
 
                 .chatgpt-helper-search-input {
                     width: 100%;
-                    padding: 8px 12px;
+                    padding: 6px 12px;
                     border: 1px solid var(--gh-input-border);
                     border-radius: 8px;
                     font-size: 14px;
@@ -10775,7 +10785,7 @@
                 }
 
                 .chatgpt-helper-conversations-search {
-                    padding: 12px;
+                    padding: 8px 12px;
                     border-bottom: 1px solid var(--gh-border, #e5e7eb);
                     background: var(--gh-bg, #ffffff);
                     flex-shrink: 0;
@@ -11168,27 +11178,6 @@
                 .chatgpt-helper-folder-select:focus {
                     outline: none;
                     border-color: var(--gh-border-active, #6366f1);
-                }
-
-                .chatgpt-helper-export-header {
-                    padding: 12px 16px;
-                    border-bottom: 1px solid var(--gh-border, #e5e7eb);
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    font-size: 15px;
-                    font-weight: 500;
-                    color: var(--gh-text, #374151);
-                    background: var(--gh-bg-secondary, #f9fafb);
-                    flex-shrink: 0;
-                    position: relative;
-                    z-index: 10;
-                    box-sizing: border-box;
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-export-header {
-                    background: var(--gh-bg-secondary, #0f172a);
-                    border-bottom-color: var(--gh-border, #475569);
                 }
 
                 .chatgpt-helper-export-container {
@@ -11702,71 +11691,34 @@
                     padding: 10px 2px 4px;
                 }
 
+                /* \u4E0E\u8BBE\u7F6E\u9875\u5176\u4ED6\u63A7\u4EF6\u4FDD\u6301\u4E00\u81F4\u7684\u7D27\u51D1\u6837\u5F0F */
                 .chatgpt-helper-about-btn {
                     width: 100%;
-                    min-height: 48px;
-                    border-radius: 16px;
-                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 10%);
-                    background:
-                        linear-gradient(135deg, color-mix(in srgb, var(--gh-bg, #ffffff), white 10%) 0%, color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 10%) 100%);
-                    color: var(--gh-text, #111827);
-                    font-size: 14px;
-                    font-weight: 700;
-                    letter-spacing: 0.04em;
+                    min-height: 32px;
+                    padding: 5px 10px;
+                    border-radius: 8px;
+                    border: 1px solid var(--gh-control-border, rgba(203, 213, 225, 0.9));
+                    background: var(--gh-control-bg, rgba(255, 255, 255, 0.86));
+                    color: var(--gh-text-secondary, #475569);
+                    font-size: 12.5px;
+                    font-weight: 600;
+                    letter-spacing: 0.01em;
                     cursor: pointer;
-                    box-shadow:
-                        0 14px 28px rgba(15, 23, 42, 0.08),
-                        inset 0 1px 0 rgba(255,255,255,0.46);
-                    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+                    box-shadow: none;
+                    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
                 }
 
                 .chatgpt-helper-about-btn:hover {
-                    transform: translateY(-1px);
-                    border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 28%);
-                    box-shadow:
-                        0 18px 30px rgba(15, 23, 42, 0.12),
-                        inset 0 1px 0 rgba(255,255,255,0.52);
+                    background: var(--gh-control-bg-hover, rgba(248, 250, 252, 0.96));
+                    border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 48%);
+                    color: var(--gh-text, #111827);
                 }
 
                 body[data-gh-mode="dark"] .chatgpt-helper-about-btn {
-                    background:
-                        linear-gradient(135deg, color-mix(in srgb, var(--gh-bg, #0f1419), white 3%) 0%, color-mix(in srgb, var(--gh-hover, #1f2937), transparent 10%) 100%);
-                    box-shadow:
-                        0 18px 34px rgba(2, 6, 23, 0.28),
-                        inset 0 1px 0 rgba(255,255,255,0.04);
+                    background: var(--gh-control-bg, rgba(32, 33, 35, 0.95));
+                    box-shadow: none;
                 }
 
-                .chatgpt-helper-header-about-btn {
-                    position: relative;
-                }
-
-                .chatgpt-helper-about-entry-icon {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 999px;
-                    border: 1.6px solid #f97316;
-                    color: #ea580c;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 11px;
-                    font-weight: 800;
-                    line-height: 1;
-                    background: rgba(255, 247, 237, 0.2);
-                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-entry-icon {
-                    color: #fdba74;
-                    border-color: #fb923c;
-                    background: rgba(249, 115, 22, 0.14);
-                }
-
-                #chatgpt-helper-header.gh-compact .chatgpt-helper-about-entry-icon {
-                    width: 14px;
-                    height: 14px;
-                    font-size: 10px;
-                }
 
                 #chatgpt-helper-about-modal {
                     position: fixed;
@@ -12941,20 +12893,19 @@
                 .outline-fixed-toolbar,
                 .chatgpt-helper-conversations-search,
                 .chatgpt-helper-conversations-toolbar,
-                .chatgpt-helper-batch-toolbar,
-                .chatgpt-helper-export-header {
+                .chatgpt-helper-batch-toolbar {
                     background: var(--gh-panel-subtle) !important;
                     border-color: var(--gh-panel-line) !important;
                 }
 
                 .chatgpt-helper-search-bar {
-                    padding: 12px 12px 10px;
+                    padding: 8px 12px;
                 }
 
                 .chatgpt-helper-search-input,
                 .outline-search-input,
                 .chatgpt-helper-conversations-search-input {
-                    min-height: 38px;
+                    min-height: 32px;
                     border-radius: var(--gh-control-radius);
                     background: var(--gh-input-bg);
                     border-color: var(--gh-input-border);
@@ -13327,8 +13278,7 @@
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-toolbar,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-search,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar,
-                :root[data-gh-bg-enabled="true"] .scroll-nav-container,
-                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-header {
+                :root[data-gh-bg-enabled="true"] .scroll-nav-container {
                     background: var(--gh-panel-card-bg) !important;
                     backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
@@ -13414,8 +13364,7 @@
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-conversations-toolbar,
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-conversations-search,
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-batch-toolbar,
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .scroll-nav-container,
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-export-header {
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .scroll-nav-container {
                     background: var(--gh-panel-surface) !important;
                     box-shadow: none !important;
                 }
@@ -13660,7 +13609,6 @@
                 .chatgpt-helper-conversations-search,
                 .chatgpt-helper-conversations-toolbar,
                 .chatgpt-helper-batch-toolbar,
-                .chatgpt-helper-export-header,
                 .scroll-nav-container,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-search-bar,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-categories,
@@ -13668,7 +13616,6 @@
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-search,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-toolbar,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar,
-                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-header,
                 :root[data-gh-bg-enabled="true"] .scroll-nav-container {
                     background: var(--gh-panel-subtle) !important;
                     border-color: var(--gh-panel-line) !important;
@@ -13681,7 +13628,6 @@
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-search,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-toolbar,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar,
-                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-header,
                 :root[data-gh-bg-enabled="true"] .scroll-nav-container {
                     backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
@@ -14947,25 +14893,6 @@
                     color: var(--gh-text) !important;
                 }
 
-                .chatgpt-helper-export-header {
-                    min-height: 46px;
-                    padding: 10px 12px !important;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    font-size: 14px !important;
-                    font-weight: 700 !important;
-                    color: var(--gh-text) !important;
-                    flex-shrink: 0;
-                    position: relative;
-                    z-index: 10;
-                    box-sizing: border-box;
-                }
-
-                .chatgpt-helper-export-header-title {
-                    line-height: 1;
-                }
-
                 .chatgpt-helper-export-host :is(button, input, select, textarea),
                 [data-gh-exporter-host="true"] :is(button, input, select, textarea) {
                     border-radius: var(--gh-control-radius) !important;
@@ -14976,7 +14903,7 @@
                     gap: 7px !important;
                     grid-template-columns: minmax(0, 1fr) !important;
                     align-content: start !important;
-                    grid-auto-rows: minmax(50px, auto) !important;
+                    grid-auto-rows: minmax(42px, auto) !important;
                 }
 
                 .chatgpt-helper-export-grid > :is(.row-full, .row-half) {
@@ -14989,14 +14916,15 @@
                 }
 
                 .chatgpt-helper-export-grid .menu-item {
-                    min-height: 50px !important;
+                    display: flex !important;
+                    min-height: 42px !important;
                     height: auto !important;
                     flex-direction: row !important;
                     align-items: center !important;
                     justify-content: flex-start !important;
                     margin: 0 !important;
-                    padding: 0 13px !important;
-                    gap: 11px !important;
+                    padding: 6px 12px !important;
+                    gap: 10px !important;
                     border-radius: 9px !important;
                     border: 1px solid color-mix(in srgb, var(--gh-panel-line), transparent 20%) !important;
                     background: color-mix(in srgb, var(--gh-panel-card), transparent 18%) !important;
@@ -15040,9 +14968,17 @@
                     text-overflow: ellipsis !important;
                     white-space: nowrap !important;
                     color: var(--gh-text) !important;
-                    font-size: 14px !important;
-                    font-weight: 680 !important;
-                    line-height: 1.25 !important;
+                    font-size: 12.8px !important;
+                    font-weight: 600 !important;
+                    line-height: 1.3 !important;
+                }
+
+                /* \u5BFC\u51FA\u6A21\u5757\uFF1A\u7981\u6B62\u6A2A\u5411\u6EA2\u51FA\uFF0C\u4E0E\u9762\u677F\u5185\u5BB9\u5BF9\u9F50 */
+                .chatgpt-helper-export-grid,
+                .chatgpt-helper-export-host,
+                .chatgpt-helper-export-container {
+                    overflow-x: hidden !important;
+                    max-width: 100% !important;
                 }
 
                 .scroll-nav-container,
@@ -15120,8 +15056,9 @@
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
                 }
 
-                /* \u6781\u7A84\u9762\u677F\uFF1A\u9690\u85CF\u201C\u6DFB\u52A0\u65B0\u63D0\u793A\u8BCD\u201D\u6309\u94AE\uFF0C\u53EA\u4FDD\u7559\u641C\u7D22\u6846 */
-                .chatgpt-helper-prompt-toolbar.compact .chatgpt-helper-add-btn {
+                /* \u6781\u7A84\u9762\u677F\uFF1A\u9690\u85CF\u201C\u6DFB\u52A0\u65B0\u63D0\u793A\u8BCD\u201D\u6309\u94AE\uFF0C\u53EA\u4FDD\u7559\u641C\u7D22\u6846\uFF1B\u5361\u7247\u7F16\u8F91/\u5220\u9664\u6309\u94AE\u4E00\u5E76\u9690\u85CF */
+                .chatgpt-helper-content-panel.compact .chatgpt-helper-add-btn,
+                .chatgpt-helper-content-panel.compact .chatgpt-helper-prompt-actions {
                     display: none;
                 }
 
@@ -15149,7 +15086,7 @@
                 .chatgpt-helper-prompt-search-bar .chatgpt-helper-search-input {
                     padding-left: 34px !important;
                     padding-right: 10px !important;
-                    min-height: 36px !important;
+                    min-height: 32px !important;
                     font-size: 13px !important;
                 }
 
@@ -15814,33 +15751,33 @@
         this.scrollNavObserver = new ResizeObserver(() => scheduleUpdate());
         this.scrollNavObserver.observe(navEl);
       },
-      initPromptToolbarResponsive(toolbarEl) {
-        if (!toolbarEl) return;
-        if (this.promptToolbarObserver) {
-          this.promptToolbarObserver.disconnect();
-          this.promptToolbarObserver = null;
+      initPromptsResponsive(panelEl) {
+        if (!panelEl) return;
+        if (this.promptsResponsiveObserver) {
+          this.promptsResponsiveObserver.disconnect();
+          this.promptsResponsiveObserver = null;
         }
         const updateMode = () => {
-          const width = toolbarEl.getBoundingClientRect().width;
-          toolbarEl.classList.toggle("compact", width < 300);
+          const width = panelEl.getBoundingClientRect().width;
+          panelEl.classList.toggle("compact", width < 300);
         };
         updateMode();
-        let toolbarRafId = null;
+        let panelRafId = null;
         const scheduleUpdate = () => {
-          if (toolbarRafId) return;
-          toolbarRafId = requestAnimationFrame(() => {
-            toolbarRafId = null;
+          if (panelRafId) return;
+          panelRafId = requestAnimationFrame(() => {
+            panelRafId = null;
             updateMode();
           });
         };
-        this.promptToolbarObserver = new ResizeObserver(() => scheduleUpdate());
-        this.promptToolbarObserver.observe(toolbarEl);
+        this.promptsResponsiveObserver = new ResizeObserver(() => scheduleUpdate());
+        this.promptsResponsiveObserver.observe(panelEl);
       },
       updateCollapseButtonState() {
         const collapseBtn = document.getElementById("chatgpt-helper-collapse-btn");
         if (!collapseBtn) return;
         const nextTitle = this.isCollapsed ? this.t("expand") : this.t("collapse");
-        setButtonIcon(collapseBtn, this.isCollapsed ? "expand" : "collapse", { size: 16 });
+        setButtonIcon(collapseBtn, this.isCollapsed ? "panelExpand" : "panelCollapse", { size: 16 });
         collapseBtn.title = nextTitle;
         collapseBtn.setAttribute("aria-label", nextTitle);
       },
@@ -15958,7 +15895,7 @@
           type: "button",
           "aria-label": this.isCollapsed ? this.t("expand") : this.t("collapse")
         });
-        collapseBtn.appendChild(createSvgIconNode(this.isCollapsed ? "expand" : "collapse", { size: 16 }));
+        collapseBtn.appendChild(createSvgIconNode(this.isCollapsed ? "panelExpand" : "panelCollapse", { size: 16 }));
         collapseBtn.addEventListener("click", () => this.toggleCollapse());
         const settingsBtn = createElement("button", {
           className: "chatgpt-helper-header-btn",
@@ -15976,27 +15913,11 @@
             this.switchTab("settings");
           }
         });
-        const aboutBtn = createElement("button", {
-          className: "chatgpt-helper-header-btn chatgpt-helper-header-about-btn",
-          title: this.t("aboutTopEntryTitle") || this.t("aboutButton") || "About",
-          id: "chatgpt-helper-header-about-btn",
-          type: "button",
-          "aria-label": this.t("aboutTopEntryTitle") || this.t("aboutButton") || "About"
-        });
-        const aboutIcon = createElement("span", { className: "chatgpt-helper-about-entry-icon" }, "i");
-        aboutIcon.setAttribute("aria-hidden", "true");
-        aboutBtn.appendChild(aboutIcon);
-        aboutBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          this.openAboutModal(e.currentTarget);
-        });
         controls.appendChild(themeBtn);
         controls.appendChild(newChatBtn);
         controls.appendChild(refreshBtn);
         controls.appendChild(settingsBtn);
         controls.appendChild(collapseBtn);
-        controls.appendChild(aboutBtn);
         header.appendChild(title);
         header.appendChild(controls);
         this.panel.appendChild(header);
@@ -16218,7 +16139,7 @@
         addBtn.addEventListener("click", () => this.showAddPromptDialog());
         toolbar.appendChild(addBtn);
         container.appendChild(toolbar);
-        this.initPromptToolbarResponsive(toolbar);
+        this.initPromptsResponsive(container);
         const categories = this.getCategories();
         const categoryBar = createElement("div", { className: "chatgpt-helper-categories chatgpt-helper-prompt-categories" });
         const allCategoryText = this.t("allCategory");
@@ -16666,24 +16587,13 @@
       renderExport(container) {
         container.classList.add("chatgpt-helper-export-panel");
         this.syncExporterLanguage();
-        const titleBar = createElement("div", {
-          className: "chatgpt-helper-export-header",
-          id: "chatgpt-helper-export-header"
-        });
-        titleBar.appendChild(createSvgIconNode("export", {
-          size: 16,
-          className: "chatgpt-helper-export-header-icon"
-        }));
-        titleBar.appendChild(createElement("span", {
-          className: "chatgpt-helper-export-header-title"
-        }, this.t("tabExport")));
-        container.appendChild(titleBar);
         const exportContainer = createElement("div", {
           className: "chatgpt-helper-export-container",
           id: "chatgpt-helper-export-container",
           style: {
             flex: "1",
             overflow: "auto",
+            overflowX: "hidden",
             padding: "0",
             minHeight: "0",
             position: "relative",

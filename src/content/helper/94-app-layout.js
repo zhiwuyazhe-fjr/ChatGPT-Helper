@@ -460,33 +460,33 @@
             this.scrollNavObserver.observe(navEl);
         },
 
-        initPromptToolbarResponsive(toolbarEl) {
-            if (!toolbarEl) return;
+        initPromptsResponsive(panelEl) {
+            if (!panelEl) return;
 
             // 如果已经初始化过，先清理旧的observer
-            if (this.promptToolbarObserver) {
-                this.promptToolbarObserver.disconnect();
-                this.promptToolbarObserver = null;
+            if (this.promptsResponsiveObserver) {
+                this.promptsResponsiveObserver.disconnect();
+                this.promptsResponsiveObserver = null;
             }
 
             const updateMode = () => {
-                const width = toolbarEl.getBoundingClientRect().width;
-                // 极窄时隐藏“添加新提示词”按钮，只保留搜索框
-                toolbarEl.classList.toggle('compact', width < 300);
+                const width = panelEl.getBoundingClientRect().width;
+                // 极窄时隐藏“添加新提示词”按钮与卡片上的编辑/删除按钮
+                panelEl.classList.toggle('compact', width < 300);
             };
 
             updateMode();
 
-            let toolbarRafId = null;
+            let panelRafId = null;
             const scheduleUpdate = () => {
-                if (toolbarRafId) return;
-                toolbarRafId = requestAnimationFrame(() => {
-                    toolbarRafId = null;
+                if (panelRafId) return;
+                panelRafId = requestAnimationFrame(() => {
+                    panelRafId = null;
                     updateMode();
                 });
             };
-            this.promptToolbarObserver = new ResizeObserver(() => scheduleUpdate());
-            this.promptToolbarObserver.observe(toolbarEl);
+            this.promptsResponsiveObserver = new ResizeObserver(() => scheduleUpdate());
+            this.promptsResponsiveObserver.observe(panelEl);
         },
 
         updateCollapseButtonState() {
@@ -494,7 +494,7 @@
             if (!collapseBtn) return;
 
             const nextTitle = this.isCollapsed ? this.t('expand') : this.t('collapse');
-            setButtonIcon(collapseBtn, this.isCollapsed ? 'expand' : 'collapse', { size: 16 });
+            setButtonIcon(collapseBtn, this.isCollapsed ? 'panelExpand' : 'panelCollapse', { size: 16 });
             collapseBtn.title = nextTitle;
             collapseBtn.setAttribute('aria-label', nextTitle);
         },
@@ -642,7 +642,7 @@
                 type: 'button',
                 'aria-label': this.isCollapsed ? this.t('expand') : this.t('collapse')
             });
-            collapseBtn.appendChild(createSvgIconNode(this.isCollapsed ? 'expand' : 'collapse', { size: 16 }));
+            collapseBtn.appendChild(createSvgIconNode(this.isCollapsed ? 'panelExpand' : 'panelCollapse', { size: 16 }));
             collapseBtn.addEventListener('click', () => this.toggleCollapse());
 
             // 设置按钮
@@ -663,28 +663,11 @@
                 }
             });
 
-            const aboutBtn = createElement('button', {
-                className: 'chatgpt-helper-header-btn chatgpt-helper-header-about-btn',
-                title: this.t('aboutTopEntryTitle') || this.t('aboutButton') || 'About',
-                id: 'chatgpt-helper-header-about-btn',
-                type: 'button',
-                'aria-label': this.t('aboutTopEntryTitle') || this.t('aboutButton') || 'About'
-            });
-            const aboutIcon = createElement('span', { className: 'chatgpt-helper-about-entry-icon' }, 'i');
-            aboutIcon.setAttribute('aria-hidden', 'true');
-            aboutBtn.appendChild(aboutIcon);
-            aboutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.openAboutModal(e.currentTarget);
-            });
-
             controls.appendChild(themeBtn);
             controls.appendChild(newChatBtn);
             controls.appendChild(refreshBtn);
             controls.appendChild(settingsBtn);
             controls.appendChild(collapseBtn);
-            controls.appendChild(aboutBtn);
 
             header.appendChild(title);
             header.appendChild(controls);

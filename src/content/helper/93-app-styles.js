@@ -525,7 +525,7 @@
 
                 .chatgpt-helper-search-input {
                     width: 100%;
-                    padding: 8px 12px;
+                    padding: 6px 12px;
                     border: 1px solid var(--gh-input-border);
                     border-radius: 8px;
                     font-size: 14px;
@@ -1618,7 +1618,7 @@
                 }
 
                 .chatgpt-helper-conversations-search {
-                    padding: 12px;
+                    padding: 8px 12px;
                     border-bottom: 1px solid var(--gh-border, #e5e7eb);
                     background: var(--gh-bg, #ffffff);
                     flex-shrink: 0;
@@ -2011,27 +2011,6 @@
                 .chatgpt-helper-folder-select:focus {
                     outline: none;
                     border-color: var(--gh-border-active, #6366f1);
-                }
-
-                .chatgpt-helper-export-header {
-                    padding: 12px 16px;
-                    border-bottom: 1px solid var(--gh-border, #e5e7eb);
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    font-size: 15px;
-                    font-weight: 500;
-                    color: var(--gh-text, #374151);
-                    background: var(--gh-bg-secondary, #f9fafb);
-                    flex-shrink: 0;
-                    position: relative;
-                    z-index: 10;
-                    box-sizing: border-box;
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-export-header {
-                    background: var(--gh-bg-secondary, #0f172a);
-                    border-bottom-color: var(--gh-border, #475569);
                 }
 
                 .chatgpt-helper-export-container {
@@ -2545,71 +2524,34 @@
                     padding: 10px 2px 4px;
                 }
 
+                /* 与设置页其他控件保持一致的紧凑样式 */
                 .chatgpt-helper-about-btn {
                     width: 100%;
-                    min-height: 48px;
-                    border-radius: 16px;
-                    border: 1px solid color-mix(in srgb, var(--gh-border, #cbd5e1), transparent 10%);
-                    background:
-                        linear-gradient(135deg, color-mix(in srgb, var(--gh-bg, #ffffff), white 10%) 0%, color-mix(in srgb, var(--gh-hover, #f3f4f6), transparent 10%) 100%);
-                    color: var(--gh-text, #111827);
-                    font-size: 14px;
-                    font-weight: 700;
-                    letter-spacing: 0.04em;
+                    min-height: 32px;
+                    padding: 5px 10px;
+                    border-radius: 8px;
+                    border: 1px solid var(--gh-control-border, rgba(203, 213, 225, 0.9));
+                    background: var(--gh-control-bg, rgba(255, 255, 255, 0.86));
+                    color: var(--gh-text-secondary, #475569);
+                    font-size: 12.5px;
+                    font-weight: 600;
+                    letter-spacing: 0.01em;
                     cursor: pointer;
-                    box-shadow:
-                        0 14px 28px rgba(15, 23, 42, 0.08),
-                        inset 0 1px 0 rgba(255,255,255,0.46);
-                    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+                    box-shadow: none;
+                    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
                 }
 
                 .chatgpt-helper-about-btn:hover {
-                    transform: translateY(-1px);
-                    border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 28%);
-                    box-shadow:
-                        0 18px 30px rgba(15, 23, 42, 0.12),
-                        inset 0 1px 0 rgba(255,255,255,0.52);
+                    background: var(--gh-control-bg-hover, rgba(248, 250, 252, 0.96));
+                    border-color: color-mix(in srgb, var(--gh-primary, #10a37f), transparent 48%);
+                    color: var(--gh-text, #111827);
                 }
 
                 body[data-gh-mode="dark"] .chatgpt-helper-about-btn {
-                    background:
-                        linear-gradient(135deg, color-mix(in srgb, var(--gh-bg, #0f1419), white 3%) 0%, color-mix(in srgb, var(--gh-hover, #1f2937), transparent 10%) 100%);
-                    box-shadow:
-                        0 18px 34px rgba(2, 6, 23, 0.28),
-                        inset 0 1px 0 rgba(255,255,255,0.04);
+                    background: var(--gh-control-bg, rgba(32, 33, 35, 0.95));
+                    box-shadow: none;
                 }
 
-                .chatgpt-helper-header-about-btn {
-                    position: relative;
-                }
-
-                .chatgpt-helper-about-entry-icon {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 999px;
-                    border: 1.6px solid #f97316;
-                    color: #ea580c;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 11px;
-                    font-weight: 800;
-                    line-height: 1;
-                    background: rgba(255, 247, 237, 0.2);
-                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.24);
-                }
-
-                body[data-gh-mode="dark"] .chatgpt-helper-about-entry-icon {
-                    color: #fdba74;
-                    border-color: #fb923c;
-                    background: rgba(249, 115, 22, 0.14);
-                }
-
-                #chatgpt-helper-header.gh-compact .chatgpt-helper-about-entry-icon {
-                    width: 14px;
-                    height: 14px;
-                    font-size: 10px;
-                }
 
                 #chatgpt-helper-about-modal {
                     position: fixed;
@@ -3784,20 +3726,19 @@
                 .outline-fixed-toolbar,
                 .chatgpt-helper-conversations-search,
                 .chatgpt-helper-conversations-toolbar,
-                .chatgpt-helper-batch-toolbar,
-                .chatgpt-helper-export-header {
+                .chatgpt-helper-batch-toolbar {
                     background: var(--gh-panel-subtle) !important;
                     border-color: var(--gh-panel-line) !important;
                 }
 
                 .chatgpt-helper-search-bar {
-                    padding: 12px 12px 10px;
+                    padding: 8px 12px;
                 }
 
                 .chatgpt-helper-search-input,
                 .outline-search-input,
                 .chatgpt-helper-conversations-search-input {
-                    min-height: 38px;
+                    min-height: 32px;
                     border-radius: var(--gh-control-radius);
                     background: var(--gh-input-bg);
                     border-color: var(--gh-input-border);
@@ -4170,8 +4111,7 @@
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-toolbar,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-search,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar,
-                :root[data-gh-bg-enabled="true"] .scroll-nav-container,
-                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-header {
+                :root[data-gh-bg-enabled="true"] .scroll-nav-container {
                     background: var(--gh-panel-card-bg) !important;
                     backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
@@ -4257,8 +4197,7 @@
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-conversations-toolbar,
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-conversations-search,
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-batch-toolbar,
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .scroll-nav-container,
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .chatgpt-helper-export-header {
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .scroll-nav-container {
                     background: var(--gh-panel-surface) !important;
                     box-shadow: none !important;
                 }
@@ -4503,7 +4442,6 @@
                 .chatgpt-helper-conversations-search,
                 .chatgpt-helper-conversations-toolbar,
                 .chatgpt-helper-batch-toolbar,
-                .chatgpt-helper-export-header,
                 .scroll-nav-container,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-search-bar,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-categories,
@@ -4511,7 +4449,6 @@
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-search,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-toolbar,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar,
-                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-header,
                 :root[data-gh-bg-enabled="true"] .scroll-nav-container {
                     background: var(--gh-panel-subtle) !important;
                     border-color: var(--gh-panel-line) !important;
@@ -4524,7 +4461,6 @@
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-search,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-conversations-toolbar,
                 :root[data-gh-bg-enabled="true"] .chatgpt-helper-batch-toolbar,
-                :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-header,
                 :root[data-gh-bg-enabled="true"] .scroll-nav-container {
                     backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
@@ -5790,25 +5726,6 @@
                     color: var(--gh-text) !important;
                 }
 
-                .chatgpt-helper-export-header {
-                    min-height: 46px;
-                    padding: 10px 12px !important;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    font-size: 14px !important;
-                    font-weight: 700 !important;
-                    color: var(--gh-text) !important;
-                    flex-shrink: 0;
-                    position: relative;
-                    z-index: 10;
-                    box-sizing: border-box;
-                }
-
-                .chatgpt-helper-export-header-title {
-                    line-height: 1;
-                }
-
                 .chatgpt-helper-export-host :is(button, input, select, textarea),
                 [data-gh-exporter-host="true"] :is(button, input, select, textarea) {
                     border-radius: var(--gh-control-radius) !important;
@@ -5819,7 +5736,7 @@
                     gap: 7px !important;
                     grid-template-columns: minmax(0, 1fr) !important;
                     align-content: start !important;
-                    grid-auto-rows: minmax(50px, auto) !important;
+                    grid-auto-rows: minmax(42px, auto) !important;
                 }
 
                 .chatgpt-helper-export-grid > :is(.row-full, .row-half) {
@@ -5832,14 +5749,15 @@
                 }
 
                 .chatgpt-helper-export-grid .menu-item {
-                    min-height: 50px !important;
+                    display: flex !important;
+                    min-height: 42px !important;
                     height: auto !important;
                     flex-direction: row !important;
                     align-items: center !important;
                     justify-content: flex-start !important;
                     margin: 0 !important;
-                    padding: 0 13px !important;
-                    gap: 11px !important;
+                    padding: 6px 12px !important;
+                    gap: 10px !important;
                     border-radius: 9px !important;
                     border: 1px solid color-mix(in srgb, var(--gh-panel-line), transparent 20%) !important;
                     background: color-mix(in srgb, var(--gh-panel-card), transparent 18%) !important;
@@ -5883,9 +5801,17 @@
                     text-overflow: ellipsis !important;
                     white-space: nowrap !important;
                     color: var(--gh-text) !important;
-                    font-size: 14px !important;
-                    font-weight: 680 !important;
-                    line-height: 1.25 !important;
+                    font-size: 12.8px !important;
+                    font-weight: 600 !important;
+                    line-height: 1.3 !important;
+                }
+
+                /* 导出模块：禁止横向溢出，与面板内容对齐 */
+                .chatgpt-helper-export-grid,
+                .chatgpt-helper-export-host,
+                .chatgpt-helper-export-container {
+                    overflow-x: hidden !important;
+                    max-width: 100% !important;
                 }
 
                 .scroll-nav-container,
@@ -5963,8 +5889,9 @@
                     -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.03);
                 }
 
-                /* 极窄面板：隐藏“添加新提示词”按钮，只保留搜索框 */
-                .chatgpt-helper-prompt-toolbar.compact .chatgpt-helper-add-btn {
+                /* 极窄面板：隐藏“添加新提示词”按钮，只保留搜索框；卡片编辑/删除按钮一并隐藏 */
+                .chatgpt-helper-content-panel.compact .chatgpt-helper-add-btn,
+                .chatgpt-helper-content-panel.compact .chatgpt-helper-prompt-actions {
                     display: none;
                 }
 
@@ -5992,7 +5919,7 @@
                 .chatgpt-helper-prompt-search-bar .chatgpt-helper-search-input {
                     padding-left: 34px !important;
                     padding-right: 10px !important;
-                    min-height: 36px !important;
+                    min-height: 32px !important;
                     font-size: 13px !important;
                 }
 
