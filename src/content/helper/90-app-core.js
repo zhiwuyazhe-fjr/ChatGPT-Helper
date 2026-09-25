@@ -197,6 +197,7 @@
                             // ignore
                         }
                     }
+                    this.stopThemeHostWatchdog();
                     this.revokeThemeBackgroundObjectUrl();
                     this.stopSystemThemeListener();
                     this.closeThemeSettingsModal();

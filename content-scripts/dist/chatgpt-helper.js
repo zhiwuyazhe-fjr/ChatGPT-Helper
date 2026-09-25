@@ -621,7 +621,7 @@
     const REPO_URL = "https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper";
     const AUTHOR_GITHUB_URL = "https://github.com/zhiwuyazhe-fjr";
     const EXTENSION_NAME = "ChatGPT Helper";
-    const EXTENSION_VERSION = "2.4.6";
+    const EXTENSION_VERSION = "2.4.7";
     const EXTENSION_AUTHOR = "zhiwuyazhe_fjr";
     const EXTENSION_LICENSE = "MIT";
     const THEME_HOST_ATTRS = [
@@ -6309,6 +6309,7 @@
               } catch (e) {
               }
             }
+            this.stopThemeHostWatchdog();
             this.revokeThemeBackgroundObjectUrl();
             this.stopSystemThemeListener();
             this.closeThemeSettingsModal();
@@ -7186,6 +7187,15 @@
           this.markThemeHostElement(sidebarHost.firstElementChild, "data-gh-theme-host-sidebar");
           this.markThemeHostElement(sidebarHost.firstElementChild && sidebarHost.firstElementChild.firstElementChild, "data-gh-theme-host-sidebar");
         }
+        if (!sidebarHost) {
+          const geometricShell = this.findSidebarShellByGeometry();
+          if (geometricShell) {
+            this.markThemeHostElement(geometricShell, "data-gh-theme-host-sidebar-shell");
+            this.markThemeHostChain(geometricShell, "data-gh-theme-host-sidebar", { kind: "sidebar" });
+            sidebarHost = geometricShell;
+          }
+        }
+        this.themeHostLastFoundShell = Boolean(sidebarHost);
         const mainCandidates = [
           this.adapter?.getChatContainer ? this.adapter.getChatContainer() : null,
           document.querySelector("main"),
@@ -7240,19 +7250,109 @@
         const composerSurface = composerInput ? findComposerSurface(composerInput) : document.querySelector('[data-testid*="composer"] [class*="bg-token"]') || document.querySelector('[data-testid*="composer"] [class*="rounded"]') || composerHost;
         this.markThemeHostElement(composerHost, "data-gh-theme-host-composer");
         this.markThemeHostElement(composerSurface || composerHost, "data-gh-theme-host-composer-surface");
+        try {
+          const describe = (el) => el ? el.tagName.toLowerCase() + (el.id ? `#${el.id}` : "") + (getElementClassName(el) ? `.${getElementClassName(el).split(/\s+/).slice(0, 3).join(".")}` : "") : null;
+          console.debug("[ChatGPT Helper] \u4E3B\u9898\u5BBF\u4E3B\u6807\u8BB0\u5B8C\u6210", {
+            sidebarHost: describe(sidebarHost),
+            sidebarShell: describe(document.querySelector('[data-gh-theme-host-sidebar-shell="true"]')),
+            mainHost: describe(mainHost),
+            chatListHost: describe(chatListHost),
+            composerHost: describe(composerHost)
+          });
+        } catch (e) {
+        }
       },
       queueThemeHostRefresh() {
         if (this.themeHostRefreshQueued) return;
         this.themeHostRefreshQueued = true;
         const flush = () => {
+          if (!this.themeHostRefreshQueued) return;
           this.themeHostRefreshQueued = false;
-          this.refreshThemeHostTargets();
+          try {
+            this.refreshThemeHostTargets();
+          } catch (e) {
+            console.error("[ChatGPT Helper] refreshThemeHostTargets \u9519\u8BEF:", e);
+          }
         };
         if (typeof requestAnimationFrame === "function") {
           requestAnimationFrame(flush);
-        } else {
-          setTimeout(flush, 16);
         }
+        setTimeout(flush, 200);
+      },
+      // 从 body 逐层下钻定位侧栏壳：全宽的左侧锚定容器只作下钻通道，
+      // 第一个呈"左栏"形态（限宽、贴左、占屏高）的子元素即侧栏壳（取最外层，
+      // 保证头部/列表/底部整块都在玻璃壳内）。不含扩展自身 UI，也不把主区误认成侧栏。
+      findSidebarShellByGeometry() {
+        const maxWidth = Math.max(520, Math.floor(window.innerWidth * 0.42));
+        const minHeight = Math.floor(window.innerHeight * 0.4);
+        const pickChild = (parent) => {
+          let wrapper = null;
+          let rail = null;
+          for (const child of parent.children) {
+            if (!(child instanceof HTMLElement)) continue;
+            if (typeof child.id === "string" && child.id.startsWith("chatgpt-helper")) continue;
+            const rect = child.getBoundingClientRect();
+            if (rect.left > 80 || rect.width < 140 || rect.height < minHeight) continue;
+            if (rect.width <= maxWidth) {
+              if (child.querySelector('main, [role="main"]')) continue;
+              if (!rail) rail = child;
+            } else if (!wrapper) {
+              wrapper = child;
+            }
+          }
+          return { wrapper, rail };
+        };
+        let current = document.body;
+        for (let depth = 0; depth < 10 && current; depth++) {
+          const { wrapper, rail } = pickChild(current);
+          if (rail) {
+            return rail;
+          }
+          if (!wrapper) {
+            break;
+          }
+          current = wrapper;
+        }
+        return null;
+      },
+      // 看门狗：SPA 重渲染或侧栏晚挂载导致宿主标记丢失时自动补标。
+      // 观察器回调只做两次 querySelector 级别的存在性检查，标记缺失才触发重扫；
+      // 找不到侧栏的页面用冷却时间限制重扫频率，避免流式输出时反复布局计算。
+      startThemeHostWatchdog() {
+        if (this.themeHostWatchdog) return;
+        let checkTimer = null;
+        const runCheck = () => {
+          if (checkTimer) return;
+          checkTimer = setTimeout(() => {
+            checkTimer = null;
+            try {
+              if (!document.body) return;
+              const hasShell = !!document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+              const hasMain = !!document.querySelector('[data-gh-theme-host-main="true"]');
+              if (hasShell && hasMain) return;
+              const now = Date.now();
+              const cooldown = this.themeHostLastFoundShell ? 600 : 5e3;
+              if (now - (this.themeHostLastRefreshAt || 0) < cooldown) return;
+              this.themeHostLastRefreshAt = now;
+              this.queueThemeHostRefresh();
+            } catch (e) {
+            }
+          }, 600);
+        };
+        try {
+          this.themeHostWatchdog = new MutationObserver(runCheck);
+          this.themeHostWatchdog.observe(document.body, { childList: true, subtree: true });
+        } catch (e) {
+          this.themeHostWatchdog = null;
+        }
+      },
+      stopThemeHostWatchdog() {
+        if (!this.themeHostWatchdog) return;
+        try {
+          this.themeHostWatchdog.disconnect();
+        } catch (e) {
+        }
+        this.themeHostWatchdog = null;
       },
       ensureThemeRuntimeStyle() {
         if (this.themeRuntimeStyleReady) return;
@@ -7343,6 +7443,13 @@
                     background-color: transparent !important;
                 }
 
+                /* JS \u6807\u8BB0\u7684\u4FA7\u680F\u7956\u5148\u94FE\u900F\u660E\u5316\uFF1A\u73BB\u7483\u58F3\u4E0E\u58C1\u7EB8\u4E4B\u95F4\u4E0D\u5141\u8BB8\u6B8B\u7559\u4E0D\u900F\u660E\u4E2D\u95F4\u5C42 */
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar="true"]:not([data-gh-theme-host-sidebar-shell="true"]) {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                }
+
                 /* chatgpt.com \u7684\u80CC\u666F\u58F3\u5728 body \u4E0B\u591A\u5C42\uFF08\u5982 bg-token-bg-primary\uFF09\uFF0C\u628A main \u7684\u6240\u6709\u7956\u5148\u58F3\u4E00\u5E76\u900F\u660E\u5316 */
                 @supports selector(:has(*)) {
                     :root[data-gh-bg-enabled="true"] body div:has(main),
@@ -7384,9 +7491,8 @@
                         background: var(--gh-page-sidebar-bg-dark) !important;
                     }
 
-                    /* \u4FA7\u680F\u5185\u90E8 token \u80CC\u666F\u6E05\u7406\uFF0C\u907F\u514D\u5217\u8868/sticky \u884C\u6B8B\u7559\u4E0D\u900F\u660E\u5E95 */
-                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-token"],
-                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-(--sidebar"] {
+                    /* \u4FA7\u680F\u5185\u90E8\u80CC\u666F\u7C7B\u6E05\u7406\uFF08bg-token / bg-(--sidebar \u7B49 Tailwind \u80CC\u666F\u7C7B\uFF09\uFF0C\u907F\u514D\u5217\u8868/sticky \u884C\u6B8B\u7559\u4E0D\u900F\u660E\u5E95 */
+                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-"] {
                         background: transparent !important;
                         background-color: transparent !important;
                         background-image: none !important;
@@ -8562,6 +8668,7 @@
         });
         await this.refreshThemeBackgroundState();
         this.queueThemeHostRefresh();
+        this.startThemeHostWatchdog();
       },
       syncThemeModalState() {
         if (!this.themeModalRefs) return;

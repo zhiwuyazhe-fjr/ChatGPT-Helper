@@ -558,6 +558,18 @@
                 this.markThemeHostElement(sidebarHost.firstElementChild && sidebarHost.firstElementChild.firstElementChild, 'data-gh-theme-host-sidebar');
             }
 
+            // 兜底：站点侧栏无任何已知 id/testid/aria-label/类名时，按几何特征（左侧、
+            // 限宽、占屏高）从 body 逐层下钻找到侧栏壳并标记，保证壁纸链路不依赖选择器
+            if (!sidebarHost) {
+                const geometricShell = this.findSidebarShellByGeometry();
+                if (geometricShell) {
+                    this.markThemeHostElement(geometricShell, 'data-gh-theme-host-sidebar-shell');
+                    this.markThemeHostChain(geometricShell, 'data-gh-theme-host-sidebar', { kind: 'sidebar' });
+                    sidebarHost = geometricShell;
+                }
+            }
+            this.themeHostLastFoundShell = Boolean(sidebarHost);
+
             const mainCandidates = [
                 this.adapter?.getChatContainer ? this.adapter.getChatContainer() : null,
                 document.querySelector('main'),
@@ -636,20 +648,121 @@
                     || composerHost);
             this.markThemeHostElement(composerHost, 'data-gh-theme-host-composer');
             this.markThemeHostElement(composerSurface || composerHost, 'data-gh-theme-host-composer-surface');
+
+            try {
+                const describe = (el) => el
+                    ? el.tagName.toLowerCase() + (el.id ? `#${el.id}` : '') + (getElementClassName(el) ? `.${getElementClassName(el).split(/\s+/).slice(0, 3).join('.')}` : '')
+                    : null;
+                console.debug('[ChatGPT Helper] 主题宿主标记完成', {
+                    sidebarHost: describe(sidebarHost),
+                    sidebarShell: describe(document.querySelector('[data-gh-theme-host-sidebar-shell="true"]')),
+                    mainHost: describe(mainHost),
+                    chatListHost: describe(chatListHost),
+                    composerHost: describe(composerHost)
+                });
+            } catch (e) {
+                // ignore
+            }
         },
 
         queueThemeHostRefresh() {
             if (this.themeHostRefreshQueued) return;
             this.themeHostRefreshQueued = true;
             const flush = () => {
+                if (!this.themeHostRefreshQueued) return;
                 this.themeHostRefreshQueued = false;
-                this.refreshThemeHostTargets();
+                try {
+                    this.refreshThemeHostTargets();
+                } catch (e) {
+                    console.error('[ChatGPT Helper] refreshThemeHostTargets 错误:', e);
+                }
             };
             if (typeof requestAnimationFrame === 'function') {
                 requestAnimationFrame(flush);
-            } else {
-                setTimeout(flush, 16);
             }
+            // 隐藏标签页 rAF 不触发时用定时器兜底，避免队列标志卡死导致再也不刷新
+            setTimeout(flush, 200);
+        },
+
+        // 从 body 逐层下钻定位侧栏壳：全宽的左侧锚定容器只作下钻通道，
+        // 第一个呈"左栏"形态（限宽、贴左、占屏高）的子元素即侧栏壳（取最外层，
+        // 保证头部/列表/底部整块都在玻璃壳内）。不含扩展自身 UI，也不把主区误认成侧栏。
+        findSidebarShellByGeometry() {
+            const maxWidth = Math.max(520, Math.floor(window.innerWidth * 0.42));
+            const minHeight = Math.floor(window.innerHeight * 0.4);
+            const pickChild = (parent) => {
+                let wrapper = null;
+                let rail = null;
+                for (const child of parent.children) {
+                    if (!(child instanceof HTMLElement)) continue;
+                    if (typeof child.id === 'string' && child.id.startsWith('chatgpt-helper')) continue;
+                    const rect = child.getBoundingClientRect();
+                    if (rect.left > 80 || rect.width < 140 || rect.height < minHeight) continue;
+                    if (rect.width <= maxWidth) {
+                        // 左栏候选：排除主区本身（窄视口下主区可能贴左）
+                        if (child.querySelector('main, [role="main"]')) continue;
+                        if (!rail) rail = child;
+                    } else if (!wrapper) {
+                        wrapper = child;
+                    }
+                }
+                return { wrapper, rail };
+            };
+            let current = document.body;
+            for (let depth = 0; depth < 10 && current; depth++) {
+                const { wrapper, rail } = pickChild(current);
+                if (rail) {
+                    return rail;
+                }
+                if (!wrapper) {
+                    break;
+                }
+                current = wrapper;
+            }
+            return null;
+        },
+
+        // 看门狗：SPA 重渲染或侧栏晚挂载导致宿主标记丢失时自动补标。
+        // 观察器回调只做两次 querySelector 级别的存在性检查，标记缺失才触发重扫；
+        // 找不到侧栏的页面用冷却时间限制重扫频率，避免流式输出时反复布局计算。
+        startThemeHostWatchdog() {
+            if (this.themeHostWatchdog) return;
+            let checkTimer = null;
+            const runCheck = () => {
+                if (checkTimer) return;
+                checkTimer = setTimeout(() => {
+                    checkTimer = null;
+                    try {
+                        if (!document.body) return;
+                        const hasShell = !!document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+                        const hasMain = !!document.querySelector('[data-gh-theme-host-main="true"]');
+                        if (hasShell && hasMain) return;
+                        const now = Date.now();
+                        const cooldown = this.themeHostLastFoundShell ? 600 : 5000;
+                        if (now - (this.themeHostLastRefreshAt || 0) < cooldown) return;
+                        this.themeHostLastRefreshAt = now;
+                        this.queueThemeHostRefresh();
+                    } catch (e) {
+                        // ignore
+                    }
+                }, 600);
+            };
+            try {
+                this.themeHostWatchdog = new MutationObserver(runCheck);
+                this.themeHostWatchdog.observe(document.body, { childList: true, subtree: true });
+            } catch (e) {
+                this.themeHostWatchdog = null;
+            }
+        },
+
+        stopThemeHostWatchdog() {
+            if (!this.themeHostWatchdog) return;
+            try {
+                this.themeHostWatchdog.disconnect();
+            } catch (e) {
+                // ignore
+            }
+            this.themeHostWatchdog = null;
         },
 
         ensureThemeRuntimeStyle() {
@@ -742,6 +855,13 @@
                     background-color: transparent !important;
                 }
 
+                /* JS 标记的侧栏祖先链透明化：玻璃壳与壁纸之间不允许残留不透明中间层 */
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar="true"]:not([data-gh-theme-host-sidebar-shell="true"]) {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                }
+
                 /* chatgpt.com 的背景壳在 body 下多层（如 bg-token-bg-primary），把 main 的所有祖先壳一并透明化 */
                 @supports selector(:has(*)) {
                     :root[data-gh-bg-enabled="true"] body div:has(main),
@@ -783,9 +903,8 @@
                         background: var(--gh-page-sidebar-bg-dark) !important;
                     }
 
-                    /* 侧栏内部 token 背景清理，避免列表/sticky 行残留不透明底 */
-                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-token"],
-                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-(--sidebar"] {
+                    /* 侧栏内部背景类清理（bg-token / bg-(--sidebar 等 Tailwind 背景类），避免列表/sticky 行残留不透明底 */
+                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-"] {
                         background: transparent !important;
                         background-color: transparent !important;
                         background-image: none !important;
@@ -1979,6 +2098,7 @@
             });
             await this.refreshThemeBackgroundState();
             this.queueThemeHostRefresh();
+            this.startThemeHostWatchdog();
         },
 
         syncThemeModalState() {
