@@ -621,7 +621,7 @@
     const REPO_URL = "https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper";
     const AUTHOR_GITHUB_URL = "https://github.com/zhiwuyazhe-fjr";
     const EXTENSION_NAME = "ChatGPT Helper";
-    const EXTENSION_VERSION = "2.4.4";
+    const EXTENSION_VERSION = "2.4.5";
     const EXTENSION_AUTHOR = "zhiwuyazhe_fjr";
     const EXTENSION_LICENSE = "MIT";
     const THEME_HOST_ATTRS = [
@@ -7327,6 +7327,16 @@
                 /* \u58C1\u7EB8\u5F00\u542F\u65F6\u6E05\u6389 body \u9876\u5C42\u58F3\u5BB9\u5668\u7684\u4E0D\u900F\u660E\u80CC\u666F\uFF0C\u4FDD\u8BC1\u58C1\u7EB8\u53EF\u89C1\uFF08\u6392\u9664\u6269\u5C55\u81EA\u8EAB UI \u4E0E\u7AD9\u70B9\u5F39\u5C42\uFF09 */
                 :root[data-gh-bg-enabled="true"] body > div:not([id^="chatgpt-helper"]):not(#chatgpt-helper-theme-bg-layer):not([role="dialog"]):not([aria-modal="true"]):not([data-radix-popper-content-wrapper]):not([data-floating-ui-portal]):not(.modal-container):not([data-toast-id]):not(template) {
                     background-color: transparent !important;
+                }
+
+                /* chatgpt.com \u7684\u80CC\u666F\u58F3\u5728 body \u4E0B\u591A\u5C42\uFF08\u5982 bg-token-bg-primary\uFF09\uFF0C\u628A main \u7684\u6240\u6709\u7956\u5148\u58F3\u4E00\u5E76\u900F\u660E\u5316 */
+                @supports selector(:has(*)) {
+                    :root[data-gh-bg-enabled="true"] body div:has(main),
+                    :root[data-gh-bg-enabled="true"] body div:has([role="main"]) {
+                        background: transparent !important;
+                        background-color: transparent !important;
+                        background-image: none !important;
+                    }
                 }
 
                 :root[data-gh-mode="dark"] #chatgpt-helper-theme-bg-layer {

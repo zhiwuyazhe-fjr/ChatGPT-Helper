@@ -727,6 +727,16 @@
                     background-color: transparent !important;
                 }
 
+                /* chatgpt.com 的背景壳在 body 下多层（如 bg-token-bg-primary），把 main 的所有祖先壳一并透明化 */
+                @supports selector(:has(*)) {
+                    :root[data-gh-bg-enabled="true"] body div:has(main),
+                    :root[data-gh-bg-enabled="true"] body div:has([role="main"]) {
+                        background: transparent !important;
+                        background-color: transparent !important;
+                        background-image: none !important;
+                    }
+                }
+
                 :root[data-gh-mode="dark"] #chatgpt-helper-theme-bg-layer {
                     filter: blur(var(--gh-bg-blur)) brightness(0.5) saturate(0.82);
                 }
