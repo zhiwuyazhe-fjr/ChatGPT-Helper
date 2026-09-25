@@ -654,6 +654,21 @@
 
         ensureThemeRuntimeStyle() {
             if (this.themeRuntimeStyleReady) return;
+            // 侧栏（对话目录）通用特征选择器：站点 DOM 变化或 JS 标记失效时的 CSS 兜底
+            const sidebarSurfaceSelectors = [
+                '#stage-slideover-sidebar',
+                '[data-testid="sidebar"]',
+                'nav[data-testid*="sidebar" i]',
+                'aside[data-testid*="sidebar" i]',
+                'div[data-testid*="sidebar" i]',
+                'nav[aria-label*="chat history" i]',
+                'aside[aria-label*="chat history" i]',
+                'nav[aria-label*="聊天历史"]',
+                'aside[aria-label*="聊天历史"]',
+                'nav[class*="sidebar" i]',
+                'aside[class*="sidebar" i]',
+                '[data-gh-theme-host-sidebar-shell="true"]'
+            ].join(',\n                        ');
             let style = document.getElementById('chatgpt-helper-theme-runtime-style');
             if (!style) {
                 style = document.createElement('style');
@@ -734,6 +749,61 @@
                         background: transparent !important;
                         background-color: transparent !important;
                         background-image: none !important;
+                    }
+
+                    /* 侧栏（对话目录）独立分支：其祖先壳同样透明化（不含 main，上面的规则覆盖不到） */
+                    :root[data-gh-bg-enabled="true"] body div:has(#stage-slideover-sidebar),
+                    :root[data-gh-bg-enabled="true"] body div:has([data-testid="sidebar"]),
+                    :root[data-gh-bg-enabled="true"] body div:has([data-testid*="sidebar" i]),
+                    :root[data-gh-bg-enabled="true"] body div:has(nav[aria-label*="chat history" i]),
+                    :root[data-gh-bg-enabled="true"] body div:has(aside[aria-label*="chat history" i]),
+                    :root[data-gh-bg-enabled="true"] body div:has(nav[aria-label*="聊天历史"]),
+                    :root[data-gh-bg-enabled="true"] body div:has(aside[aria-label*="聊天历史"]),
+                    :root[data-gh-bg-enabled="true"] body div:has(nav[class*="sidebar" i]),
+                    :root[data-gh-bg-enabled="true"] body div:has(aside[class*="sidebar" i]) {
+                        background: transparent !important;
+                        background-color: transparent !important;
+                        background-image: none !important;
+                    }
+
+                    /* 侧栏自身表面：命中任一特征即套半透明渐变 + 毛玻璃，壁纸透出 */
+                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) {
+                        --sidebar-mask-bg: transparent;
+                        --sidebar-surface-primary: transparent;
+                        --sidebar-surface-secondary: transparent;
+                        --sidebar-surface-tertiary: transparent;
+                        --bg-elevated-secondary: transparent;
+                        background: var(--gh-page-sidebar-bg-light) !important;
+                        backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04) !important;
+                        -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04) !important;
+                        box-shadow: inset 0 0 0 1px var(--gh-panel-card-border) !important;
+                    }
+
+                    :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] body :is(${sidebarSurfaceSelectors}) {
+                        background: var(--gh-page-sidebar-bg-dark) !important;
+                    }
+
+                    /* 侧栏内部 token 背景清理，避免列表/sticky 行残留不透明底 */
+                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-token"],
+                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-(--sidebar"] {
+                        background: transparent !important;
+                        background-color: transparent !important;
+                        background-image: none !important;
+                        box-shadow: none !important;
+                    }
+
+                    /* 清理后补回侧栏条目悬停反馈 */
+                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) :is(a, button):hover {
+                        background: var(--gh-sidebar-button-bg) !important;
+                    }
+
+                    /* 侧栏文字增强：兜底选择器同样生效（浅色白蒙层 / 深色黑蒙层） */
+                    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] body :is(${sidebarSurfaceSelectors}) {
+                        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border) !important;
+                    }
+
+                    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] body :is(${sidebarSurfaceSelectors}) {
+                        box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border) !important;
                     }
                 }
 
