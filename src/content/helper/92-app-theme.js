@@ -402,7 +402,7 @@
                 root.style.setProperty('--gh-page-sidebar-bg-light', 'linear-gradient(180deg, rgba(255, 255, 255, 0.360), rgba(248, 250, 252, 0.220))');
                 root.style.setProperty('--gh-page-chat-bg-light', 'transparent');
                 root.style.setProperty('--gh-page-composer-bg-light', 'linear-gradient(135deg, rgba(255, 255, 255, 0.900), rgba(248, 250, 252, 0.800))');
-                root.style.setProperty('--gh-page-sidebar-bg-dark', 'linear-gradient(180deg, rgba(32, 33, 35, 0.320), rgba(23, 23, 23, 0.220))');
+                root.style.setProperty('--gh-page-sidebar-bg-dark', 'linear-gradient(180deg, rgba(32, 33, 35, 0.120), rgba(23, 23, 23, 0.070))');
                 root.style.setProperty('--gh-page-chat-bg-dark', 'transparent');
                 root.style.setProperty('--gh-page-composer-bg-dark', 'linear-gradient(135deg, rgba(32, 33, 35, 0.800), rgba(23, 23, 23, 0.720))');
                 root.style.setProperty('--gh-page-accent-soft', `color-mix(in srgb, ${preset.primary}, transparent 84%)`);
@@ -853,14 +853,29 @@
                     attrs: Array.from(el.attributes).filter(a => a.name.startsWith('data-gh')).map(a => a.name)
                 };
             };
+            const describeComputed = (el) => {
+                if (!el) return null;
+                const cs = getComputedStyle(el);
+                return {
+                    backgroundColor: cs.backgroundColor,
+                    backgroundImage: cs.backgroundImage.slice(0, 90),
+                    backdropFilter: cs.backdropFilter.slice(0, 40),
+                    boxShadow: cs.boxShadow.slice(0, 90),
+                    opacity: cs.opacity,
+                    zIndex: cs.zIndex,
+                    position: cs.position
+                };
+            };
             let sidebarCandidates = [];
             try {
                 sidebarCandidates = Array.from(document.querySelectorAll('#stage-slideover-sidebar, [data-testid="sidebar"], [data-testid*="sidebar"], nav[aria-label], aside[aria-label]'))
                     .slice(0, 8)
-                    .map(describe);
+                    .map(el => ({ ...describe(el), computed: describeComputed(el) }));
             } catch (e) {
                 sidebarCandidates = ['query failed: ' + e.message];
             }
+            const layer = document.getElementById('chatgpt-helper-theme-bg-layer');
+            const rootStyle = document.documentElement.style;
             return {
                 version: EXTENSION_VERSION,
                 url: location.href.slice(0, 120),
@@ -873,6 +888,19 @@
                 themeConfig: this.getThemeConfig(),
                 hasBackgroundObjectUrl: Boolean(this.themeBackgroundObjectUrl),
                 sidebarShell: describe(shell),
+                sidebarShellComputed: describeComputed(shell),
+                bgLayerComputed: layer ? {
+                    display: getComputedStyle(layer).display,
+                    hasImage: getComputedStyle(layer).backgroundImage.includes('url'),
+                    filter: getComputedStyle(layer).filter.slice(0, 60),
+                    zIndex: getComputedStyle(layer).zIndex
+                } : 'missing',
+                rootInlineVars: {
+                    sidebarBgDark: rootStyle.getPropertyValue('--gh-page-sidebar-bg-dark').slice(0, 90),
+                    sidebarBgLight: rootStyle.getPropertyValue('--gh-page-sidebar-bg-light').slice(0, 90),
+                    panelBlur: rootStyle.getPropertyValue('--gh-panel-blur'),
+                    enhanceAlphaDark: rootStyle.getPropertyValue('--gh-sidebar-enhance-alpha-dark')
+                },
                 sidebarCandidates,
                 region: { right: this.themeRegionRight, clearedCount: this.themeRegionClearedCount },
                 geometricShell: describe(this.findSidebarShellByGeometry())
@@ -905,6 +933,7 @@
                     --gh-bg-image: none;
                     --gh-bg-blur: 5px;
                     --gh-sidebar-enhance-alpha: 0.2;
+                    --gh-sidebar-enhance-alpha-dark: 0.08;
                     --gh-bg-overlay-light: rgba(12, 18, 32, 0.18);
                     --gh-bg-overlay-dark: rgba(23, 23, 23, 0.48);
                     --gh-panel-blur: 14px;
@@ -912,7 +941,7 @@
                     --gh-page-sidebar-bg-light: #f9f9f9;
                     --gh-page-chat-bg-light: transparent;
                     --gh-page-composer-bg-light: linear-gradient(135deg, rgba(255, 255, 255, 0.900), rgba(248, 250, 252, 0.800));
-                    --gh-page-sidebar-bg-dark: linear-gradient(180deg, rgba(32, 33, 35, 0.320), rgba(23, 23, 23, 0.220));
+                    --gh-page-sidebar-bg-dark: linear-gradient(180deg, rgba(32, 33, 35, 0.120), rgba(23, 23, 23, 0.070));
                     --gh-page-chat-bg-dark: transparent;
                     --gh-page-composer-bg-dark: linear-gradient(135deg, rgba(32, 33, 35, 0.800), rgba(23, 23, 23, 0.720));
                     --gh-page-accent-soft: color-mix(in srgb, var(--gh-theme-primary, #4285f4), transparent 84%);
@@ -1047,7 +1076,7 @@
                     }
 
                     :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] body :is(${sidebarSurfaceSelectors}) {
-                        box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border) !important;
+                        box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha-dark, 0.08)), inset 0 0 0 1px var(--gh-panel-card-border) !important;
                     }
                 }
 
@@ -2026,7 +2055,7 @@
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-testid="sidebar"],
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] {
-                    box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border);
+                    box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha-dark, 0.08)), inset 0 0 0 1px var(--gh-panel-card-border);
                 }
                 `;
                 document.head.appendChild(style);
@@ -2152,6 +2181,7 @@
             root.style.setProperty('--gh-bg-image', this.sanitizeCssUrl(this.themeBackgroundObjectUrl));
             root.style.setProperty('--gh-bg-blur', `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`);
             root.style.setProperty('--gh-sidebar-enhance-alpha', (clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100).toFixed(2));
+            root.style.setProperty('--gh-sidebar-enhance-alpha-dark', (clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100 * 0.4).toFixed(2));
             this.syncThemeSurfaceVariables(canRenderBackground);
 
             const layer = this.ensureThemeBackgroundLayer();

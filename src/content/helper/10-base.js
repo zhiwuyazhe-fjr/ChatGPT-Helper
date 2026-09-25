@@ -1347,7 +1347,7 @@
                     '--gh-page-chat-bg-light': 'transparent',
                     '--gh-page-composer-bg-light': 'color-mix(in srgb, #ffffff, transparent 78%)',
                     '--gh-page-sidebar-bg-dark': hasWallpaper
-                        ? 'linear-gradient(180deg, rgba(32, 33, 35, 0.320) 0%, rgba(23, 23, 23, 0.220) 100%)'
+                        ? 'linear-gradient(180deg, rgba(32, 33, 35, 0.120) 0%, rgba(23, 23, 23, 0.070) 100%)'
                         : 'transparent',
                     '--gh-page-chat-bg-dark': 'transparent',
                     '--gh-page-composer-bg-dark': hasWallpaper
@@ -1505,8 +1505,8 @@
                     `${rgbaFromColor(blendRgbColors('#ffffff', preset.primary, 0.18), 0.12)} 100%`
                 ]),
                 '--gh-page-sidebar-bg-dark': buildLinearGradient('180deg', [
-                    `${rgbaFromColor(sidebarTop, hasWallpaper ? (0.32 + panelUnit * 0.14) : 0.99)} 0%`,
-                    `${rgbaFromColor(sidebarBottom, hasWallpaper ? (0.22 + panelUnit * 0.12) : 0.97)} 100%`
+                    `${rgbaFromColor(sidebarTop, hasWallpaper ? (0.12 + panelUnit * 0.08) : 0.99)} 0%`,
+                    `${rgbaFromColor(sidebarBottom, hasWallpaper ? (0.07 + panelUnit * 0.06) : 0.97)} 100%`
                 ]),
                 '--gh-page-chat-bg-dark': 'transparent',
                 '--gh-page-composer-bg-dark': buildLinearGradient('135deg', [
