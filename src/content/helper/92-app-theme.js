@@ -649,6 +649,13 @@
             this.markThemeHostElement(composerHost, 'data-gh-theme-host-composer');
             this.markThemeHostElement(composerSurface || composerHost, 'data-gh-theme-host-composer-surface');
 
+            // 终极兜底：按几何区域清理侧栏区域内的不透明背景
+            try {
+                this.applySidebarRegionClearing();
+            } catch (e) {
+                console.error('[ChatGPT Helper] 侧栏区域清理错误:', e);
+            }
+
             try {
                 const describe = (el) => el
                     ? el.tagName.toLowerCase() + (el.id ? `#${el.id}` : '') + (getElementClassName(el) ? `.${getElementClassName(el).split(/\s+/).slice(0, 3).join('.')}` : '')
@@ -658,7 +665,8 @@
                     sidebarShell: describe(document.querySelector('[data-gh-theme-host-sidebar-shell="true"]')),
                     mainHost: describe(mainHost),
                     chatListHost: describe(chatListHost),
-                    composerHost: describe(composerHost)
+                    composerHost: describe(composerHost),
+                    regionCleared: this.themeRegionClearedCount
                 });
             } catch (e) {
                 // ignore
@@ -765,6 +773,112 @@
             this.themeHostWatchdog = null;
         },
 
+        // 区域清理（终极兜底，不依赖任何选择器/标记）：确定侧栏占据的屏幕区域，
+        // 把该区域内所有带不透明背景的容器统一标记为透明。无论站点 DOM 怎么变，
+        // 只要侧栏在那块区域里，壁纸就能透出。读（rect/computedStyle）与写（标记）严格分两批，避免反复回流。
+        applySidebarRegionClearing() {
+            let region = null;
+            const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+            if (shell) {
+                const rect = shell.getBoundingClientRect();
+                if (rect.width >= 100 && rect.height >= window.innerHeight * 0.3) {
+                    region = { right: Math.ceil(Math.max(rect.right, 140)) };
+                }
+            }
+            if (!region) {
+                const geometric = this.findSidebarShellByGeometry();
+                if (geometric) {
+                    const rect = geometric.getBoundingClientRect();
+                    region = { right: Math.ceil(Math.max(rect.right, 140)) };
+                    this.markThemeHostElement(geometric, 'data-gh-theme-host-sidebar-shell');
+                    this.markThemeHostElement(geometric, 'data-gh-theme-host-sidebar');
+                }
+            }
+            if (!region) {
+                region = { right: Math.ceil(Math.max(240, window.innerWidth * 0.22)) };
+            }
+
+            const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'TEMPLATE', 'SVG', 'IFRAME', 'CANVAS', 'VIDEO', 'IMG']);
+            const inExcludedSubtree = (el) => {
+                if (typeof el.id === 'string' && el.id.startsWith('chatgpt-helper')) return true;
+                return !!el.closest('[role="dialog"], [aria-modal="true"], [data-radix-popper-content-wrapper], [data-floating-ui-portal]');
+            };
+
+            // 第一批：只读，收集与侧栏区域相交的容器
+            const intersecting = [];
+            const all = document.body.querySelectorAll('div, nav, aside, section, ul, ol, header, footer, form');
+            for (let i = 0; i < all.length; i++) {
+                const el = all[i];
+                if (el.hasAttribute('data-gh-theme-host-sidebar-shell')) continue;
+                if (inExcludedSubtree(el)) continue;
+                const rect = el.getBoundingClientRect();
+                if (rect.width < 40 || rect.height < 24) continue;
+                if (rect.left >= region.right) continue;
+                if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
+                intersecting.push(el);
+            }
+
+            // 第二批：只读，计算样式挑出不透明背景者
+            const toClear = [];
+            for (const el of intersecting) {
+                const cs = getComputedStyle(el);
+                const color = cs.backgroundColor;
+                let alpha = 0;
+                const m = /rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)(?:[\s,]+([\d.]+))?\s*\)/.exec(color);
+                if (m) alpha = m[4] === undefined ? 1 : parseFloat(m[4]);
+                const hasImage = cs.backgroundImage && cs.backgroundImage !== 'none';
+                if (alpha >= 0.35 || hasImage) {
+                    toClear.push(el);
+                }
+            }
+
+            // 第三批：统一写标记
+            for (const el of toClear) {
+                el.setAttribute('data-gh-theme-bg-cleared', 'true');
+            }
+            this.themeRegionClearedCount = toClear.length;
+            this.themeRegionRight = region.right;
+        },
+
+        collectThemeDiagnostics() {
+            const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+            const describe = (el) => {
+                if (!el) return null;
+                const rect = el.getBoundingClientRect();
+                return {
+                    tag: el.tagName.toLowerCase(),
+                    id: el.id || undefined,
+                    cls: (typeof el.className === 'string' ? el.className : '').slice(0, 120) || undefined,
+                    rect: { x: Math.round(rect.x), y: Math.round(rect.y), w: Math.round(rect.width), h: Math.round(rect.height) },
+                    attrs: Array.from(el.attributes).filter(a => a.name.startsWith('data-gh')).map(a => a.name)
+                };
+            };
+            let sidebarCandidates = [];
+            try {
+                sidebarCandidates = Array.from(document.querySelectorAll('#stage-slideover-sidebar, [data-testid="sidebar"], [data-testid*="sidebar"], nav[aria-label], aside[aria-label]'))
+                    .slice(0, 8)
+                    .map(describe);
+            } catch (e) {
+                sidebarCandidates = ['query failed: ' + e.message];
+            }
+            return {
+                version: EXTENSION_VERSION,
+                url: location.href.slice(0, 120),
+                viewport: { w: window.innerWidth, h: window.innerHeight },
+                rootAttrs: {
+                    bgEnabled: document.documentElement.getAttribute('data-gh-bg-enabled'),
+                    mode: document.documentElement.getAttribute('data-gh-mode'),
+                    pageTheme: document.documentElement.getAttribute('data-gh-page-theme')
+                },
+                themeConfig: this.getThemeConfig(),
+                hasBackgroundObjectUrl: Boolean(this.themeBackgroundObjectUrl),
+                sidebarShell: describe(shell),
+                sidebarCandidates,
+                region: { right: this.themeRegionRight, clearedCount: this.themeRegionClearedCount },
+                geometricShell: describe(this.findSidebarShellByGeometry())
+            };
+        },
+
         ensureThemeRuntimeStyle() {
             if (this.themeRuntimeStyleReady) return;
             // 侧栏（对话目录）通用特征选择器：站点 DOM 变化或 JS 标记失效时的 CSS 兜底
@@ -860,6 +974,17 @@
                     background: transparent !important;
                     background-color: transparent !important;
                     background-image: none !important;
+                }
+
+                /* 区域清理兜底：侧栏几何区域内所有不透明背景一律透明（悬停反馈单独补回） */
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-bg-cleared="true"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-bg-cleared="true"]:is(a, button):hover {
+                    background: var(--gh-sidebar-button-bg) !important;
                 }
 
                 /* chatgpt.com 的背景壳在 body 下多层（如 bg-token-bg-primary），把 main 的所有祖先壳一并透明化 */
@@ -2603,8 +2728,27 @@
                 className: 'chatgpt-helper-theme-launch-btn',
                 type: 'button'
             }, this.t('themeRemoveImage') || 'Remove');
+            const diagBtn = createElement('button', {
+                className: 'chatgpt-helper-theme-launch-btn chatgpt-helper-theme-diag-btn',
+                type: 'button',
+                title: this.t('themeCopyDiagnostics') || 'Copy Theme Diagnostics'
+            }, this.t('themeCopyDiagnostics') || 'Copy Theme Diagnostics');
+            diagBtn.addEventListener('click', () => {
+                const report = JSON.stringify(this.collectThemeDiagnostics(), null, 2);
+                const done = () => this.showToast('诊断信息已复制');
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(report).then(done, () => {
+                        this.showToast('复制失败，请查看控制台');
+                        console.log('[ChatGPT Helper] 主题诊断信息:\n' + report);
+                    });
+                } else {
+                    console.log('[ChatGPT Helper] 主题诊断信息:\n' + report);
+                    this.showToast('诊断信息已输出到控制台');
+                }
+            });
             uploadButtons.appendChild(selectFileBtn);
             uploadButtons.appendChild(removeFileBtn);
+            uploadButtons.appendChild(diagBtn);
             uploadContent.appendChild(uploadButtons);
             uploadDrop.appendChild(uploadBg);
             uploadDrop.appendChild(uploadContent);

@@ -169,6 +169,7 @@
             themeFileTypes: '支持 PNG、JPG、WebP，最大 5MB',
             themeSelectFile: '选择文件',
             themeRemoveImage: '移除背景图',
+            themeCopyDiagnostics: '复制主题诊断',
             themeBlur: '模糊',
             themeMessageGlass: '消息毛玻璃效果',
             themeMessageGlassIntensity: '消息毛玻璃强度',
@@ -426,6 +427,7 @@
             themeFileTypes: 'PNG/JPG/WebP up to 5MB',
             themeSelectFile: 'Select File',
             themeRemoveImage: 'Remove Background',
+            themeCopyDiagnostics: 'Copy Theme Diagnostics',
             themeBlur: 'Blur',
             themeMessageGlass: 'Message Glass Effect',
             themeMessageGlassIntensity: 'Message Glass Intensity',
@@ -645,7 +647,8 @@
         'data-gh-theme-host-main',
         'data-gh-theme-host-chat-list',
         'data-gh-theme-host-composer',
-        'data-gh-theme-host-composer-surface'
+        'data-gh-theme-host-composer-surface',
+        'data-gh-theme-bg-cleared'
     ];
 
     const DEFAULT_THEME_CONFIG = {

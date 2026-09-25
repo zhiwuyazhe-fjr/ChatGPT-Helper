@@ -165,6 +165,7 @@
         themeFileTypes: "\u652F\u6301 PNG\u3001JPG\u3001WebP\uFF0C\u6700\u5927 5MB",
         themeSelectFile: "\u9009\u62E9\u6587\u4EF6",
         themeRemoveImage: "\u79FB\u9664\u80CC\u666F\u56FE",
+        themeCopyDiagnostics: "\u590D\u5236\u4E3B\u9898\u8BCA\u65AD",
         themeBlur: "\u6A21\u7CCA",
         themeMessageGlass: "\u6D88\u606F\u6BDB\u73BB\u7483\u6548\u679C",
         themeMessageGlassIntensity: "\u6D88\u606F\u6BDB\u73BB\u7483\u5F3A\u5EA6",
@@ -422,6 +423,7 @@
         themeFileTypes: "PNG/JPG/WebP up to 5MB",
         themeSelectFile: "Select File",
         themeRemoveImage: "Remove Background",
+        themeCopyDiagnostics: "Copy Theme Diagnostics",
         themeBlur: "Blur",
         themeMessageGlass: "Message Glass Effect",
         themeMessageGlassIntensity: "Message Glass Intensity",
@@ -630,7 +632,8 @@
       "data-gh-theme-host-main",
       "data-gh-theme-host-chat-list",
       "data-gh-theme-host-composer",
-      "data-gh-theme-host-composer-surface"
+      "data-gh-theme-host-composer-surface",
+      "data-gh-theme-bg-cleared"
     ];
     const DEFAULT_THEME_CONFIG = {
       appearanceMode: "system",
@@ -7251,13 +7254,19 @@
         this.markThemeHostElement(composerHost, "data-gh-theme-host-composer");
         this.markThemeHostElement(composerSurface || composerHost, "data-gh-theme-host-composer-surface");
         try {
+          this.applySidebarRegionClearing();
+        } catch (e) {
+          console.error("[ChatGPT Helper] \u4FA7\u680F\u533A\u57DF\u6E05\u7406\u9519\u8BEF:", e);
+        }
+        try {
           const describe = (el) => el ? el.tagName.toLowerCase() + (el.id ? `#${el.id}` : "") + (getElementClassName(el) ? `.${getElementClassName(el).split(/\s+/).slice(0, 3).join(".")}` : "") : null;
           console.debug("[ChatGPT Helper] \u4E3B\u9898\u5BBF\u4E3B\u6807\u8BB0\u5B8C\u6210", {
             sidebarHost: describe(sidebarHost),
             sidebarShell: describe(document.querySelector('[data-gh-theme-host-sidebar-shell="true"]')),
             mainHost: describe(mainHost),
             chatListHost: describe(chatListHost),
-            composerHost: describe(composerHost)
+            composerHost: describe(composerHost),
+            regionCleared: this.themeRegionClearedCount
           });
         } catch (e) {
         }
@@ -7354,6 +7363,100 @@
         }
         this.themeHostWatchdog = null;
       },
+      // 区域清理（终极兜底，不依赖任何选择器/标记）：确定侧栏占据的屏幕区域，
+      // 把该区域内所有带不透明背景的容器统一标记为透明。无论站点 DOM 怎么变，
+      // 只要侧栏在那块区域里，壁纸就能透出。读（rect/computedStyle）与写（标记）严格分两批，避免反复回流。
+      applySidebarRegionClearing() {
+        let region = null;
+        const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+        if (shell) {
+          const rect = shell.getBoundingClientRect();
+          if (rect.width >= 100 && rect.height >= window.innerHeight * 0.3) {
+            region = { right: Math.ceil(Math.max(rect.right, 140)) };
+          }
+        }
+        if (!region) {
+          const geometric = this.findSidebarShellByGeometry();
+          if (geometric) {
+            const rect = geometric.getBoundingClientRect();
+            region = { right: Math.ceil(Math.max(rect.right, 140)) };
+            this.markThemeHostElement(geometric, "data-gh-theme-host-sidebar-shell");
+            this.markThemeHostElement(geometric, "data-gh-theme-host-sidebar");
+          }
+        }
+        if (!region) {
+          region = { right: Math.ceil(Math.max(240, window.innerWidth * 0.22)) };
+        }
+        const inExcludedSubtree = (el) => {
+          if (typeof el.id === "string" && el.id.startsWith("chatgpt-helper")) return true;
+          return !!el.closest('[role="dialog"], [aria-modal="true"], [data-radix-popper-content-wrapper], [data-floating-ui-portal]');
+        };
+        const intersecting = [];
+        const all = document.body.querySelectorAll("div, nav, aside, section, ul, ol, header, footer, form");
+        for (let i = 0; i < all.length; i++) {
+          const el = all[i];
+          if (el.hasAttribute("data-gh-theme-host-sidebar-shell")) continue;
+          if (inExcludedSubtree(el)) continue;
+          const rect = el.getBoundingClientRect();
+          if (rect.width < 40 || rect.height < 24) continue;
+          if (rect.left >= region.right) continue;
+          if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
+          intersecting.push(el);
+        }
+        const toClear = [];
+        for (const el of intersecting) {
+          const cs = getComputedStyle(el);
+          const color = cs.backgroundColor;
+          let alpha = 0;
+          const m = /rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)(?:[\s,]+([\d.]+))?\s*\)/.exec(color);
+          if (m) alpha = m[4] === void 0 ? 1 : parseFloat(m[4]);
+          const hasImage = cs.backgroundImage && cs.backgroundImage !== "none";
+          if (alpha >= 0.35 || hasImage) {
+            toClear.push(el);
+          }
+        }
+        for (const el of toClear) {
+          el.setAttribute("data-gh-theme-bg-cleared", "true");
+        }
+        this.themeRegionClearedCount = toClear.length;
+        this.themeRegionRight = region.right;
+      },
+      collectThemeDiagnostics() {
+        const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+        const describe = (el) => {
+          if (!el) return null;
+          const rect = el.getBoundingClientRect();
+          return {
+            tag: el.tagName.toLowerCase(),
+            id: el.id || void 0,
+            cls: (typeof el.className === "string" ? el.className : "").slice(0, 120) || void 0,
+            rect: { x: Math.round(rect.x), y: Math.round(rect.y), w: Math.round(rect.width), h: Math.round(rect.height) },
+            attrs: Array.from(el.attributes).filter((a) => a.name.startsWith("data-gh")).map((a) => a.name)
+          };
+        };
+        let sidebarCandidates = [];
+        try {
+          sidebarCandidates = Array.from(document.querySelectorAll('#stage-slideover-sidebar, [data-testid="sidebar"], [data-testid*="sidebar"], nav[aria-label], aside[aria-label]')).slice(0, 8).map(describe);
+        } catch (e) {
+          sidebarCandidates = ["query failed: " + e.message];
+        }
+        return {
+          version: EXTENSION_VERSION,
+          url: location.href.slice(0, 120),
+          viewport: { w: window.innerWidth, h: window.innerHeight },
+          rootAttrs: {
+            bgEnabled: document.documentElement.getAttribute("data-gh-bg-enabled"),
+            mode: document.documentElement.getAttribute("data-gh-mode"),
+            pageTheme: document.documentElement.getAttribute("data-gh-page-theme")
+          },
+          themeConfig: this.getThemeConfig(),
+          hasBackgroundObjectUrl: Boolean(this.themeBackgroundObjectUrl),
+          sidebarShell: describe(shell),
+          sidebarCandidates,
+          region: { right: this.themeRegionRight, clearedCount: this.themeRegionClearedCount },
+          geometricShell: describe(this.findSidebarShellByGeometry())
+        };
+      },
       ensureThemeRuntimeStyle() {
         if (this.themeRuntimeStyleReady) return;
         const sidebarSurfaceSelectors = [
@@ -7448,6 +7551,17 @@
                     background: transparent !important;
                     background-color: transparent !important;
                     background-image: none !important;
+                }
+
+                /* \u533A\u57DF\u6E05\u7406\u515C\u5E95\uFF1A\u4FA7\u680F\u51E0\u4F55\u533A\u57DF\u5185\u6240\u6709\u4E0D\u900F\u660E\u80CC\u666F\u4E00\u5F8B\u900F\u660E\uFF08\u60AC\u505C\u53CD\u9988\u5355\u72EC\u8865\u56DE\uFF09 */
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-bg-cleared="true"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-bg-cleared="true"]:is(a, button):hover {
+                    background: var(--gh-sidebar-button-bg) !important;
                 }
 
                 /* chatgpt.com \u7684\u80CC\u666F\u58F3\u5728 body \u4E0B\u591A\u5C42\uFF08\u5982 bg-token-bg-primary\uFF09\uFF0C\u628A main \u7684\u6240\u6709\u7956\u5148\u58F3\u4E00\u5E76\u900F\u660E\u5316 */
@@ -9095,8 +9209,27 @@
           className: "chatgpt-helper-theme-launch-btn",
           type: "button"
         }, this.t("themeRemoveImage") || "Remove");
+        const diagBtn = createElement("button", {
+          className: "chatgpt-helper-theme-launch-btn chatgpt-helper-theme-diag-btn",
+          type: "button",
+          title: this.t("themeCopyDiagnostics") || "Copy Theme Diagnostics"
+        }, this.t("themeCopyDiagnostics") || "Copy Theme Diagnostics");
+        diagBtn.addEventListener("click", () => {
+          const report = JSON.stringify(this.collectThemeDiagnostics(), null, 2);
+          const done = () => this.showToast("\u8BCA\u65AD\u4FE1\u606F\u5DF2\u590D\u5236");
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(report).then(done, () => {
+              this.showToast("\u590D\u5236\u5931\u8D25\uFF0C\u8BF7\u67E5\u770B\u63A7\u5236\u53F0");
+              console.log("[ChatGPT Helper] \u4E3B\u9898\u8BCA\u65AD\u4FE1\u606F:\n" + report);
+            });
+          } else {
+            console.log("[ChatGPT Helper] \u4E3B\u9898\u8BCA\u65AD\u4FE1\u606F:\n" + report);
+            this.showToast("\u8BCA\u65AD\u4FE1\u606F\u5DF2\u8F93\u51FA\u5230\u63A7\u5236\u53F0");
+          }
+        });
         uploadButtons.appendChild(selectFileBtn);
         uploadButtons.appendChild(removeFileBtn);
+        uploadButtons.appendChild(diagBtn);
         uploadContent.appendChild(uploadButtons);
         uploadDrop.appendChild(uploadBg);
         uploadDrop.appendChild(uploadContent);
