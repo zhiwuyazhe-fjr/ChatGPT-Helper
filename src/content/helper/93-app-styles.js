@@ -3447,6 +3447,11 @@
                     transform: translateX(18px);
                 }
 
+                /* 无壁纸时，玻璃/模糊/侧栏增强等依赖壁纸的控件置灰提示 */
+                .chatgpt-helper-theme-block.no-wallpaper .chatgpt-helper-theme-row.wallpaper-dependent {
+                    opacity: 0.5;
+                }
+
                 .chatgpt-helper-theme-preview {
                     border: 1px solid color-mix(in srgb, var(--gh-border, #d1d5db), transparent 8%);
                     border-radius: 18px;

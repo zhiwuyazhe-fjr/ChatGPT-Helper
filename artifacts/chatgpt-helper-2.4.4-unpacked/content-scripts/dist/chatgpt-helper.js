@@ -621,7 +621,7 @@
     const REPO_URL = "https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper";
     const AUTHOR_GITHUB_URL = "https://github.com/zhiwuyazhe-fjr";
     const EXTENSION_NAME = "ChatGPT Helper";
-    const EXTENSION_VERSION = "2.4.3";
+    const EXTENSION_VERSION = "2.4.4";
     const EXTENSION_AUTHOR = "zhiwuyazhe_fjr";
     const EXTENSION_LICENSE = "MIT";
     const THEME_HOST_ATTRS = [
@@ -1452,12 +1452,12 @@
         appearanceMode,
         presetKey,
         backgroundImageEnabled,
-        backgroundBlurPx: Math.round(clampNumber(input.backgroundBlurPx, 0, 20)),
+        backgroundBlurPx: input.backgroundBlurPx == null ? DEFAULT_THEME_CONFIG.backgroundBlurPx : Math.round(clampNumber(input.backgroundBlurPx, 0, 20)),
         messageGlassEnabled: Boolean(input.messageGlassEnabled),
         messageGlassIntensity: input.messageGlassIntensity == null ? DEFAULT_THEME_CONFIG.messageGlassIntensity : Math.round(clampNumber(input.messageGlassIntensity, 0, 100)),
         panelGlassIntensity: input.panelGlassIntensity == null ? DEFAULT_THEME_CONFIG.panelGlassIntensity : Math.round(clampNumber(input.panelGlassIntensity, 0, 100)),
         sidebarTextEnhanceEnabled: typeof input.sidebarTextEnhanceEnabled === "boolean" ? input.sidebarTextEnhanceEnabled : true,
-        sidebarTextEnhanceIntensity: Math.round(clampNumber(input.sidebarTextEnhanceIntensity, 0, 100)),
+        sidebarTextEnhanceIntensity: input.sidebarTextEnhanceIntensity == null ? DEFAULT_THEME_CONFIG.sidebarTextEnhanceIntensity : Math.round(clampNumber(input.sidebarTextEnhanceIntensity, 0, 100)),
         backgroundAssetId,
         updatedAt
       };
@@ -6301,6 +6301,14 @@
           this.themeRuntimeStyleReady = false;
           this.themeHostRefreshQueued = false;
           this.beforeUnloadHandler = () => {
+            if (this.themeSettingSaveTimer) {
+              clearTimeout(this.themeSettingSaveTimer);
+              this.themeSettingSaveTimer = null;
+              try {
+                this.saveSettings();
+              } catch (e) {
+              }
+            }
             this.revokeThemeBackgroundObjectUrl();
             this.stopSystemThemeListener();
             this.closeThemeSettingsModal();
@@ -7287,7 +7295,7 @@
                 #chatgpt-helper-theme-bg-layer {
                     position: fixed;
                     inset: -8vh -8vw;
-                    z-index: 0;
+                    z-index: -1;
                     pointer-events: none;
                     display: none;
                     background-image: none;
@@ -7313,6 +7321,11 @@
                 :root[data-gh-bg-enabled="true"],
                 :root[data-gh-bg-enabled="true"] body,
                 :root[data-gh-bg-enabled="true"] #__next {
+                    background-color: transparent !important;
+                }
+
+                /* \u58C1\u7EB8\u5F00\u542F\u65F6\u6E05\u6389 body \u9876\u5C42\u58F3\u5BB9\u5668\u7684\u4E0D\u900F\u660E\u80CC\u666F\uFF0C\u4FDD\u8BC1\u58C1\u7EB8\u53EF\u89C1\uFF08\u6392\u9664\u6269\u5C55\u81EA\u8EAB UI \u4E0E\u7AD9\u70B9\u5F39\u5C42\uFF09 */
+                :root[data-gh-bg-enabled="true"] body > div:not([id^="chatgpt-helper"]):not(#chatgpt-helper-theme-bg-layer):not([role="dialog"]):not([aria-modal="true"]):not([data-radix-popper-content-wrapper]):not([data-floating-ui-portal]):not(.modal-container):not([data-toast-id]):not(template) {
                     background-color: transparent !important;
                 }
 
@@ -8155,7 +8168,7 @@
                     --sidebar-surface-tertiary: transparent;
                     --bg-elevated-secondary: transparent;
                     background: var(--gh-page-sidebar-bg-light) !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border) !important;
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
                 }
 
                 :root[data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
@@ -8285,18 +8298,13 @@
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] #stage-slideover-sidebar,
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] [data-testid="sidebar"],
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] [data-gh-theme-host-sidebar-shell="true"] {
-                    box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha));
+                    box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border);
                 }
 
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar="true"] {
-                    box-shadow: none;
-                }
-
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] nav[aria-label*="Chat history"],
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] nav[aria-label*="\u804A\u5929\u5386\u53F2"],
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-testid="sidebar"],
                 :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] {
-                    box-shadow: none;
+                    box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border);
                 }
                 `;
           document.head.appendChild(style);
@@ -8352,7 +8360,12 @@
           this.updateThemeVisualState();
           return;
         }
-        const url = await this.resolveThemeBackgroundObjectUrl(cfg.backgroundAssetId);
+        let url = null;
+        try {
+          url = await this.resolveThemeBackgroundObjectUrl(cfg.backgroundAssetId);
+        } catch (error) {
+          console.error("[ChatGPT Helper] \u8BFB\u53D6\u80CC\u666F\u56FE\u7247\u5931\u8D25:", error);
+        }
         if (!url) {
           cfg.backgroundImageEnabled = false;
           cfg.backgroundAssetId = null;
@@ -8360,6 +8373,19 @@
           this.saveSettings();
         }
         this.updateThemeVisualState();
+      },
+      scheduleThemeSettingSave() {
+        if (this.themeSettingSaveTimer) {
+          clearTimeout(this.themeSettingSaveTimer);
+        }
+        this.themeSettingSaveTimer = setTimeout(() => {
+          this.themeSettingSaveTimer = null;
+          try {
+            this.saveSettings();
+          } catch (e) {
+            console.error("[ChatGPT Helper] \u4FDD\u5B58\u4E3B\u9898\u8BBE\u7F6E\u5931\u8D25:", e);
+          }
+        }, 250);
       },
       syncThemeSurfaceVariables(canRenderBackground) {
         const root2 = document.documentElement;
@@ -8382,7 +8408,7 @@
         const canRenderBackground = Boolean(cfg.backgroundImageEnabled && this.themeBackgroundObjectUrl);
         const root2 = document.documentElement;
         this.syncHelperThemeMode(this.detectEffectiveThemeFromDom());
-        this.refreshThemeHostTargets();
+        this.queueThemeHostRefresh();
         root2.setAttribute("data-gh-theme-active", "true");
         root2.setAttribute("data-gh-theme-preset", cfg.presetKey || DEFAULT_THEME_CONFIG.presetKey);
         root2.setAttribute("data-gh-page-theme", "true");
@@ -8484,6 +8510,9 @@
         refs.sidebarEnhanceRange.value = `${Math.round(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100))}`;
         refs.sidebarEnhanceValue.textContent = `${Math.round(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100))}%`;
         refs.removeFileBtn.disabled = !cfg.backgroundAssetId;
+        if (refs.wallpaperBlock) {
+          refs.wallpaperBlock.classList.toggle("no-wallpaper", !canRenderBackground);
+        }
         refs.uploadDrop.classList.toggle("has-image", canRenderBackground);
         refs.uploadBg.style.backgroundImage = canRenderBackground ? this.sanitizeCssUrl(this.themeBackgroundObjectUrl) : "none";
         this.updateThemePreviewCard();
@@ -8788,8 +8817,13 @@
       },
       openThemeSettingsModal() {
         if (this.themeModal && this.themeModal.isConnected) {
+          const existingModal = this.themeModal;
           this.syncThemeModalState();
-          requestAnimationFrame(() => this.themeModal.classList.add("open"));
+          requestAnimationFrame(() => {
+            if (this.themeModal === existingModal) {
+              existingModal.classList.add("open");
+            }
+          });
           return;
         }
         const overlay = createElement("div", { id: "chatgpt-helper-theme-modal" });
@@ -8887,7 +8921,7 @@
           style: { display: "none" }
         });
         wallpaperBlock.appendChild(fileInput);
-        const blurRow = createElement("div", { className: "chatgpt-helper-theme-row" });
+        const blurRow = createElement("div", { className: "chatgpt-helper-theme-row wallpaper-dependent" });
         blurRow.appendChild(createElement("span", {}, this.t("themeBlur") || "Blur"));
         const blurControls = createElement("div", { className: "chatgpt-helper-theme-range-control" });
         const blurRange = createElement("input", {
@@ -8901,12 +8935,12 @@
         blurControls.appendChild(blurValue);
         blurRow.appendChild(blurControls);
         wallpaperBlock.appendChild(blurRow);
-        const messageGlassRow = createElement("div", { className: "chatgpt-helper-theme-row" });
+        const messageGlassRow = createElement("div", { className: "chatgpt-helper-theme-row wallpaper-dependent" });
         messageGlassRow.appendChild(createElement("span", {}, this.t("themeMessageGlass") || "Message Glass Effect"));
         const messageGlass = createElement("input", { type: "checkbox" });
         messageGlassRow.appendChild(messageGlass);
         wallpaperBlock.appendChild(messageGlassRow);
-        const messageGlassIntensityRow = createElement("div", { className: "chatgpt-helper-theme-row" });
+        const messageGlassIntensityRow = createElement("div", { className: "chatgpt-helper-theme-row wallpaper-dependent" });
         messageGlassIntensityRow.appendChild(createElement("span", {}, this.t("themeMessageGlassIntensity") || "Message Glass Intensity"));
         const messageGlassIntensityControls = createElement("div", { className: "chatgpt-helper-theme-range-control" });
         const messageGlassIntensityRange = createElement("input", {
@@ -8920,7 +8954,7 @@
         messageGlassIntensityControls.appendChild(messageGlassIntensityValue);
         messageGlassIntensityRow.appendChild(messageGlassIntensityControls);
         wallpaperBlock.appendChild(messageGlassIntensityRow);
-        const panelGlassIntensityRow = createElement("div", { className: "chatgpt-helper-theme-row" });
+        const panelGlassIntensityRow = createElement("div", { className: "chatgpt-helper-theme-row wallpaper-dependent" });
         panelGlassIntensityRow.appendChild(createElement("span", {}, this.t("themePanelGlassIntensity") || "Side Panel Glass Intensity"));
         const panelGlassIntensityControls = createElement("div", { className: "chatgpt-helper-theme-range-control" });
         const panelGlassIntensityRange = createElement("input", {
@@ -8934,12 +8968,12 @@
         panelGlassIntensityControls.appendChild(panelGlassIntensityValue);
         panelGlassIntensityRow.appendChild(panelGlassIntensityControls);
         wallpaperBlock.appendChild(panelGlassIntensityRow);
-        const sidebarEnhanceRow = createElement("div", { className: "chatgpt-helper-theme-row" });
+        const sidebarEnhanceRow = createElement("div", { className: "chatgpt-helper-theme-row wallpaper-dependent" });
         sidebarEnhanceRow.appendChild(createElement("span", {}, this.t("themeSidebarEnhance") || "Sidebar Text Enhance"));
         const sidebarEnhance = createElement("input", { type: "checkbox" });
         sidebarEnhanceRow.appendChild(sidebarEnhance);
         wallpaperBlock.appendChild(sidebarEnhanceRow);
-        const sidebarEnhanceIntensityRow = createElement("div", { className: "chatgpt-helper-theme-row" });
+        const sidebarEnhanceIntensityRow = createElement("div", { className: "chatgpt-helper-theme-row wallpaper-dependent" });
         sidebarEnhanceIntensityRow.appendChild(createElement("span", {}, this.t("themeSidebarEnhanceIntensity") || "Enhance Intensity"));
         const sidebarEnhanceControls = createElement("div", { className: "chatgpt-helper-theme-range-control" });
         const sidebarEnhanceRange = createElement("input", {
@@ -9027,7 +9061,7 @@
           cfg.backgroundBlurPx = Math.round(clampNumber(blurRange.value, 0, 20));
           cfg.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
           blurValue.textContent = `${cfg.backgroundBlurPx}px`;
-          this.saveSettings();
+          this.scheduleThemeSettingSave();
           this.updateThemeVisualState();
         });
         messageGlass.addEventListener("change", () => {
@@ -9043,7 +9077,7 @@
           cfg.messageGlassIntensity = Math.round(clampNumber(messageGlassIntensityRange.value, 0, 100));
           cfg.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
           messageGlassIntensityValue.textContent = `${cfg.messageGlassIntensity}%`;
-          this.saveSettings();
+          this.scheduleThemeSettingSave();
           this.updateThemeVisualState();
         });
         panelGlassIntensityRange.addEventListener("input", () => {
@@ -9051,7 +9085,7 @@
           cfg.panelGlassIntensity = Math.round(clampNumber(panelGlassIntensityRange.value, 0, 100));
           cfg.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
           panelGlassIntensityValue.textContent = `${cfg.panelGlassIntensity}%`;
-          this.saveSettings();
+          this.scheduleThemeSettingSave();
           this.updateThemeVisualState();
         });
         sidebarEnhance.addEventListener("change", () => {
@@ -9067,7 +9101,7 @@
           cfg.sidebarTextEnhanceIntensity = Math.round(clampNumber(sidebarEnhanceRange.value, 0, 100));
           cfg.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
           sidebarEnhanceValue.textContent = `${cfg.sidebarTextEnhanceIntensity}%`;
-          this.saveSettings();
+          this.scheduleThemeSettingSave();
           this.updateThemeVisualState();
         });
         selectFileBtn.addEventListener("click", () => fileInput.click());
@@ -9126,6 +9160,7 @@
         this.themeModalRefs = {
           appearanceButtons,
           presetButtons,
+          wallpaperBlock,
           wallpaperEnable,
           blurRange,
           blurValue,
@@ -12612,6 +12647,11 @@
 
                 .chatgpt-helper-theme-row input[type="checkbox"]:checked::after {
                     transform: translateX(18px);
+                }
+
+                /* \u65E0\u58C1\u7EB8\u65F6\uFF0C\u73BB\u7483/\u6A21\u7CCA/\u4FA7\u680F\u589E\u5F3A\u7B49\u4F9D\u8D56\u58C1\u7EB8\u7684\u63A7\u4EF6\u7F6E\u7070\u63D0\u793A */
+                .chatgpt-helper-theme-block.no-wallpaper .chatgpt-helper-theme-row.wallpaper-dependent {
+                    opacity: 0.5;
                 }
 
                 .chatgpt-helper-theme-preview {

@@ -188,6 +188,15 @@
                 this.themeRuntimeStyleReady = false;
                 this.themeHostRefreshQueued = false;
                 this.beforeUnloadHandler = () => {
+                    if (this.themeSettingSaveTimer) {
+                        clearTimeout(this.themeSettingSaveTimer);
+                        this.themeSettingSaveTimer = null;
+                        try {
+                            this.saveSettings();
+                        } catch (e) {
+                            // ignore
+                        }
+                    }
                     this.revokeThemeBackgroundObjectUrl();
                     this.stopSystemThemeListener();
                     this.closeThemeSettingsModal();

@@ -636,7 +636,7 @@
     const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
     const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
     const EXTENSION_NAME = 'ChatGPT Helper';
-    const EXTENSION_VERSION = '2.4.3';
+    const EXTENSION_VERSION = '2.4.4';
     const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
     const EXTENSION_LICENSE = 'MIT';
     const THEME_HOST_ATTRS = [
@@ -1674,7 +1674,9 @@
             appearanceMode,
             presetKey,
             backgroundImageEnabled,
-            backgroundBlurPx: Math.round(clampNumber(input.backgroundBlurPx, 0, 20)),
+            backgroundBlurPx: input.backgroundBlurPx == null
+                ? DEFAULT_THEME_CONFIG.backgroundBlurPx
+                : Math.round(clampNumber(input.backgroundBlurPx, 0, 20)),
             messageGlassEnabled: Boolean(input.messageGlassEnabled),
             messageGlassIntensity: input.messageGlassIntensity == null
                 ? DEFAULT_THEME_CONFIG.messageGlassIntensity
@@ -1686,7 +1688,9 @@
                 typeof input.sidebarTextEnhanceEnabled === 'boolean'
                     ? input.sidebarTextEnhanceEnabled
                     : true,
-            sidebarTextEnhanceIntensity: Math.round(clampNumber(input.sidebarTextEnhanceIntensity, 0, 100)),
+            sidebarTextEnhanceIntensity: input.sidebarTextEnhanceIntensity == null
+                ? DEFAULT_THEME_CONFIG.sidebarTextEnhanceIntensity
+                : Math.round(clampNumber(input.sidebarTextEnhanceIntensity, 0, 100)),
             backgroundAssetId,
             updatedAt
         };
