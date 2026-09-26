@@ -6279,7 +6279,8 @@
                     flex-direction: column;
                     padding: 5px;
                     border-radius: 12px;
-                    background: #ffffff;
+                    /* 渐变形式的纯色背景：不会被壁纸透明化规则（仅清 background-color）洗掉 */
+                    background: linear-gradient(#ffffff, #ffffff) !important;
                     border: 1px solid rgba(15, 23, 42, 0.12);
                     box-shadow: 0 18px 42px rgba(15, 23, 42, 0.20);
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -6288,7 +6289,7 @@
                 body[data-gh-mode="dark"] .gh-quick-menu,
                 :root[data-gh-mode="dark"] .gh-quick-menu,
                 body.dark .gh-quick-menu {
-                    background: #26272a;
+                    background: linear-gradient(#26272a, #26272a) !important;
                     border-color: rgba(255, 255, 255, 0.14);
                     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
                 }
@@ -6481,7 +6482,7 @@
                     gap: 8px;
                     padding: 8px 10px;
                     border-radius: 14px;
-                    background: rgba(255, 255, 255, 0.97);
+                    background: linear-gradient(rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.97)) !important;
                     border: 1px solid rgba(15, 23, 42, 0.10);
                     box-shadow: 0 16px 44px rgba(15, 23, 42, 0.24);
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -6492,7 +6493,7 @@
                 body[data-gh-mode="dark"] .gh-msg-select-toolbar,
                 :root[data-gh-mode="dark"] .gh-msg-select-toolbar,
                 body.dark .gh-msg-select-toolbar {
-                    background: rgba(32, 33, 35, 0.97);
+                    background: linear-gradient(rgba(32, 33, 35, 0.97), rgba(32, 33, 35, 0.97)) !important;
                     border-color: rgba(255, 255, 255, 0.12);
                     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
                 }
@@ -6605,7 +6606,7 @@
                     align-items: center;
                     justify-content: center;
                     padding: 24px;
-                    background: rgba(15, 23, 42, 0.42);
+                    background: linear-gradient(rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.42)) !important;
                     backdrop-filter: blur(3px);
                     -webkit-backdrop-filter: blur(3px);
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -6616,14 +6617,14 @@
                     max-width: 100%;
                     padding: 22px 22px 18px;
                     border-radius: 16px;
-                    background: #ffffff;
+                    background: linear-gradient(#ffffff, #ffffff) !important;
                     border: 1px solid rgba(15, 23, 42, 0.08);
                     box-shadow: 0 28px 70px rgba(15, 23, 42, 0.34);
                 }
 
                 body[data-gh-mode="dark"] .gh-onboarding-card,
                 :root[data-gh-mode="dark"] .gh-onboarding-card {
-                    background: #202124;
+                    background: linear-gradient(#202124, #202124) !important;
                     border-color: rgba(255, 255, 255, 0.10);
                     box-shadow: 0 28px 70px rgba(0, 0, 0, 0.62);
                 }

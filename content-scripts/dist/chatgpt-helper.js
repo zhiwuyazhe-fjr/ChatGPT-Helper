@@ -5246,6 +5246,7 @@
         this.activeIndex = 0;
         if (!this.menuEl) {
           this.menuEl = this.buildMenu();
+          this.menuEl.id = "chatgpt-helper-quick-menu";
           document.body.appendChild(this.menuEl);
         }
         this.menuEl.classList.add("open");
@@ -6016,6 +6017,8 @@
       ensureToolbar() {
         if (this.toolbar && this.toolbar.isConnected) return this.toolbar;
         this.toolbar = createElement("div", {
+          // id 前缀用于被主题壁纸的"body 直属容器透明化"规则排除
+          id: "chatgpt-helper-msg-select-toolbar",
           className: "gh-msg-select-toolbar",
           role: "toolbar",
           "aria-label": "ChatGPT Helper message export"
@@ -8429,7 +8432,7 @@
                 }
 
                 /* \u58C1\u7EB8\u5F00\u542F\u65F6\u6E05\u6389 body \u9876\u5C42\u58F3\u5BB9\u5668\u7684\u4E0D\u900F\u660E\u80CC\u666F\uFF0C\u4FDD\u8BC1\u58C1\u7EB8\u53EF\u89C1\uFF08\u6392\u9664\u6269\u5C55\u81EA\u8EAB UI \u4E0E\u7AD9\u70B9\u5F39\u5C42\uFF09 */
-                :root[data-gh-bg-enabled="true"] body > div:not([id^="chatgpt-helper"]):not(#chatgpt-helper-theme-bg-layer):not([role="dialog"]):not([aria-modal="true"]):not([data-radix-popper-content-wrapper]):not([data-floating-ui-portal]):not(.modal-container):not([data-toast-id]):not(template) {
+                :root[data-gh-bg-enabled="true"] body > div:not([id^="chatgpt-helper"]):not(#chatgpt-helper-theme-bg-layer):not([role="dialog"]):not([aria-modal="true"]):not([data-radix-popper-content-wrapper]):not([data-floating-ui-portal]):not(.modal-container):not([data-toast-id]):not(template):not(.gh-quick-menu):not(.gh-msg-select-toolbar):not(.gh-onboarding-overlay) {
                     background-color: transparent !important;
                 }
 
@@ -16688,7 +16691,8 @@
                     flex-direction: column;
                     padding: 5px;
                     border-radius: 12px;
-                    background: #ffffff;
+                    /* \u6E10\u53D8\u5F62\u5F0F\u7684\u7EAF\u8272\u80CC\u666F\uFF1A\u4E0D\u4F1A\u88AB\u58C1\u7EB8\u900F\u660E\u5316\u89C4\u5219\uFF08\u4EC5\u6E05 background-color\uFF09\u6D17\u6389 */
+                    background: linear-gradient(#ffffff, #ffffff) !important;
                     border: 1px solid rgba(15, 23, 42, 0.12);
                     box-shadow: 0 18px 42px rgba(15, 23, 42, 0.20);
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -16697,7 +16701,7 @@
                 body[data-gh-mode="dark"] .gh-quick-menu,
                 :root[data-gh-mode="dark"] .gh-quick-menu,
                 body.dark .gh-quick-menu {
-                    background: #26272a;
+                    background: linear-gradient(#26272a, #26272a) !important;
                     border-color: rgba(255, 255, 255, 0.14);
                     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
                 }
@@ -16890,7 +16894,7 @@
                     gap: 8px;
                     padding: 8px 10px;
                     border-radius: 14px;
-                    background: rgba(255, 255, 255, 0.97);
+                    background: linear-gradient(rgba(255, 255, 255, 0.97), rgba(255, 255, 255, 0.97)) !important;
                     border: 1px solid rgba(15, 23, 42, 0.10);
                     box-shadow: 0 16px 44px rgba(15, 23, 42, 0.24);
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -16901,7 +16905,7 @@
                 body[data-gh-mode="dark"] .gh-msg-select-toolbar,
                 :root[data-gh-mode="dark"] .gh-msg-select-toolbar,
                 body.dark .gh-msg-select-toolbar {
-                    background: rgba(32, 33, 35, 0.97);
+                    background: linear-gradient(rgba(32, 33, 35, 0.97), rgba(32, 33, 35, 0.97)) !important;
                     border-color: rgba(255, 255, 255, 0.12);
                     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
                 }
@@ -17014,7 +17018,7 @@
                     align-items: center;
                     justify-content: center;
                     padding: 24px;
-                    background: rgba(15, 23, 42, 0.42);
+                    background: linear-gradient(rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.42)) !important;
                     backdrop-filter: blur(3px);
                     -webkit-backdrop-filter: blur(3px);
                     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -17025,14 +17029,14 @@
                     max-width: 100%;
                     padding: 22px 22px 18px;
                     border-radius: 16px;
-                    background: #ffffff;
+                    background: linear-gradient(#ffffff, #ffffff) !important;
                     border: 1px solid rgba(15, 23, 42, 0.08);
                     box-shadow: 0 28px 70px rgba(15, 23, 42, 0.34);
                 }
 
                 body[data-gh-mode="dark"] .gh-onboarding-card,
                 :root[data-gh-mode="dark"] .gh-onboarding-card {
-                    background: #202124;
+                    background: linear-gradient(#202124, #202124) !important;
                     border-color: rgba(255, 255, 255, 0.10);
                     box-shadow: 0 28px 70px rgba(0, 0, 0, 0.62);
                 }
@@ -21284,10 +21288,11 @@
         }
       },
       showOnboardingOverlay() {
-        const existing = document.getElementById("gh-onboarding-overlay");
+        const existing = document.getElementById("chatgpt-helper-onboarding-overlay");
         if (existing) existing.remove();
         const overlay = createElement("div", {
-          id: "gh-onboarding-overlay",
+          // id 前缀用于被主题壁纸的"body 直属容器透明化"规则排除
+          id: "chatgpt-helper-onboarding-overlay",
           className: "gh-onboarding-overlay",
           role: "dialog",
           "aria-modal": "true",

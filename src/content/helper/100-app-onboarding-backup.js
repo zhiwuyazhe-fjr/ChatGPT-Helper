@@ -68,11 +68,12 @@
         },
 
         showOnboardingOverlay() {
-            const existing = document.getElementById('gh-onboarding-overlay');
+            const existing = document.getElementById('chatgpt-helper-onboarding-overlay');
             if (existing) existing.remove();
 
             const overlay = createElement('div', {
-                id: 'gh-onboarding-overlay',
+                // id 前缀用于被主题壁纸的"body 直属容器透明化"规则排除
+                id: 'chatgpt-helper-onboarding-overlay',
                 className: 'gh-onboarding-overlay',
                 role: 'dialog',
                 'aria-modal': 'true',

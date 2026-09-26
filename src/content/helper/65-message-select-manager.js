@@ -279,6 +279,8 @@
         ensureToolbar() {
             if (this.toolbar && this.toolbar.isConnected) return this.toolbar;
             this.toolbar = createElement('div', {
+                // id 前缀用于被主题壁纸的"body 直属容器透明化"规则排除
+                id: 'chatgpt-helper-msg-select-toolbar',
                 className: 'gh-msg-select-toolbar',
                 role: 'toolbar',
                 'aria-label': 'ChatGPT Helper message export'

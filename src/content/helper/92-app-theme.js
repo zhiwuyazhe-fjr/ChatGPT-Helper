@@ -994,7 +994,7 @@
                 }
 
                 /* 壁纸开启时清掉 body 顶层壳容器的不透明背景，保证壁纸可见（排除扩展自身 UI 与站点弹层） */
-                :root[data-gh-bg-enabled="true"] body > div:not([id^="chatgpt-helper"]):not(#chatgpt-helper-theme-bg-layer):not([role="dialog"]):not([aria-modal="true"]):not([data-radix-popper-content-wrapper]):not([data-floating-ui-portal]):not(.modal-container):not([data-toast-id]):not(template) {
+                :root[data-gh-bg-enabled="true"] body > div:not([id^="chatgpt-helper"]):not(#chatgpt-helper-theme-bg-layer):not([role="dialog"]):not([aria-modal="true"]):not([data-radix-popper-content-wrapper]):not([data-floating-ui-portal]):not(.modal-container):not([data-toast-id]):not(template):not(.gh-quick-menu):not(.gh-msg-select-toolbar):not(.gh-onboarding-overlay) {
                     background-color: transparent !important;
                 }
 

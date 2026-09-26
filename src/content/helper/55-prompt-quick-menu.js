@@ -181,6 +181,8 @@
             this.activeIndex = 0;
             if (!this.menuEl) {
                 this.menuEl = this.buildMenu();
+                // id 前缀用于被主题壁纸的"body 直属容器透明化"规则排除，防止菜单背景被强制透明
+                this.menuEl.id = 'chatgpt-helper-quick-menu';
                 document.body.appendChild(this.menuEl);
             }
             // 先渲染并显示菜单，再定位（可见状态下才能量到真实高度，
