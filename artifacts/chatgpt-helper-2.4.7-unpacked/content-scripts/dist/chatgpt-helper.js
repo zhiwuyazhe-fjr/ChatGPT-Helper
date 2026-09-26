@@ -310,7 +310,7 @@
         onboardingTitle: "\u6B22\u8FCE\u4F7F\u7528 ChatGPT Helper",
         onboardingSubtitle: "\u8BA9\u957F\u5BF9\u8BDD\u66F4\u6E05\u6670\uFF0C\u8BA9\u5185\u5BB9\u6C89\u6DC0\u4E0B\u6765\u3002\u4E09\u6B65\u4E0A\u624B\uFF1A",
         onboardingStep1Title: "\u63D0\u793A\u8BCD\u4E00\u952E\u63D2\u5165",
-        onboardingStep1Desc: "\u5185\u7F6E\u5E38\u7528\u6A21\u677F\uFF0C\u70B9\u51FB\u5373\u63D2\u5165\uFF1B\u5728\u8F93\u5165\u6846\u8F93\u5165 // \u53EF\u968F\u65F6\u5FEB\u901F\u5524\u8D77",
+        onboardingStep1Desc: "\u5185\u7F6E\u5E38\u7528\u6A21\u677F\uFF0C\u70B9\u51FB\u5373\u63D2\u5165\uFF1B\u5728\u8F93\u5165\u6846\u8F93\u5165 / \u6216 // \u53EF\u968F\u65F6\u5FEB\u901F\u5524\u8D77",
         onboardingStep2Title: "\u540C\u6B65\u5386\u53F2\u4F1A\u8BDD",
         onboardingStep2Desc: "\u5728\u201C\u4F1A\u8BDD\u201D\u9875\u70B9\u51FB\u540C\u6B65\uFF0C\u5373\u53EF\u641C\u7D22\u3001\u7F6E\u9876\u4E0E\u5206\u7EC4\u7BA1\u7406",
         onboardingStep3Title: "\u957F\u5BF9\u8BDD\u5927\u7EB2\u5BFC\u822A",
@@ -326,7 +326,7 @@
         promptVariablesDesc: "\u8BE5\u63D0\u793A\u8BCD\u5305\u542B\u4EE5\u4E0B\u53D8\u91CF\uFF0C\u586B\u5199\u540E\u63D2\u5165\uFF1A",
         promptInsert: "\u63D2\u5165",
         promptQuickMenuEnabledLabel: "\u8F93\u5165\u6846 / \u5FEB\u901F\u5524\u8D77",
-        promptQuickMenuEnabledDesc: "\u5728 ChatGPT \u8F93\u5165\u6846\u4EE5 // \u5F00\u5934\u8F93\u5165\u65F6\uFF0C\u5F39\u51FA\u63D0\u793A\u8BCD\u5FEB\u901F\u9009\u62E9\u83DC\u5355\uFF08\u5355\u659C\u6760 / \u4FDD\u7559\u7ED9 ChatGPT \u81EA\u5E26\u547D\u4EE4\uFF09",
+        promptQuickMenuEnabledDesc: "\u5728 ChatGPT \u8F93\u5165\u6846\u4EE5 / \u6216 // \u5F00\u5934\u8F93\u5165\u65F6\uFF0C\u5F39\u51FA\u63D0\u793A\u8BCD\u5FEB\u901F\u9009\u62E9\u83DC\u5355\uFF1B\u82E5 ChatGPT \u81EA\u5E26\u547D\u4EE4\u83DC\u5355\u51FA\u73B0\u5219\u81EA\u52A8\u8BA9\u4F4D",
         quickMenuEmpty: "\u6CA1\u6709\u5339\u914D\u7684\u63D0\u793A\u8BCD",
         quickMenuHint: "\u2191\u2193 \u9009\u62E9\u3000Enter \u63D2\u5165\u3000Esc \u5173\u95ED",
         // 快捷键
@@ -623,7 +623,7 @@
         onboardingTitle: "Welcome to ChatGPT Helper",
         onboardingSubtitle: "Clearer long conversations, knowledge that stays. Three steps to start:",
         onboardingStep1Title: "One-click prompts",
-        onboardingStep1Desc: "Built-in templates insert instantly; type // in the input box for a quick picker",
+        onboardingStep1Desc: "Built-in templates insert instantly; type / or // in the input box for a quick picker",
         onboardingStep2Title: "Sync conversations",
         onboardingStep2Desc: "Open the Conversations tab and sync to search, pin and organize chats",
         onboardingStep3Title: "Outline for long chats",
@@ -639,7 +639,7 @@
         promptVariablesDesc: "This prompt contains variables. Fill them in before inserting:",
         promptInsert: "Insert",
         promptQuickMenuEnabledLabel: "Slash Quick Menu",
-        promptQuickMenuEnabledDesc: "Typing // at the start of the ChatGPT input opens a quick prompt picker (single / is left to ChatGPT native commands)",
+        promptQuickMenuEnabledDesc: "Typing / or // at the start of the ChatGPT input opens a quick prompt picker; yields to ChatGPT native commands when they appear",
         quickMenuEmpty: "No matching prompts",
         quickMenuHint: "\u2191\u2193 navigate \xB7 Enter insert \xB7 Esc close",
         // Shortcut
@@ -5102,6 +5102,13 @@
     const MAX_QUERY_LENGTH = 24;
     const MAX_VISIBLE_ITEMS = 9;
     const TRIGGER_PREFIX = "//";
+    const SINGLE_SLASH_DEFER_MS = 160;
+    const NATIVE_MENU_SELECTORS = [
+      "[data-radix-popper-content-wrapper]",
+      "[data-floating-ui-portal]",
+      '[role="listbox"]',
+      '[role="menu"]'
+    ];
     class PromptQuickMenu {
       constructor(config = {}) {
         this.getPrompts = config.getPrompts || (() => []);
@@ -5161,6 +5168,7 @@
         if (this._onResize) {
           window.removeEventListener("resize", this._onResize);
         }
+        this.cancelSlashDefer();
         this.close();
       }
       // 仅识别 ChatGPT 对话输入框，避免在页面其他 textarea/input 中误触发
@@ -5186,6 +5194,7 @@
         this.composer = e.target;
         const rawText = this.getComposerText(this.composer);
         const text = rawText.replace(/^[\s]+/, "");
+        this.cancelSlashDefer();
         if (text.startsWith(TRIGGER_PREFIX)) {
           const query = text.slice(TRIGGER_PREFIX.length);
           if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith("/")) {
@@ -5194,11 +5203,74 @@
           }
           this.query = query;
           this.open();
-        } else if (this.isOpen) {
+          return;
+        }
+        if (text.startsWith("/") && !text.startsWith(TRIGGER_PREFIX)) {
+          const query = text.slice(1);
+          if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith("/")) {
+            this.close();
+            return;
+          }
+          if (this.isOpen) {
+            this.query = query;
+            this.open();
+            return;
+          }
+          const snapshot = text;
+          this._slashDeferTimer = setTimeout(() => {
+            this._slashDeferTimer = null;
+            try {
+              if (!this.isEnabled()) return;
+              const current = this.getComposerText(this.composer).replace(/^[\s]+/, "");
+              if (current !== snapshot) return;
+              if (this.hasNativeComposerMenu()) return;
+              this.query = snapshot.slice(1);
+              this.open();
+            } catch (err) {
+            }
+          }, SINGLE_SLASH_DEFER_MS);
+          return;
+        }
+        if (this.isOpen) {
           this.close();
         }
       }
+      cancelSlashDefer() {
+        if (this._slashDeferTimer) {
+          clearTimeout(this._slashDeferTimer);
+          this._slashDeferTimer = null;
+        }
+      }
+      // 探测输入框附近是否出现了 ChatGPT 原生弹层（斜杠命令/提及等）
+      hasNativeComposerMenu() {
+        if (!this.composer || !this.composer.getBoundingClientRect) return false;
+        const cRect = this.composer.getBoundingClientRect();
+        for (const selector of NATIVE_MENU_SELECTORS) {
+          let nodes = [];
+          try {
+            nodes = document.querySelectorAll(selector);
+          } catch (e) {
+            continue;
+          }
+          for (const node of nodes) {
+            if (!(node instanceof HTMLElement)) continue;
+            if (typeof node.id === "string" && node.id.startsWith("chatgpt-helper")) continue;
+            if (this.menuEl && (node === this.menuEl || this.menuEl.contains(node))) continue;
+            const r = node.getBoundingClientRect();
+            if (r.width < 40 || r.height < 16) continue;
+            const style = window.getComputedStyle(node);
+            if (style.visibility === "hidden" || style.display === "none" || Number(style.opacity) === 0) continue;
+            if (r.bottom <= cRect.top + 24 && r.top >= cRect.top - 520) return true;
+          }
+        }
+        return false;
+      }
       handleKeyDown(e) {
+        if (e.key === "Escape" && this._slashDeferTimer) {
+          this.cancelSlashDefer();
+          e.stopPropagation();
+          return;
+        }
         if (!this.isOpen) return;
         if (e.isComposing || e.keyCode === 229) return;
         if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -5218,6 +5290,7 @@
         }
         if (e.key === "Escape") {
           e.stopPropagation();
+          this.cancelSlashDefer();
           this.close();
         }
       }
@@ -5259,6 +5332,7 @@
           this.menuEl.classList.remove("open");
         }
         this.isOpen = false;
+        this.cancelSlashDefer();
       }
       destroy() {
         this.stop();

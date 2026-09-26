@@ -20,8 +20,16 @@
     ];
     const MAX_QUERY_LENGTH = 24;
     const MAX_VISIBLE_ITEMS = 9;
-    // 触发前缀使用双斜杠 // ：单斜杠属于 ChatGPT 自带的斜杠命令菜单，避免与其冲突
+    // 双斜杠 // 立即触发；单斜杠 / 延迟探测 ChatGPT 原生命令菜单，
+    // 原生菜单出现则让位，未出现（如账号无斜杠命令）则弹出我们的菜单
     const TRIGGER_PREFIX = '//';
+    const SINGLE_SLASH_DEFER_MS = 160;
+    const NATIVE_MENU_SELECTORS = [
+        '[data-radix-popper-content-wrapper]',
+        '[data-floating-ui-portal]',
+        '[role="listbox"]',
+        '[role="menu"]'
+    ];
 
     class PromptQuickMenu {
         constructor(config = {}) {
@@ -88,6 +96,7 @@
             if (this._onResize) {
                 window.removeEventListener('resize', this._onResize);
             }
+            this.cancelSlashDefer();
             this.close();
         }
 
@@ -114,8 +123,11 @@
             }
             this.composer = e.target;
             const rawText = this.getComposerText(this.composer);
-            const text = rawText.replace(/^[\s]+/, ''); // 仅在整体以 // 开头时触发
+            const text = rawText.replace(/^[\s]+/, '');
+            this.cancelSlashDefer();
+
             if (text.startsWith(TRIGGER_PREFIX)) {
+                // "//" 强制触发，不做让位探测
                 const query = text.slice(TRIGGER_PREFIX.length);
                 if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith('/')) {
                     this.close();
@@ -123,12 +135,85 @@
                 }
                 this.query = query;
                 this.open();
-            } else if (this.isOpen) {
+                return;
+            }
+
+            if (text.startsWith('/') && !text.startsWith(TRIGGER_PREFIX)) {
+                // 单斜杠：先给 ChatGPT 原生命令菜单一个出现窗口；
+                // 它出现了就让位，没出现就弹出我们的菜单
+                const query = text.slice(1);
+                if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith('/')) {
+                    this.close();
+                    return;
+                }
+                if (this.isOpen) {
+                    // 菜单已由我们接管：直接更新过滤结果，不再重复探测
+                    this.query = query;
+                    this.open();
+                    return;
+                }
+                const snapshot = text;
+                this._slashDeferTimer = setTimeout(() => {
+                    this._slashDeferTimer = null;
+                    try {
+                        if (!this.isEnabled()) return;
+                        const current = this.getComposerText(this.composer).replace(/^[\s]+/, '');
+                        if (current !== snapshot) return; // 文本已变化，等下一个输入事件
+                        if (this.hasNativeComposerMenu()) return; // 原生菜单在场，让位
+                        this.query = snapshot.slice(1);
+                        this.open();
+                    } catch (err) {
+                        // ignore
+                    }
+                }, SINGLE_SLASH_DEFER_MS);
+                return;
+            }
+
+            if (this.isOpen) {
                 this.close();
             }
         }
 
+        cancelSlashDefer() {
+            if (this._slashDeferTimer) {
+                clearTimeout(this._slashDeferTimer);
+                this._slashDeferTimer = null;
+            }
+        }
+
+        // 探测输入框附近是否出现了 ChatGPT 原生弹层（斜杠命令/提及等）
+        hasNativeComposerMenu() {
+            if (!this.composer || !this.composer.getBoundingClientRect) return false;
+            const cRect = this.composer.getBoundingClientRect();
+            for (const selector of NATIVE_MENU_SELECTORS) {
+                let nodes = [];
+                try {
+                    nodes = document.querySelectorAll(selector);
+                } catch (e) {
+                    continue;
+                }
+                for (const node of nodes) {
+                    if (!(node instanceof HTMLElement)) continue;
+                    if (typeof node.id === 'string' && node.id.startsWith('chatgpt-helper')) continue;
+                    if (this.menuEl && (node === this.menuEl || this.menuEl.contains(node))) continue;
+                    const r = node.getBoundingClientRect();
+                    if (r.width < 40 || r.height < 16) continue;
+                    const style = window.getComputedStyle(node);
+                    if (style.visibility === 'hidden' || style.display === 'none' || Number(style.opacity) === 0) continue;
+                    // 输入框上方 520px 带宽内（原生斜杠菜单的标准位置）
+                    if (r.bottom <= cRect.top + 24 && r.top >= cRect.top - 520) return true;
+                }
+            }
+            return false;
+        }
+
         handleKeyDown(e) {
+            // 菜单未打开但探测等待中，Esc 也要能取消（否则会“凭空弹出”）
+            if (e.key === 'Escape' && this._slashDeferTimer) {
+                this.cancelSlashDefer();
+                e.stopPropagation();
+                return;
+            }
             if (!this.isOpen) return;
             // IME 组合输入期间完全放行
             if (e.isComposing || e.keyCode === 229) return;
@@ -149,6 +234,7 @@
             }
             if (e.key === 'Escape') {
                 e.stopPropagation();
+                this.cancelSlashDefer();
                 this.close();
             }
         }
@@ -198,6 +284,7 @@
                 this.menuEl.classList.remove('open');
             }
             this.isOpen = false;
+            this.cancelSlashDefer();
         }
 
         destroy() {
