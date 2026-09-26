@@ -6269,7 +6269,10 @@
                 /* ==================== 输入框 / 快速唤起菜单（页面级浮动） ==================== */
                 .gh-quick-menu {
                     position: fixed;
-                    z-index: 9000;
+                    z-index: 2147483000;
+                    opacity: 1 !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
                     min-width: 280px;
                     max-width: 380px;
                     display: none;
@@ -6283,7 +6286,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-quick-menu,
-                :root[data-gh-mode="dark"] .gh-quick-menu {
+                :root[data-gh-mode="dark"] .gh-quick-menu,
+                body.dark .gh-quick-menu {
                     background: #26272a;
                     border-color: rgba(255, 255, 255, 0.14);
                     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
@@ -6312,7 +6316,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-quick-menu-item.active,
-                :root[data-gh-mode="dark"] .gh-quick-menu-item.active {
+                :root[data-gh-mode="dark"] .gh-quick-menu-item.active,
+                body.dark .gh-quick-menu-item.active {
                     background: rgba(255, 255, 255, 0.10);
                 }
 
@@ -6329,7 +6334,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-quick-menu-item-icon,
-                :root[data-gh-mode="dark"] .gh-quick-menu-item-icon {
+                :root[data-gh-mode="dark"] .gh-quick-menu-item-icon,
+                body.dark .gh-quick-menu-item-icon {
                     background: rgba(255, 255, 255, 0.07);
                     color: #cbd5e1;
                 }
@@ -6353,7 +6359,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-quick-menu-item-title,
-                :root[data-gh-mode="dark"] .gh-quick-menu-item-title {
+                :root[data-gh-mode="dark"] .gh-quick-menu-item-title,
+                body.dark .gh-quick-menu-item-title {
                     color: #ececf1;
                 }
 
@@ -6373,7 +6380,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-quick-menu-item-category,
-                :root[data-gh-mode="dark"] .gh-quick-menu-item-category {
+                :root[data-gh-mode="dark"] .gh-quick-menu-item-category,
+                body.dark .gh-quick-menu-item-category {
                     background: rgba(255, 255, 255, 0.08);
                     color: #93c5fd;
                 }
@@ -6392,7 +6400,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-quick-menu-empty,
-                :root[data-gh-mode="dark"] .gh-quick-menu-empty {
+                :root[data-gh-mode="dark"] .gh-quick-menu-empty,
+                body.dark .gh-quick-menu-empty {
                     color: #9ca3af;
                 }
 
@@ -6405,7 +6414,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-quick-menu-hint,
-                :root[data-gh-mode="dark"] .gh-quick-menu-hint {
+                :root[data-gh-mode="dark"] .gh-quick-menu-hint,
+                body.dark .gh-quick-menu-hint {
                     border-top-color: rgba(255, 255, 255, 0.08);
                 }
 
@@ -6441,7 +6451,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-msg-select-check,
-                :root[data-gh-mode="dark"] .gh-msg-select-check {
+                :root[data-gh-mode="dark"] .gh-msg-select-check,
+                body.dark .gh-msg-select-check {
                     border-color: rgba(255, 255, 255, 0.30);
                     background: rgba(32, 33, 35, 0.88);
                 }
@@ -6461,7 +6472,10 @@
                     left: 50%;
                     transform: translateX(-50%) translateY(12px);
                     bottom: 132px;
-                    z-index: 9000;
+                    z-index: 2147483000;
+                    opacity: 1 !important;
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
                     display: none;
                     align-items: center;
                     gap: 8px;
@@ -6476,7 +6490,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-msg-select-toolbar,
-                :root[data-gh-mode="dark"] .gh-msg-select-toolbar {
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar,
+                body.dark .gh-msg-select-toolbar {
                     background: rgba(32, 33, 35, 0.97);
                     border-color: rgba(255, 255, 255, 0.12);
                     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
@@ -6497,7 +6512,8 @@
                 }
 
                 body[data-gh-mode="dark"] .gh-msg-select-toolbar-count,
-                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-count {
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-count,
+                body.dark .gh-msg-select-toolbar-count {
                     color: #ececf1;
                 }
 
@@ -6584,7 +6600,7 @@
                 .gh-onboarding-overlay {
                     position: fixed;
                     inset: 0;
-                    z-index: 100000;
+                    z-index: 2147483001;
                     display: flex;
                     align-items: center;
                     justify-content: center;
