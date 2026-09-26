@@ -8123,6 +8123,18 @@
           console.error("[ChatGPT Helper] \u4FA7\u680F\u533A\u57DF\u6E05\u7406\u9519\u8BEF:", e);
         }
         try {
+          this.protectFixedPositionedDescendants();
+          clearTimeout(this._fixedProtectTimer);
+          this._fixedProtectTimer = setTimeout(() => {
+            try {
+              this.protectFixedPositionedDescendants();
+            } catch (e) {
+            }
+          }, 2e3);
+        } catch (e) {
+          console.error("[ChatGPT Helper] fixed \u540E\u4EE3\u9632\u62A4\u9519\u8BEF:", e);
+        }
+        try {
           const describe = (el) => el ? el.tagName.toLowerCase() + (el.id ? `#${el.id}` : "") + (getElementClassName(el) ? `.${getElementClassName(el).split(/\s+/).slice(0, 3).join(".")}` : "") : null;
           console.debug("[ChatGPT Helper] \u4E3B\u9898\u5BBF\u4E3B\u6807\u8BB0\u5B8C\u6210", {
             sidebarHost: describe(sidebarHost),
@@ -8284,6 +8296,53 @@
         }
         this.themeRegionClearedCount = toClear.length;
         this.themeRegionRight = region.right;
+      },
+      // 含 fixed 后代的玻璃表面防护：backdrop-filter 会改变 fixed 后代的包含块，
+      // 把 ChatGPT 固定在视口底部的账号栏吸到可滚动容器底部。
+      // 对这类表面用 inline !important 关闭毛玻璃（inline important 优先级高于样式表 important），
+      // 不含 fixed 后代的表面移除防护恢复玻璃效果。
+      protectFixedPositionedDescendants() {
+        if (document.documentElement.getAttribute("data-gh-bg-enabled") !== "true") return;
+        const SKIP_TAGS = /* @__PURE__ */ new Set(["SCRIPT", "STYLE", "LINK", "META", "TEMPLATE", "SVG", "IFRAME", "CANVAS", "VIDEO", "IMG"]);
+        const surfaces = [];
+        const all = document.body.querySelectorAll("div, nav, aside, section, ul, ol, header, footer, form");
+        const maxSurfaceScan = 1200;
+        let scanned = 0;
+        for (let i = 0; i < all.length && surfaces.length < 24 && scanned < maxSurfaceScan; i++) {
+          const el = all[i];
+          if (SKIP_TAGS.has(el.tagName)) continue;
+          if (typeof el.id === "string" && el.id.startsWith("chatgpt-helper")) continue;
+          const rect = el.getBoundingClientRect();
+          if (rect.width < 40 || rect.height < 24) continue;
+          if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
+          scanned++;
+          const cs = window.getComputedStyle(el);
+          const bd = cs.backdropFilter || cs.webkitBackdropFilter;
+          if (!bd || bd === "none") continue;
+          surfaces.push(el);
+        }
+        for (const surface of surfaces) {
+          let hasFixed = false;
+          let checked = 0;
+          const descendants = surface.querySelectorAll("*");
+          for (let j = 0; j < descendants.length && checked < 1500; j++) {
+            const node = descendants[j];
+            checked++;
+            if (SKIP_TAGS.has(node.tagName)) continue;
+            if (window.getComputedStyle(node).position === "fixed") {
+              hasFixed = true;
+              break;
+            }
+          }
+          if (hasFixed) {
+            surface.style.setProperty("backdrop-filter", "none", "important");
+            surface.style.setProperty("-webkit-backdrop-filter", "none", "important");
+          } else {
+            surface.style.removeProperty("backdrop-filter");
+            surface.style.removeProperty("-webkit-backdrop-filter");
+          }
+        }
+        this.themeGlassProtectedCount = surfaces.filter((el) => el.style.getPropertyValue("backdrop-filter") === "none").length;
       },
       collectThemeDiagnostics() {
         const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');

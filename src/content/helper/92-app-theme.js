@@ -656,6 +656,25 @@
                 console.error('[ChatGPT Helper] 侧栏区域清理错误:', e);
             }
 
+            // backdrop-filter 与 transform/filter 一样会创建包含块：position:fixed 的后代
+            // 会从"钉在视口底"变成"钉在容器底"。ChatGPT 侧栏底部的账号栏是 fixed 定位，
+            // 玻璃化的侧栏表面会把它顶出屏幕（表现为头像不可见/不可点）。
+            // 防护：含 fixed 后代的玻璃表面直接关闭毛玻璃；另在 2s 后重扫一次，
+            // 捕捉 SPA 晚挂载的 fixed 元素。
+            try {
+                this.protectFixedPositionedDescendants();
+                clearTimeout(this._fixedProtectTimer);
+                this._fixedProtectTimer = setTimeout(() => {
+                    try {
+                        this.protectFixedPositionedDescendants();
+                    } catch (e) {
+                        // ignore
+                    }
+                }, 2000);
+            } catch (e) {
+                console.error('[ChatGPT Helper] fixed 后代防护错误:', e);
+            }
+
             try {
                 const describe = (el) => el
                     ? el.tagName.toLowerCase() + (el.id ? `#${el.id}` : '') + (getElementClassName(el) ? `.${getElementClassName(el).split(/\s+/).slice(0, 3).join('.')}` : '')
@@ -838,6 +857,57 @@
             }
             this.themeRegionClearedCount = toClear.length;
             this.themeRegionRight = region.right;
+        },
+
+        // 含 fixed 后代的玻璃表面防护：backdrop-filter 会改变 fixed 后代的包含块，
+        // 把 ChatGPT 固定在视口底部的账号栏吸到可滚动容器底部。
+        // 对这类表面用 inline !important 关闭毛玻璃（inline important 优先级高于样式表 important），
+        // 不含 fixed 后代的表面移除防护恢复玻璃效果。
+        protectFixedPositionedDescendants() {
+            if (document.documentElement.getAttribute('data-gh-bg-enabled') !== 'true') return;
+            const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'TEMPLATE', 'SVG', 'IFRAME', 'CANVAS', 'VIDEO', 'IMG']);
+            // 全页扫描玻璃表面（侧栏 + 主区 + 输入区），与区域清理的扫描成本同量级
+            const surfaces = [];
+            const all = document.body.querySelectorAll('div, nav, aside, section, ul, ol, header, footer, form');
+            const maxSurfaceScan = 1200;
+            let scanned = 0;
+            for (let i = 0; i < all.length && surfaces.length < 24 && scanned < maxSurfaceScan; i++) {
+                const el = all[i];
+                if (SKIP_TAGS.has(el.tagName)) continue;
+                if (typeof el.id === 'string' && el.id.startsWith('chatgpt-helper')) continue;
+                const rect = el.getBoundingClientRect();
+                if (rect.width < 40 || rect.height < 24) continue;
+                if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue; // 视口外不管
+                scanned++;
+                const cs = window.getComputedStyle(el);
+                const bd = cs.backdropFilter || cs.webkitBackdropFilter;
+                if (!bd || bd === 'none') continue;
+                surfaces.push(el);
+            }
+
+            for (const surface of surfaces) {
+                let hasFixed = false;
+                let checked = 0;
+                const descendants = surface.querySelectorAll('*');
+                for (let j = 0; j < descendants.length && checked < 1500; j++) {
+                    const node = descendants[j];
+                    checked++;
+                    if (SKIP_TAGS.has(node.tagName)) continue;
+                    if (window.getComputedStyle(node).position === 'fixed') {
+                        hasFixed = true;
+                        break;
+                    }
+                }
+                if (hasFixed) {
+                    surface.style.setProperty('backdrop-filter', 'none', 'important');
+                    surface.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+                } else {
+                    surface.style.removeProperty('backdrop-filter');
+                    surface.style.removeProperty('-webkit-backdrop-filter');
+                }
+            }
+            this.themeGlassProtectedCount = surfaces.filter((el) =>
+                el.style.getPropertyValue('backdrop-filter') === 'none').length;
         },
 
         collectThemeDiagnostics() {
