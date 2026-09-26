@@ -649,30 +649,19 @@
             this.markThemeHostElement(composerHost, 'data-gh-theme-host-composer');
             this.markThemeHostElement(composerSurface || composerHost, 'data-gh-theme-host-composer-surface');
 
-            // 终极兜底：按几何区域清理侧栏区域内的不透明背景
+            // 玻璃层注入：壁纸开启时为侧栏壳与输入区表面挂上玻璃兄弟层。
+            // 这是唯一的毛玻璃载体——页面自身容器永不携带 backdrop-filter，
+            // 因此不存在 fixed 后代被顶出视口的问题，也无需任何事后扫描防护。
             try {
-                this.applySidebarRegionClearing();
+                const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+                if (shell && this.isBackgroundEnabled()) {
+                    this.ensureThemeGlassLayer(shell, 'sidebar');
+                }
+                if (composerSurface && this.isBackgroundEnabled()) {
+                    this.ensureThemeGlassLayer(composerSurface, 'composer');
+                }
             } catch (e) {
-                console.error('[ChatGPT Helper] 侧栏区域清理错误:', e);
-            }
-
-            // backdrop-filter 与 transform/filter 一样会创建包含块：position:fixed 的后代
-            // 会从"钉在视口底"变成"钉在容器底"。ChatGPT 侧栏底部的账号栏是 fixed 定位，
-            // 玻璃化的侧栏表面会把它顶出屏幕（表现为头像不可见/不可点）。
-            // 防护：含 fixed 后代的玻璃表面直接关闭毛玻璃；另在 2s 后重扫一次，
-            // 捕捉 SPA 晚挂载的 fixed 元素。
-            try {
-                this.protectFixedPositionedDescendants();
-                clearTimeout(this._fixedProtectTimer);
-                this._fixedProtectTimer = setTimeout(() => {
-                    try {
-                        this.protectFixedPositionedDescendants();
-                    } catch (e) {
-                        // ignore
-                    }
-                }, 2000);
-            } catch (e) {
-                console.error('[ChatGPT Helper] fixed 后代防护错误:', e);
+                console.error('[ChatGPT Helper] 玻璃层注入错误:', e);
             }
 
             try {
@@ -685,7 +674,7 @@
                     mainHost: describe(mainHost),
                     chatListHost: describe(chatListHost),
                     composerHost: describe(composerHost),
-                    regionCleared: this.themeRegionClearedCount
+                    glassLayers: document.querySelectorAll('.gh-theme-glass-layer').length
                 });
             } catch (e) {
                 // ignore
@@ -749,8 +738,8 @@
             return null;
         },
 
-        // 看门狗：SPA 重渲染或侧栏晚挂载导致宿主标记丢失时自动补标。
-        // 观察器回调只做两次 querySelector 级别的存在性检查，标记缺失才触发重扫；
+        // 看门狗：SPA 重渲染或侧栏晚挂载导致宿主标记/玻璃层丢失时自动补齐。
+        // 观察器回调只做 querySelector 级别的存在性检查，缺失才触发重扫；
         // 找不到侧栏的页面用冷却时间限制重扫频率，避免流式输出时反复布局计算。
         startThemeHostWatchdog() {
             if (this.themeHostWatchdog) return;
@@ -761,9 +750,14 @@
                     checkTimer = null;
                     try {
                         if (!document.body) return;
+                        if (!this.isBackgroundEnabled()) return;
                         const hasShell = !!document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
                         const hasMain = !!document.querySelector('[data-gh-theme-host-main="true"]');
-                        if (hasShell && hasMain) return;
+                        if (hasShell && hasMain) {
+                            // 壳都在时还要确认玻璃层仍挂在壳里（SPA 重挂载会带走注入的层）
+                            const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+                            if (shell.querySelector(':scope > .gh-theme-glass-layer.gh-glass-sidebar')) return;
+                        }
                         const now = Date.now();
                         const cooldown = this.themeHostLastFoundShell ? 600 : 5000;
                         if (now - (this.themeHostLastRefreshAt || 0) < cooldown) return;
@@ -792,122 +786,38 @@
             this.themeHostWatchdog = null;
         },
 
-        // 区域清理（终极兜底，不依赖任何选择器/标记）：确定侧栏占据的屏幕区域，
-        // 把该区域内所有带不透明背景的容器统一标记为透明。无论站点 DOM 怎么变，
-        // 只要侧栏在那块区域里，壁纸就能透出。读（rect/computedStyle）与写（标记）严格分两批，避免反复回流。
-        applySidebarRegionClearing() {
-            let region = null;
-            const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
-            if (shell) {
-                const rect = shell.getBoundingClientRect();
-                if (rect.width >= 100 && rect.height >= window.innerHeight * 0.3) {
-                    region = { right: Math.ceil(Math.max(rect.right, 140)) };
-                }
-            }
-            if (!region) {
-                const geometric = this.findSidebarShellByGeometry();
-                if (geometric) {
-                    const rect = geometric.getBoundingClientRect();
-                    region = { right: Math.ceil(Math.max(rect.right, 140)) };
-                    this.markThemeHostElement(geometric, 'data-gh-theme-host-sidebar-shell');
-                    this.markThemeHostElement(geometric, 'data-gh-theme-host-sidebar');
-                }
-            }
-            if (!region) {
-                region = { right: Math.ceil(Math.max(240, window.innerWidth * 0.22)) };
-            }
-
-            const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'TEMPLATE', 'SVG', 'IFRAME', 'CANVAS', 'VIDEO', 'IMG']);
-            const inExcludedSubtree = (el) => {
-                if (typeof el.id === 'string' && el.id.startsWith('chatgpt-helper')) return true;
-                return !!el.closest('[role="dialog"], [aria-modal="true"], [data-radix-popper-content-wrapper], [data-floating-ui-portal]');
-            };
-
-            // 第一批：只读，收集与侧栏区域相交的容器
-            const intersecting = [];
-            const all = document.body.querySelectorAll('div, nav, aside, section, ul, ol, header, footer, form');
-            for (let i = 0; i < all.length; i++) {
-                const el = all[i];
-                if (el.hasAttribute('data-gh-theme-host-sidebar-shell')) continue;
-                if (inExcludedSubtree(el)) continue;
-                const rect = el.getBoundingClientRect();
-                if (rect.width < 40 || rect.height < 24) continue;
-                if (rect.left >= region.right) continue;
-                if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
-                intersecting.push(el);
-            }
-
-            // 第二批：只读，计算样式挑出不透明背景者
-            const toClear = [];
-            for (const el of intersecting) {
-                const cs = getComputedStyle(el);
-                const color = cs.backgroundColor;
-                let alpha = 0;
-                const m = /rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)(?:[\s,]+([\d.]+))?\s*\)/.exec(color);
-                if (m) alpha = m[4] === undefined ? 1 : parseFloat(m[4]);
-                const hasImage = cs.backgroundImage && cs.backgroundImage !== 'none';
-                if (alpha >= 0.35 || hasImage) {
-                    toClear.push(el);
-                }
-            }
-
-            // 第三批：统一写标记
-            for (const el of toClear) {
-                el.setAttribute('data-gh-theme-bg-cleared', 'true');
-            }
-            this.themeRegionClearedCount = toClear.length;
-            this.themeRegionRight = region.right;
+        isBackgroundEnabled() {
+            return document.documentElement.getAttribute('data-gh-bg-enabled') === 'true';
         },
 
-        // 含 fixed 后代的玻璃表面防护：backdrop-filter 会改变 fixed 后代的包含块，
-        // 把 ChatGPT 固定在视口底部的账号栏吸到可滚动容器底部。
-        // 对这类表面用 inline !important 关闭毛玻璃（inline important 优先级高于样式表 important），
-        // 不含 fixed 后代的表面移除防护恢复玻璃效果。
-        protectFixedPositionedDescendants() {
-            if (document.documentElement.getAttribute('data-gh-bg-enabled') !== 'true') return;
-            const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'META', 'TEMPLATE', 'SVG', 'IFRAME', 'CANVAS', 'VIDEO', 'IMG']);
-            // 全页扫描玻璃表面（侧栏 + 主区 + 输入区），与区域清理的扫描成本同量级
-            const surfaces = [];
-            const all = document.body.querySelectorAll('div, nav, aside, section, ul, ol, header, footer, form');
-            const maxSurfaceScan = 1200;
-            let scanned = 0;
-            for (let i = 0; i < all.length && surfaces.length < 24 && scanned < maxSurfaceScan; i++) {
-                const el = all[i];
-                if (SKIP_TAGS.has(el.tagName)) continue;
-                if (typeof el.id === 'string' && el.id.startsWith('chatgpt-helper')) continue;
-                const rect = el.getBoundingClientRect();
-                if (rect.width < 40 || rect.height < 24) continue;
-                if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue; // 视口外不管
-                scanned++;
-                const cs = window.getComputedStyle(el);
-                const bd = cs.backdropFilter || cs.webkitBackdropFilter;
-                if (!bd || bd === 'none') continue;
-                surfaces.push(el);
+        // 玻璃层是毛玻璃效果的唯一载体：宿主容器的最后一个子节点，
+        // absolute + z-index:-1 + pointer-events:none，画在宿主全部内容之下、
+        // 壁纸之上。宿主自身背景由 CSS 清空。backdrop-filter 只出现在这一层，
+        // 页面容器（可能含有 fixed 后代/原生弹层）永远不会因它产生包含块问题。
+        ensureThemeGlassLayer(host, variant) {
+            if (!(host instanceof HTMLElement)) return null;
+            const id = variant === 'composer'
+                ? 'chatgpt-helper-glass-composer'
+                : 'chatgpt-helper-glass-sidebar';
+            let layer = document.getElementById(id);
+            if (layer && layer.parentElement !== host) {
+                layer.remove();
+                layer = null;
             }
+            if (!layer) {
+                layer = document.createElement('div');
+                layer.id = id;
+                layer.className = `gh-theme-glass-layer gh-glass-${variant}`;
+                layer.setAttribute('aria-hidden', 'true');
+                host.appendChild(layer);
+            }
+            return layer;
+        },
 
-            for (const surface of surfaces) {
-                let hasFixed = false;
-                let checked = 0;
-                const descendants = surface.querySelectorAll('*');
-                for (let j = 0; j < descendants.length && checked < 1500; j++) {
-                    const node = descendants[j];
-                    checked++;
-                    if (SKIP_TAGS.has(node.tagName)) continue;
-                    if (window.getComputedStyle(node).position === 'fixed') {
-                        hasFixed = true;
-                        break;
-                    }
-                }
-                if (hasFixed) {
-                    surface.style.setProperty('backdrop-filter', 'none', 'important');
-                    surface.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
-                } else {
-                    surface.style.removeProperty('backdrop-filter');
-                    surface.style.removeProperty('-webkit-backdrop-filter');
-                }
-            }
-            this.themeGlassProtectedCount = surfaces.filter((el) =>
-                el.style.getPropertyValue('backdrop-filter') === 'none').length;
+        removeThemeGlassLayers() {
+            document.querySelectorAll('.gh-theme-glass-layer').forEach((node) => {
+                node.remove();
+            });
         },
 
         collectThemeDiagnostics() {
@@ -972,7 +882,18 @@
                     enhanceAlphaDark: rootStyle.getPropertyValue('--gh-sidebar-enhance-alpha-dark')
                 },
                 sidebarCandidates,
-                region: { right: this.themeRegionRight, clearedCount: this.themeRegionClearedCount },
+                glassLayers: Array.from(document.querySelectorAll('.gh-theme-glass-layer')).map((node) => {
+                    const cs = getComputedStyle(node);
+                    return {
+                        id: node.id,
+                        host: node.parentElement ? (node.parentElement.tagName.toLowerCase() +
+                            (node.parentElement.id ? '#' + node.parentElement.id : '')) : null,
+                        backdropFilter: cs.backdropFilter.slice(0, 40),
+                        zIndex: cs.zIndex,
+                        position: cs.position,
+                        pointerEvents: cs.pointerEvents
+                    };
+                }),
                 geometricShell: describe(this.findSidebarShellByGeometry())
             };
         },
@@ -1063,9 +984,68 @@
                     background-color: transparent !important;
                 }
 
-                /* 壁纸开启时清掉 body 顶层壳容器的不透明背景，保证壁纸可见（排除扩展自身 UI 与站点弹层） */
-                :root[data-gh-bg-enabled="true"] body > div:not([id^="chatgpt-helper"]):not(#chatgpt-helper-theme-bg-layer):not([role="dialog"]):not([aria-modal="true"]):not([data-radix-popper-content-wrapper]):not([data-floating-ui-portal]):not(.modal-container):not([data-toast-id]):not(template):not(.gh-quick-menu):not(.gh-msg-select-toolbar):not(.gh-onboarding-overlay) {
-                    background-color: transparent !important;
+                /*
+                 * 注入式玻璃层：唯一允许携带 backdrop-filter 的元素。
+                 * 页面自身容器一律不加 backdrop-filter（它会成为 fixed 后代的包含块，
+                 * 历史上两次把 ChatGPT 的 fixed 账号栏/弹层顶出视口）。
+                 * 玻璃层是宿主容器的最后一个子节点，absolute + z-index:-1 + pointer-events:none，
+                 * 画在宿主全部内容之下、壁纸之上，对布局、点击、弹层零影响。
+                 */
+                .gh-theme-glass-layer {
+                    position: absolute !important;
+                    inset: 0 !important;
+                    z-index: -1 !important;
+                    pointer-events: none !important;
+                    border-radius: inherit;
+                }
+
+                .gh-theme-glass-layer.gh-glass-sidebar {
+                    background: var(--gh-page-sidebar-bg-light);
+                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
+                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                .gh-theme-glass-layer.gh-glass-composer {
+                    background: var(--gh-page-composer-bg-light);
+                    backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04);
+                    -webkit-backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04);
+                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .gh-theme-glass-layer.gh-glass-sidebar {
+                    background: var(--gh-page-sidebar-bg-dark);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .gh-theme-glass-layer.gh-glass-composer {
+                    background: var(--gh-page-composer-bg-dark);
+                }
+
+                /* 文字增强蒙层也挂在玻璃层上（画在内容之下，视觉与原 shell 内阴影等价） */
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] .gh-theme-glass-layer.gh-glass-sidebar {
+                    box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] .gh-theme-glass-layer.gh-glass-sidebar {
+                    box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha-dark, 0.08)), inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="false"] .gh-theme-glass-layer {
+                    display: none !important;
+                }
+
+                /*
+                 * 结构锚定（第一性原则）：背景清理只命中"应用结构"——
+                 * body 直接子级中真正承载 main / 侧栏壳的容器。
+                 * 站点弹层（斜杠菜单、账号菜单、对话框、toast）都是不含 main 的
+                 * body 级浮动层或树内节点，天然不可能命中，无需任何豁免名单。
+                 */
+                @supports selector(:has(*)) {
+                    :root[data-gh-bg-enabled="true"] body > div:has(main),
+                    :root[data-gh-bg-enabled="true"] body > div:has([role="main"]),
+                    :root[data-gh-bg-enabled="true"] body > div:has([data-gh-theme-host-sidebar-shell="true"]) {
+                        background-color: transparent !important;
+                    }
                 }
 
                 /* JS 标记的侧栏祖先链透明化：玻璃壳与壁纸之间不允许残留不透明中间层 */
@@ -1073,17 +1053,6 @@
                     background: transparent !important;
                     background-color: transparent !important;
                     background-image: none !important;
-                }
-
-                /* 区域清理兜底：侧栏几何区域内所有不透明背景一律透明（悬停反馈单独补回） */
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-bg-cleared="true"] {
-                    background: transparent !important;
-                    background-color: transparent !important;
-                    background-image: none !important;
-                }
-
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-bg-cleared="true"]:is(a, button):hover {
-                    background: var(--gh-sidebar-button-bg) !important;
                 }
 
                 /* chatgpt.com 的背景壳在 body 下多层（如 bg-token-bg-primary），把 main 的所有祖先壳一并透明化 */
@@ -1110,25 +1079,13 @@
                         background-image: none !important;
                     }
 
-                    /* 侧栏自身表面：命中任一特征即套半透明渐变 + 毛玻璃，壁纸透出 */
+                    /* 侧栏自身表面：只清背景与站点底色 token，玻璃效果由注入的玻璃层承载 */
                     :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) {
                         --sidebar-mask-bg: transparent;
                         --sidebar-surface-primary: transparent;
                         --sidebar-surface-secondary: transparent;
                         --sidebar-surface-tertiary: transparent;
                         --bg-elevated-secondary: transparent;
-                        background: var(--gh-page-sidebar-bg-light) !important;
-                        backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04) !important;
-                        -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04) !important;
-                        box-shadow: inset 0 0 0 1px var(--gh-panel-card-border) !important;
-                    }
-
-                    :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] body :is(${sidebarSurfaceSelectors}) {
-                        background: var(--gh-page-sidebar-bg-dark) !important;
-                    }
-
-                    /* 侧栏内部背景类清理（bg-token / bg-(--sidebar 等 Tailwind 背景类），避免列表/sticky 行残留不透明底 */
-                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-"] {
                         background: transparent !important;
                         background-color: transparent !important;
                         background-image: none !important;
@@ -1138,15 +1095,6 @@
                     /* 清理后补回侧栏条目悬停反馈 */
                     :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) :is(a, button):hover {
                         background: var(--gh-sidebar-button-bg) !important;
-                    }
-
-                    /* 侧栏文字增强：兜底选择器同样生效（浅色白蒙层 / 深色黑蒙层） */
-                    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] body :is(${sidebarSurfaceSelectors}) {
-                        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border) !important;
-                    }
-
-                    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] body :is(${sidebarSurfaceSelectors}) {
-                        box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha-dark, 0.08)), inset 0 0 0 1px var(--gh-panel-card-border) !important;
                     }
                 }
 
@@ -1168,10 +1116,10 @@
                     --sidebar-surface-secondary: transparent;
                     --sidebar-surface-tertiary: transparent;
                     --bg-elevated-secondary: transparent;
-                    background: var(--gh-page-sidebar-bg-light) !important;
-                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
-                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
                 }
 
                 :root[data-gh-bg-enabled="true"] #chatgpt-helper-right {
@@ -1194,12 +1142,12 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="true"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"],
+                /* 侧栏内部清理只保留两类精准谓词：
+                   1) sticky 吸附行（弹层永远不会是 sticky）；
+                   2) nav/aside 自身与 shell 直接子层（下方结构规则）。
+                   深处的 bg-token 类背景一律不动——侧栏表面用 --sidebar-* 变量
+                   （已在 shell 上覆写为 transparent，随级联自然生效），
+                   弹层面板用 bg-token-bg-elevated 等字面色板，保持原生可见。 */
                 :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
                 :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"],
                 :root[data-gh-bg-enabled="true"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"],
@@ -1322,15 +1270,26 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="true"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
+                /* 输入区：JS 标记的表面只负责透明化，玻璃由注入层承载；
+                   未标记的兜底选择器只上渐变底色（无 backdrop-filter，杜绝包含块风险） */
                 :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer-surface="true"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"]:not([data-gh-theme-host-composer-surface="true"]) {
                     background: var(--gh-page-composer-bg-light) !important;
-                    backdrop-filter: blur(var(--gh-composer-blur));
-                    -webkit-backdrop-filter: blur(var(--gh-composer-blur));
-                    border-radius: 28px !important;
                     box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"]:not([data-gh-theme-host-composer-surface="true"]) {
+                    background: var(--gh-page-composer-bg-dark) !important;
                 }
 
                 :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"],
@@ -1402,12 +1361,12 @@
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"],
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="聊天历史"] {
-                    --sidebar-mask-bg: var(--gh-page-sidebar-bg-dark);
-                    --sidebar-surface-primary: var(--gh-page-sidebar-bg-dark);
-                    --sidebar-surface-secondary: var(--gh-panel-subtle);
-                    --sidebar-surface-tertiary: var(--gh-panel-card);
-                    --bg-elevated-secondary: var(--gh-panel-card);
-                    background: var(--gh-page-sidebar-bg-dark) !important;
+                    --sidebar-mask-bg: transparent;
+                    --sidebar-surface-primary: transparent;
+                    --sidebar-surface-secondary: transparent;
+                    --sidebar-surface-tertiary: transparent;
+                    --bg-elevated-secondary: transparent;
+                    background: transparent !important;
                 }
 
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #chatgpt-helper-right {
@@ -1429,10 +1388,9 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer-surface="true"] {
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"]:not([data-gh-theme-host-composer-surface="true"]) {
                     background: var(--gh-page-composer-bg-dark) !important;
                     box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
                 }
@@ -1545,45 +1503,6 @@
                     background-image: none !important;
                     backdrop-filter: none !important;
                     -webkit-backdrop-filter: none !important;
-                }
-
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container::before,
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container::after,
-                :root[data-gh-bg-enabled="true"] #thread-bottom::before,
-                :root[data-gh-bg-enabled="true"] #thread-bottom::after,
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container > div::before,
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container > div::after,
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="text-token-text-secondary"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-main-surface"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-bg-secondary"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-bg-tertiary"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-bg-elevated"],
-                :root[data-gh-bg-enabled="true"] [role="main"] [class*="text-token-text-secondary"][class*="text-xs"] {
-                    background: transparent !important;
-                    background-image: none !important;
-                    box-shadow: none !important;
-                    backdrop-filter: none !important;
-                    -webkit-backdrop-filter: none !important;
-                }
-
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
-                    background: var(--gh-page-composer-bg-light) !important;
-                    background-image: var(--gh-page-composer-bg-light) !important;
-                    backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04) !important;
-                    -webkit-backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04) !important;
-                    border-radius: 28px !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow) !important;
-                }
-
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
-                    background: var(--gh-page-composer-bg-dark) !important;
-                    background-image: var(--gh-page-composer-bg-dark) !important;
                 }
 
                 @supports selector(:has(*)) {
@@ -1799,12 +1718,6 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"],
@@ -1836,12 +1749,6 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"],
@@ -1978,11 +1885,11 @@
                     }
                 }
 
-                :root[data-gh-page-theme="true"] #stage-slideover-sidebar,
-                :root[data-gh-page-theme="true"] [data-testid="sidebar"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"],
-                :root[data-gh-page-theme="true"] aside[aria-label*="Chat history"],
-                :root[data-gh-page-theme="true"] aside[aria-label*="聊天历史"] {
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] #stage-slideover-sidebar,
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-testid="sidebar"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-gh-theme-host-sidebar-shell="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] aside[aria-label*="Chat history"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] aside[aria-label*="聊天历史"] {
                     --sidebar-mask-bg: transparent;
                     --sidebar-surface-primary: transparent;
                     --sidebar-surface-secondary: transparent;
@@ -1992,22 +1899,15 @@
                     box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
                 }
 
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="聊天历史"] {
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] #stage-slideover-sidebar,
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-testid="sidebar"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-gh-theme-host-sidebar-shell="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] aside[aria-label*="Chat history"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] aside[aria-label*="聊天历史"] {
                     background: var(--gh-page-sidebar-bg-dark) !important;
                 }
 
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] #stage-slideover-sidebar,
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] [data-testid="sidebar"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] aside[aria-label*="Chat history"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] aside[aria-label*="聊天历史"] {
-                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
-                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
-                }
+                /* 页面主题模式下 shell 用半透明渐变着色（无 backdrop-filter，毛玻璃只属于玻璃层） */
 
                 :root[data-gh-page-theme="true"] #stage-slideover-sidebar > div,
                 :root[data-gh-page-theme="true"] [data-testid="sidebar"] > div,
@@ -2015,11 +1915,7 @@
                 :root[data-gh-page-theme="true"] nav[aria-label*="Chat history"],
                 :root[data-gh-page-theme="true"] nav[aria-label*="聊天历史"],
                 :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] nav,
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] aside,
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"] {
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] aside {
                     background: transparent !important;
                     background-image: none !important;
                     box-shadow: none !important;
@@ -2081,52 +1977,33 @@
                     -webkit-backdrop-filter: none !important;
                 }
 
-                :root[data-gh-page-theme="true"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] main [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
                     background: var(--gh-page-composer-bg-light) !important;
                     background-image: var(--gh-page-composer-bg-light) !important;
                     border-radius: 28px !important;
                     box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow) !important;
                 }
 
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] main [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
                     background: var(--gh-page-composer-bg-dark) !important;
                     background-image: var(--gh-page-composer-bg-dark) !important;
                 }
 
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
-                    backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04) !important;
-                    -webkit-backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04) !important;
-                }
-
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] #stage-slideover-sidebar,
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] [data-testid="sidebar"],
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] [data-gh-theme-host-sidebar-shell="true"] {
-                    box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border);
-                }
-
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-testid="sidebar"],
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] {
-                    box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha-dark, 0.08)), inset 0 0 0 1px var(--gh-panel-card-border);
-                }
+                /* 文字增强蒙层已迁移至玻璃层（见上方 .gh-theme-glass-layer 规则组） */
                 `;
                 document.head.appendChild(style);
             }
@@ -2257,6 +2134,10 @@
             const layer = this.ensureThemeBackgroundLayer();
             layer.style.display = canRenderBackground ? 'block' : 'none';
             layer.style.backgroundImage = this.sanitizeCssUrl(this.themeBackgroundObjectUrl);
+            if (!canRenderBackground) {
+                // 壁纸关闭时移除注入的玻璃层，页面完全回到自身样式
+                this.removeThemeGlassLayers();
+            }
 
             if (this.themeModalRefs) {
                 this.updateThemePreviewCard();

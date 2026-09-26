@@ -782,8 +782,7 @@
         'data-gh-theme-host-main',
         'data-gh-theme-host-chat-list',
         'data-gh-theme-host-composer',
-        'data-gh-theme-host-composer-surface',
-        'data-gh-theme-bg-cleared'
+        'data-gh-theme-host-composer-surface'
     ];
 
     const DEFAULT_THEME_CONFIG = {

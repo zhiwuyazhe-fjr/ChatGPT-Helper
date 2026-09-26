@@ -763,8 +763,7 @@
       "data-gh-theme-host-main",
       "data-gh-theme-host-chat-list",
       "data-gh-theme-host-composer",
-      "data-gh-theme-host-composer-surface",
-      "data-gh-theme-bg-cleared"
+      "data-gh-theme-host-composer-surface"
     ];
     const DEFAULT_THEME_CONFIG = {
       appearanceMode: "system",
@@ -8118,21 +8117,15 @@
         this.markThemeHostElement(composerHost, "data-gh-theme-host-composer");
         this.markThemeHostElement(composerSurface || composerHost, "data-gh-theme-host-composer-surface");
         try {
-          this.applySidebarRegionClearing();
+          const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+          if (shell && this.isBackgroundEnabled()) {
+            this.ensureThemeGlassLayer(shell, "sidebar");
+          }
+          if (composerSurface && this.isBackgroundEnabled()) {
+            this.ensureThemeGlassLayer(composerSurface, "composer");
+          }
         } catch (e) {
-          console.error("[ChatGPT Helper] \u4FA7\u680F\u533A\u57DF\u6E05\u7406\u9519\u8BEF:", e);
-        }
-        try {
-          this.protectFixedPositionedDescendants();
-          clearTimeout(this._fixedProtectTimer);
-          this._fixedProtectTimer = setTimeout(() => {
-            try {
-              this.protectFixedPositionedDescendants();
-            } catch (e) {
-            }
-          }, 2e3);
-        } catch (e) {
-          console.error("[ChatGPT Helper] fixed \u540E\u4EE3\u9632\u62A4\u9519\u8BEF:", e);
+          console.error("[ChatGPT Helper] \u73BB\u7483\u5C42\u6CE8\u5165\u9519\u8BEF:", e);
         }
         try {
           const describe = (el) => el ? el.tagName.toLowerCase() + (el.id ? `#${el.id}` : "") + (getElementClassName(el) ? `.${getElementClassName(el).split(/\s+/).slice(0, 3).join(".")}` : "") : null;
@@ -8142,7 +8135,7 @@
             mainHost: describe(mainHost),
             chatListHost: describe(chatListHost),
             composerHost: describe(composerHost),
-            regionCleared: this.themeRegionClearedCount
+            glassLayers: document.querySelectorAll(".gh-theme-glass-layer").length
           });
         } catch (e) {
         }
@@ -8200,8 +8193,8 @@
         }
         return null;
       },
-      // 看门狗：SPA 重渲染或侧栏晚挂载导致宿主标记丢失时自动补标。
-      // 观察器回调只做两次 querySelector 级别的存在性检查，标记缺失才触发重扫；
+      // 看门狗：SPA 重渲染或侧栏晚挂载导致宿主标记/玻璃层丢失时自动补齐。
+      // 观察器回调只做 querySelector 级别的存在性检查，缺失才触发重扫；
       // 找不到侧栏的页面用冷却时间限制重扫频率，避免流式输出时反复布局计算。
       startThemeHostWatchdog() {
         if (this.themeHostWatchdog) return;
@@ -8212,9 +8205,13 @@
             checkTimer = null;
             try {
               if (!document.body) return;
+              if (!this.isBackgroundEnabled()) return;
               const hasShell = !!document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
               const hasMain = !!document.querySelector('[data-gh-theme-host-main="true"]');
-              if (hasShell && hasMain) return;
+              if (hasShell && hasMain) {
+                const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
+                if (shell.querySelector(":scope > .gh-theme-glass-layer.gh-glass-sidebar")) return;
+              }
               const now = Date.now();
               const cooldown = this.themeHostLastFoundShell ? 600 : 5e3;
               if (now - (this.themeHostLastRefreshAt || 0) < cooldown) return;
@@ -8239,110 +8236,34 @@
         }
         this.themeHostWatchdog = null;
       },
-      // 区域清理（终极兜底，不依赖任何选择器/标记）：确定侧栏占据的屏幕区域，
-      // 把该区域内所有带不透明背景的容器统一标记为透明。无论站点 DOM 怎么变，
-      // 只要侧栏在那块区域里，壁纸就能透出。读（rect/computedStyle）与写（标记）严格分两批，避免反复回流。
-      applySidebarRegionClearing() {
-        let region = null;
-        const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
-        if (shell) {
-          const rect = shell.getBoundingClientRect();
-          if (rect.width >= 100 && rect.height >= window.innerHeight * 0.3) {
-            region = { right: Math.ceil(Math.max(rect.right, 140)) };
-          }
-        }
-        if (!region) {
-          const geometric = this.findSidebarShellByGeometry();
-          if (geometric) {
-            const rect = geometric.getBoundingClientRect();
-            region = { right: Math.ceil(Math.max(rect.right, 140)) };
-            this.markThemeHostElement(geometric, "data-gh-theme-host-sidebar-shell");
-            this.markThemeHostElement(geometric, "data-gh-theme-host-sidebar");
-          }
-        }
-        if (!region) {
-          region = { right: Math.ceil(Math.max(240, window.innerWidth * 0.22)) };
-        }
-        const inExcludedSubtree = (el) => {
-          if (typeof el.id === "string" && el.id.startsWith("chatgpt-helper")) return true;
-          return !!el.closest('[role="dialog"], [aria-modal="true"], [data-radix-popper-content-wrapper], [data-floating-ui-portal]');
-        };
-        const intersecting = [];
-        const all = document.body.querySelectorAll("div, nav, aside, section, ul, ol, header, footer, form");
-        for (let i = 0; i < all.length; i++) {
-          const el = all[i];
-          if (el.hasAttribute("data-gh-theme-host-sidebar-shell")) continue;
-          if (inExcludedSubtree(el)) continue;
-          const rect = el.getBoundingClientRect();
-          if (rect.width < 40 || rect.height < 24) continue;
-          if (rect.left >= region.right) continue;
-          if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
-          intersecting.push(el);
-        }
-        const toClear = [];
-        for (const el of intersecting) {
-          const cs = getComputedStyle(el);
-          const color = cs.backgroundColor;
-          let alpha = 0;
-          const m = /rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)(?:[\s,]+([\d.]+))?\s*\)/.exec(color);
-          if (m) alpha = m[4] === void 0 ? 1 : parseFloat(m[4]);
-          const hasImage = cs.backgroundImage && cs.backgroundImage !== "none";
-          if (alpha >= 0.35 || hasImage) {
-            toClear.push(el);
-          }
-        }
-        for (const el of toClear) {
-          el.setAttribute("data-gh-theme-bg-cleared", "true");
-        }
-        this.themeRegionClearedCount = toClear.length;
-        this.themeRegionRight = region.right;
+      isBackgroundEnabled() {
+        return document.documentElement.getAttribute("data-gh-bg-enabled") === "true";
       },
-      // 含 fixed 后代的玻璃表面防护：backdrop-filter 会改变 fixed 后代的包含块，
-      // 把 ChatGPT 固定在视口底部的账号栏吸到可滚动容器底部。
-      // 对这类表面用 inline !important 关闭毛玻璃（inline important 优先级高于样式表 important），
-      // 不含 fixed 后代的表面移除防护恢复玻璃效果。
-      protectFixedPositionedDescendants() {
-        if (document.documentElement.getAttribute("data-gh-bg-enabled") !== "true") return;
-        const SKIP_TAGS = /* @__PURE__ */ new Set(["SCRIPT", "STYLE", "LINK", "META", "TEMPLATE", "SVG", "IFRAME", "CANVAS", "VIDEO", "IMG"]);
-        const surfaces = [];
-        const all = document.body.querySelectorAll("div, nav, aside, section, ul, ol, header, footer, form");
-        const maxSurfaceScan = 1200;
-        let scanned = 0;
-        for (let i = 0; i < all.length && surfaces.length < 24 && scanned < maxSurfaceScan; i++) {
-          const el = all[i];
-          if (SKIP_TAGS.has(el.tagName)) continue;
-          if (typeof el.id === "string" && el.id.startsWith("chatgpt-helper")) continue;
-          const rect = el.getBoundingClientRect();
-          if (rect.width < 40 || rect.height < 24) continue;
-          if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
-          scanned++;
-          const cs = window.getComputedStyle(el);
-          const bd = cs.backdropFilter || cs.webkitBackdropFilter;
-          if (!bd || bd === "none") continue;
-          surfaces.push(el);
+      // 玻璃层是毛玻璃效果的唯一载体：宿主容器的最后一个子节点，
+      // absolute + z-index:-1 + pointer-events:none，画在宿主全部内容之下、
+      // 壁纸之上。宿主自身背景由 CSS 清空。backdrop-filter 只出现在这一层，
+      // 页面容器（可能含有 fixed 后代/原生弹层）永远不会因它产生包含块问题。
+      ensureThemeGlassLayer(host, variant) {
+        if (!(host instanceof HTMLElement)) return null;
+        const id = variant === "composer" ? "chatgpt-helper-glass-composer" : "chatgpt-helper-glass-sidebar";
+        let layer = document.getElementById(id);
+        if (layer && layer.parentElement !== host) {
+          layer.remove();
+          layer = null;
         }
-        for (const surface of surfaces) {
-          let hasFixed = false;
-          let checked = 0;
-          const descendants = surface.querySelectorAll("*");
-          for (let j = 0; j < descendants.length && checked < 1500; j++) {
-            const node = descendants[j];
-            checked++;
-            if (SKIP_TAGS.has(node.tagName)) continue;
-            if (window.getComputedStyle(node).position === "fixed") {
-              hasFixed = true;
-              break;
-            }
-          }
-          if (hasFixed) {
-            surface.style.setProperty("backdrop-filter", "none", "important");
-            surface.style.setProperty("-webkit-backdrop-filter", "none", "important");
-          } else {
-            surface.style.removeProperty("backdrop-filter");
-            surface.style.removeProperty("-webkit-backdrop-filter");
-          }
+        if (!layer) {
+          layer = document.createElement("div");
+          layer.id = id;
+          layer.className = `gh-theme-glass-layer gh-glass-${variant}`;
+          layer.setAttribute("aria-hidden", "true");
+          host.appendChild(layer);
         }
-        this.themeGlassProtectedCount = surfaces.filter((el) => el.style.getPropertyValue("backdrop-filter") === "none").length;
+        return layer;
+      },
+      removeThemeGlassLayers() {
+        document.querySelectorAll(".gh-theme-glass-layer").forEach((node) => {
+          node.remove();
+        });
       },
       collectThemeDiagnostics() {
         const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
@@ -8404,7 +8325,17 @@
             enhanceAlphaDark: rootStyle.getPropertyValue("--gh-sidebar-enhance-alpha-dark")
           },
           sidebarCandidates,
-          region: { right: this.themeRegionRight, clearedCount: this.themeRegionClearedCount },
+          glassLayers: Array.from(document.querySelectorAll(".gh-theme-glass-layer")).map((node) => {
+            const cs = getComputedStyle(node);
+            return {
+              id: node.id,
+              host: node.parentElement ? node.parentElement.tagName.toLowerCase() + (node.parentElement.id ? "#" + node.parentElement.id : "") : null,
+              backdropFilter: cs.backdropFilter.slice(0, 40),
+              zIndex: cs.zIndex,
+              position: cs.position,
+              pointerEvents: cs.pointerEvents
+            };
+          }),
           geometricShell: describe(this.findSidebarShellByGeometry())
         };
       },
@@ -8493,9 +8424,68 @@
                     background-color: transparent !important;
                 }
 
-                /* \u58C1\u7EB8\u5F00\u542F\u65F6\u6E05\u6389 body \u9876\u5C42\u58F3\u5BB9\u5668\u7684\u4E0D\u900F\u660E\u80CC\u666F\uFF0C\u4FDD\u8BC1\u58C1\u7EB8\u53EF\u89C1\uFF08\u6392\u9664\u6269\u5C55\u81EA\u8EAB UI \u4E0E\u7AD9\u70B9\u5F39\u5C42\uFF09 */
-                :root[data-gh-bg-enabled="true"] body > div:not([id^="chatgpt-helper"]):not(#chatgpt-helper-theme-bg-layer):not([role="dialog"]):not([aria-modal="true"]):not([data-radix-popper-content-wrapper]):not([data-floating-ui-portal]):not(.modal-container):not([data-toast-id]):not(template):not(.gh-quick-menu):not(.gh-msg-select-toolbar):not(.gh-onboarding-overlay) {
-                    background-color: transparent !important;
+                /*
+                 * \u6CE8\u5165\u5F0F\u73BB\u7483\u5C42\uFF1A\u552F\u4E00\u5141\u8BB8\u643A\u5E26 backdrop-filter \u7684\u5143\u7D20\u3002
+                 * \u9875\u9762\u81EA\u8EAB\u5BB9\u5668\u4E00\u5F8B\u4E0D\u52A0 backdrop-filter\uFF08\u5B83\u4F1A\u6210\u4E3A fixed \u540E\u4EE3\u7684\u5305\u542B\u5757\uFF0C
+                 * \u5386\u53F2\u4E0A\u4E24\u6B21\u628A ChatGPT \u7684 fixed \u8D26\u53F7\u680F/\u5F39\u5C42\u9876\u51FA\u89C6\u53E3\uFF09\u3002
+                 * \u73BB\u7483\u5C42\u662F\u5BBF\u4E3B\u5BB9\u5668\u7684\u6700\u540E\u4E00\u4E2A\u5B50\u8282\u70B9\uFF0Cabsolute + z-index:-1 + pointer-events:none\uFF0C
+                 * \u753B\u5728\u5BBF\u4E3B\u5168\u90E8\u5185\u5BB9\u4E4B\u4E0B\u3001\u58C1\u7EB8\u4E4B\u4E0A\uFF0C\u5BF9\u5E03\u5C40\u3001\u70B9\u51FB\u3001\u5F39\u5C42\u96F6\u5F71\u54CD\u3002
+                 */
+                .gh-theme-glass-layer {
+                    position: absolute !important;
+                    inset: 0 !important;
+                    z-index: -1 !important;
+                    pointer-events: none !important;
+                    border-radius: inherit;
+                }
+
+                .gh-theme-glass-layer.gh-glass-sidebar {
+                    background: var(--gh-page-sidebar-bg-light);
+                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
+                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
+                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                .gh-theme-glass-layer.gh-glass-composer {
+                    background: var(--gh-page-composer-bg-light);
+                    backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04);
+                    -webkit-backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04);
+                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .gh-theme-glass-layer.gh-glass-sidebar {
+                    background: var(--gh-page-sidebar-bg-dark);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] .gh-theme-glass-layer.gh-glass-composer {
+                    background: var(--gh-page-composer-bg-dark);
+                }
+
+                /* \u6587\u5B57\u589E\u5F3A\u8499\u5C42\u4E5F\u6302\u5728\u73BB\u7483\u5C42\u4E0A\uFF08\u753B\u5728\u5185\u5BB9\u4E4B\u4E0B\uFF0C\u89C6\u89C9\u4E0E\u539F shell \u5185\u9634\u5F71\u7B49\u4EF7\uFF09 */
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] .gh-theme-glass-layer.gh-glass-sidebar {
+                    box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] .gh-theme-glass-layer.gh-glass-sidebar {
+                    box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha-dark, 0.08)), inset 0 0 0 1px var(--gh-panel-card-border);
+                }
+
+                :root[data-gh-bg-enabled="false"] .gh-theme-glass-layer {
+                    display: none !important;
+                }
+
+                /*
+                 * \u7ED3\u6784\u951A\u5B9A\uFF08\u7B2C\u4E00\u6027\u539F\u5219\uFF09\uFF1A\u80CC\u666F\u6E05\u7406\u53EA\u547D\u4E2D"\u5E94\u7528\u7ED3\u6784"\u2014\u2014
+                 * body \u76F4\u63A5\u5B50\u7EA7\u4E2D\u771F\u6B63\u627F\u8F7D main / \u4FA7\u680F\u58F3\u7684\u5BB9\u5668\u3002
+                 * \u7AD9\u70B9\u5F39\u5C42\uFF08\u659C\u6760\u83DC\u5355\u3001\u8D26\u53F7\u83DC\u5355\u3001\u5BF9\u8BDD\u6846\u3001toast\uFF09\u90FD\u662F\u4E0D\u542B main \u7684
+                 * body \u7EA7\u6D6E\u52A8\u5C42\u6216\u6811\u5185\u8282\u70B9\uFF0C\u5929\u7136\u4E0D\u53EF\u80FD\u547D\u4E2D\uFF0C\u65E0\u9700\u4EFB\u4F55\u8C41\u514D\u540D\u5355\u3002
+                 */
+                @supports selector(:has(*)) {
+                    :root[data-gh-bg-enabled="true"] body > div:has(main),
+                    :root[data-gh-bg-enabled="true"] body > div:has([role="main"]),
+                    :root[data-gh-bg-enabled="true"] body > div:has([data-gh-theme-host-sidebar-shell="true"]) {
+                        background-color: transparent !important;
+                    }
                 }
 
                 /* JS \u6807\u8BB0\u7684\u4FA7\u680F\u7956\u5148\u94FE\u900F\u660E\u5316\uFF1A\u73BB\u7483\u58F3\u4E0E\u58C1\u7EB8\u4E4B\u95F4\u4E0D\u5141\u8BB8\u6B8B\u7559\u4E0D\u900F\u660E\u4E2D\u95F4\u5C42 */
@@ -8503,17 +8493,6 @@
                     background: transparent !important;
                     background-color: transparent !important;
                     background-image: none !important;
-                }
-
-                /* \u533A\u57DF\u6E05\u7406\u515C\u5E95\uFF1A\u4FA7\u680F\u51E0\u4F55\u533A\u57DF\u5185\u6240\u6709\u4E0D\u900F\u660E\u80CC\u666F\u4E00\u5F8B\u900F\u660E\uFF08\u60AC\u505C\u53CD\u9988\u5355\u72EC\u8865\u56DE\uFF09 */
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-bg-cleared="true"] {
-                    background: transparent !important;
-                    background-color: transparent !important;
-                    background-image: none !important;
-                }
-
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-bg-cleared="true"]:is(a, button):hover {
-                    background: var(--gh-sidebar-button-bg) !important;
                 }
 
                 /* chatgpt.com \u7684\u80CC\u666F\u58F3\u5728 body \u4E0B\u591A\u5C42\uFF08\u5982 bg-token-bg-primary\uFF09\uFF0C\u628A main \u7684\u6240\u6709\u7956\u5148\u58F3\u4E00\u5E76\u900F\u660E\u5316 */
@@ -8540,25 +8519,13 @@
                         background-image: none !important;
                     }
 
-                    /* \u4FA7\u680F\u81EA\u8EAB\u8868\u9762\uFF1A\u547D\u4E2D\u4EFB\u4E00\u7279\u5F81\u5373\u5957\u534A\u900F\u660E\u6E10\u53D8 + \u6BDB\u73BB\u7483\uFF0C\u58C1\u7EB8\u900F\u51FA */
+                    /* \u4FA7\u680F\u81EA\u8EAB\u8868\u9762\uFF1A\u53EA\u6E05\u80CC\u666F\u4E0E\u7AD9\u70B9\u5E95\u8272 token\uFF0C\u73BB\u7483\u6548\u679C\u7531\u6CE8\u5165\u7684\u73BB\u7483\u5C42\u627F\u8F7D */
                     :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) {
                         --sidebar-mask-bg: transparent;
                         --sidebar-surface-primary: transparent;
                         --sidebar-surface-secondary: transparent;
                         --sidebar-surface-tertiary: transparent;
                         --bg-elevated-secondary: transparent;
-                        background: var(--gh-page-sidebar-bg-light) !important;
-                        backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04) !important;
-                        -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04) !important;
-                        box-shadow: inset 0 0 0 1px var(--gh-panel-card-border) !important;
-                    }
-
-                    :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] body :is(${sidebarSurfaceSelectors}) {
-                        background: var(--gh-page-sidebar-bg-dark) !important;
-                    }
-
-                    /* \u4FA7\u680F\u5185\u90E8\u80CC\u666F\u7C7B\u6E05\u7406\uFF08bg-token / bg-(--sidebar \u7B49 Tailwind \u80CC\u666F\u7C7B\uFF09\uFF0C\u907F\u514D\u5217\u8868/sticky \u884C\u6B8B\u7559\u4E0D\u900F\u660E\u5E95 */
-                    :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) [class*="bg-"] {
                         background: transparent !important;
                         background-color: transparent !important;
                         background-image: none !important;
@@ -8568,15 +8535,6 @@
                     /* \u6E05\u7406\u540E\u8865\u56DE\u4FA7\u680F\u6761\u76EE\u60AC\u505C\u53CD\u9988 */
                     :root[data-gh-bg-enabled="true"] body :is(${sidebarSurfaceSelectors}) :is(a, button):hover {
                         background: var(--gh-sidebar-button-bg) !important;
-                    }
-
-                    /* \u4FA7\u680F\u6587\u5B57\u589E\u5F3A\uFF1A\u515C\u5E95\u9009\u62E9\u5668\u540C\u6837\u751F\u6548\uFF08\u6D45\u8272\u767D\u8499\u5C42 / \u6DF1\u8272\u9ED1\u8499\u5C42\uFF09 */
-                    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] body :is(${sidebarSurfaceSelectors}) {
-                        box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border) !important;
-                    }
-
-                    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] body :is(${sidebarSurfaceSelectors}) {
-                        box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha-dark, 0.08)), inset 0 0 0 1px var(--gh-panel-card-border) !important;
                     }
                 }
 
@@ -8598,10 +8556,10 @@
                     --sidebar-surface-secondary: transparent;
                     --sidebar-surface-tertiary: transparent;
                     --bg-elevated-secondary: transparent;
-                    background: var(--gh-page-sidebar-bg-light) !important;
-                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
-                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
                 }
 
                 :root[data-gh-bg-enabled="true"] #chatgpt-helper-right {
@@ -8624,12 +8582,12 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="true"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"],
+                /* \u4FA7\u680F\u5185\u90E8\u6E05\u7406\u53EA\u4FDD\u7559\u4E24\u7C7B\u7CBE\u51C6\u8C13\u8BCD\uFF1A
+                   1) sticky \u5438\u9644\u884C\uFF08\u5F39\u5C42\u6C38\u8FDC\u4E0D\u4F1A\u662F sticky\uFF09\uFF1B
+                   2) nav/aside \u81EA\u8EAB\u4E0E shell \u76F4\u63A5\u5B50\u5C42\uFF08\u4E0B\u65B9\u7ED3\u6784\u89C4\u5219\uFF09\u3002
+                   \u6DF1\u5904\u7684 bg-token \u7C7B\u80CC\u666F\u4E00\u5F8B\u4E0D\u52A8\u2014\u2014\u4FA7\u680F\u8868\u9762\u7528 --sidebar-* \u53D8\u91CF
+                   \uFF08\u5DF2\u5728 shell \u4E0A\u8986\u5199\u4E3A transparent\uFF0C\u968F\u7EA7\u8054\u81EA\u7136\u751F\u6548\uFF09\uFF0C
+                   \u5F39\u5C42\u9762\u677F\u7528 bg-token-bg-elevated \u7B49\u5B57\u9762\u8272\u677F\uFF0C\u4FDD\u6301\u539F\u751F\u53EF\u89C1\u3002 */
                 :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
                 :root[data-gh-bg-enabled="true"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"],
                 :root[data-gh-bg-enabled="true"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"],
@@ -8752,15 +8710,26 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="true"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
+                /* \u8F93\u5165\u533A\uFF1AJS \u6807\u8BB0\u7684\u8868\u9762\u53EA\u8D1F\u8D23\u900F\u660E\u5316\uFF0C\u73BB\u7483\u7531\u6CE8\u5165\u5C42\u627F\u8F7D\uFF1B
+                   \u672A\u6807\u8BB0\u7684\u515C\u5E95\u9009\u62E9\u5668\u53EA\u4E0A\u6E10\u53D8\u5E95\u8272\uFF08\u65E0 backdrop-filter\uFF0C\u675C\u7EDD\u5305\u542B\u5757\u98CE\u9669\uFF09 */
                 :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer-surface="true"] {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    background-image: none !important;
+                    box-shadow: none !important;
+                }
+
+                :root[data-gh-bg-enabled="true"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"]:not([data-gh-theme-host-composer-surface="true"]) {
                     background: var(--gh-page-composer-bg-light) !important;
-                    backdrop-filter: blur(var(--gh-composer-blur));
-                    -webkit-backdrop-filter: blur(var(--gh-composer-blur));
-                    border-radius: 28px !important;
                     box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"]:not([data-gh-theme-host-composer-surface="true"]) {
+                    background: var(--gh-page-composer-bg-dark) !important;
                 }
 
                 :root[data-gh-bg-enabled="true"] main [class*="sticky"][class*="top-0"],
@@ -8832,12 +8801,12 @@
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"],
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] aside[aria-label*="\u804A\u5929\u5386\u53F2"] {
-                    --sidebar-mask-bg: var(--gh-page-sidebar-bg-dark);
-                    --sidebar-surface-primary: var(--gh-page-sidebar-bg-dark);
-                    --sidebar-surface-secondary: var(--gh-panel-subtle);
-                    --sidebar-surface-tertiary: var(--gh-panel-card);
-                    --bg-elevated-secondary: var(--gh-panel-card);
-                    background: var(--gh-page-sidebar-bg-dark) !important;
+                    --sidebar-mask-bg: transparent;
+                    --sidebar-surface-primary: transparent;
+                    --sidebar-surface-secondary: transparent;
+                    --sidebar-surface-tertiary: transparent;
+                    --bg-elevated-secondary: transparent;
+                    background: transparent !important;
                 }
 
                 :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #chatgpt-helper-right {
@@ -8859,10 +8828,9 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer-surface="true"] {
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"]:not([data-gh-theme-host-composer-surface="true"]),
+                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"]:not([data-gh-theme-host-composer-surface="true"]) {
                     background: var(--gh-page-composer-bg-dark) !important;
                     box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
                 }
@@ -8975,45 +8943,6 @@
                     background-image: none !important;
                     backdrop-filter: none !important;
                     -webkit-backdrop-filter: none !important;
-                }
-
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container::before,
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container::after,
-                :root[data-gh-bg-enabled="true"] #thread-bottom::before,
-                :root[data-gh-bg-enabled="true"] #thread-bottom::after,
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container > div::before,
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container > div::after,
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="text-token-text-secondary"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-main-surface"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-bg-secondary"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-bg-tertiary"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [class*="bg-token-bg-elevated"],
-                :root[data-gh-bg-enabled="true"] [role="main"] [class*="text-token-text-secondary"][class*="text-xs"] {
-                    background: transparent !important;
-                    background-image: none !important;
-                    box-shadow: none !important;
-                    backdrop-filter: none !important;
-                    -webkit-backdrop-filter: none !important;
-                }
-
-                :root[data-gh-bg-enabled="true"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
-                    background: var(--gh-page-composer-bg-light) !important;
-                    background-image: var(--gh-page-composer-bg-light) !important;
-                    backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04) !important;
-                    -webkit-backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04) !important;
-                    border-radius: 28px !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow) !important;
-                }
-
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-bg-enabled="true"][data-gh-mode="dark"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
-                    background: var(--gh-page-composer-bg-dark) !important;
-                    background-image: var(--gh-page-composer-bg-dark) !important;
                 }
 
                 @supports selector(:has(*)) {
@@ -9229,12 +9158,6 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"],
@@ -9266,12 +9189,6 @@
                     box-shadow: none !important;
                 }
 
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="bg-(--sidebar-mask-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
-                :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="sticky"][class*="top-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar [class*="sticky"][class*="bottom-0"],
                 :root[data-gh-bg-enabled="false"][data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"] [class*="sticky"][class*="top-0"],
@@ -9408,11 +9325,11 @@
                     }
                 }
 
-                :root[data-gh-page-theme="true"] #stage-slideover-sidebar,
-                :root[data-gh-page-theme="true"] [data-testid="sidebar"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"],
-                :root[data-gh-page-theme="true"] aside[aria-label*="Chat history"],
-                :root[data-gh-page-theme="true"] aside[aria-label*="\u804A\u5929\u5386\u53F2"] {
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] #stage-slideover-sidebar,
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-testid="sidebar"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-gh-theme-host-sidebar-shell="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] aside[aria-label*="Chat history"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] aside[aria-label*="\u804A\u5929\u5386\u53F2"] {
                     --sidebar-mask-bg: transparent;
                     --sidebar-surface-primary: transparent;
                     --sidebar-surface-secondary: transparent;
@@ -9422,22 +9339,15 @@
                     box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
                 }
 
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-testid="sidebar"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="Chat history"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] aside[aria-label*="\u804A\u5929\u5386\u53F2"] {
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] #stage-slideover-sidebar,
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-testid="sidebar"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-gh-theme-host-sidebar-shell="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] aside[aria-label*="Chat history"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] aside[aria-label*="\u804A\u5929\u5386\u53F2"] {
                     background: var(--gh-page-sidebar-bg-dark) !important;
                 }
 
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] #stage-slideover-sidebar,
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] [data-testid="sidebar"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] aside[aria-label*="Chat history"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] aside[aria-label*="\u804A\u5929\u5386\u53F2"] {
-                    backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
-                    -webkit-backdrop-filter: blur(var(--gh-panel-blur)) saturate(1.04);
-                }
+                /* \u9875\u9762\u4E3B\u9898\u6A21\u5F0F\u4E0B shell \u7528\u534A\u900F\u660E\u6E10\u53D8\u7740\u8272\uFF08\u65E0 backdrop-filter\uFF0C\u6BDB\u73BB\u7483\u53EA\u5C5E\u4E8E\u73BB\u7483\u5C42\uFF09 */
 
                 :root[data-gh-page-theme="true"] #stage-slideover-sidebar > div,
                 :root[data-gh-page-theme="true"] [data-testid="sidebar"] > div,
@@ -9445,11 +9355,7 @@
                 :root[data-gh-page-theme="true"] nav[aria-label*="Chat history"],
                 :root[data-gh-page-theme="true"] nav[aria-label*="\u804A\u5929\u5386\u53F2"],
                 :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] nav,
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] aside,
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-sidebar"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-bg"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-token-main-surface"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar-shell="true"] [class*="bg-(--sidebar-mask-bg"] {
+                :root[data-gh-page-theme="true"] [data-gh-theme-host-sidebar="true"] aside {
                     background: transparent !important;
                     background-image: none !important;
                     box-shadow: none !important;
@@ -9511,52 +9417,33 @@
                     -webkit-backdrop-filter: none !important;
                 }
 
-                :root[data-gh-page-theme="true"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
-                :root[data-gh-page-theme="true"] [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] main [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-bg-enabled="false"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
                     background: var(--gh-page-composer-bg-light) !important;
                     background-image: var(--gh-page-composer-bg-light) !important;
                     border-radius: 28px !important;
                     box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow) !important;
                 }
 
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-mode="dark"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] form[class*="group/composer"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer="true"] div[class*="bg-token-bg-primary"][class*="corner-superellipse"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer="true"] div[class*="bg-token"][class*="rounded"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] main [data-gh-theme-host-composer-surface="true"],
+                :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
                     background: var(--gh-page-composer-bg-dark) !important;
                     background-image: var(--gh-page-composer-bg-dark) !important;
                 }
 
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] #thread-bottom-container [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] #thread-bottom [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] main [data-gh-theme-host-composer-surface="true"],
-                :root[data-gh-page-theme="true"][data-gh-bg-enabled="true"] [role="main"] [data-gh-theme-host-composer-surface="true"] {
-                    backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04) !important;
-                    -webkit-backdrop-filter: blur(var(--gh-composer-blur)) saturate(1.04) !important;
-                }
-
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] #stage-slideover-sidebar,
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] [data-testid="sidebar"],
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] [data-gh-theme-host-sidebar-shell="true"] {
-                    box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, var(--gh-sidebar-enhance-alpha)), inset 0 0 0 1px var(--gh-panel-card-border);
-                }
-
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] #stage-slideover-sidebar,
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-testid="sidebar"],
-                :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] [data-gh-theme-host-sidebar-shell="true"] {
-                    box-shadow: inset 0 0 0 9999px rgba(15, 15, 16, var(--gh-sidebar-enhance-alpha-dark, 0.08)), inset 0 0 0 1px var(--gh-panel-card-border);
-                }
+                /* \u6587\u5B57\u589E\u5F3A\u8499\u5C42\u5DF2\u8FC1\u79FB\u81F3\u73BB\u7483\u5C42\uFF08\u89C1\u4E0A\u65B9 .gh-theme-glass-layer \u89C4\u5219\u7EC4\uFF09 */
                 `;
           document.head.appendChild(style);
         }
@@ -9674,6 +9561,9 @@
         const layer = this.ensureThemeBackgroundLayer();
         layer.style.display = canRenderBackground ? "block" : "none";
         layer.style.backgroundImage = this.sanitizeCssUrl(this.themeBackgroundObjectUrl);
+        if (!canRenderBackground) {
+          this.removeThemeGlassLayers();
+        }
         if (this.themeModalRefs) {
           this.updateThemePreviewCard();
         }
