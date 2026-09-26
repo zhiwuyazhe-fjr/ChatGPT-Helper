@@ -11,12 +11,24 @@
   },
   "permissions": [
     "storage",
-    "notifications"
+    "notifications",
+    "scripting"
   ],
   "host_permissions": [
     "https://chat.openai.com/*",
     "https://chatgpt.com/*"
   ],
+  "background": {
+    "service_worker": "background/sw.js"
+  },
+  "commands": {
+    "toggle-helper-panel": {
+      "suggested_key": {
+        "default": "Alt+Shift+H"
+      },
+      "description": "显示/隐藏 ChatGPT Helper 面板"
+    }
+  },
   "content_scripts": [
     {
       "matches": [
@@ -24,10 +36,7 @@
         "https://chatgpt.com/*"
       ],
       "js": [
-        "libs/jszip.min.js",
-        "libs/html2canvas.min.js",
         "content-scripts/gm-api-adapter.js",
-        "content-scripts/dist/chatgpt-exporter.js",
         "content-scripts/dist/chatgpt-helper.js"
       ],
       "run_at": "document_idle",

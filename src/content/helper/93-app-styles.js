@@ -6192,6 +6192,570 @@
                     }
                 }
 
+                /* ==================== 提示词排序选择器（紧凑版） ==================== */
+                .chatgpt-helper-prompt-sort-select {
+                    min-width: 0;
+                    flex: 0 0 auto;
+                    font-size: 12px;
+                }
+
+                .chatgpt-helper-prompt-sort-select .chatgpt-helper-custom-select-trigger {
+                    min-height: 30px;
+                    padding: 4px 8px;
+                    gap: 6px;
+                    font-size: 12px;
+                    border-radius: 7px;
+                }
+
+                .chatgpt-helper-prompt-sort-select .chatgpt-helper-custom-select-value {
+                    white-space: nowrap;
+                }
+
+                .chatgpt-helper-prompt-sort-select .chatgpt-helper-custom-select-menu {
+                    position: absolute;
+                    min-width: 128px;
+                    width: auto;
+                    z-index: 10030;
+                }
+
+                .chatgpt-helper-prompt-sort-select.open .chatgpt-helper-custom-select-menu {
+                    display: block;
+                    position: absolute;
+                    margin-top: 0;
+                }
+
+                /* 极窄面板隐藏排序选择器 */
+                .chatgpt-helper-content-panel.compact .chatgpt-helper-prompt-sort-select {
+                    display: none;
+                }
+
+                /* ==================== 提示词变量填写对话框 ==================== */
+                .chatgpt-helper-prompt-variables-prompt-name {
+                    font-size: 12px;
+                    color: var(--gh-text-secondary, #6b7280);
+                    margin: -6px 0 4px;
+                }
+
+                .chatgpt-helper-prompt-variables-desc {
+                    font-size: 12.5px;
+                    color: var(--gh-text-secondary, #6b7280);
+                    margin-bottom: 12px;
+                }
+
+                .chatgpt-helper-prompt-variables-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-bottom: 10px;
+                }
+
+                .chatgpt-helper-prompt-variables-label {
+                    flex: 0 0 auto;
+                    min-width: 96px;
+                    max-width: 42%;
+                    font-size: 12.5px;
+                    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                    color: var(--gh-text, #111827);
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .chatgpt-helper-prompt-variables-row input {
+                    flex: 1 1 auto;
+                    min-width: 0;
+                }
+
+                /* ==================== 输入框 / 快速唤起菜单（页面级浮动） ==================== */
+                .gh-quick-menu {
+                    position: fixed;
+                    z-index: 9000;
+                    min-width: 280px;
+                    max-width: 380px;
+                    display: none;
+                    flex-direction: column;
+                    padding: 5px;
+                    border-radius: 12px;
+                    background: #ffffff;
+                    border: 1px solid rgba(15, 23, 42, 0.12);
+                    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.20);
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu,
+                :root[data-gh-mode="dark"] .gh-quick-menu {
+                    background: #26272a;
+                    border-color: rgba(255, 255, 255, 0.14);
+                    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
+                }
+
+                .gh-quick-menu.open {
+                    display: flex;
+                }
+
+                .gh-quick-menu-list {
+                    max-height: 276px;
+                    overflow-y: auto;
+                }
+
+                .gh-quick-menu-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 9px;
+                    padding: 7px 9px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                }
+
+                .gh-quick-menu-item.active {
+                    background: rgba(59, 130, 246, 0.12);
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-item.active,
+                :root[data-gh-mode="dark"] .gh-quick-menu-item.active {
+                    background: rgba(255, 255, 255, 0.10);
+                }
+
+                .gh-quick-menu-item-icon {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 22px;
+                    height: 22px;
+                    border-radius: 6px;
+                    background: rgba(15, 23, 42, 0.06);
+                    color: #334155;
+                    flex: 0 0 auto;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-item-icon,
+                :root[data-gh-mode="dark"] .gh-quick-menu-item-icon {
+                    background: rgba(255, 255, 255, 0.07);
+                    color: #cbd5e1;
+                }
+
+                .gh-quick-menu-item-main {
+                    flex: 1 1 auto;
+                    min-width: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 8px;
+                }
+
+                .gh-quick-menu-item-title {
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: #0f172a;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-item-title,
+                :root[data-gh-mode="dark"] .gh-quick-menu-item-title {
+                    color: #ececf1;
+                }
+
+                .gh-quick-menu-item-meta {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    flex: 0 0 auto;
+                }
+
+                .gh-quick-menu-item-category {
+                    font-size: 11px;
+                    padding: 1px 7px;
+                    border-radius: 999px;
+                    background: rgba(59, 130, 246, 0.10);
+                    color: #2563eb;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-item-category,
+                :root[data-gh-mode="dark"] .gh-quick-menu-item-category {
+                    background: rgba(255, 255, 255, 0.08);
+                    color: #93c5fd;
+                }
+
+                .gh-quick-menu-item-vars {
+                    font-size: 11px;
+                    color: #9ca3af;
+                    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                }
+
+                .gh-quick-menu-empty {
+                    padding: 14px 10px;
+                    font-size: 12.5px;
+                    color: #6b7280;
+                    text-align: center;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-empty,
+                :root[data-gh-mode="dark"] .gh-quick-menu-empty {
+                    color: #9ca3af;
+                }
+
+                .gh-quick-menu-hint {
+                    padding: 6px 8px 3px;
+                    border-top: 1px solid rgba(15, 23, 42, 0.08);
+                    font-size: 11px;
+                    color: #9ca3af;
+                    white-space: nowrap;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-hint,
+                :root[data-gh-mode="dark"] .gh-quick-menu-hint {
+                    border-top-color: rgba(255, 255, 255, 0.08);
+                }
+
+                /* ==================== 多选消息导出（页面级浮动） ==================== */
+                .gh-msg-select-turn {
+                    position: relative;
+                }
+
+                .gh-msg-select-check {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    z-index: 30;
+                    width: 22px;
+                    height: 22px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    border-radius: 999px;
+                    border: 1.5px solid rgba(15, 23, 42, 0.22);
+                    background: rgba(255, 255, 255, 0.86);
+                    color: transparent;
+                    cursor: pointer;
+                    opacity: 0;
+                    transition: opacity 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+                }
+
+                .gh-msg-select-turn:hover .gh-msg-select-check,
+                .gh-msg-select-check.checked,
+                .gh-msg-select-check:focus-visible {
+                    opacity: 1;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-check,
+                :root[data-gh-mode="dark"] .gh-msg-select-check {
+                    border-color: rgba(255, 255, 255, 0.30);
+                    background: rgba(32, 33, 35, 0.88);
+                }
+
+                .gh-msg-select-check.checked {
+                    border-color: #10b981;
+                    background: #10b981;
+                    color: #ffffff;
+                }
+
+                .gh-msg-select-turn.gh-msg-selected > .gh-msg-select-check {
+                    opacity: 1;
+                }
+
+                .gh-msg-select-toolbar {
+                    position: fixed;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(12px);
+                    bottom: 132px;
+                    z-index: 9000;
+                    display: none;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 10px;
+                    border-radius: 14px;
+                    background: rgba(255, 255, 255, 0.97);
+                    border: 1px solid rgba(15, 23, 42, 0.10);
+                    box-shadow: 0 16px 44px rgba(15, 23, 42, 0.24);
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                    opacity: 0;
+                    transition: opacity 0.16s ease, transform 0.16s ease;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar {
+                    background: rgba(32, 33, 35, 0.97);
+                    border-color: rgba(255, 255, 255, 0.12);
+                    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+                }
+
+                .gh-msg-select-toolbar.open {
+                    display: flex;
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+
+                .gh-msg-select-toolbar-count {
+                    font-size: 12.5px;
+                    font-weight: 600;
+                    color: #0f172a;
+                    padding: 0 4px 0 6px;
+                    white-space: nowrap;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-count,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-count {
+                    color: #ececf1;
+                }
+
+                .gh-msg-select-toolbar-btn {
+                    font-size: 12px;
+                    padding: 5px 10px;
+                    border-radius: 8px;
+                    border: 1px solid rgba(59, 130, 246, 0.35);
+                    background: rgba(59, 130, 246, 0.10);
+                    color: #2563eb;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    transition: background 0.12s ease;
+                }
+
+                .gh-msg-select-toolbar-btn:hover {
+                    background: rgba(59, 130, 246, 0.20);
+                }
+
+                .gh-msg-select-toolbar-btn.secondary {
+                    border-color: rgba(15, 23, 42, 0.16);
+                    background: rgba(15, 23, 42, 0.05);
+                    color: #475569;
+                }
+
+                .gh-msg-select-toolbar-btn.secondary:hover {
+                    background: rgba(15, 23, 42, 0.10);
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-btn,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-btn {
+                    border-color: rgba(147, 197, 253, 0.35);
+                    background: rgba(59, 130, 246, 0.16);
+                    color: #93c5fd;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-btn:hover,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-btn:hover {
+                    background: rgba(59, 130, 246, 0.28);
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-btn.secondary,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-btn.secondary {
+                    border-color: rgba(255, 255, 255, 0.16);
+                    background: rgba(255, 255, 255, 0.06);
+                    color: #cbd5e1;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-btn.secondary:hover,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-btn.secondary:hover {
+                    background: rgba(255, 255, 255, 0.12);
+                }
+
+                .gh-msg-select-toolbar-close {
+                    width: 24px;
+                    height: 24px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 999px;
+                    border: 0;
+                    background: transparent;
+                    color: #6b7280;
+                    cursor: pointer;
+                }
+
+                .gh-msg-select-toolbar-close:hover {
+                    background: rgba(15, 23, 42, 0.08);
+                    color: #0f172a;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-close,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-close {
+                    color: #9ca3af;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-close:hover,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-close:hover {
+                    background: rgba(255, 255, 255, 0.10);
+                    color: #ececf1;
+                }
+
+                /* ==================== 新手引导浮层（页面级） ==================== */
+                .gh-onboarding-overlay {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 100000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 24px;
+                    background: rgba(15, 23, 42, 0.42);
+                    backdrop-filter: blur(3px);
+                    -webkit-backdrop-filter: blur(3px);
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                }
+
+                .gh-onboarding-card {
+                    width: 400px;
+                    max-width: 100%;
+                    padding: 22px 22px 18px;
+                    border-radius: 16px;
+                    background: #ffffff;
+                    border: 1px solid rgba(15, 23, 42, 0.08);
+                    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.34);
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-card,
+                :root[data-gh-mode="dark"] .gh-onboarding-card {
+                    background: #202124;
+                    border-color: rgba(255, 255, 255, 0.10);
+                    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.62);
+                }
+
+                .gh-onboarding-overlay.gh-onboarding-pulse .gh-onboarding-card {
+                    animation: gh-onboarding-pulse-anim 0.3s ease;
+                }
+
+                @keyframes gh-onboarding-pulse-anim {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.015); }
+                }
+
+                .gh-onboarding-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 16px;
+                }
+
+                .gh-onboarding-title {
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #0f172a;
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-title,
+                :root[data-gh-mode="dark"] .gh-onboarding-title {
+                    color: #ececf1;
+                }
+
+                .gh-onboarding-subtitle {
+                    margin-top: 2px;
+                    font-size: 12.5px;
+                    color: #64748b;
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-subtitle,
+                :root[data-gh-mode="dark"] .gh-onboarding-subtitle {
+                    color: #9aa0a6;
+                }
+
+                .gh-onboarding-steps {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    margin-bottom: 18px;
+                }
+
+                .gh-onboarding-step {
+                    display: flex;
+                    gap: 11px;
+                    padding: 10px 12px;
+                    border-radius: 12px;
+                    background: rgba(15, 23, 42, 0.04);
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-step,
+                :root[data-gh-mode="dark"] .gh-onboarding-step {
+                    background: rgba(255, 255, 255, 0.05);
+                }
+
+                .gh-onboarding-step-badge {
+                    flex: 0 0 auto;
+                    width: 28px;
+                    height: 28px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 9px;
+                    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+                    color: #ffffff;
+                }
+
+                .gh-onboarding-step-text {
+                    min-width: 0;
+                }
+
+                .gh-onboarding-step-title {
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #1e293b;
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-step-title,
+                :root[data-gh-mode="dark"] .gh-onboarding-step-title {
+                    color: #e3e3e8;
+                }
+
+                .gh-onboarding-step-desc {
+                    margin-top: 2px;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    color: #64748b;
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-step-desc,
+                :root[data-gh-mode="dark"] .gh-onboarding-step-desc {
+                    color: #9aa0a6;
+                }
+
+                .gh-onboarding-start-btn {
+                    width: 100%;
+                    padding: 9px 0;
+                    border: 0;
+                    border-radius: 10px;
+                    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                    color: #ffffff;
+                    font-size: 13.5px;
+                    font-weight: 600;
+                    cursor: pointer;
+                }
+
+                .gh-onboarding-start-btn:hover {
+                    filter: brightness(1.06);
+                }
+
+                /* ==================== 导出引擎按需加载状态 ==================== */
+                .chatgpt-helper-export-engine-loading {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    min-height: 120px;
+                    font-size: 13px;
+                    color: var(--gh-text-secondary, #6b7280);
+                }
+
+                .chatgpt-helper-export-engine-loading::before {
+                    content: '';
+                    width: 14px;
+                    height: 14px;
+                    border-radius: 999px;
+                    border: 2px solid var(--gh-panel-muted-line, rgba(0, 0, 0, 0.12));
+                    border-top-color: var(--gh-primary, #3b82f6);
+                    animation: gh-export-engine-spin 0.8s linear infinite;
+                }
+
+                @keyframes gh-export-engine-spin {
+                    to { transform: rotate(360deg); }
+                }
+
+                .chatgpt-helper-export-engine-error {
+                    padding: 14px 12px;
+                    font-size: 13px;
+                    color: var(--gh-text-secondary, #6b7280);
+                }
+
                 /* 响应式调整中栏 - 通过 JS 动态更新 */
             `;
                 try {

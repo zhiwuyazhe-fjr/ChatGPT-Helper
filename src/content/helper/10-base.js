@@ -12,7 +12,34 @@
         DEFAULT_PANEL_STATE: 'chatgpt_default_panel_state',
         PANEL_WIDTH: 'chatgpt_panel_width',
         LANGUAGE: 'chatgpt_language',
+        CONVERSATIONS: 'chatgpt_conversations',
+        READING_PROGRESS: 'chatgpt_reading_progress',
+        ONBOARDING_DONE: 'chatgpt_onboarding_done',
     };
+
+    // 提示词变量占位符：{{变量名}}
+    const PROMPT_VARIABLE_PATTERN = /\{\{\s*([^{}\n]+?)\s*\}\}/g;
+
+    function extractPromptVariables(content) {
+        if (typeof content !== 'string' || !content) return [];
+        const names = [];
+        let match;
+        PROMPT_VARIABLE_PATTERN.lastIndex = 0;
+        while ((match = PROMPT_VARIABLE_PATTERN.exec(content)) !== null) {
+            const name = match[1].trim();
+            if (name && !names.includes(name)) names.push(name);
+        }
+        return names;
+    }
+
+    function renderPromptVariables(content, values = {}) {
+        if (typeof content !== 'string' || !content) return content || '';
+        return content.replace(PROMPT_VARIABLE_PATTERN, (raw, name) => {
+            const key = String(name || '').trim();
+            const value = values[key];
+            return (value === undefined || value === null || value === '') ? raw : String(value);
+        });
+    }
 
     // ==================== 国际化 ====================
     const I18N = {
@@ -274,6 +301,60 @@
             buttonOrderUpdated: '已更新按钮顺序',
             enabled: '已启用',
             disabled: '已禁用',
+            // 数据备份与恢复
+            settingsGroupData: '备份与恢复',
+            backupExportButton: '导出备份',
+            backupExportDesc: '将提示词、设置、主题与壁纸、会话整理数据导出为 JSON 文件',
+            backupImportButton: '导入备份',
+            backupImportDesc: '从备份文件恢复，将覆盖当前的同项数据',
+            backupImportConfirm: '导入将覆盖当前的提示词、设置、主题与会话整理数据，且无法撤销。\n确定继续吗？',
+            backupExportSuccess: '备份已导出',
+            backupImportSuccess: '备份已导入，即将刷新页面',
+            backupInvalidFile: '不是有效的 ChatGPT Helper 备份文件',
+            backupImportFailed: '导入失败，备份文件可能有误',
+            backupIncludeHint: '包含 {prompts} 条提示词、{conversations} 个会话、{assets} 张壁纸',
+            backupReadingHint: '正在读取备份数据…',
+            // 新手引导
+            onboardingTitle: '欢迎使用 ChatGPT Helper',
+            onboardingSubtitle: '让长对话更清晰，让内容沉淀下来。三步上手：',
+            onboardingStep1Title: '提示词一键插入',
+            onboardingStep1Desc: '内置常用模板，点击即插入；在输入框输入 / 可随时快速唤起',
+            onboardingStep2Title: '同步历史会话',
+            onboardingStep2Desc: '在“会话”页点击同步，即可搜索、置顶与分组管理',
+            onboardingStep3Title: '长对话大纲导航',
+            onboardingStep3Desc: '“大纲”自动提取标题结构，点击即可跳转，阅读位置可返回',
+            onboardingStart: '开始使用',
+            replayOnboarding: '重看新手引导',
+            // 提示词排序 / 变量 / 快速菜单
+            promptSortLabel: '排序',
+            promptSortManual: '手动',
+            promptSortRecent: '最近使用',
+            promptSortFrequent: '最常用',
+            promptVariablesTitle: '填写变量',
+            promptVariablesDesc: '该提示词包含以下变量，填写后插入：',
+            promptInsert: '插入',
+            promptQuickMenuEnabledLabel: '输入框 / 快速唤起',
+            promptQuickMenuEnabledDesc: '在 ChatGPT 输入框以 / 开头输入时，弹出提示词快速选择菜单',
+            quickMenuEmpty: '没有匹配的提示词',
+            quickMenuHint: '↑↓ 选择　Enter 插入　Esc 关闭',
+            // 快捷键
+            shortcutHintLabel: '面板快捷键',
+            shortcutHintDesc: 'Alt+Shift+H 显示/隐藏面板，可在 chrome://extensions/shortcuts 修改',
+            // 多选消息导出
+            selectMessageTitle: '选择此消息',
+            selectedMessagesCount: '已选 {count} 条',
+            exportSelectedMarkdown: 'Markdown',
+            exportSelectedJson: 'JSON',
+            exportSelectedTxt: 'TXT',
+            copySelectedMessages: '复制',
+            clearSelection: '清除',
+            selectedExported: '已导出所选消息',
+            selectedExportEmpty: '请先选择要导出的消息',
+            selectedCopied: '已复制所选消息',
+            selectedNoContent: '所选消息没有可导出的文本内容',
+            // 导出引擎按需加载
+            exportEngineLoading: '正在加载导出引擎…',
+            exportEngineInjectFailed: '导出引擎加载失败，请刷新页面后重试',
         },
         'en': {
             panelTitle: 'ChatGPT Helper',
@@ -533,6 +614,60 @@
             buttonOrderUpdated: 'Button order updated',
             enabled: 'Enabled',
             disabled: 'Disabled',
+            // Backup & restore
+            settingsGroupData: 'Backup & Restore',
+            backupExportButton: 'Export Backup',
+            backupExportDesc: 'Export prompts, settings, theme, wallpapers and conversation groups to a JSON file',
+            backupImportButton: 'Import Backup',
+            backupImportDesc: 'Restore from a backup file; matching local data will be replaced',
+            backupImportConfirm: 'Importing will replace your current prompts, settings, theme and conversation groups. This cannot be undone.\nContinue?',
+            backupExportSuccess: 'Backup exported',
+            backupImportSuccess: 'Backup imported. Reloading…',
+            backupInvalidFile: 'Not a valid ChatGPT Helper backup file',
+            backupImportFailed: 'Import failed. The backup file may be corrupted',
+            backupIncludeHint: '{prompts} prompts, {conversations} conversations, {assets} wallpapers',
+            backupReadingHint: 'Reading backup data…',
+            // Onboarding
+            onboardingTitle: 'Welcome to ChatGPT Helper',
+            onboardingSubtitle: 'Clearer long conversations, knowledge that stays. Three steps to start:',
+            onboardingStep1Title: 'One-click prompts',
+            onboardingStep1Desc: 'Built-in templates insert instantly; type / in the input box for a quick picker',
+            onboardingStep2Title: 'Sync conversations',
+            onboardingStep2Desc: 'Open the Conversations tab and sync to search, pin and organize chats',
+            onboardingStep3Title: 'Outline for long chats',
+            onboardingStep3Desc: 'The Outline tab builds a navigable structure and remembers your reading spot',
+            onboardingStart: 'Get Started',
+            replayOnboarding: 'Replay Onboarding',
+            // Prompt sorting / variables / quick menu
+            promptSortLabel: 'Sort',
+            promptSortManual: 'Manual',
+            promptSortRecent: 'Recent',
+            promptSortFrequent: 'Frequent',
+            promptVariablesTitle: 'Fill in Variables',
+            promptVariablesDesc: 'This prompt contains variables. Fill them in before inserting:',
+            promptInsert: 'Insert',
+            promptQuickMenuEnabledLabel: 'Slash Quick Menu',
+            promptQuickMenuEnabledDesc: 'Typing / at the start of the ChatGPT input opens a quick prompt picker',
+            quickMenuEmpty: 'No matching prompts',
+            quickMenuHint: '↑↓ navigate · Enter insert · Esc close',
+            // Shortcut
+            shortcutHintLabel: 'Panel Shortcut',
+            shortcutHintDesc: 'Alt+Shift+H toggles the panel. Change it at chrome://extensions/shortcuts',
+            // Multi-select message export
+            selectMessageTitle: 'Select this message',
+            selectedMessagesCount: '{count} selected',
+            exportSelectedMarkdown: 'Markdown',
+            exportSelectedJson: 'JSON',
+            exportSelectedTxt: 'TXT',
+            copySelectedMessages: 'Copy',
+            clearSelection: 'Clear',
+            selectedExported: 'Selected messages exported',
+            selectedExportEmpty: 'Select messages first',
+            selectedCopied: 'Selected messages copied',
+            selectedNoContent: 'The selected messages have no text content to export',
+            // Lazy export engine
+            exportEngineLoading: 'Loading export engine…',
+            exportEngineInjectFailed: 'Failed to load the export engine. Refresh the page and try again',
         }
     };
 
@@ -670,6 +805,10 @@
         panelWidth: 320,
         defaultPanelState: true, // true = 展开, false = 折叠
         prompts: { enabled: true },
+        // 提示词列表排序：manual | recent | frequent
+        promptSortMode: 'manual',
+        // 输入框 / 快速唤起菜单
+        promptQuickMenuEnabled: true,
         outline: {
             enabled: true,
             showUserQueries: true,
@@ -1747,6 +1886,9 @@
         DEFAULT_SETTINGS,
         DEFAULT_PROMPTS,
         createDefaultPrompts,
+        PROMPT_VARIABLE_PATTERN,
+        extractPromptVariables,
+        renderPromptVariables,
         createElement,
         getExtensionRuntime,
         getExtensionAssetUrl,

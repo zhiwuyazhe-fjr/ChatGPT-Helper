@@ -130,14 +130,29 @@ for (const requiredSnippet of ['chatgpt-helper-settings-compact-title-btn', 'cha
 
 const scripts = manifest.content_scripts?.[0]?.js ?? []
 const expectedScripts = [
-    'libs/jszip.min.js',
-    'libs/html2canvas.min.js',
     'content-scripts/gm-api-adapter.js',
-    'content-scripts/dist/chatgpt-exporter.js',
     'content-scripts/dist/chatgpt-helper.js',
 ]
 if (JSON.stringify(scripts) !== JSON.stringify(expectedScripts)) {
     throw new Error(`manifest.json content script order mismatch:\nexpected ${JSON.stringify(expectedScripts, null, 2)}\nactual   ${JSON.stringify(scripts, null, 2)}`)
+}
+
+// 导出引擎改为按需注入后，service worker 与注入清单必须存在且接线正确
+execFileSync(process.execPath, ['--check', path.join(root, 'background', 'sw.js')], { stdio: 'inherit' })
+const swSource = fs.readFileSync(path.join(root, 'background', 'sw.js'), 'utf8')
+for (const requiredSnippet of ["'libs/jszip.min.js'", "'libs/html2canvas.min.js'", "'content-scripts/dist/chatgpt-exporter.js'", 'toggle-helper-panel', 'ch-helper-inject-export-deps']) {
+    if (!swSource.includes(requiredSnippet)) {
+        throw new Error(`background/sw.js is missing lazy export engine wiring: ${requiredSnippet}`)
+    }
+}
+if (!manifest.background?.service_worker) {
+    throw new Error('manifest.json is missing background.service_worker')
+}
+if (!manifest.commands?.['toggle-helper-panel']) {
+    throw new Error('manifest.json is missing the toggle-helper-panel command')
+}
+if (!manifest.permissions?.includes('scripting')) {
+    throw new Error('manifest.json is missing the scripting permission required by on-demand injection')
 }
 
 function makeElement(tag = 'div') {

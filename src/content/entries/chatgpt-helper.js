@@ -3,7 +3,9 @@ import '../helper/20-theme-assets.js'
 import '../helper/30-conversation-manager.js'
 import '../helper/40-scroll-managers.js'
 import '../helper/50-outline-manager.js'
+import '../helper/55-prompt-quick-menu.js'
 import '../helper/60-copy-manager.js'
+import '../helper/65-message-select-manager.js'
 import '../helper/70-tab-rename-manager.js'
 import '../helper/80-chatgpt-adapter.js'
 import '../helper/90-app-core.js'
@@ -16,6 +18,7 @@ import '../helper/96-app-export.js'
 import '../helper/97-app-conversations-settings.js'
 import '../helper/98-app-outline.js'
 import '../helper/99-app-controls-events.js'
+import '../helper/100-app-onboarding-backup.js'
 
 // Chrome Extension Content Script - ChatGPT Helper
 

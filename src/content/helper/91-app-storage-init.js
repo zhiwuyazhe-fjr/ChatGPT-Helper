@@ -136,6 +136,10 @@
                     : DEFAULT_SETTINGS.defaultPanelState,
                 preventAutoScroll: Boolean(saved.preventAutoScroll),
                 prompts: { enabled: true },
+                promptSortMode: ['manual', 'recent', 'frequent'].includes(saved.promptSortMode)
+                    ? saved.promptSortMode
+                    : 'manual',
+                promptQuickMenuEnabled: saved.promptQuickMenuEnabled !== false,
                 outline: {
                     enabled: true,
                     showUserQueries: saved.outline?.showUserQueries !== false,
@@ -198,6 +202,8 @@
                 themeEnabled: true,
                 manualAnchorEnabled: true,
                 preventAutoScroll: normalized.preventAutoScroll,
+                promptSortMode: normalized.promptSortMode,
+                promptQuickMenuEnabled: normalized.promptQuickMenuEnabled,
                 readingHistory: {
                     persistence: normalized.readingHistory.persistence,
                     autoRestore: normalized.readingHistory.autoRestore
@@ -347,6 +353,52 @@
                                 }
                             } catch (e) {
                                 console.error('[ChatGPT Helper] tabRenameManager.start 错误:', e);
+                            }
+
+                            // 启动输入框 / 快速唤起菜单
+                            try {
+                                if (this.promptQuickMenu && this.settings.promptQuickMenuEnabled !== false) {
+                                    this.promptQuickMenu.start();
+                                }
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] promptQuickMenu.start 错误:', e);
+                            }
+
+                            // 启动多选消息导出（悬浮工具条）
+                            try {
+                                if (this.messageSelectManager) {
+                                    this.messageSelectManager.start();
+                                }
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] messageSelectManager.start 错误:', e);
+                            }
+
+                            // 监听 service worker 下发的面板切换指令（全局快捷键）
+                            try {
+                                const runtime = (typeof chrome !== 'undefined' && chrome.runtime) ||
+                                    (typeof browser !== 'undefined' && browser.runtime);
+                                if (runtime && runtime.onMessage && typeof runtime.onMessage.addListener === 'function' &&
+                                    !window.__chHelperPanelListenerAdded) {
+                                    window.__chHelperPanelListenerAdded = true;
+                                    runtime.onMessage.addListener((msg) => {
+                                        if (msg && msg.type === 'ch-helper-toggle-panel' && this.panel) {
+                                            try {
+                                                this.toggleCollapse();
+                                            } catch (e) {
+                                                console.error('[ChatGPT Helper] 快捷键切换面板失败:', e);
+                                            }
+                                        }
+                                    });
+                                }
+                            } catch (e) {
+                                console.warn('[ChatGPT Helper] 注册面板切换监听失败:', e);
+                            }
+
+                            // 首次使用引导
+                            try {
+                                this.maybeShowOnboarding();
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] maybeShowOnboarding 错误:', e);
                             }
 
                             // 初始化滚动锁定管理器

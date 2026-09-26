@@ -65,6 +65,8 @@
         OutlineManager,
         CopyManager,
         TabRenameManager,
+        PromptQuickMenu,
+        MessageSelectManager,
         ChatGPTAdapter
     } = H;
 
@@ -171,6 +173,30 @@
                 } catch (e) {
                     console.error('[ChatGPT Helper] TabRenameManager 创建错误:', e);
                     this.tabRenameManager = null; // 非关键组件，允许为 null
+                }
+
+                // 初始化输入框 / 快速唤起菜单
+                try {
+                    this.promptQuickMenu = new PromptQuickMenu({
+                        getPrompts: () => this.prompts || [],
+                        isEnabled: () => this.settings.promptQuickMenuEnabled !== false,
+                        t: (key) => this.t(key),
+                        onInsert: (prompt) => this.usePrompt(prompt, { replaceComposer: true })
+                    });
+                } catch (e) {
+                    console.error('[ChatGPT Helper] PromptQuickMenu 创建错误:', e);
+                    this.promptQuickMenu = null;
+                }
+
+                // 初始化多选消息导出管理器
+                try {
+                    this.messageSelectManager = new MessageSelectManager({
+                        t: (key) => this.t(key),
+                        onToast: (msg) => this.showToast(msg)
+                    });
+                } catch (e) {
+                    console.error('[ChatGPT Helper] MessageSelectManager 创建错误:', e);
+                    this.messageSelectManager = null;
                 }
 
                 // 初始化主题监听器

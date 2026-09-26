@@ -30,6 +30,8 @@
         DEFAULT_THEME_CONFIG,
         DEFAULT_SETTINGS,
         DEFAULT_PROMPTS,
+        extractPromptVariables,
+        renderPromptVariables,
         createElement,
         getExtensionRuntime,
         getExtensionAssetUrl,
@@ -104,6 +106,84 @@
             searchBar.appendChild(searchInput);
             toolbar.appendChild(searchBar);
 
+            // 排序方式：手动 / 最近使用 / 最常用
+            const sortModes = [
+                { value: 'manual', label: this.t('promptSortManual') },
+                { value: 'recent', label: this.t('promptSortRecent') },
+                { value: 'frequent', label: this.t('promptSortFrequent') }
+            ];
+            const currentSortMode = this.settings.promptSortMode || 'manual';
+            const sortSelect = createElement('div', {
+                className: 'chatgpt-helper-custom-select chatgpt-helper-prompt-sort-select',
+                title: this.t('promptSortLabel'),
+                'data-value': currentSortMode
+            });
+            const sortTrigger = createElement('button', {
+                className: 'chatgpt-helper-custom-select-trigger',
+                type: 'button',
+                'aria-haspopup': 'listbox',
+                'aria-expanded': 'false',
+                'aria-label': this.t('promptSortLabel'),
+                title: this.t('promptSortLabel')
+            });
+            const sortTriggerText = createElement('span', {
+                className: 'chatgpt-helper-custom-select-value'
+            }, (sortModes.find((m) => m.value === currentSortMode) || sortModes[0]).label);
+            const sortTriggerIcon = createElement('span', {
+                className: 'chatgpt-helper-custom-select-icon',
+                'aria-hidden': 'true'
+            }, '\u25be');
+            sortTrigger.appendChild(sortTriggerText);
+            sortTrigger.appendChild(sortTriggerIcon);
+
+            const sortMenu = createElement('div', {
+                className: 'chatgpt-helper-custom-select-menu',
+                role: 'listbox'
+            });
+            const closeSortMenu = () => {
+                sortSelect.classList.remove('open');
+                sortTrigger.setAttribute('aria-expanded', 'false');
+            };
+            sortModes.forEach((mode) => {
+                const isSelected = mode.value === currentSortMode;
+                const option = createElement('button', {
+                    className: 'chatgpt-helper-custom-select-option' + (isSelected ? ' selected' : ''),
+                    type: 'button',
+                    role: 'option',
+                    'aria-selected': String(isSelected),
+                    'data-value': mode.value
+                }, mode.label);
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.settings.promptSortMode = mode.value;
+                    this.saveSettings();
+                    sortSelect.dataset.value = mode.value;
+                    sortTriggerText.textContent = mode.label;
+                    sortMenu.querySelectorAll('.chatgpt-helper-custom-select-option').forEach((optionEl) => {
+                        const active = optionEl.dataset.value === mode.value;
+                        optionEl.classList.toggle('selected', active);
+                        optionEl.setAttribute('aria-selected', String(active));
+                    });
+                    closeSortMenu();
+                    this.refreshPromptList();
+                });
+                sortMenu.appendChild(option);
+            });
+            sortTrigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const willOpen = !sortSelect.classList.contains('open');
+                sortSelect.classList.toggle('open', willOpen);
+                sortTrigger.setAttribute('aria-expanded', String(willOpen));
+            });
+            sortSelect.addEventListener('focusout', (e) => {
+                if (!sortSelect.contains(e.relatedTarget)) closeSortMenu();
+            });
+            sortSelect.appendChild(sortTrigger);
+            sortSelect.appendChild(sortMenu);
+            toolbar.appendChild(sortSelect);
+
             const addBtn = createElement('button', {
                 className: 'chatgpt-helper-add-btn chatgpt-helper-add-btn-compact',
                 type: 'button',
@@ -165,6 +245,18 @@
                     p.title.toLowerCase().includes(query) ||
                     p.content.toLowerCase().includes(query)
                 );
+            }
+
+            // 排序：手动模式保持原始顺序（支持拖拽），其余按使用数据排序
+            const sortMode = this.settings.promptSortMode || 'manual';
+            if (sortMode !== 'manual') {
+                filteredPrompts = [...filteredPrompts].sort((a, b) => {
+                    if (sortMode === 'frequent') {
+                        const countDiff = (b.useCount || 0) - (a.useCount || 0);
+                        if (countDiff !== 0) return countDiff;
+                    }
+                    return (b.lastUsedAt || 0) - (a.lastUsedAt || 0);
+                });
             }
 
             if (filteredPrompts.length === 0) {
@@ -278,8 +370,7 @@
                 item.addEventListener('click', (e) => {
                     if (!e.target.closest('button') && !e.target.closest('.chatgpt-helper-prompt-drag-handle')) {
                         this.selectedPrompt = prompt;
-                        this.adapter.insertPrompt(prompt.content);
-                        this.refreshPromptList(); // 刷新以显示选中状态
+                        this.usePrompt(prompt);
                     }
                 });
                 
@@ -586,6 +677,119 @@
             // 更新分类标签栏（如果删除的提示词是某个分类的最后一个，该分类会从标签栏中消失）
             this.updateCategoryBar();
             this.refreshPromptList();
+        },
+
+        // ==================== 提示词使用与插入（变量 / 使用统计 / 快速菜单） ====================
+
+        trackPromptUsage(id) {
+            const prompt = this.prompts.find(p => p.id === id);
+            if (!prompt) return;
+            prompt.useCount = (Number(prompt.useCount) || 0) + 1;
+            prompt.lastUsedAt = Date.now();
+            this.savePrompts();
+            // 使用数据变化后刷新列表（最近使用/最常用排序生效，选中态同步）
+            if (this.currentTab === 'prompts') {
+                this.refreshPromptList();
+            }
+        },
+
+        // 统一插入入口：面板点击、/ 快速菜单共用
+        // options.replaceComposer 为 true 时（快速菜单），整体替换输入框中的 "/关键词"
+        usePrompt(prompt, options = {}) {
+            if (!prompt) return;
+            const variables = extractPromptVariables(prompt.content);
+            if (variables.length > 0) {
+                this.showPromptVariablesDialog(prompt, variables, (content) => {
+                    this.trackPromptUsage(prompt.id);
+                    this.applyPromptToComposer(content, options);
+                });
+            } else {
+                this.trackPromptUsage(prompt.id);
+                this.applyPromptToComposer(prompt.content, options);
+            }
+        },
+
+        applyPromptToComposer(content, options = {}) {
+            let inserted = false;
+            if (options.replaceComposer && this.promptQuickMenu) {
+                inserted = this.promptQuickMenu.replaceComposerText(content);
+            }
+            if (!inserted) {
+                inserted = this.adapter.insertPrompt(content);
+            }
+            this.showToast(inserted ? this.t('inserted') : this.t('operationFailed'));
+        },
+
+        showPromptVariablesDialog(prompt, variables, onConfirm) {
+            const overlay = createElement('div', {
+                className: 'chatgpt-helper-prompt-dialog-overlay',
+                role: 'presentation'
+            });
+            const dialog = createElement('div', {
+                className: 'chatgpt-helper-prompt-dialog chatgpt-helper-prompt-variables-dialog',
+                role: 'dialog',
+                'aria-modal': 'true',
+                'aria-label': this.t('promptVariablesTitle')
+            });
+            dialog.appendChild(createElement('h3', {
+                className: 'chatgpt-helper-prompt-dialog-title'
+            }, this.t('promptVariablesTitle')));
+            dialog.appendChild(createElement('div', {
+                className: 'chatgpt-helper-prompt-variables-prompt-name'
+            }, prompt?.title || ''));
+            dialog.appendChild(createElement('div', {
+                className: 'chatgpt-helper-prompt-variables-desc'
+            }, this.t('promptVariablesDesc')));
+
+            const inputs = {};
+            variables.forEach((name) => {
+                const row = createElement('div', { className: 'chatgpt-helper-prompt-variables-row' });
+                row.appendChild(createElement('label', {
+                    className: 'chatgpt-helper-prompt-variables-label'
+                }, `{{${name}}}`));
+                const input = createElement('input', {
+                    className: 'chatgpt-helper-prompt-dialog-field',
+                    type: 'text',
+                    placeholder: name
+                });
+                inputs[name] = input;
+                row.appendChild(input);
+                dialog.appendChild(row);
+            });
+
+            const buttons = createElement('div', {
+                className: 'chatgpt-helper-prompt-dialog-actions'
+            });
+            const cancelBtn = createElement('button', {
+                className: 'chatgpt-helper-prompt-dialog-btn secondary',
+                type: 'button'
+            }, this.t('cancel'));
+            cancelBtn.addEventListener('click', () => overlay.remove());
+            const insertBtn = createElement('button', {
+                className: 'chatgpt-helper-prompt-dialog-btn primary',
+                type: 'button'
+            }, this.t('promptInsert'));
+            insertBtn.addEventListener('click', () => {
+                const values = {};
+                variables.forEach((name) => {
+                    values[name] = (inputs[name].value || '').trim();
+                });
+                overlay.remove();
+                const rendered = renderPromptVariables(prompt.content, values);
+                onConfirm(rendered);
+            });
+            buttons.appendChild(cancelBtn);
+            buttons.appendChild(insertBtn);
+            dialog.appendChild(buttons);
+
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.remove();
+            });
+            // 聚焦第一个输入框，方便直接填写
+            const firstInput = dialog.querySelector('input[type="text"]');
+            if (firstInput) setTimeout(() => firstInput.focus(), 50);
         }
     });
 })();

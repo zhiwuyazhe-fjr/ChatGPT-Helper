@@ -583,6 +583,40 @@
                             this.settings.defaultPanelState = val;
                             this.saveSettings();
                         }
+                    },
+                    {
+                        label: this.t('promptQuickMenuEnabledLabel') || 'Slash Quick Menu',
+                        desc: this.t('promptQuickMenuEnabledDesc'),
+                        type: 'toggle',
+                        value: this.settings.promptQuickMenuEnabled !== false,
+                        onChange: (val) => {
+                            this.settings.promptQuickMenuEnabled = val;
+                            this.saveSettings();
+                            try {
+                                if (!this.promptQuickMenu) return;
+                                if (val) this.promptQuickMenu.start();
+                                else this.promptQuickMenu.stop();
+                            } catch (e) {
+                                console.error('[ChatGPT Helper] 切换快速菜单失败:', e);
+                            }
+                            this.showToast(this.t(val ? 'enabled' : 'disabled') + ' ' + this.t('promptQuickMenuEnabledLabel'));
+                        }
+                    },
+                    {
+                        label: this.t('shortcutHintLabel') || 'Panel Shortcut',
+                        desc: this.t('shortcutHintDesc'),
+                        type: 'button',
+                        buttonText: 'Alt+Shift+H',
+                        onClick: () => {
+                            // 网页无法直接打开 chrome:// 页面，展示说明即可
+                            this.showToast(this.t('shortcutHintDesc'));
+                        }
+                    },
+                    {
+                        label: this.t('replayOnboarding') || 'Replay Onboarding',
+                        type: 'button',
+                        buttonText: this.t('replayOnboarding'),
+                        onClick: () => this.maybeShowOnboarding({ force: true })
                     }
                 ]),
                 createCompactSection('tabs', this.t('settingsGroupTabs') || 'Tabs', [
@@ -769,7 +803,23 @@
                         }
                     } : null
                 ]),
-                createQuickButtonsSection()
+                createQuickButtonsSection(),
+                createCompactSection('data', this.t('settingsGroupData') || 'Backup & Restore', [
+                    {
+                        label: this.t('backupExportButton') || 'Export Backup',
+                        desc: this.t('backupExportDesc'),
+                        type: 'button',
+                        buttonText: this.t('backupExportButton'),
+                        onClick: () => this.exportBackupData()
+                    },
+                    {
+                        label: this.t('backupImportButton') || 'Import Backup',
+                        desc: this.t('backupImportDesc'),
+                        type: 'button',
+                        buttonText: this.t('backupImportButton'),
+                        onClick: () => this.importBackupData()
+                    }
+                ])
             ];
 
             sections.forEach(section => settingsContent.appendChild(section));

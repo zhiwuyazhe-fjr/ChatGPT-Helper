@@ -108,9 +108,24 @@
             });
         }
 
-        async putAsset(blob, mimeType) {
+        async getAllAssets() {
             const db = await this.openDB();
-            const id = createThemeAssetId();
+            return await new Promise((resolve, reject) => {
+                try {
+                    const tx = db.transaction(THEME_BACKGROUND_STORE, 'readonly');
+                    const store = tx.objectStore(THEME_BACKGROUND_STORE);
+                    const req = store.getAll();
+                    req.onsuccess = () => resolve(Array.isArray(req.result) ? req.result : []);
+                    req.onerror = () => reject(req.error || new Error('get all assets failed'));
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        async putAsset(blob, mimeType, existingId = null) {
+            const db = await this.openDB();
+            const id = existingId || createThemeAssetId();
             const now = new Date().toISOString();
             const row = {
                 id,

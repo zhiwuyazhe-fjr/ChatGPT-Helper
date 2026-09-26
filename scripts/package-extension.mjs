@@ -17,11 +17,11 @@ if (dirname(artifactsDir) !== resolve(root)) {
 const entries = [
     'manifest.json',
     'LICENSE',
+    'background',
     'content-scripts/gm-api-adapter.js',
     'content-scripts/dist',
     'icons',
-    'libs',
-]
+    'libs',]
 
 await rm(artifactsDir, { recursive: true, force: true })
 await mkdir(unpackedDir, { recursive: true })
@@ -39,6 +39,7 @@ const requiredFiles = [
     'content-scripts/gm-api-adapter.js',
     'content-scripts/dist/chatgpt-exporter.js',
     'content-scripts/dist/chatgpt-helper.js',
+    'background/sw.js',
     'icons/icon16.png',
     'icons/icon48.png',
     'icons/icon128.png',

@@ -9,8 +9,31 @@
       PROMPT_LIBRARY_VERSION: "chatgpt_prompts_version",
       DEFAULT_PANEL_STATE: "chatgpt_default_panel_state",
       PANEL_WIDTH: "chatgpt_panel_width",
-      LANGUAGE: "chatgpt_language"
+      LANGUAGE: "chatgpt_language",
+      CONVERSATIONS: "chatgpt_conversations",
+      READING_PROGRESS: "chatgpt_reading_progress",
+      ONBOARDING_DONE: "chatgpt_onboarding_done"
     };
+    const PROMPT_VARIABLE_PATTERN = /\{\{\s*([^{}\n]+?)\s*\}\}/g;
+    function extractPromptVariables(content) {
+      if (typeof content !== "string" || !content) return [];
+      const names = [];
+      let match;
+      PROMPT_VARIABLE_PATTERN.lastIndex = 0;
+      while ((match = PROMPT_VARIABLE_PATTERN.exec(content)) !== null) {
+        const name = match[1].trim();
+        if (name && !names.includes(name)) names.push(name);
+      }
+      return names;
+    }
+    function renderPromptVariables(content, values = {}) {
+      if (typeof content !== "string" || !content) return content || "";
+      return content.replace(PROMPT_VARIABLE_PATTERN, (raw, name) => {
+        const key = String(name || "").trim();
+        const value = values[key];
+        return value === void 0 || value === null || value === "" ? raw : String(value);
+      });
+    }
     const I18N = {
       "zh-CN": {
         panelTitle: "ChatGPT Helper",
@@ -269,7 +292,61 @@
         moveDown: "\u4E0B\u79FB",
         buttonOrderUpdated: "\u5DF2\u66F4\u65B0\u6309\u94AE\u987A\u5E8F",
         enabled: "\u5DF2\u542F\u7528",
-        disabled: "\u5DF2\u7981\u7528"
+        disabled: "\u5DF2\u7981\u7528",
+        // 数据备份与恢复
+        settingsGroupData: "\u5907\u4EFD\u4E0E\u6062\u590D",
+        backupExportButton: "\u5BFC\u51FA\u5907\u4EFD",
+        backupExportDesc: "\u5C06\u63D0\u793A\u8BCD\u3001\u8BBE\u7F6E\u3001\u4E3B\u9898\u4E0E\u58C1\u7EB8\u3001\u4F1A\u8BDD\u6574\u7406\u6570\u636E\u5BFC\u51FA\u4E3A JSON \u6587\u4EF6",
+        backupImportButton: "\u5BFC\u5165\u5907\u4EFD",
+        backupImportDesc: "\u4ECE\u5907\u4EFD\u6587\u4EF6\u6062\u590D\uFF0C\u5C06\u8986\u76D6\u5F53\u524D\u7684\u540C\u9879\u6570\u636E",
+        backupImportConfirm: "\u5BFC\u5165\u5C06\u8986\u76D6\u5F53\u524D\u7684\u63D0\u793A\u8BCD\u3001\u8BBE\u7F6E\u3001\u4E3B\u9898\u4E0E\u4F1A\u8BDD\u6574\u7406\u6570\u636E\uFF0C\u4E14\u65E0\u6CD5\u64A4\u9500\u3002\n\u786E\u5B9A\u7EE7\u7EED\u5417\uFF1F",
+        backupExportSuccess: "\u5907\u4EFD\u5DF2\u5BFC\u51FA",
+        backupImportSuccess: "\u5907\u4EFD\u5DF2\u5BFC\u5165\uFF0C\u5373\u5C06\u5237\u65B0\u9875\u9762",
+        backupInvalidFile: "\u4E0D\u662F\u6709\u6548\u7684 ChatGPT Helper \u5907\u4EFD\u6587\u4EF6",
+        backupImportFailed: "\u5BFC\u5165\u5931\u8D25\uFF0C\u5907\u4EFD\u6587\u4EF6\u53EF\u80FD\u6709\u8BEF",
+        backupIncludeHint: "\u5305\u542B {prompts} \u6761\u63D0\u793A\u8BCD\u3001{conversations} \u4E2A\u4F1A\u8BDD\u3001{assets} \u5F20\u58C1\u7EB8",
+        backupReadingHint: "\u6B63\u5728\u8BFB\u53D6\u5907\u4EFD\u6570\u636E\u2026",
+        // 新手引导
+        onboardingTitle: "\u6B22\u8FCE\u4F7F\u7528 ChatGPT Helper",
+        onboardingSubtitle: "\u8BA9\u957F\u5BF9\u8BDD\u66F4\u6E05\u6670\uFF0C\u8BA9\u5185\u5BB9\u6C89\u6DC0\u4E0B\u6765\u3002\u4E09\u6B65\u4E0A\u624B\uFF1A",
+        onboardingStep1Title: "\u63D0\u793A\u8BCD\u4E00\u952E\u63D2\u5165",
+        onboardingStep1Desc: "\u5185\u7F6E\u5E38\u7528\u6A21\u677F\uFF0C\u70B9\u51FB\u5373\u63D2\u5165\uFF1B\u5728\u8F93\u5165\u6846\u8F93\u5165 / \u53EF\u968F\u65F6\u5FEB\u901F\u5524\u8D77",
+        onboardingStep2Title: "\u540C\u6B65\u5386\u53F2\u4F1A\u8BDD",
+        onboardingStep2Desc: "\u5728\u201C\u4F1A\u8BDD\u201D\u9875\u70B9\u51FB\u540C\u6B65\uFF0C\u5373\u53EF\u641C\u7D22\u3001\u7F6E\u9876\u4E0E\u5206\u7EC4\u7BA1\u7406",
+        onboardingStep3Title: "\u957F\u5BF9\u8BDD\u5927\u7EB2\u5BFC\u822A",
+        onboardingStep3Desc: "\u201C\u5927\u7EB2\u201D\u81EA\u52A8\u63D0\u53D6\u6807\u9898\u7ED3\u6784\uFF0C\u70B9\u51FB\u5373\u53EF\u8DF3\u8F6C\uFF0C\u9605\u8BFB\u4F4D\u7F6E\u53EF\u8FD4\u56DE",
+        onboardingStart: "\u5F00\u59CB\u4F7F\u7528",
+        replayOnboarding: "\u91CD\u770B\u65B0\u624B\u5F15\u5BFC",
+        // 提示词排序 / 变量 / 快速菜单
+        promptSortLabel: "\u6392\u5E8F",
+        promptSortManual: "\u624B\u52A8",
+        promptSortRecent: "\u6700\u8FD1\u4F7F\u7528",
+        promptSortFrequent: "\u6700\u5E38\u7528",
+        promptVariablesTitle: "\u586B\u5199\u53D8\u91CF",
+        promptVariablesDesc: "\u8BE5\u63D0\u793A\u8BCD\u5305\u542B\u4EE5\u4E0B\u53D8\u91CF\uFF0C\u586B\u5199\u540E\u63D2\u5165\uFF1A",
+        promptInsert: "\u63D2\u5165",
+        promptQuickMenuEnabledLabel: "\u8F93\u5165\u6846 / \u5FEB\u901F\u5524\u8D77",
+        promptQuickMenuEnabledDesc: "\u5728 ChatGPT \u8F93\u5165\u6846\u4EE5 / \u5F00\u5934\u8F93\u5165\u65F6\uFF0C\u5F39\u51FA\u63D0\u793A\u8BCD\u5FEB\u901F\u9009\u62E9\u83DC\u5355",
+        quickMenuEmpty: "\u6CA1\u6709\u5339\u914D\u7684\u63D0\u793A\u8BCD",
+        quickMenuHint: "\u2191\u2193 \u9009\u62E9\u3000Enter \u63D2\u5165\u3000Esc \u5173\u95ED",
+        // 快捷键
+        shortcutHintLabel: "\u9762\u677F\u5FEB\u6377\u952E",
+        shortcutHintDesc: "Alt+Shift+H \u663E\u793A/\u9690\u85CF\u9762\u677F\uFF0C\u53EF\u5728 chrome://extensions/shortcuts \u4FEE\u6539",
+        // 多选消息导出
+        selectMessageTitle: "\u9009\u62E9\u6B64\u6D88\u606F",
+        selectedMessagesCount: "\u5DF2\u9009 {count} \u6761",
+        exportSelectedMarkdown: "Markdown",
+        exportSelectedJson: "JSON",
+        exportSelectedTxt: "TXT",
+        copySelectedMessages: "\u590D\u5236",
+        clearSelection: "\u6E05\u9664",
+        selectedExported: "\u5DF2\u5BFC\u51FA\u6240\u9009\u6D88\u606F",
+        selectedExportEmpty: "\u8BF7\u5148\u9009\u62E9\u8981\u5BFC\u51FA\u7684\u6D88\u606F",
+        selectedCopied: "\u5DF2\u590D\u5236\u6240\u9009\u6D88\u606F",
+        selectedNoContent: "\u6240\u9009\u6D88\u606F\u6CA1\u6709\u53EF\u5BFC\u51FA\u7684\u6587\u672C\u5185\u5BB9",
+        // 导出引擎按需加载
+        exportEngineLoading: "\u6B63\u5728\u52A0\u8F7D\u5BFC\u51FA\u5F15\u64CE\u2026",
+        exportEngineInjectFailed: "\u5BFC\u51FA\u5F15\u64CE\u52A0\u8F7D\u5931\u8D25\uFF0C\u8BF7\u5237\u65B0\u9875\u9762\u540E\u91CD\u8BD5"
       },
       "en": {
         panelTitle: "ChatGPT Helper",
@@ -528,7 +605,61 @@
         moveDown: "Move Down",
         buttonOrderUpdated: "Button order updated",
         enabled: "Enabled",
-        disabled: "Disabled"
+        disabled: "Disabled",
+        // Backup & restore
+        settingsGroupData: "Backup & Restore",
+        backupExportButton: "Export Backup",
+        backupExportDesc: "Export prompts, settings, theme, wallpapers and conversation groups to a JSON file",
+        backupImportButton: "Import Backup",
+        backupImportDesc: "Restore from a backup file; matching local data will be replaced",
+        backupImportConfirm: "Importing will replace your current prompts, settings, theme and conversation groups. This cannot be undone.\nContinue?",
+        backupExportSuccess: "Backup exported",
+        backupImportSuccess: "Backup imported. Reloading\u2026",
+        backupInvalidFile: "Not a valid ChatGPT Helper backup file",
+        backupImportFailed: "Import failed. The backup file may be corrupted",
+        backupIncludeHint: "{prompts} prompts, {conversations} conversations, {assets} wallpapers",
+        backupReadingHint: "Reading backup data\u2026",
+        // Onboarding
+        onboardingTitle: "Welcome to ChatGPT Helper",
+        onboardingSubtitle: "Clearer long conversations, knowledge that stays. Three steps to start:",
+        onboardingStep1Title: "One-click prompts",
+        onboardingStep1Desc: "Built-in templates insert instantly; type / in the input box for a quick picker",
+        onboardingStep2Title: "Sync conversations",
+        onboardingStep2Desc: "Open the Conversations tab and sync to search, pin and organize chats",
+        onboardingStep3Title: "Outline for long chats",
+        onboardingStep3Desc: "The Outline tab builds a navigable structure and remembers your reading spot",
+        onboardingStart: "Get Started",
+        replayOnboarding: "Replay Onboarding",
+        // Prompt sorting / variables / quick menu
+        promptSortLabel: "Sort",
+        promptSortManual: "Manual",
+        promptSortRecent: "Recent",
+        promptSortFrequent: "Frequent",
+        promptVariablesTitle: "Fill in Variables",
+        promptVariablesDesc: "This prompt contains variables. Fill them in before inserting:",
+        promptInsert: "Insert",
+        promptQuickMenuEnabledLabel: "Slash Quick Menu",
+        promptQuickMenuEnabledDesc: "Typing / at the start of the ChatGPT input opens a quick prompt picker",
+        quickMenuEmpty: "No matching prompts",
+        quickMenuHint: "\u2191\u2193 navigate \xB7 Enter insert \xB7 Esc close",
+        // Shortcut
+        shortcutHintLabel: "Panel Shortcut",
+        shortcutHintDesc: "Alt+Shift+H toggles the panel. Change it at chrome://extensions/shortcuts",
+        // Multi-select message export
+        selectMessageTitle: "Select this message",
+        selectedMessagesCount: "{count} selected",
+        exportSelectedMarkdown: "Markdown",
+        exportSelectedJson: "JSON",
+        exportSelectedTxt: "TXT",
+        copySelectedMessages: "Copy",
+        clearSelection: "Clear",
+        selectedExported: "Selected messages exported",
+        selectedExportEmpty: "Select messages first",
+        selectedCopied: "Selected messages copied",
+        selectedNoContent: "The selected messages have no text content to export",
+        // Lazy export engine
+        exportEngineLoading: "Loading export engine\u2026",
+        exportEngineInjectFailed: "Failed to load the export engine. Refresh the page and try again"
       }
     };
     function detectLanguage() {
@@ -654,6 +785,10 @@
       defaultPanelState: true,
       // true = 展开, false = 折叠
       prompts: { enabled: true },
+      // 提示词列表排序：manual | recent | frequent
+      promptSortMode: "manual",
+      // 输入框 / 快速唤起菜单
+      promptQuickMenuEnabled: true,
       outline: {
         enabled: true,
         showUserQueries: true,
@@ -1509,6 +1644,9 @@
       DEFAULT_SETTINGS,
       DEFAULT_PROMPTS,
       createDefaultPrompts,
+      PROMPT_VARIABLE_PATTERN,
+      extractPromptVariables,
+      renderPromptVariables,
       createElement,
       getExtensionRuntime,
       getExtensionAssetUrl,
@@ -1637,9 +1775,23 @@
           }
         });
       }
-      async putAsset(blob, mimeType) {
+      async getAllAssets() {
         const db = await this.openDB();
-        const id = createThemeAssetId();
+        return await new Promise((resolve, reject) => {
+          try {
+            const tx = db.transaction(THEME_BACKGROUND_STORE, "readonly");
+            const store = tx.objectStore(THEME_BACKGROUND_STORE);
+            const req = store.getAll();
+            req.onsuccess = () => resolve(Array.isArray(req.result) ? req.result : []);
+            req.onerror = () => reject(req.error || new Error("get all assets failed"));
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+      async putAsset(blob, mimeType, existingId = null) {
+        const db = await this.openDB();
+        const id = existingId || createThemeAssetId();
         const now = (/* @__PURE__ */ new Date()).toISOString();
         const row = {
           id,
@@ -4936,6 +5088,314 @@
     const root = window.__MY_EXT__ = window.__MY_EXT__ || {};
     const H = root.helper = root.helper || {};
     const {
+      createElement,
+      createSvgIconNode,
+      extractPromptVariables
+    } = H;
+    const COMPOSER_SELECTORS = [
+      "#prompt-textarea",
+      'div[contenteditable="true"][role="textbox"]',
+      'textarea[data-id="root"]',
+      'textarea[placeholder*="Message"]',
+      'textarea[placeholder*="\u6D88\u606F"]'
+    ];
+    const MAX_QUERY_LENGTH = 24;
+    const MAX_VISIBLE_ITEMS = 9;
+    class PromptQuickMenu {
+      constructor(config = {}) {
+        this.getPrompts = config.getPrompts || (() => []);
+        this.isEnabled = config.isEnabled || (() => true);
+        this.onInsert = config.onInsert || (() => {
+        });
+        this.t = config.t || ((key) => key);
+        this.isOpen = false;
+        this.menuEl = null;
+        this.items = [];
+        this.activeIndex = 0;
+        this.query = "";
+        this.composer = null;
+        this._composerChangeTimer = null;
+      }
+      getComposer() {
+        for (const selector of COMPOSER_SELECTORS) {
+          const el = document.querySelector(selector);
+          if (el && el.offsetParent !== null) {
+            return el;
+          }
+        }
+        return null;
+      }
+      getComposerText(el) {
+        if (!el) return "";
+        if (el.tagName === "TEXTAREA" || el.tagName === "INPUT") {
+          return el.value || "";
+        }
+        return el.textContent || "";
+      }
+      start() {
+        if (this._started) return;
+        this._started = true;
+        this._onInput = (e) => this.handleInput(e);
+        this._onKeyDown = (e) => this.handleKeyDown(e);
+        this._onMouseDown = (e) => this.handleMouseDown(e);
+        document.addEventListener("input", this._onInput, true);
+        document.addEventListener("keydown", this._onKeyDown, true);
+        document.addEventListener("mousedown", this._onMouseDown, true);
+        this._onSelectionChange = () => {
+          if (this.isOpen && !this.getComposer()) this.close();
+        };
+        document.addEventListener("selectionchange", this._onSelectionChange);
+      }
+      stop() {
+        if (!this._started) return;
+        this._started = false;
+        document.removeEventListener("input", this._onInput, true);
+        document.removeEventListener("keydown", this._onKeyDown, true);
+        document.removeEventListener("mousedown", this._onMouseDown, true);
+        document.removeEventListener("selectionchange", this._onSelectionChange);
+        this.close();
+      }
+      // 仅识别 ChatGPT 对话输入框，避免在页面其他 textarea/input 中误触发
+      isComposerEvent(e) {
+        const target = e.target;
+        if (!target || target.nodeType !== 1) return false;
+        if (target.id === "prompt-textarea") return true;
+        if (target.matches && target.matches('div[contenteditable="true"][role="textbox"]')) return true;
+        if (target.matches && target.matches('textarea[data-id="root"]')) return true;
+        if (target.matches && target.matches('textarea[placeholder*="Message"]')) return true;
+        if (target.matches && target.matches('textarea[placeholder*="\u6D88\u606F"]')) return true;
+        return false;
+      }
+      handleInput(e) {
+        if (e.type === "input" && e.isComposing) return;
+        if (!this.isEnabled()) {
+          if (this.isOpen) this.close();
+          return;
+        }
+        if (!this.isComposerEvent(e)) {
+          return;
+        }
+        this.composer = e.target;
+        const rawText = this.getComposerText(this.composer);
+        const text = rawText.replace(/^[\s]+/, "");
+        if (text.startsWith("/")) {
+          const query = text.slice(1);
+          if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith("/")) {
+            this.close();
+            return;
+          }
+          this.query = query;
+          this.open();
+        } else if (this.isOpen) {
+          this.close();
+        }
+      }
+      handleKeyDown(e) {
+        if (!this.isOpen) return;
+        if (e.isComposing || e.keyCode === 229) return;
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          e.stopPropagation();
+          if (this.items.length === 0) return;
+          const delta = e.key === "ArrowDown" ? 1 : -1;
+          this.activeIndex = (this.activeIndex + delta + this.items.length) % this.items.length;
+          this.updateActiveItem();
+          return;
+        }
+        if (e.key === "Enter" || e.key === "Tab") {
+          e.preventDefault();
+          e.stopPropagation();
+          this.insertActive();
+          return;
+        }
+        if (e.key === "Escape") {
+          e.stopPropagation();
+          this.close();
+        }
+      }
+      handleMouseDown(e) {
+        if (!this.isOpen) return;
+        if (this.menuEl && e.target && this.menuEl.contains(e.target)) return;
+        if (this.composer && this.composer.contains && this.composer.contains(e.target)) return;
+        this.close();
+      }
+      filterPrompts() {
+        const prompts = this.getPrompts() || [];
+        const query = this.query.toLowerCase();
+        const matched = prompts.filter((p) => {
+          if (!p) return false;
+          const title = (p.title || "").toLowerCase();
+          const content = (p.content || "").toLowerCase();
+          const category = (p.category || "").toLowerCase();
+          if (!query) return true;
+          return title.includes(query) || content.includes(query) || category.includes(query);
+        });
+        return matched.slice(0, MAX_VISIBLE_ITEMS);
+      }
+      open() {
+        const filtered = this.filterPrompts();
+        this.items = filtered;
+        this.activeIndex = 0;
+        if (!this.menuEl) {
+          this.menuEl = this.buildMenu();
+          document.body.appendChild(this.menuEl);
+        }
+        this.renderItems();
+        this.positionMenu();
+        this.menuEl.classList.add("open");
+        this.isOpen = true;
+      }
+      close() {
+        if (this.menuEl) {
+          this.menuEl.classList.remove("open");
+        }
+        this.isOpen = false;
+      }
+      destroy() {
+        this.stop();
+        if (this.menuEl && this.menuEl.parentNode) {
+          this.menuEl.parentNode.removeChild(this.menuEl);
+        }
+        this.menuEl = null;
+      }
+      buildMenu() {
+        const menu = createElement("div", {
+          className: "gh-quick-menu",
+          role: "listbox",
+          "aria-label": "ChatGPT Helper prompts"
+        });
+        const list = createElement("div", { className: "gh-quick-menu-list" });
+        menu.appendChild(list);
+        const hint = createElement("div", { className: "gh-quick-menu-hint" }, this.t("quickMenuHint"));
+        menu.appendChild(hint);
+        return menu;
+      }
+      renderItems() {
+        const list = this.menuEl.querySelector(".gh-quick-menu-list");
+        if (!list) return;
+        while (list.firstChild) list.firstChild.remove();
+        if (this.items.length === 0) {
+          const empty = createElement("div", { className: "gh-quick-menu-empty" }, this.t("quickMenuEmpty"));
+          list.appendChild(empty);
+          return;
+        }
+        this.items.forEach((prompt2, index) => {
+          const vars = extractPromptVariables(prompt2.content);
+          const item = createElement("div", {
+            className: `gh-quick-menu-item${index === this.activeIndex ? " active" : ""}`,
+            role: "option",
+            "aria-selected": String(index === this.activeIndex),
+            "data-index": String(index)
+          });
+          const iconWrap = createElement("span", { className: "gh-quick-menu-item-icon" });
+          iconWrap.appendChild(createSvgIconNode("edit", { size: 13 }));
+          item.appendChild(iconWrap);
+          const main = createElement("div", { className: "gh-quick-menu-item-main" });
+          main.appendChild(createElement("span", { className: "gh-quick-menu-item-title" }, prompt2.title || ""));
+          const meta = createElement("span", { className: "gh-quick-menu-item-meta" });
+          if (prompt2.category) {
+            meta.appendChild(createElement("span", { className: "gh-quick-menu-item-category" }, prompt2.category));
+          }
+          if (vars.length > 0) {
+            meta.appendChild(createElement(
+              "span",
+              { className: "gh-quick-menu-item-vars" },
+              `${vars.length} {{}}`
+            ));
+          }
+          main.appendChild(meta);
+          item.appendChild(main);
+          item.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+          item.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.activeIndex = index;
+            this.insertActive();
+          });
+          item.addEventListener("mousemove", () => {
+            if (this.activeIndex !== index) {
+              this.activeIndex = index;
+              this.updateActiveItem();
+            }
+          });
+          list.appendChild(item);
+        });
+      }
+      updateActiveItem() {
+        if (!this.menuEl) return;
+        const itemEls = this.menuEl.querySelectorAll(".gh-quick-menu-item");
+        itemEls.forEach((el, index) => {
+          const isActive = index === this.activeIndex;
+          el.classList.toggle("active", isActive);
+          el.setAttribute("aria-selected", String(isActive));
+        });
+        const activeEl = itemEls[this.activeIndex];
+        if (activeEl && activeEl.scrollIntoView) {
+          activeEl.scrollIntoView({ block: "nearest" });
+        }
+      }
+      positionMenu() {
+        if (!this.menuEl || !this.composer) return;
+        const rect = this.composer.getBoundingClientRect();
+        const menuRect = this.menuEl.getBoundingClientRect();
+        let left = rect.left;
+        if (left + menuRect.width > window.innerWidth - 12) {
+          left = Math.max(12, window.innerWidth - menuRect.width - 12);
+        }
+        let top = rect.top - menuRect.height - 8;
+        if (top < 12) {
+          top = rect.bottom + 8;
+        }
+        this.menuEl.style.left = `${Math.round(left)}px`;
+        this.menuEl.style.top = `${Math.round(top)}px`;
+      }
+      insertActive() {
+        const prompt2 = this.items[this.activeIndex];
+        if (!prompt2) return;
+        this.close();
+        try {
+          this.onInsert(prompt2);
+        } catch (e) {
+          console.error("[ChatGPT Helper] \u5FEB\u901F\u83DC\u5355\u63D2\u5165\u5931\u8D25:", e);
+        }
+      }
+      // 用最终内容替换输入框文本（删除 / 关键词后写入提示词）
+      replaceComposerText(text) {
+        const el = this.composer && this.composer.isConnected ? this.composer : this.getComposer();
+        if (!el) return false;
+        try {
+          el.focus();
+          if (el.tagName === "TEXTAREA" || el.tagName === "INPUT") {
+            el.value = text;
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            el.dispatchEvent(new Event("change", { bubbles: true }));
+          } else {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            document.execCommand("insertText", false, text);
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+          return true;
+        } catch (e) {
+          console.error("[ChatGPT Helper] \u66FF\u6362\u8F93\u5165\u6846\u6587\u672C\u5931\u8D25:", e);
+          return false;
+        }
+      }
+    }
+    Object.assign(H, {
+      PromptQuickMenu
+    });
+  })();
+  (function() {
+    const root = window.__MY_EXT__ = window.__MY_EXT__ || {};
+    const H = root.helper = root.helper || {};
+    const {
       SETTING_KEYS,
       I18N,
       detectLanguage,
@@ -5283,6 +5743,320 @@
     }
     Object.assign(H, {
       CopyManager
+    });
+  })();
+  (function() {
+    const root = window.__MY_EXT__ = window.__MY_EXT__ || {};
+    const H = root.helper = root.helper || {};
+    const {
+      createElement,
+      createSvgIconNode,
+      copyTextToClipboard
+    } = H;
+    const TURN_SELECTORS = [
+      'article[data-testid^="conversation-turn"]',
+      '.group[data-testid*="conversation-turn"]',
+      '[data-testid="conversation-turn-item"]'
+    ].join(", ");
+    class MessageSelectManager {
+      constructor(config = {}) {
+        this.t = config.t || ((key) => key);
+        this.showToast = config.onToast || ((msg) => {
+        });
+        this.observer = null;
+        this.toolbar = null;
+        this.selections = [];
+        this._syncTimer = null;
+        this._started = false;
+      }
+      start() {
+        if (this._started) return;
+        this._started = true;
+        this.syncTurns();
+        if (typeof MutationObserver === "function") {
+          this.observer = new MutationObserver(() => this.scheduleSync());
+          this.observer.observe(document.body, {
+            childList: true,
+            subtree: true
+          });
+        }
+      }
+      stop() {
+        if (!this._started) return;
+        this._started = false;
+        if (this.observer) {
+          this.observer.disconnect();
+          this.observer = null;
+        }
+        if (this._syncTimer) {
+          clearTimeout(this._syncTimer);
+          this._syncTimer = null;
+        }
+        this.selections = [];
+        this.removeToolbar();
+        document.querySelectorAll(".gh-msg-select-check").forEach((el) => el.remove());
+        document.querySelectorAll(".gh-msg-select-turn").forEach((el) => {
+          el.classList.remove("gh-msg-select-turn", "gh-msg-selected");
+        });
+      }
+      scheduleSync() {
+        if (this._syncTimer) return;
+        this._syncTimer = setTimeout(() => {
+          this._syncTimer = null;
+          this.syncTurns();
+        }, 300);
+      }
+      findTurns() {
+        if (typeof document.querySelectorAll !== "function") return [];
+        try {
+          return Array.from(document.querySelectorAll(TURN_SELECTORS));
+        } catch (e) {
+          return [];
+        }
+      }
+      extractTurnMessage(turn) {
+        const authorEl = turn.querySelector("[data-message-author-role]");
+        const role = authorEl && authorEl.getAttribute("data-message-author-role") === "user" ? "user" : "assistant";
+        let content = "";
+        if (authorEl) {
+          content = (authorEl.innerText || authorEl.textContent || "").trim();
+        } else {
+          content = (turn.innerText || turn.textContent || "").trim();
+        }
+        return { role, content };
+      }
+      syncTurns() {
+        const turns = this.findTurns();
+        turns.forEach((turn) => {
+          if (turn.querySelector(":scope > .gh-msg-select-check")) return;
+          try {
+            turn.classList.add("gh-msg-select-turn");
+            const check = createElement("button", {
+              className: "gh-msg-select-check",
+              type: "button",
+              title: this.t("selectMessageTitle"),
+              "aria-label": this.t("selectMessageTitle"),
+              "aria-pressed": "false"
+            });
+            check.appendChild(createSvgIconNode("check", { size: 11 }));
+            check.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.toggle(turn, check);
+            });
+            turn.insertAdjacentElement("afterbegin", check);
+          } catch (e) {
+          }
+        });
+        this.updateToolbar();
+      }
+      toggle(turn, check) {
+        const message = this.extractTurnMessage(turn);
+        const key = `${message.role}::${message.content}`;
+        const existingIndex = this.selections.findIndex((item) => item.key === key);
+        if (existingIndex !== -1) {
+          this.selections.splice(existingIndex, 1);
+          turn.classList.remove("gh-msg-selected");
+          if (check) {
+            check.classList.remove("checked");
+            check.setAttribute("aria-pressed", "false");
+          }
+        } else {
+          this.selections.push({ key, role: message.role, content: message.content });
+          turn.classList.add("gh-msg-selected");
+          if (check) {
+            check.classList.add("checked");
+            check.setAttribute("aria-pressed", "true");
+          }
+        }
+        this.updateToolbar();
+      }
+      clearSelection() {
+        this.selections = [];
+        document.querySelectorAll(".gh-msg-select-turn.gh-msg-selected").forEach((turn) => {
+          turn.classList.remove("gh-msg-selected");
+          const check = turn.querySelector(":scope > .gh-msg-select-check");
+          if (check) {
+            check.classList.remove("checked");
+            check.setAttribute("aria-pressed", "false");
+          }
+        });
+        this.updateToolbar();
+      }
+      getConversationTitle() {
+        try {
+          const h1 = document.querySelector('main h1, [role="main"] h1');
+          if (h1 && h1.textContent.trim()) return h1.textContent.trim();
+          const title = (document.title || "").split("|")[0].trim();
+          return title || "conversation";
+        } catch (e) {
+          return "conversation";
+        }
+      }
+      collectSelectedMessages() {
+        return this.selections.filter((item) => item.content).map((item) => ({ role: item.role, content: item.content }));
+      }
+      formatToMarkdown(title, messages, exportedAt) {
+        const lines = [`# ${title}`, ""];
+        lines.push(`> ${this.t("exportTimeLabel")}: ${exportedAt}`);
+        lines.push("");
+        messages.forEach((msg, index) => {
+          const label = msg.role === "user" ? `## \u{1F9D1} ${this.t("userRole")}` : "## \u{1F916} ChatGPT";
+          lines.push(label);
+          lines.push("");
+          lines.push(msg.content);
+          if (index < messages.length - 1) lines.push("");
+        });
+        return lines.join("\n");
+      }
+      formatToTxt(title, messages, exportedAt) {
+        const lines = [`=== ${title} (${exportedAt}) ===`, ""];
+        messages.forEach((msg) => {
+          const label = msg.role === "user" ? `[${this.t("userRole")}]` : "[ChatGPT]";
+          lines.push(label);
+          lines.push(msg.content);
+          lines.push("");
+        });
+        return lines.join("\n");
+      }
+      formatToJson(title, messages, exportedAt) {
+        return JSON.stringify({
+          title,
+          exportedAt,
+          source: window.location && window.location.href ? window.location.href : "",
+          messages
+        }, null, 2);
+      }
+      sanitizeFilename(name) {
+        return String(name || "conversation").replace(/[\\/:*?"<>|\r\n]+/g, "_").replace(/\s+/g, " ").trim().slice(0, 80) || "conversation";
+      }
+      downloadFile(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const link = createElement("a", {
+          href: url,
+          download: filename
+        });
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => {
+          link.remove();
+          URL.revokeObjectURL(url);
+        }, 1e3);
+      }
+      exportSelected(format) {
+        const messages = this.collectSelectedMessages();
+        if (messages.length === 0) {
+          this.showToast(this.t("selectedExportEmpty"));
+          return;
+        }
+        const title = this.getConversationTitle();
+        const exportedAt = (/* @__PURE__ */ new Date()).toLocaleString();
+        const stamp = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+        const baseName = `${this.sanitizeFilename(title)}-${stamp}`;
+        try {
+          if (format === "md") {
+            this.downloadFile(
+              this.formatToMarkdown(title, messages, exportedAt),
+              `chatgpt-helper-${baseName}.md`,
+              "text/markdown"
+            );
+          } else if (format === "json") {
+            this.downloadFile(
+              this.formatToJson(title, messages, exportedAt),
+              `chatgpt-helper-${baseName}.json`,
+              "application/json"
+            );
+          } else {
+            this.downloadFile(
+              this.formatToTxt(title, messages, exportedAt),
+              `chatgpt-helper-${baseName}.txt`,
+              "text/plain"
+            );
+          }
+          this.showToast(this.t("selectedExported"));
+        } catch (e) {
+          console.error("[ChatGPT Helper] \u5BFC\u51FA\u6240\u9009\u6D88\u606F\u5931\u8D25:", e);
+          this.showToast(this.t("exportFailed"));
+        }
+      }
+      async copySelected() {
+        const messages = this.collectSelectedMessages();
+        if (messages.length === 0) {
+          this.showToast(this.t("selectedExportEmpty"));
+          return;
+        }
+        const title = this.getConversationTitle();
+        const markdown = this.formatToMarkdown(title, messages, (/* @__PURE__ */ new Date()).toLocaleString());
+        const ok = await copyTextToClipboard(markdown);
+        this.showToast(ok ? this.t("selectedCopied") : this.t("copyFailed"));
+      }
+      ensureToolbar() {
+        if (this.toolbar && this.toolbar.isConnected) return this.toolbar;
+        this.toolbar = createElement("div", {
+          className: "gh-msg-select-toolbar",
+          role: "toolbar",
+          "aria-label": "ChatGPT Helper message export"
+        });
+        const count = createElement("span", { className: "gh-msg-select-toolbar-count" });
+        this.toolbar.appendChild(count);
+        const makeBtn = (label, onClick, className = "") => {
+          const btn = createElement("button", {
+            className: `gh-msg-select-toolbar-btn ${className}`,
+            type: "button"
+          }, label);
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick();
+          });
+          return btn;
+        };
+        this.toolbar.appendChild(makeBtn(this.t("exportSelectedMarkdown"), () => this.exportSelected("md")));
+        this.toolbar.appendChild(makeBtn(this.t("exportSelectedJson"), () => this.exportSelected("json")));
+        this.toolbar.appendChild(makeBtn(this.t("exportSelectedTxt"), () => this.exportSelected("txt")));
+        this.toolbar.appendChild(makeBtn(this.t("copySelectedMessages"), () => {
+          this.copySelected();
+        }, "secondary"));
+        this.toolbar.appendChild(makeBtn(this.t("clearSelection"), () => this.clearSelection(), "secondary"));
+        const closeBtn = createElement("button", {
+          className: "gh-msg-select-toolbar-close",
+          type: "button",
+          title: this.t("clearSelection"),
+          "aria-label": this.t("clearSelection")
+        });
+        closeBtn.appendChild(createSvgIconNode("close", { size: 12 }));
+        closeBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.clearSelection();
+        });
+        this.toolbar.appendChild(closeBtn);
+        document.body.appendChild(this.toolbar);
+        return this.toolbar;
+      }
+      removeToolbar() {
+        if (this.toolbar && this.toolbar.parentNode) {
+          this.toolbar.parentNode.removeChild(this.toolbar);
+        }
+        this.toolbar = null;
+      }
+      updateToolbar() {
+        const count = this.selections.length;
+        if (count === 0) {
+          if (this.toolbar) this.toolbar.classList.remove("open");
+          return;
+        }
+        const toolbar = this.ensureToolbar();
+        const countEl = toolbar.querySelector(".gh-msg-select-toolbar-count");
+        if (countEl) {
+          countEl.textContent = (this.t("selectedMessagesCount") || "{count} selected").replace("{count}", String(count));
+        }
+        toolbar.classList.add("open");
+      }
+    }
+    Object.assign(H, {
+      MessageSelectManager
     });
   })();
   (function() {
@@ -6203,6 +6977,8 @@
       OutlineManager,
       CopyManager,
       TabRenameManager,
+      PromptQuickMenu,
+      MessageSelectManager,
       ChatGPTAdapter
     } = H;
     class ChatGPTHelper {
@@ -6289,6 +7065,26 @@
           } catch (e) {
             console.error("[ChatGPT Helper] TabRenameManager \u521B\u5EFA\u9519\u8BEF:", e);
             this.tabRenameManager = null;
+          }
+          try {
+            this.promptQuickMenu = new PromptQuickMenu({
+              getPrompts: () => this.prompts || [],
+              isEnabled: () => this.settings.promptQuickMenuEnabled !== false,
+              t: (key) => this.t(key),
+              onInsert: (prompt2) => this.usePrompt(prompt2, { replaceComposer: true })
+            });
+          } catch (e) {
+            console.error("[ChatGPT Helper] PromptQuickMenu \u521B\u5EFA\u9519\u8BEF:", e);
+            this.promptQuickMenu = null;
+          }
+          try {
+            this.messageSelectManager = new MessageSelectManager({
+              t: (key) => this.t(key),
+              onToast: (msg) => this.showToast(msg)
+            });
+          } catch (e) {
+            console.error("[ChatGPT Helper] MessageSelectManager \u521B\u5EFA\u9519\u8BEF:", e);
+            this.messageSelectManager = null;
           }
           this.themeObserver = null;
           this.systemThemeMediaQuery = null;
@@ -6457,6 +7253,8 @@
           defaultPanelState: saved.defaultPanelState !== void 0 ? Boolean(saved.defaultPanelState) : DEFAULT_SETTINGS.defaultPanelState,
           preventAutoScroll: Boolean(saved.preventAutoScroll),
           prompts: { enabled: true },
+          promptSortMode: ["manual", "recent", "frequent"].includes(saved.promptSortMode) ? saved.promptSortMode : "manual",
+          promptQuickMenuEnabled: saved.promptQuickMenuEnabled !== false,
           outline: {
             enabled: true,
             showUserQueries: saved.outline?.showUserQueries !== false,
@@ -6517,6 +7315,8 @@
           themeEnabled: true,
           manualAnchorEnabled: true,
           preventAutoScroll: normalized.preventAutoScroll,
+          promptSortMode: normalized.promptSortMode,
+          promptQuickMenuEnabled: normalized.promptQuickMenuEnabled,
           readingHistory: {
             persistence: normalized.readingHistory.persistence,
             autoRestore: normalized.readingHistory.autoRestore
@@ -6643,6 +7443,42 @@
                   }
                 } catch (e) {
                   console.error("[ChatGPT Helper] tabRenameManager.start \u9519\u8BEF:", e);
+                }
+                try {
+                  if (this.promptQuickMenu && this.settings.promptQuickMenuEnabled !== false) {
+                    this.promptQuickMenu.start();
+                  }
+                } catch (e) {
+                  console.error("[ChatGPT Helper] promptQuickMenu.start \u9519\u8BEF:", e);
+                }
+                try {
+                  if (this.messageSelectManager) {
+                    this.messageSelectManager.start();
+                  }
+                } catch (e) {
+                  console.error("[ChatGPT Helper] messageSelectManager.start \u9519\u8BEF:", e);
+                }
+                try {
+                  const runtime = typeof chrome !== "undefined" && chrome.runtime || typeof browser !== "undefined" && browser.runtime;
+                  if (runtime && runtime.onMessage && typeof runtime.onMessage.addListener === "function" && !window.__chHelperPanelListenerAdded) {
+                    window.__chHelperPanelListenerAdded = true;
+                    runtime.onMessage.addListener((msg) => {
+                      if (msg && msg.type === "ch-helper-toggle-panel" && this.panel) {
+                        try {
+                          this.toggleCollapse();
+                        } catch (e) {
+                          console.error("[ChatGPT Helper] \u5FEB\u6377\u952E\u5207\u6362\u9762\u677F\u5931\u8D25:", e);
+                        }
+                      }
+                    });
+                  }
+                } catch (e) {
+                  console.warn("[ChatGPT Helper] \u6CE8\u518C\u9762\u677F\u5207\u6362\u76D1\u542C\u5931\u8D25:", e);
+                }
+                try {
+                  this.maybeShowOnboarding();
+                } catch (e) {
+                  console.error("[ChatGPT Helper] maybeShowOnboarding \u9519\u8BEF:", e);
                 }
                 try {
                   if (!this.scrollLockManager) {
@@ -15743,6 +16579,570 @@
                     }
                 }
 
+                /* ==================== \u63D0\u793A\u8BCD\u6392\u5E8F\u9009\u62E9\u5668\uFF08\u7D27\u51D1\u7248\uFF09 ==================== */
+                .chatgpt-helper-prompt-sort-select {
+                    min-width: 0;
+                    flex: 0 0 auto;
+                    font-size: 12px;
+                }
+
+                .chatgpt-helper-prompt-sort-select .chatgpt-helper-custom-select-trigger {
+                    min-height: 30px;
+                    padding: 4px 8px;
+                    gap: 6px;
+                    font-size: 12px;
+                    border-radius: 7px;
+                }
+
+                .chatgpt-helper-prompt-sort-select .chatgpt-helper-custom-select-value {
+                    white-space: nowrap;
+                }
+
+                .chatgpt-helper-prompt-sort-select .chatgpt-helper-custom-select-menu {
+                    position: absolute;
+                    min-width: 128px;
+                    width: auto;
+                    z-index: 10030;
+                }
+
+                .chatgpt-helper-prompt-sort-select.open .chatgpt-helper-custom-select-menu {
+                    display: block;
+                    position: absolute;
+                    margin-top: 0;
+                }
+
+                /* \u6781\u7A84\u9762\u677F\u9690\u85CF\u6392\u5E8F\u9009\u62E9\u5668 */
+                .chatgpt-helper-content-panel.compact .chatgpt-helper-prompt-sort-select {
+                    display: none;
+                }
+
+                /* ==================== \u63D0\u793A\u8BCD\u53D8\u91CF\u586B\u5199\u5BF9\u8BDD\u6846 ==================== */
+                .chatgpt-helper-prompt-variables-prompt-name {
+                    font-size: 12px;
+                    color: var(--gh-text-secondary, #6b7280);
+                    margin: -6px 0 4px;
+                }
+
+                .chatgpt-helper-prompt-variables-desc {
+                    font-size: 12.5px;
+                    color: var(--gh-text-secondary, #6b7280);
+                    margin-bottom: 12px;
+                }
+
+                .chatgpt-helper-prompt-variables-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-bottom: 10px;
+                }
+
+                .chatgpt-helper-prompt-variables-label {
+                    flex: 0 0 auto;
+                    min-width: 96px;
+                    max-width: 42%;
+                    font-size: 12.5px;
+                    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                    color: var(--gh-text, #111827);
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .chatgpt-helper-prompt-variables-row input {
+                    flex: 1 1 auto;
+                    min-width: 0;
+                }
+
+                /* ==================== \u8F93\u5165\u6846 / \u5FEB\u901F\u5524\u8D77\u83DC\u5355\uFF08\u9875\u9762\u7EA7\u6D6E\u52A8\uFF09 ==================== */
+                .gh-quick-menu {
+                    position: fixed;
+                    z-index: 9000;
+                    min-width: 280px;
+                    max-width: 380px;
+                    display: none;
+                    flex-direction: column;
+                    padding: 5px;
+                    border-radius: 12px;
+                    background: #ffffff;
+                    border: 1px solid rgba(15, 23, 42, 0.12);
+                    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.20);
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu,
+                :root[data-gh-mode="dark"] .gh-quick-menu {
+                    background: #26272a;
+                    border-color: rgba(255, 255, 255, 0.14);
+                    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
+                }
+
+                .gh-quick-menu.open {
+                    display: flex;
+                }
+
+                .gh-quick-menu-list {
+                    max-height: 276px;
+                    overflow-y: auto;
+                }
+
+                .gh-quick-menu-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 9px;
+                    padding: 7px 9px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                }
+
+                .gh-quick-menu-item.active {
+                    background: rgba(59, 130, 246, 0.12);
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-item.active,
+                :root[data-gh-mode="dark"] .gh-quick-menu-item.active {
+                    background: rgba(255, 255, 255, 0.10);
+                }
+
+                .gh-quick-menu-item-icon {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 22px;
+                    height: 22px;
+                    border-radius: 6px;
+                    background: rgba(15, 23, 42, 0.06);
+                    color: #334155;
+                    flex: 0 0 auto;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-item-icon,
+                :root[data-gh-mode="dark"] .gh-quick-menu-item-icon {
+                    background: rgba(255, 255, 255, 0.07);
+                    color: #cbd5e1;
+                }
+
+                .gh-quick-menu-item-main {
+                    flex: 1 1 auto;
+                    min-width: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 8px;
+                }
+
+                .gh-quick-menu-item-title {
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: #0f172a;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-item-title,
+                :root[data-gh-mode="dark"] .gh-quick-menu-item-title {
+                    color: #ececf1;
+                }
+
+                .gh-quick-menu-item-meta {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    flex: 0 0 auto;
+                }
+
+                .gh-quick-menu-item-category {
+                    font-size: 11px;
+                    padding: 1px 7px;
+                    border-radius: 999px;
+                    background: rgba(59, 130, 246, 0.10);
+                    color: #2563eb;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-item-category,
+                :root[data-gh-mode="dark"] .gh-quick-menu-item-category {
+                    background: rgba(255, 255, 255, 0.08);
+                    color: #93c5fd;
+                }
+
+                .gh-quick-menu-item-vars {
+                    font-size: 11px;
+                    color: #9ca3af;
+                    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                }
+
+                .gh-quick-menu-empty {
+                    padding: 14px 10px;
+                    font-size: 12.5px;
+                    color: #6b7280;
+                    text-align: center;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-empty,
+                :root[data-gh-mode="dark"] .gh-quick-menu-empty {
+                    color: #9ca3af;
+                }
+
+                .gh-quick-menu-hint {
+                    padding: 6px 8px 3px;
+                    border-top: 1px solid rgba(15, 23, 42, 0.08);
+                    font-size: 11px;
+                    color: #9ca3af;
+                    white-space: nowrap;
+                }
+
+                body[data-gh-mode="dark"] .gh-quick-menu-hint,
+                :root[data-gh-mode="dark"] .gh-quick-menu-hint {
+                    border-top-color: rgba(255, 255, 255, 0.08);
+                }
+
+                /* ==================== \u591A\u9009\u6D88\u606F\u5BFC\u51FA\uFF08\u9875\u9762\u7EA7\u6D6E\u52A8\uFF09 ==================== */
+                .gh-msg-select-turn {
+                    position: relative;
+                }
+
+                .gh-msg-select-check {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    z-index: 30;
+                    width: 22px;
+                    height: 22px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    border-radius: 999px;
+                    border: 1.5px solid rgba(15, 23, 42, 0.22);
+                    background: rgba(255, 255, 255, 0.86);
+                    color: transparent;
+                    cursor: pointer;
+                    opacity: 0;
+                    transition: opacity 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+                }
+
+                .gh-msg-select-turn:hover .gh-msg-select-check,
+                .gh-msg-select-check.checked,
+                .gh-msg-select-check:focus-visible {
+                    opacity: 1;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-check,
+                :root[data-gh-mode="dark"] .gh-msg-select-check {
+                    border-color: rgba(255, 255, 255, 0.30);
+                    background: rgba(32, 33, 35, 0.88);
+                }
+
+                .gh-msg-select-check.checked {
+                    border-color: #10b981;
+                    background: #10b981;
+                    color: #ffffff;
+                }
+
+                .gh-msg-select-turn.gh-msg-selected > .gh-msg-select-check {
+                    opacity: 1;
+                }
+
+                .gh-msg-select-toolbar {
+                    position: fixed;
+                    left: 50%;
+                    transform: translateX(-50%) translateY(12px);
+                    bottom: 132px;
+                    z-index: 9000;
+                    display: none;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 10px;
+                    border-radius: 14px;
+                    background: rgba(255, 255, 255, 0.97);
+                    border: 1px solid rgba(15, 23, 42, 0.10);
+                    box-shadow: 0 16px 44px rgba(15, 23, 42, 0.24);
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                    opacity: 0;
+                    transition: opacity 0.16s ease, transform 0.16s ease;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar {
+                    background: rgba(32, 33, 35, 0.97);
+                    border-color: rgba(255, 255, 255, 0.12);
+                    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+                }
+
+                .gh-msg-select-toolbar.open {
+                    display: flex;
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+
+                .gh-msg-select-toolbar-count {
+                    font-size: 12.5px;
+                    font-weight: 600;
+                    color: #0f172a;
+                    padding: 0 4px 0 6px;
+                    white-space: nowrap;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-count,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-count {
+                    color: #ececf1;
+                }
+
+                .gh-msg-select-toolbar-btn {
+                    font-size: 12px;
+                    padding: 5px 10px;
+                    border-radius: 8px;
+                    border: 1px solid rgba(59, 130, 246, 0.35);
+                    background: rgba(59, 130, 246, 0.10);
+                    color: #2563eb;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    transition: background 0.12s ease;
+                }
+
+                .gh-msg-select-toolbar-btn:hover {
+                    background: rgba(59, 130, 246, 0.20);
+                }
+
+                .gh-msg-select-toolbar-btn.secondary {
+                    border-color: rgba(15, 23, 42, 0.16);
+                    background: rgba(15, 23, 42, 0.05);
+                    color: #475569;
+                }
+
+                .gh-msg-select-toolbar-btn.secondary:hover {
+                    background: rgba(15, 23, 42, 0.10);
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-btn,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-btn {
+                    border-color: rgba(147, 197, 253, 0.35);
+                    background: rgba(59, 130, 246, 0.16);
+                    color: #93c5fd;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-btn:hover,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-btn:hover {
+                    background: rgba(59, 130, 246, 0.28);
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-btn.secondary,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-btn.secondary {
+                    border-color: rgba(255, 255, 255, 0.16);
+                    background: rgba(255, 255, 255, 0.06);
+                    color: #cbd5e1;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-btn.secondary:hover,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-btn.secondary:hover {
+                    background: rgba(255, 255, 255, 0.12);
+                }
+
+                .gh-msg-select-toolbar-close {
+                    width: 24px;
+                    height: 24px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 999px;
+                    border: 0;
+                    background: transparent;
+                    color: #6b7280;
+                    cursor: pointer;
+                }
+
+                .gh-msg-select-toolbar-close:hover {
+                    background: rgba(15, 23, 42, 0.08);
+                    color: #0f172a;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-close,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-close {
+                    color: #9ca3af;
+                }
+
+                body[data-gh-mode="dark"] .gh-msg-select-toolbar-close:hover,
+                :root[data-gh-mode="dark"] .gh-msg-select-toolbar-close:hover {
+                    background: rgba(255, 255, 255, 0.10);
+                    color: #ececf1;
+                }
+
+                /* ==================== \u65B0\u624B\u5F15\u5BFC\u6D6E\u5C42\uFF08\u9875\u9762\u7EA7\uFF09 ==================== */
+                .gh-onboarding-overlay {
+                    position: fixed;
+                    inset: 0;
+                    z-index: 100000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 24px;
+                    background: rgba(15, 23, 42, 0.42);
+                    backdrop-filter: blur(3px);
+                    -webkit-backdrop-filter: blur(3px);
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                }
+
+                .gh-onboarding-card {
+                    width: 400px;
+                    max-width: 100%;
+                    padding: 22px 22px 18px;
+                    border-radius: 16px;
+                    background: #ffffff;
+                    border: 1px solid rgba(15, 23, 42, 0.08);
+                    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.34);
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-card,
+                :root[data-gh-mode="dark"] .gh-onboarding-card {
+                    background: #202124;
+                    border-color: rgba(255, 255, 255, 0.10);
+                    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.62);
+                }
+
+                .gh-onboarding-overlay.gh-onboarding-pulse .gh-onboarding-card {
+                    animation: gh-onboarding-pulse-anim 0.3s ease;
+                }
+
+                @keyframes gh-onboarding-pulse-anim {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.015); }
+                }
+
+                .gh-onboarding-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    margin-bottom: 16px;
+                }
+
+                .gh-onboarding-title {
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #0f172a;
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-title,
+                :root[data-gh-mode="dark"] .gh-onboarding-title {
+                    color: #ececf1;
+                }
+
+                .gh-onboarding-subtitle {
+                    margin-top: 2px;
+                    font-size: 12.5px;
+                    color: #64748b;
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-subtitle,
+                :root[data-gh-mode="dark"] .gh-onboarding-subtitle {
+                    color: #9aa0a6;
+                }
+
+                .gh-onboarding-steps {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    margin-bottom: 18px;
+                }
+
+                .gh-onboarding-step {
+                    display: flex;
+                    gap: 11px;
+                    padding: 10px 12px;
+                    border-radius: 12px;
+                    background: rgba(15, 23, 42, 0.04);
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-step,
+                :root[data-gh-mode="dark"] .gh-onboarding-step {
+                    background: rgba(255, 255, 255, 0.05);
+                }
+
+                .gh-onboarding-step-badge {
+                    flex: 0 0 auto;
+                    width: 28px;
+                    height: 28px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 9px;
+                    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+                    color: #ffffff;
+                }
+
+                .gh-onboarding-step-text {
+                    min-width: 0;
+                }
+
+                .gh-onboarding-step-title {
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #1e293b;
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-step-title,
+                :root[data-gh-mode="dark"] .gh-onboarding-step-title {
+                    color: #e3e3e8;
+                }
+
+                .gh-onboarding-step-desc {
+                    margin-top: 2px;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    color: #64748b;
+                }
+
+                body[data-gh-mode="dark"] .gh-onboarding-step-desc,
+                :root[data-gh-mode="dark"] .gh-onboarding-step-desc {
+                    color: #9aa0a6;
+                }
+
+                .gh-onboarding-start-btn {
+                    width: 100%;
+                    padding: 9px 0;
+                    border: 0;
+                    border-radius: 10px;
+                    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                    color: #ffffff;
+                    font-size: 13.5px;
+                    font-weight: 600;
+                    cursor: pointer;
+                }
+
+                .gh-onboarding-start-btn:hover {
+                    filter: brightness(1.06);
+                }
+
+                /* ==================== \u5BFC\u51FA\u5F15\u64CE\u6309\u9700\u52A0\u8F7D\u72B6\u6001 ==================== */
+                .chatgpt-helper-export-engine-loading {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    min-height: 120px;
+                    font-size: 13px;
+                    color: var(--gh-text-secondary, #6b7280);
+                }
+
+                .chatgpt-helper-export-engine-loading::before {
+                    content: '';
+                    width: 14px;
+                    height: 14px;
+                    border-radius: 999px;
+                    border: 2px solid var(--gh-panel-muted-line, rgba(0, 0, 0, 0.12));
+                    border-top-color: var(--gh-primary, #3b82f6);
+                    animation: gh-export-engine-spin 0.8s linear infinite;
+                }
+
+                @keyframes gh-export-engine-spin {
+                    to { transform: rotate(360deg); }
+                }
+
+                .chatgpt-helper-export-engine-error {
+                    padding: 14px 12px;
+                    font-size: 13px;
+                    color: var(--gh-text-secondary, #6b7280);
+                }
+
                 /* \u54CD\u5E94\u5F0F\u8C03\u6574\u4E2D\u680F - \u901A\u8FC7 JS \u52A8\u6001\u66F4\u65B0 */
             `;
           try {
@@ -16453,6 +17853,8 @@
       DEFAULT_THEME_CONFIG,
       DEFAULT_SETTINGS,
       DEFAULT_PROMPTS,
+      extractPromptVariables,
+      renderPromptVariables,
       createElement,
       getExtensionRuntime,
       getExtensionAssetUrl,
@@ -16522,6 +17924,81 @@
         });
         searchBar.appendChild(searchInput);
         toolbar.appendChild(searchBar);
+        const sortModes = [
+          { value: "manual", label: this.t("promptSortManual") },
+          { value: "recent", label: this.t("promptSortRecent") },
+          { value: "frequent", label: this.t("promptSortFrequent") }
+        ];
+        const currentSortMode = this.settings.promptSortMode || "manual";
+        const sortSelect = createElement("div", {
+          className: "chatgpt-helper-custom-select chatgpt-helper-prompt-sort-select",
+          title: this.t("promptSortLabel"),
+          "data-value": currentSortMode
+        });
+        const sortTrigger = createElement("button", {
+          className: "chatgpt-helper-custom-select-trigger",
+          type: "button",
+          "aria-haspopup": "listbox",
+          "aria-expanded": "false",
+          "aria-label": this.t("promptSortLabel"),
+          title: this.t("promptSortLabel")
+        });
+        const sortTriggerText = createElement("span", {
+          className: "chatgpt-helper-custom-select-value"
+        }, (sortModes.find((m) => m.value === currentSortMode) || sortModes[0]).label);
+        const sortTriggerIcon = createElement("span", {
+          className: "chatgpt-helper-custom-select-icon",
+          "aria-hidden": "true"
+        }, "\u25BE");
+        sortTrigger.appendChild(sortTriggerText);
+        sortTrigger.appendChild(sortTriggerIcon);
+        const sortMenu = createElement("div", {
+          className: "chatgpt-helper-custom-select-menu",
+          role: "listbox"
+        });
+        const closeSortMenu = () => {
+          sortSelect.classList.remove("open");
+          sortTrigger.setAttribute("aria-expanded", "false");
+        };
+        sortModes.forEach((mode) => {
+          const isSelected = mode.value === currentSortMode;
+          const option = createElement("button", {
+            className: "chatgpt-helper-custom-select-option" + (isSelected ? " selected" : ""),
+            type: "button",
+            role: "option",
+            "aria-selected": String(isSelected),
+            "data-value": mode.value
+          }, mode.label);
+          option.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.settings.promptSortMode = mode.value;
+            this.saveSettings();
+            sortSelect.dataset.value = mode.value;
+            sortTriggerText.textContent = mode.label;
+            sortMenu.querySelectorAll(".chatgpt-helper-custom-select-option").forEach((optionEl) => {
+              const active = optionEl.dataset.value === mode.value;
+              optionEl.classList.toggle("selected", active);
+              optionEl.setAttribute("aria-selected", String(active));
+            });
+            closeSortMenu();
+            this.refreshPromptList();
+          });
+          sortMenu.appendChild(option);
+        });
+        sortTrigger.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const willOpen = !sortSelect.classList.contains("open");
+          sortSelect.classList.toggle("open", willOpen);
+          sortTrigger.setAttribute("aria-expanded", String(willOpen));
+        });
+        sortSelect.addEventListener("focusout", (e) => {
+          if (!sortSelect.contains(e.relatedTarget)) closeSortMenu();
+        });
+        sortSelect.appendChild(sortTrigger);
+        sortSelect.appendChild(sortMenu);
+        toolbar.appendChild(sortSelect);
         const addBtn = createElement("button", {
           className: "chatgpt-helper-add-btn chatgpt-helper-add-btn-compact",
           type: "button",
@@ -16569,6 +18046,16 @@
           filteredPrompts = filteredPrompts.filter(
             (p) => p.title.toLowerCase().includes(query) || p.content.toLowerCase().includes(query)
           );
+        }
+        const sortMode = this.settings.promptSortMode || "manual";
+        if (sortMode !== "manual") {
+          filteredPrompts = [...filteredPrompts].sort((a, b) => {
+            if (sortMode === "frequent") {
+              const countDiff = (b.useCount || 0) - (a.useCount || 0);
+              if (countDiff !== 0) return countDiff;
+            }
+            return (b.lastUsedAt || 0) - (a.lastUsedAt || 0);
+          });
         }
         if (filteredPrompts.length === 0) {
           const emptyState = createElement("div", {
@@ -16661,8 +18148,7 @@
           item.addEventListener("click", (e) => {
             if (!e.target.closest("button") && !e.target.closest(".chatgpt-helper-prompt-drag-handle")) {
               this.selectedPrompt = prompt2;
-              this.adapter.insertPrompt(prompt2.content);
-              this.refreshPromptList();
+              this.usePrompt(prompt2);
             }
           });
           listContainer.appendChild(item);
@@ -16883,6 +18369,109 @@
         this.savePrompts();
         this.updateCategoryBar();
         this.refreshPromptList();
+      },
+      // ==================== 提示词使用与插入（变量 / 使用统计 / 快速菜单） ====================
+      trackPromptUsage(id) {
+        const prompt2 = this.prompts.find((p) => p.id === id);
+        if (!prompt2) return;
+        prompt2.useCount = (Number(prompt2.useCount) || 0) + 1;
+        prompt2.lastUsedAt = Date.now();
+        this.savePrompts();
+        if (this.currentTab === "prompts") {
+          this.refreshPromptList();
+        }
+      },
+      // 统一插入入口：面板点击、/ 快速菜单共用
+      // options.replaceComposer 为 true 时（快速菜单），整体替换输入框中的 "/关键词"
+      usePrompt(prompt2, options = {}) {
+        if (!prompt2) return;
+        const variables = extractPromptVariables(prompt2.content);
+        if (variables.length > 0) {
+          this.showPromptVariablesDialog(prompt2, variables, (content) => {
+            this.trackPromptUsage(prompt2.id);
+            this.applyPromptToComposer(content, options);
+          });
+        } else {
+          this.trackPromptUsage(prompt2.id);
+          this.applyPromptToComposer(prompt2.content, options);
+        }
+      },
+      applyPromptToComposer(content, options = {}) {
+        let inserted = false;
+        if (options.replaceComposer && this.promptQuickMenu) {
+          inserted = this.promptQuickMenu.replaceComposerText(content);
+        }
+        if (!inserted) {
+          inserted = this.adapter.insertPrompt(content);
+        }
+        this.showToast(inserted ? this.t("inserted") : this.t("operationFailed"));
+      },
+      showPromptVariablesDialog(prompt2, variables, onConfirm) {
+        const overlay = createElement("div", {
+          className: "chatgpt-helper-prompt-dialog-overlay",
+          role: "presentation"
+        });
+        const dialog = createElement("div", {
+          className: "chatgpt-helper-prompt-dialog chatgpt-helper-prompt-variables-dialog",
+          role: "dialog",
+          "aria-modal": "true",
+          "aria-label": this.t("promptVariablesTitle")
+        });
+        dialog.appendChild(createElement("h3", {
+          className: "chatgpt-helper-prompt-dialog-title"
+        }, this.t("promptVariablesTitle")));
+        dialog.appendChild(createElement("div", {
+          className: "chatgpt-helper-prompt-variables-prompt-name"
+        }, prompt2?.title || ""));
+        dialog.appendChild(createElement("div", {
+          className: "chatgpt-helper-prompt-variables-desc"
+        }, this.t("promptVariablesDesc")));
+        const inputs = {};
+        variables.forEach((name) => {
+          const row = createElement("div", { className: "chatgpt-helper-prompt-variables-row" });
+          row.appendChild(createElement("label", {
+            className: "chatgpt-helper-prompt-variables-label"
+          }, `{{${name}}}`));
+          const input = createElement("input", {
+            className: "chatgpt-helper-prompt-dialog-field",
+            type: "text",
+            placeholder: name
+          });
+          inputs[name] = input;
+          row.appendChild(input);
+          dialog.appendChild(row);
+        });
+        const buttons = createElement("div", {
+          className: "chatgpt-helper-prompt-dialog-actions"
+        });
+        const cancelBtn = createElement("button", {
+          className: "chatgpt-helper-prompt-dialog-btn secondary",
+          type: "button"
+        }, this.t("cancel"));
+        cancelBtn.addEventListener("click", () => overlay.remove());
+        const insertBtn = createElement("button", {
+          className: "chatgpt-helper-prompt-dialog-btn primary",
+          type: "button"
+        }, this.t("promptInsert"));
+        insertBtn.addEventListener("click", () => {
+          const values = {};
+          variables.forEach((name) => {
+            values[name] = (inputs[name].value || "").trim();
+          });
+          overlay.remove();
+          const rendered = renderPromptVariables(prompt2.content, values);
+          onConfirm(rendered);
+        });
+        buttons.appendChild(cancelBtn);
+        buttons.appendChild(insertBtn);
+        dialog.appendChild(buttons);
+        overlay.appendChild(dialog);
+        document.body.appendChild(overlay);
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) overlay.remove();
+        });
+        const firstInput = dialog.querySelector('input[type="text"]');
+        if (firstInput) setTimeout(() => firstInput.focus(), 50);
       }
     });
   })();
@@ -16978,6 +18567,47 @@
         } catch (e) {
         }
       },
+      // 按需加载导出引擎：jszip / html2canvas / chatgpt-exporter 不再随页面加载，
+      // 首次进入导出页时请求 service worker 注入，减小 ChatGPT 页面的脚本解析负担
+      async ensureExporterEngine() {
+        const isReady = () => {
+          const mount = window.__MY_EXT__ && window.__MY_EXT__.ChatGPTExporterMount || window.ChatGPTExporterMount;
+          return typeof mount === "function";
+        };
+        if (isReady()) return true;
+        if (this._exporterEnginePromise) return this._exporterEnginePromise;
+        this._exporterEnginePromise = (async () => {
+          const runtime = typeof chrome !== "undefined" && chrome.runtime || typeof browser !== "undefined" && browser.runtime;
+          if (!runtime || !runtime.id || typeof runtime.sendMessage !== "function") {
+            console.warn("[ChatGPT Helper] \u5F53\u524D\u73AF\u5883\u65E0\u6CD5\u6309\u9700\u6CE8\u5165\u5BFC\u51FA\u5F15\u64CE");
+            return isReady();
+          }
+          try {
+            await new Promise((resolve) => {
+              try {
+                runtime.sendMessage({ type: "ch-helper-inject-export-deps" }, () => {
+                  void (chrome.runtime && chrome.runtime.lastError);
+                  resolve();
+                });
+              } catch (e) {
+                resolve();
+              }
+            });
+          } catch (e) {
+            console.warn("[ChatGPT Helper] \u8BF7\u6C42\u6CE8\u5165\u5BFC\u51FA\u5F15\u64CE\u5931\u8D25:", e);
+          }
+          for (let i = 0; i < 60; i++) {
+            if (isReady()) return true;
+            await new Promise((resolve) => setTimeout(resolve, 100));
+          }
+          return isReady();
+        })();
+        try {
+          return await this._exporterEnginePromise;
+        } finally {
+          this._exporterEnginePromise = null;
+        }
+      },
       renderExport(container) {
         container.classList.add("chatgpt-helper-export-panel");
         this.syncExporterLanguage();
@@ -16995,8 +18625,32 @@
           }
         });
         container.appendChild(exportContainer);
+        const loadingEl = createElement("div", {
+          className: "chatgpt-helper-export-engine-loading"
+        }, this.t("exportEngineLoading"));
+        const alreadyReady = typeof (window.__MY_EXT__ && window.__MY_EXT__.ChatGPTExporterMount || window.ChatGPTExporterMount) === "function";
+        if (!alreadyReady) {
+          exportContainer.appendChild(loadingEl);
+        }
+        this.ensureExporterEngine().then((ready) => {
+          if (!this.panel || !this.panel.isConnected) return;
+          if (loadingEl.parentNode) loadingEl.remove();
+          if (!ready) {
+            exportContainer.appendChild(createElement("div", {
+              className: "chatgpt-helper-export-engine-error"
+            }, this.t("exportEngineInjectFailed")));
+            return;
+          }
+          this.tryMountExporter(exportContainer);
+        }).catch((e) => {
+          console.error("[ChatGPT Helper] ensureExporterEngine \u5F02\u5E38:", e);
+          if (loadingEl.parentNode) loadingEl.remove();
+          this.tryMountExporter(exportContainer);
+        });
+      },
+      tryMountExporter(exportContainer) {
         let retryCount = 0;
-        const maxRetries = 50;
+        const maxRetries = 30;
         const tryMount = () => {
           const exporterMount = window.__MY_EXT__ && window.__MY_EXT__.ChatGPTExporterMount ? window.__MY_EXT__.ChatGPTExporterMount : window.ChatGPTExporterMount;
           if (exporterMount && typeof exporterMount === "function") {
@@ -17020,9 +18674,6 @@
             }
           } else if (retryCount < maxRetries) {
             retryCount++;
-            if (retryCount % 10 === 0) {
-              console.log(`[ChatGPT Helper] \u7B49\u5F85 ChatGPTExporterMount... (${retryCount}/${maxRetries})`);
-            }
             setTimeout(tryMount, 100);
           } else {
             console.warn("[ChatGPT Helper] ChatGPTExporterMount \u672A\u627E\u5230\uFF0C\u5F53\u524D\u72B6\u6001:", {
@@ -17590,6 +19241,39 @@
                 this.settings.defaultPanelState = val;
                 this.saveSettings();
               }
+            },
+            {
+              label: this.t("promptQuickMenuEnabledLabel") || "Slash Quick Menu",
+              desc: this.t("promptQuickMenuEnabledDesc"),
+              type: "toggle",
+              value: this.settings.promptQuickMenuEnabled !== false,
+              onChange: (val) => {
+                this.settings.promptQuickMenuEnabled = val;
+                this.saveSettings();
+                try {
+                  if (!this.promptQuickMenu) return;
+                  if (val) this.promptQuickMenu.start();
+                  else this.promptQuickMenu.stop();
+                } catch (e) {
+                  console.error("[ChatGPT Helper] \u5207\u6362\u5FEB\u901F\u83DC\u5355\u5931\u8D25:", e);
+                }
+                this.showToast(this.t(val ? "enabled" : "disabled") + " " + this.t("promptQuickMenuEnabledLabel"));
+              }
+            },
+            {
+              label: this.t("shortcutHintLabel") || "Panel Shortcut",
+              desc: this.t("shortcutHintDesc"),
+              type: "button",
+              buttonText: "Alt+Shift+H",
+              onClick: () => {
+                this.showToast(this.t("shortcutHintDesc"));
+              }
+            },
+            {
+              label: this.t("replayOnboarding") || "Replay Onboarding",
+              type: "button",
+              buttonText: this.t("replayOnboarding"),
+              onClick: () => this.maybeShowOnboarding({ force: true })
             }
           ]),
           createCompactSection("tabs", this.t("settingsGroupTabs") || "Tabs", [
@@ -17776,7 +19460,23 @@
               }
             } : null
           ]),
-          createQuickButtonsSection()
+          createQuickButtonsSection(),
+          createCompactSection("data", this.t("settingsGroupData") || "Backup & Restore", [
+            {
+              label: this.t("backupExportButton") || "Export Backup",
+              desc: this.t("backupExportDesc"),
+              type: "button",
+              buttonText: this.t("backupExportButton"),
+              onClick: () => this.exportBackupData()
+            },
+            {
+              label: this.t("backupImportButton") || "Import Backup",
+              desc: this.t("backupImportDesc"),
+              type: "button",
+              buttonText: this.t("backupImportButton"),
+              onClick: () => this.importBackupData()
+            }
+          ])
         ];
         sections.forEach((section) => settingsContent.appendChild(section));
         const aboutFooter = createElement("div", {
@@ -19485,6 +21185,272 @@
             }
           }, 1e3);
         });
+      }
+    });
+  })();
+  (function() {
+    const root = window.__MY_EXT__ = window.__MY_EXT__ || {};
+    const H = root.helper = root.helper || {};
+    const {
+      SETTING_KEYS,
+      EXTENSION_VERSION,
+      createElement,
+      createHelperLogoNode,
+      createSvgIconNode
+    } = H;
+    const BACKUP_APP_MARKER = "chatgpt-helper";
+    const BACKUP_FORMAT_VERSION = 1;
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        try {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = String(reader.result || "");
+            const commaIndex = result.indexOf(",");
+            resolve(commaIndex >= 0 ? result.slice(commaIndex + 1) : result);
+          };
+          reader.onerror = () => reject(reader.error || new Error("read blob failed"));
+          reader.readAsDataURL(blob);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    }
+    function base64ToBlob(base64, mimeType) {
+      const binary = atob(String(base64 || ""));
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return new Blob([bytes], { type: mimeType || "application/octet-stream" });
+    }
+    function formatBackupTimestamp() {
+      const now = /* @__PURE__ */ new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+    }
+    if (!H.ChatGPTHelper) {
+      console.error("[ChatGPT Helper] ChatGPTHelper is not loaded; skipping App Onboarding & Backup module");
+      return;
+    }
+    const ChatGPTHelperClass = H.ChatGPTHelper;
+    Object.assign(ChatGPTHelperClass.prototype, {
+      // ==================== 新手引导 ====================
+      maybeShowOnboarding(options = {}) {
+        try {
+          const done = window.GM_getValue(SETTING_KEYS.ONBOARDING_DONE, null);
+          if (!options.force && done) return;
+          this.showOnboardingOverlay();
+        } catch (e) {
+          console.error("[ChatGPT Helper] \u663E\u793A\u65B0\u624B\u5F15\u5BFC\u5931\u8D25:", e);
+        }
+      },
+      showOnboardingOverlay() {
+        const existing = document.getElementById("gh-onboarding-overlay");
+        if (existing) existing.remove();
+        const overlay = createElement("div", {
+          id: "gh-onboarding-overlay",
+          className: "gh-onboarding-overlay",
+          role: "dialog",
+          "aria-modal": "true",
+          "aria-label": this.t("onboardingTitle")
+        });
+        const card = createElement("div", { className: "gh-onboarding-card" });
+        const header = createElement("div", { className: "gh-onboarding-header" });
+        header.appendChild(createHelperLogoNode({
+          size: 30,
+          className: "gh-onboarding-logo",
+          title: "ChatGPT Helper"
+        }));
+        const headerText = createElement("div", { className: "gh-onboarding-header-text" });
+        headerText.appendChild(createElement("div", { className: "gh-onboarding-title" }, this.t("onboardingTitle")));
+        headerText.appendChild(createElement("div", { className: "gh-onboarding-subtitle" }, this.t("onboardingSubtitle")));
+        header.appendChild(headerText);
+        card.appendChild(header);
+        const steps = createElement("div", { className: "gh-onboarding-steps" });
+        const stepDefs = [
+          { icon: "edit", titleKey: "onboardingStep1Title", descKey: "onboardingStep1Desc" },
+          { icon: "message", titleKey: "onboardingStep2Title", descKey: "onboardingStep2Desc" },
+          { icon: "list", titleKey: "onboardingStep3Title", descKey: "onboardingStep3Desc" }
+        ];
+        stepDefs.forEach((def, index) => {
+          const step = createElement("div", { className: "gh-onboarding-step" });
+          const badge = createElement("div", { className: "gh-onboarding-step-badge" });
+          badge.appendChild(createSvgIconNode(def.icon, { size: 15 }));
+          step.appendChild(badge);
+          const text = createElement("div", { className: "gh-onboarding-step-text" });
+          text.appendChild(createElement("div", { className: "gh-onboarding-step-title" }, `${index + 1}. ${this.t(def.titleKey)}`));
+          text.appendChild(createElement("div", { className: "gh-onboarding-step-desc" }, this.t(def.descKey)));
+          step.appendChild(text);
+          steps.appendChild(step);
+        });
+        card.appendChild(steps);
+        const startBtn = createElement("button", {
+          className: "gh-onboarding-start-btn",
+          type: "button"
+        }, this.t("onboardingStart"));
+        startBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          try {
+            window.GM_setValue(SETTING_KEYS.ONBOARDING_DONE, true);
+          } catch (err) {
+            console.error("[ChatGPT Helper] \u4FDD\u5B58\u5F15\u5BFC\u5B8C\u6210\u6807\u8BB0\u5931\u8D25:", err);
+          }
+          overlay.remove();
+        });
+        card.appendChild(startBtn);
+        overlay.appendChild(card);
+        document.body.appendChild(overlay);
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) {
+            overlay.classList.add("gh-onboarding-pulse");
+            setTimeout(() => overlay.classList.remove("gh-onboarding-pulse"), 300);
+          }
+        });
+      },
+      // ==================== 数据备份与恢复 ====================
+      async collectBackupData() {
+        const data = {};
+        const prompts = window.GM_getValue(SETTING_KEYS.PROMPTS, null);
+        data.prompts = Array.isArray(prompts) ? prompts : this.prompts || [];
+        const settings = window.GM_getValue(SETTING_KEYS.SETTINGS, null);
+        data.settings = settings && typeof settings === "object" ? settings : typeof this.serializeSettingsForStorage === "function" ? this.serializeSettingsForStorage() : {};
+        data.language = window.GM_getValue(SETTING_KEYS.LANGUAGE, "auto");
+        data.promptLibraryVersion = window.GM_getValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, null);
+        data.conversations = window.GM_getValue(SETTING_KEYS.CONVERSATIONS, null);
+        data.readingProgress = window.GM_getValue(SETTING_KEYS.READING_PROGRESS, null);
+        data.themeAssets = [];
+        try {
+          if (this.themeAssetRepository && typeof this.themeAssetRepository.getAllAssets === "function") {
+            const assets = await this.themeAssetRepository.getAllAssets();
+            for (const asset of assets || []) {
+              if (!asset || !asset.blob) continue;
+              data.themeAssets.push({
+                id: asset.id,
+                mimeType: asset.mimeType,
+                size: asset.size,
+                createdAt: asset.createdAt,
+                dataBase64: await blobToBase64(asset.blob)
+              });
+            }
+          }
+        } catch (e) {
+          console.warn("[ChatGPT Helper] \u5907\u4EFD\u4E3B\u9898\u58C1\u7EB8\u5931\u8D25:", e);
+        }
+        return data;
+      },
+      async exportBackupData() {
+        try {
+          const data = await this.collectBackupData();
+          const backup = {
+            app: BACKUP_APP_MARKER,
+            formatVersion: BACKUP_FORMAT_VERSION,
+            extensionVersion: EXTENSION_VERSION,
+            exportedAt: (/* @__PURE__ */ new Date()).toISOString(),
+            data
+          };
+          const json = JSON.stringify(backup, null, 2);
+          const blob = new Blob([json], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const link = createElement("a", {
+            href: url,
+            download: `chatgpt-helper-backup-${formatBackupTimestamp()}.json`
+          });
+          document.body.appendChild(link);
+          link.click();
+          setTimeout(() => {
+            link.remove();
+            URL.revokeObjectURL(url);
+          }, 1e3);
+          this.showToast(this.t("backupExportSuccess"));
+        } catch (e) {
+          console.error("[ChatGPT Helper] \u5BFC\u51FA\u5907\u4EFD\u5931\u8D25:", e);
+          this.showToast(this.t("operationFailed"));
+        }
+      },
+      importBackupData() {
+        try {
+          const existingInput = document.getElementById("gh-backup-import-input");
+          if (existingInput) existingInput.remove();
+          const input = createElement("input", {
+            id: "gh-backup-import-input",
+            type: "file",
+            accept: "application/json,.json"
+          });
+          input.style.display = "none";
+          document.body.appendChild(input);
+          input.addEventListener("change", async () => {
+            const file = input.files && input.files[0];
+            input.remove();
+            if (!file) return;
+            try {
+              const text = await file.text();
+              const parsed = JSON.parse(text);
+              if (!parsed || parsed.app !== BACKUP_APP_MARKER || !parsed.data || typeof parsed.data !== "object") {
+                this.showToast(this.t("backupInvalidFile"));
+                return;
+              }
+              if (!confirm(this.t("backupImportConfirm"))) {
+                return;
+              }
+              await this.applyBackupData(parsed.data);
+            } catch (e) {
+              console.error("[ChatGPT Helper] \u5BFC\u5165\u5907\u4EFD\u5931\u8D25:", e);
+              this.showToast(this.t("backupImportFailed"));
+            }
+          });
+          input.click();
+        } catch (e) {
+          console.error("[ChatGPT Helper] \u6253\u5F00\u5907\u4EFD\u6587\u4EF6\u5931\u8D25:", e);
+          this.showToast(this.t("operationFailed"));
+        }
+      },
+      async applyBackupData(data) {
+        if (Array.isArray(data.prompts)) {
+          window.GM_setValue(SETTING_KEYS.PROMPTS, data.prompts);
+        }
+        if (data.settings && typeof data.settings === "object") {
+          window.GM_setValue(SETTING_KEYS.SETTINGS, data.settings);
+        }
+        if (typeof data.language === "string" && data.language) {
+          window.GM_setValue(SETTING_KEYS.LANGUAGE, data.language);
+        }
+        if (data.conversations && typeof data.conversations === "object") {
+          window.GM_setValue(SETTING_KEYS.CONVERSATIONS, data.conversations);
+        }
+        if (data.readingProgress && typeof data.readingProgress === "object") {
+          window.GM_setValue(SETTING_KEYS.READING_PROGRESS, data.readingProgress);
+        }
+        if (data.promptLibraryVersion != null) {
+          window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, data.promptLibraryVersion);
+        }
+        let assetCount = 0;
+        if (Array.isArray(data.themeAssets) && data.themeAssets.length > 0) {
+          try {
+            if (!this.themeAssetRepository) {
+              this.themeAssetRepository = new H.ThemeAssetRepository();
+            }
+            for (const asset of data.themeAssets) {
+              if (!asset || !asset.id || !asset.dataBase64) continue;
+              const blob = base64ToBlob(asset.dataBase64, asset.mimeType);
+              await this.themeAssetRepository.putAsset(blob, asset.mimeType, asset.id);
+              assetCount++;
+            }
+          } catch (e) {
+            console.warn("[ChatGPT Helper] \u6062\u590D\u4E3B\u9898\u58C1\u7EB8\u5931\u8D25:", e);
+          }
+        }
+        const promptCount = Array.isArray(data.prompts) ? data.prompts.length : 0;
+        const conversationCount = data.conversations && data.conversations.conversations ? Object.keys(data.conversations.conversations || {}).length : 0;
+        const summary = (this.t("backupIncludeHint") || "").replace("{prompts}", String(promptCount)).replace("{conversations}", String(conversationCount)).replace("{assets}", String(assetCount));
+        this.showToast(`${this.t("backupImportSuccess")} \xB7 ${summary}`);
+        setTimeout(() => {
+          try {
+            window.location.reload();
+          } catch (e) {
+            console.error("[ChatGPT Helper] \u5237\u65B0\u9875\u9762\u5931\u8D25:", e);
+          }
+        }, 2500);
       }
     });
   })();
