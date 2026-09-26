@@ -20,6 +20,8 @@
     ];
     const MAX_QUERY_LENGTH = 24;
     const MAX_VISIBLE_ITEMS = 9;
+    // 触发前缀使用双斜杠 // ：单斜杠属于 ChatGPT 自带的斜杠命令菜单，避免与其冲突
+    const TRIGGER_PREFIX = '//';
 
     class PromptQuickMenu {
         constructor(config = {}) {
@@ -104,9 +106,9 @@
             }
             this.composer = e.target;
             const rawText = this.getComposerText(this.composer);
-            const text = rawText.replace(/^[\s]+/, ''); // 仅在整体以 / 开头时触发
-            if (text.startsWith('/')) {
-                const query = text.slice(1);
+            const text = rawText.replace(/^[\s]+/, ''); // 仅在整体以 // 开头时触发
+            if (text.startsWith(TRIGGER_PREFIX)) {
+                const query = text.slice(TRIGGER_PREFIX.length);
                 if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith('/')) {
                     this.close();
                     return;
@@ -303,28 +305,49 @@
             }
         }
 
-        // 用最终内容替换输入框文本（删除 / 关键词后写入提示词）
+        // 用最终内容替换输入框文本（删除 "//关键词" 后写入提示词）
+        // 注意：在 ProseMirror 等编辑器上 execCommand 可能返回 false 但内容实际已插入，
+        // 因此以 DOM 实际文本为准判断成败，绝不重复插入导致文字翻倍。
         replaceComposerText(text) {
             const el = this.composer && this.composer.isConnected
                 ? this.composer
                 : this.getComposer();
             if (!el) return false;
+            const normalize = (s) => String(s || '').replace(/\s+/g, '');
             try {
                 el.focus();
                 if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
                     el.value = text;
                     el.dispatchEvent(new Event('input', { bubbles: true }));
                     el.dispatchEvent(new Event('change', { bubbles: true }));
-                } else {
+                    return true;
+                }
+
+                const selectAll = () => {
                     const selection = window.getSelection();
                     const range = document.createRange();
                     range.selectNodeContents(el);
                     selection.removeAllRanges();
                     selection.addRange(range);
-                    document.execCommand('insertText', false, text);
+                };
+
+                selectAll();
+                document.execCommand('insertText', false, text);
+
+                if (normalize(el.textContent) === normalize(text)) {
+                    // 内容已就位（无论 execCommand 返回值如何）
                     el.dispatchEvent(new Event('input', { bubbles: true }));
+                    return true;
                 }
-                return true;
+
+                // 未生效：清空输入内容后交由调用方走 adapter.insertPrompt 兜底
+                try {
+                    selectAll();
+                    document.execCommand('delete');
+                } catch (err) {
+                    // ignore
+                }
+                return false;
             } catch (e) {
                 console.error('[ChatGPT Helper] 替换输入框文本失败:', e);
                 return false;

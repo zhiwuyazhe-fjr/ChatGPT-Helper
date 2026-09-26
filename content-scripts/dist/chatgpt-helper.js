@@ -310,7 +310,7 @@
         onboardingTitle: "\u6B22\u8FCE\u4F7F\u7528 ChatGPT Helper",
         onboardingSubtitle: "\u8BA9\u957F\u5BF9\u8BDD\u66F4\u6E05\u6670\uFF0C\u8BA9\u5185\u5BB9\u6C89\u6DC0\u4E0B\u6765\u3002\u4E09\u6B65\u4E0A\u624B\uFF1A",
         onboardingStep1Title: "\u63D0\u793A\u8BCD\u4E00\u952E\u63D2\u5165",
-        onboardingStep1Desc: "\u5185\u7F6E\u5E38\u7528\u6A21\u677F\uFF0C\u70B9\u51FB\u5373\u63D2\u5165\uFF1B\u5728\u8F93\u5165\u6846\u8F93\u5165 / \u53EF\u968F\u65F6\u5FEB\u901F\u5524\u8D77",
+        onboardingStep1Desc: "\u5185\u7F6E\u5E38\u7528\u6A21\u677F\uFF0C\u70B9\u51FB\u5373\u63D2\u5165\uFF1B\u5728\u8F93\u5165\u6846\u8F93\u5165 // \u53EF\u968F\u65F6\u5FEB\u901F\u5524\u8D77",
         onboardingStep2Title: "\u540C\u6B65\u5386\u53F2\u4F1A\u8BDD",
         onboardingStep2Desc: "\u5728\u201C\u4F1A\u8BDD\u201D\u9875\u70B9\u51FB\u540C\u6B65\uFF0C\u5373\u53EF\u641C\u7D22\u3001\u7F6E\u9876\u4E0E\u5206\u7EC4\u7BA1\u7406",
         onboardingStep3Title: "\u957F\u5BF9\u8BDD\u5927\u7EB2\u5BFC\u822A",
@@ -326,7 +326,7 @@
         promptVariablesDesc: "\u8BE5\u63D0\u793A\u8BCD\u5305\u542B\u4EE5\u4E0B\u53D8\u91CF\uFF0C\u586B\u5199\u540E\u63D2\u5165\uFF1A",
         promptInsert: "\u63D2\u5165",
         promptQuickMenuEnabledLabel: "\u8F93\u5165\u6846 / \u5FEB\u901F\u5524\u8D77",
-        promptQuickMenuEnabledDesc: "\u5728 ChatGPT \u8F93\u5165\u6846\u4EE5 / \u5F00\u5934\u8F93\u5165\u65F6\uFF0C\u5F39\u51FA\u63D0\u793A\u8BCD\u5FEB\u901F\u9009\u62E9\u83DC\u5355",
+        promptQuickMenuEnabledDesc: "\u5728 ChatGPT \u8F93\u5165\u6846\u4EE5 // \u5F00\u5934\u8F93\u5165\u65F6\uFF0C\u5F39\u51FA\u63D0\u793A\u8BCD\u5FEB\u901F\u9009\u62E9\u83DC\u5355\uFF08\u5355\u659C\u6760 / \u4FDD\u7559\u7ED9 ChatGPT \u81EA\u5E26\u547D\u4EE4\uFF09",
         quickMenuEmpty: "\u6CA1\u6709\u5339\u914D\u7684\u63D0\u793A\u8BCD",
         quickMenuHint: "\u2191\u2193 \u9009\u62E9\u3000Enter \u63D2\u5165\u3000Esc \u5173\u95ED",
         // 快捷键
@@ -623,7 +623,7 @@
         onboardingTitle: "Welcome to ChatGPT Helper",
         onboardingSubtitle: "Clearer long conversations, knowledge that stays. Three steps to start:",
         onboardingStep1Title: "One-click prompts",
-        onboardingStep1Desc: "Built-in templates insert instantly; type / in the input box for a quick picker",
+        onboardingStep1Desc: "Built-in templates insert instantly; type // in the input box for a quick picker",
         onboardingStep2Title: "Sync conversations",
         onboardingStep2Desc: "Open the Conversations tab and sync to search, pin and organize chats",
         onboardingStep3Title: "Outline for long chats",
@@ -639,7 +639,7 @@
         promptVariablesDesc: "This prompt contains variables. Fill them in before inserting:",
         promptInsert: "Insert",
         promptQuickMenuEnabledLabel: "Slash Quick Menu",
-        promptQuickMenuEnabledDesc: "Typing / at the start of the ChatGPT input opens a quick prompt picker",
+        promptQuickMenuEnabledDesc: "Typing // at the start of the ChatGPT input opens a quick prompt picker (single / is left to ChatGPT native commands)",
         quickMenuEmpty: "No matching prompts",
         quickMenuHint: "\u2191\u2193 navigate \xB7 Enter insert \xB7 Esc close",
         // Shortcut
@@ -5101,6 +5101,7 @@
     ];
     const MAX_QUERY_LENGTH = 24;
     const MAX_VISIBLE_ITEMS = 9;
+    const TRIGGER_PREFIX = "//";
     class PromptQuickMenu {
       constructor(config = {}) {
         this.getPrompts = config.getPrompts || (() => []);
@@ -5178,8 +5179,8 @@
         this.composer = e.target;
         const rawText = this.getComposerText(this.composer);
         const text = rawText.replace(/^[\s]+/, "");
-        if (text.startsWith("/")) {
-          const query = text.slice(1);
+        if (text.startsWith(TRIGGER_PREFIX)) {
+          const query = text.slice(TRIGGER_PREFIX.length);
           if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith("/")) {
             this.close();
             return;
@@ -5362,26 +5363,40 @@
           console.error("[ChatGPT Helper] \u5FEB\u901F\u83DC\u5355\u63D2\u5165\u5931\u8D25:", e);
         }
       }
-      // 用最终内容替换输入框文本（删除 / 关键词后写入提示词）
+      // 用最终内容替换输入框文本（删除 "//关键词" 后写入提示词）
+      // 注意：在 ProseMirror 等编辑器上 execCommand 可能返回 false 但内容实际已插入，
+      // 因此以 DOM 实际文本为准判断成败，绝不重复插入导致文字翻倍。
       replaceComposerText(text) {
         const el = this.composer && this.composer.isConnected ? this.composer : this.getComposer();
         if (!el) return false;
+        const normalize = (s) => String(s || "").replace(/\s+/g, "");
         try {
           el.focus();
           if (el.tagName === "TEXTAREA" || el.tagName === "INPUT") {
             el.value = text;
             el.dispatchEvent(new Event("input", { bubbles: true }));
             el.dispatchEvent(new Event("change", { bubbles: true }));
-          } else {
+            return true;
+          }
+          const selectAll = () => {
             const selection = window.getSelection();
             const range = document.createRange();
             range.selectNodeContents(el);
             selection.removeAllRanges();
             selection.addRange(range);
-            document.execCommand("insertText", false, text);
+          };
+          selectAll();
+          document.execCommand("insertText", false, text);
+          if (normalize(el.textContent) === normalize(text)) {
             el.dispatchEvent(new Event("input", { bubbles: true }));
+            return true;
           }
-          return true;
+          try {
+            selectAll();
+            document.execCommand("delete");
+          } catch (err) {
+          }
+          return false;
         } catch (e) {
           console.error("[ChatGPT Helper] \u66FF\u6362\u8F93\u5165\u6846\u6587\u672C\u5931\u8D25:", e);
           return false;
