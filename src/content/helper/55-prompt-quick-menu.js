@@ -66,6 +66,11 @@
             document.addEventListener('input', this._onInput, true);
             document.addEventListener('keydown', this._onKeyDown, true);
             document.addEventListener('mousedown', this._onMouseDown, true);
+            // 窗口尺寸变化时，若菜单开着则重新贴位（输入框为固定定位，随之移动）
+            this._onResize = () => {
+                if (this.isOpen) this.positionMenu();
+            };
+            window.addEventListener('resize', this._onResize);
             // 页面切换 / 输入框重建时关闭菜单
             this._onSelectionChange = () => {
                 if (this.isOpen && !this.getComposer()) this.close();
@@ -80,6 +85,9 @@
             document.removeEventListener('keydown', this._onKeyDown, true);
             document.removeEventListener('mousedown', this._onMouseDown, true);
             document.removeEventListener('selectionchange', this._onSelectionChange);
+            if (this._onResize) {
+                window.removeEventListener('resize', this._onResize);
+            }
             this.close();
         }
 
@@ -175,9 +183,11 @@
                 this.menuEl = this.buildMenu();
                 document.body.appendChild(this.menuEl);
             }
+            // 先渲染并显示菜单，再定位（可见状态下才能量到真实高度，
+            // 同一帧内完成不会闪烁），确保菜单整体位于输入框上方
+            this.menuEl.classList.add('open');
             this.renderItems();
             this.positionMenu();
-            this.menuEl.classList.add('open');
             this.isOpen = true;
         }
 
@@ -281,13 +291,17 @@
         positionMenu() {
             if (!this.menuEl || !this.composer) return;
             const rect = this.composer.getBoundingClientRect();
+            // 菜单必须处于可见状态（open class）才能量到真实高度，
+            // 否则 display:none 下高度为 0，会把菜单摆到输入框内部造成遮挡
             const menuRect = this.menuEl.getBoundingClientRect();
             let left = rect.left;
             if (left + menuRect.width > window.innerWidth - 12) {
                 left = Math.max(12, window.innerWidth - menuRect.width - 12);
             }
+            // 优先整体悬在输入框上方：菜单底边距输入框顶边 8px
             let top = rect.top - menuRect.height - 8;
             if (top < 12) {
+                // 上方空间不足时才落到输入框下方
                 top = rect.bottom + 8;
             }
             this.menuEl.style.left = `${Math.round(left)}px`;

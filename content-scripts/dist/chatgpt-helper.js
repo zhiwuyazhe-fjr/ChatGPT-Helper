@@ -5142,6 +5142,10 @@
         document.addEventListener("input", this._onInput, true);
         document.addEventListener("keydown", this._onKeyDown, true);
         document.addEventListener("mousedown", this._onMouseDown, true);
+        this._onResize = () => {
+          if (this.isOpen) this.positionMenu();
+        };
+        window.addEventListener("resize", this._onResize);
         this._onSelectionChange = () => {
           if (this.isOpen && !this.getComposer()) this.close();
         };
@@ -5154,6 +5158,9 @@
         document.removeEventListener("keydown", this._onKeyDown, true);
         document.removeEventListener("mousedown", this._onMouseDown, true);
         document.removeEventListener("selectionchange", this._onSelectionChange);
+        if (this._onResize) {
+          window.removeEventListener("resize", this._onResize);
+        }
         this.close();
       }
       // 仅识别 ChatGPT 对话输入框，避免在页面其他 textarea/input 中误触发
@@ -5241,9 +5248,9 @@
           this.menuEl = this.buildMenu();
           document.body.appendChild(this.menuEl);
         }
+        this.menuEl.classList.add("open");
         this.renderItems();
         this.positionMenu();
-        this.menuEl.classList.add("open");
         this.isOpen = true;
       }
       close() {
