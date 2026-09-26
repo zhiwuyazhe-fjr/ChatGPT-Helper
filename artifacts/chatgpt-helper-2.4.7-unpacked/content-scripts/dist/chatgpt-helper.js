@@ -310,7 +310,7 @@
         onboardingTitle: "\u6B22\u8FCE\u4F7F\u7528 ChatGPT Helper",
         onboardingSubtitle: "\u8BA9\u957F\u5BF9\u8BDD\u66F4\u6E05\u6670\uFF0C\u8BA9\u5185\u5BB9\u6C89\u6DC0\u4E0B\u6765\u3002\u4E09\u6B65\u4E0A\u624B\uFF1A",
         onboardingStep1Title: "\u63D0\u793A\u8BCD\u4E00\u952E\u63D2\u5165",
-        onboardingStep1Desc: "\u5185\u7F6E\u5E38\u7528\u6A21\u677F\uFF0C\u70B9\u51FB\u5373\u63D2\u5165\uFF1B\u5728\u8F93\u5165\u6846\u8F93\u5165 / \u6216 // \u53EF\u968F\u65F6\u5FEB\u901F\u5524\u8D77",
+        onboardingStep1Desc: "\u5185\u7F6E\u5E38\u7528\u6A21\u677F\uFF0C\u70B9\u51FB\u5373\u63D2\u5165\uFF1B\u5728\u8F93\u5165\u6846\u8F93\u5165 // \u53EF\u5FEB\u901F\u5524\u8D77\uFF08\u5355\u4E2A / \u662F ChatGPT \u81EA\u5DF1\u7684\u547D\u4EE4\uFF09",
         onboardingStep2Title: "\u540C\u6B65\u5386\u53F2\u4F1A\u8BDD",
         onboardingStep2Desc: "\u5728\u201C\u4F1A\u8BDD\u201D\u9875\u70B9\u51FB\u540C\u6B65\uFF0C\u5373\u53EF\u641C\u7D22\u3001\u7F6E\u9876\u4E0E\u5206\u7EC4\u7BA1\u7406",
         onboardingStep3Title: "\u957F\u5BF9\u8BDD\u5927\u7EB2\u5BFC\u822A",
@@ -326,7 +326,7 @@
         promptVariablesDesc: "\u8BE5\u63D0\u793A\u8BCD\u5305\u542B\u4EE5\u4E0B\u53D8\u91CF\uFF0C\u586B\u5199\u540E\u63D2\u5165\uFF1A",
         promptInsert: "\u63D2\u5165",
         promptQuickMenuEnabledLabel: "\u8F93\u5165\u6846 / \u5FEB\u901F\u5524\u8D77",
-        promptQuickMenuEnabledDesc: "\u5728 ChatGPT \u8F93\u5165\u6846\u4EE5 / \u6216 // \u5F00\u5934\u8F93\u5165\u65F6\uFF0C\u5F39\u51FA\u63D0\u793A\u8BCD\u5FEB\u901F\u9009\u62E9\u83DC\u5355\uFF1B\u82E5 ChatGPT \u81EA\u5E26\u547D\u4EE4\u83DC\u5355\u51FA\u73B0\u5219\u81EA\u52A8\u8BA9\u4F4D",
+        promptQuickMenuEnabledDesc: "\u5728 ChatGPT \u8F93\u5165\u6846\u8F93\u5165 // \u5524\u8D77\u63D0\u793A\u8BCD\u5FEB\u901F\u9009\u62E9\u83DC\u5355\uFF08\u5355\u4E2A / \u7531 ChatGPT \u539F\u751F\u547D\u4EE4\u83DC\u5355\u4F7F\u7528\uFF09",
         quickMenuEmpty: "\u6CA1\u6709\u5339\u914D\u7684\u63D0\u793A\u8BCD",
         quickMenuHint: "\u2191\u2193 \u9009\u62E9\u3000Enter \u63D2\u5165\u3000Esc \u5173\u95ED",
         // 快捷键
@@ -623,7 +623,7 @@
         onboardingTitle: "Welcome to ChatGPT Helper",
         onboardingSubtitle: "Clearer long conversations, knowledge that stays. Three steps to start:",
         onboardingStep1Title: "One-click prompts",
-        onboardingStep1Desc: "Built-in templates insert instantly; type / or // in the input box for a quick picker",
+        onboardingStep1Desc: "Built-in templates insert instantly; type // in the input box for a quick picker (single / is ChatGPT own command)",
         onboardingStep2Title: "Sync conversations",
         onboardingStep2Desc: "Open the Conversations tab and sync to search, pin and organize chats",
         onboardingStep3Title: "Outline for long chats",
@@ -639,7 +639,7 @@
         promptVariablesDesc: "This prompt contains variables. Fill them in before inserting:",
         promptInsert: "Insert",
         promptQuickMenuEnabledLabel: "Slash Quick Menu",
-        promptQuickMenuEnabledDesc: "Typing / or // at the start of the ChatGPT input opens a quick prompt picker; yields to ChatGPT native commands when they appear",
+        promptQuickMenuEnabledDesc: "Typing // in the ChatGPT input opens a quick prompt picker (single / belongs to ChatGPT native commands)",
         quickMenuEmpty: "No matching prompts",
         quickMenuHint: "\u2191\u2193 navigate \xB7 Enter insert \xB7 Esc close",
         // Shortcut
@@ -5099,16 +5099,18 @@
       'textarea[placeholder*="Message"]',
       'textarea[placeholder*="\u6D88\u606F"]'
     ];
+    const TRIGGER_PREFIX = "//";
     const MAX_QUERY_LENGTH = 24;
     const MAX_VISIBLE_ITEMS = 9;
-    const TRIGGER_PREFIX = "//";
-    const SINGLE_SLASH_DEFER_MS = 160;
-    const NATIVE_MENU_SELECTORS = [
-      "[data-radix-popper-content-wrapper]",
-      "[data-floating-ui-portal]",
-      '[role="listbox"]',
-      '[role="menu"]'
-    ];
+    function parseTrigger(rawText) {
+      const text = String(rawText || "").replace(/^\s+/, "");
+      if (!text.startsWith(TRIGGER_PREFIX)) return null;
+      const query = text.slice(TRIGGER_PREFIX.length);
+      if (query.startsWith("/")) return null;
+      if (/\s/.test(query)) return null;
+      if (query.length > MAX_QUERY_LENGTH) return null;
+      return { query };
+    }
     class PromptQuickMenu {
       constructor(config = {}) {
         this.getPrompts = config.getPrompts || (() => []);
@@ -5116,13 +5118,57 @@
         this.onInsert = config.onInsert || (() => {
         });
         this.t = config.t || ((key) => key);
-        this.isOpen = false;
         this.menuEl = null;
         this.items = [];
         this.activeIndex = 0;
         this.query = "";
         this.composer = null;
-        this._composerChangeTimer = null;
+        this.isOpen = false;
+        this.suppressed = false;
+        this._started = false;
+      }
+      // ==================== 生命周期 ====================
+      start() {
+        if (this._started) return;
+        this._started = true;
+        this._onInput = (e) => this.handleInput(e);
+        this._onKeyDown = (e) => this.handleKeyDown(e);
+        this._onMouseDown = (e) => this.handleMouseDown(e);
+        this._onResize = () => {
+          if (this.isOpen) this.positionMenu();
+        };
+        document.addEventListener("input", this._onInput, true);
+        document.addEventListener("keydown", this._onKeyDown, true);
+        document.addEventListener("mousedown", this._onMouseDown, true);
+        window.addEventListener("resize", this._onResize);
+      }
+      stop() {
+        if (!this._started) return;
+        this._started = false;
+        document.removeEventListener("input", this._onInput, true);
+        document.removeEventListener("keydown", this._onKeyDown, true);
+        document.removeEventListener("mousedown", this._onMouseDown, true);
+        window.removeEventListener("resize", this._onResize);
+        this.close();
+      }
+      destroy() {
+        this.stop();
+        if (this.menuEl && this.menuEl.parentNode) {
+          this.menuEl.parentNode.removeChild(this.menuEl);
+        }
+        this.menuEl = null;
+      }
+      // ==================== 事件处理 ====================
+      // 仅识别 ChatGPT 对话输入框，避免在页面其他 textarea/input 中误触发
+      isComposerEvent(e) {
+        const target = e.target;
+        if (!target || target.nodeType !== 1) return false;
+        if (target.id === "prompt-textarea") return true;
+        if (target.matches && target.matches('div[contenteditable="true"][role="textbox"]')) return true;
+        if (target.matches && target.matches('textarea[data-id="root"]')) return true;
+        if (target.matches && target.matches('textarea[placeholder*="Message"]')) return true;
+        if (target.matches && target.matches('textarea[placeholder*="\u6D88\u606F"]')) return true;
+        return false;
       }
       getComposer() {
         for (const selector of COMPOSER_SELECTORS) {
@@ -5140,137 +5186,26 @@
         }
         return el.textContent || "";
       }
-      start() {
-        if (this._started) return;
-        this._started = true;
-        this._onInput = (e) => this.handleInput(e);
-        this._onKeyDown = (e) => this.handleKeyDown(e);
-        this._onMouseDown = (e) => this.handleMouseDown(e);
-        document.addEventListener("input", this._onInput, true);
-        document.addEventListener("keydown", this._onKeyDown, true);
-        document.addEventListener("mousedown", this._onMouseDown, true);
-        this._onResize = () => {
-          if (this.isOpen) this.positionMenu();
-        };
-        window.addEventListener("resize", this._onResize);
-        this._onSelectionChange = () => {
-          if (this.isOpen && !this.getComposer()) this.close();
-        };
-        document.addEventListener("selectionchange", this._onSelectionChange);
-      }
-      stop() {
-        if (!this._started) return;
-        this._started = false;
-        document.removeEventListener("input", this._onInput, true);
-        document.removeEventListener("keydown", this._onKeyDown, true);
-        document.removeEventListener("mousedown", this._onMouseDown, true);
-        document.removeEventListener("selectionchange", this._onSelectionChange);
-        if (this._onResize) {
-          window.removeEventListener("resize", this._onResize);
-        }
-        this.cancelSlashDefer();
-        this.close();
-      }
-      // 仅识别 ChatGPT 对话输入框，避免在页面其他 textarea/input 中误触发
-      isComposerEvent(e) {
-        const target = e.target;
-        if (!target || target.nodeType !== 1) return false;
-        if (target.id === "prompt-textarea") return true;
-        if (target.matches && target.matches('div[contenteditable="true"][role="textbox"]')) return true;
-        if (target.matches && target.matches('textarea[data-id="root"]')) return true;
-        if (target.matches && target.matches('textarea[placeholder*="Message"]')) return true;
-        if (target.matches && target.matches('textarea[placeholder*="\u6D88\u606F"]')) return true;
-        return false;
-      }
+      // 核心入口：每次输入后，用纯函数重新推导菜单状态。
+      // 单个 "/" 在这里得到 null，因此菜单保持关闭——没有任何副作用或延迟逻辑。
       handleInput(e) {
-        if (e.type === "input" && e.isComposing) return;
-        if (!this.isEnabled()) {
+        if (!this._started) return;
+        if (e.isComposing) return;
+        if (!this.isComposerEvent(e)) return;
+        this.composer = e.target;
+        const trigger = this.isEnabled() ? parseTrigger(this.getComposerText(this.composer)) : null;
+        if (!trigger) {
+          this.suppressed = false;
           if (this.isOpen) this.close();
           return;
         }
-        if (!this.isComposerEvent(e)) {
-          return;
-        }
-        this.composer = e.target;
-        const rawText = this.getComposerText(this.composer);
-        const text = rawText.replace(/^[\s]+/, "");
-        this.cancelSlashDefer();
-        if (text.startsWith(TRIGGER_PREFIX)) {
-          const query = text.slice(TRIGGER_PREFIX.length);
-          if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith("/")) {
-            this.close();
-            return;
-          }
-          this.query = query;
-          this.open();
-          return;
-        }
-        if (text.startsWith("/") && !text.startsWith(TRIGGER_PREFIX)) {
-          const query = text.slice(1);
-          if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith("/")) {
-            this.close();
-            return;
-          }
-          if (this.isOpen) {
-            this.query = query;
-            this.open();
-            return;
-          }
-          const snapshot = text;
-          this._slashDeferTimer = setTimeout(() => {
-            this._slashDeferTimer = null;
-            try {
-              if (!this.isEnabled()) return;
-              const current = this.getComposerText(this.composer).replace(/^[\s]+/, "");
-              if (current !== snapshot) return;
-              if (this.hasNativeComposerMenu()) return;
-              this.query = snapshot.slice(1);
-              this.open();
-            } catch (err) {
-            }
-          }, SINGLE_SLASH_DEFER_MS);
-          return;
-        }
-        if (this.isOpen) {
-          this.close();
-        }
+        if (this.suppressed) return;
+        this.query = trigger.query;
+        this.show();
       }
-      cancelSlashDefer() {
-        if (this._slashDeferTimer) {
-          clearTimeout(this._slashDeferTimer);
-          this._slashDeferTimer = null;
-        }
-      }
-      // 探测输入框附近是否出现了 ChatGPT 原生弹层（斜杠命令/提及等）
-      hasNativeComposerMenu() {
-        if (!this.composer || !this.composer.getBoundingClientRect) return false;
-        const cRect = this.composer.getBoundingClientRect();
-        for (const selector of NATIVE_MENU_SELECTORS) {
-          let nodes = [];
-          try {
-            nodes = document.querySelectorAll(selector);
-          } catch (e) {
-            continue;
-          }
-          for (const node of nodes) {
-            if (!(node instanceof HTMLElement)) continue;
-            if (typeof node.id === "string" && node.id.startsWith("chatgpt-helper")) continue;
-            if (this.menuEl && (node === this.menuEl || this.menuEl.contains(node))) continue;
-            const r = node.getBoundingClientRect();
-            if (r.width < 40 || r.height < 16) continue;
-            const style = window.getComputedStyle(node);
-            if (style.visibility === "hidden" || style.display === "none" || Number(style.opacity) === 0) continue;
-            if (r.bottom <= cRect.top + 24 && r.top >= cRect.top - 520) return true;
-          }
-        }
-        return false;
-      }
+      // 仅当菜单打开时才处理按键；菜单关闭时本方法立即返回，
+      // 不 preventDefault / stopPropagation，ChatGPT 原生菜单不受任何影响
       handleKeyDown(e) {
-        if (e.key === "Escape" && this._slashDeferTimer) {
-          this.cancelSlashDefer();
-          e.stopPropagation();
-          return;
-        }
         if (!this.isOpen) return;
         if (e.isComposing || e.keyCode === 229) return;
         if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -5290,7 +5225,7 @@
         }
         if (e.key === "Escape") {
           e.stopPropagation();
-          this.cancelSlashDefer();
+          this.suppressed = true;
           this.close();
         }
       }
@@ -5300,6 +5235,7 @@
         if (this.composer && this.composer.contains && this.composer.contains(e.target)) return;
         this.close();
       }
+      // ==================== 过滤与渲染 ====================
       filterPrompts() {
         const prompts = this.getPrompts() || [];
         const query = this.query.toLowerCase();
@@ -5313,9 +5249,8 @@
         });
         return matched.slice(0, MAX_VISIBLE_ITEMS);
       }
-      open() {
-        const filtered = this.filterPrompts();
-        this.items = filtered;
+      show() {
+        this.items = this.filterPrompts();
         this.activeIndex = 0;
         if (!this.menuEl) {
           this.menuEl = this.buildMenu();
@@ -5332,14 +5267,6 @@
           this.menuEl.classList.remove("open");
         }
         this.isOpen = false;
-        this.cancelSlashDefer();
-      }
-      destroy() {
-        this.stop();
-        if (this.menuEl && this.menuEl.parentNode) {
-          this.menuEl.parentNode.removeChild(this.menuEl);
-        }
-        this.menuEl = null;
       }
       buildMenu() {
         const menu = createElement("div", {
@@ -5435,6 +5362,7 @@
         this.menuEl.style.left = `${Math.round(left)}px`;
         this.menuEl.style.top = `${Math.round(top)}px`;
       }
+      // ==================== 插入 ====================
       insertActive() {
         const prompt2 = this.items[this.activeIndex];
         if (!prompt2) return;
@@ -5486,7 +5414,8 @@
       }
     }
     Object.assign(H, {
-      PromptQuickMenu
+      PromptQuickMenu,
+      parseQuickMenuTrigger: parseTrigger
     });
   })();
   (function() {

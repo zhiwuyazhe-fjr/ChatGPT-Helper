@@ -1,5 +1,12 @@
 // Chrome Extension Content Script - ChatGPT Helper Prompt Quick Menu
-// 在 ChatGPT 输入框中以 / 开头输入时，弹出提示词快速选择菜单
+//
+// 契约（与 ChatGPT 原生行为的分工）：
+//   - 单个 "/" ：完全属于 ChatGPT 原生斜杠命令菜单，本模块不做任何事
+//   - "//关键词"：弹出本模块的提示词快速菜单，↑↓ 选择，Enter/Tab 插入，Esc 关闭
+//
+// 设计原则：菜单的可见性是输入框文本的纯函数（parseTrigger），
+// 不存在定时器、DOM 探测或异步状态机，因此不会与原生菜单竞争，
+// 也不会出现"迟到的菜单凭空弹出"这类时序问题。
 (function () {
     'use strict';
 
@@ -18,18 +25,22 @@
         'textarea[placeholder*="Message"]',
         'textarea[placeholder*="消息"]'
     ];
+    const TRIGGER_PREFIX = '//';
     const MAX_QUERY_LENGTH = 24;
     const MAX_VISIBLE_ITEMS = 9;
-    // 双斜杠 // 立即触发；单斜杠 / 延迟探测 ChatGPT 原生命令菜单，
-    // 原生菜单出现则让位，未出现（如账号无斜杠命令）则弹出我们的菜单
-    const TRIGGER_PREFIX = '//';
-    const SINGLE_SLASH_DEFER_MS = 160;
-    const NATIVE_MENU_SELECTORS = [
-        '[data-radix-popper-content-wrapper]',
-        '[data-floating-ui-portal]',
-        '[role="listbox"]',
-        '[role="menu"]'
-    ];
+
+    // 唯一的触发判定逻辑：文本是否是 "// + 合法关键词"
+    // 返回 { query } 表示应当显示菜单；返回 null 表示不显示。
+    // 纯函数：同样的输入永远得到同样的结论。
+    function parseTrigger(rawText) {
+        const text = String(rawText || '').replace(/^\s+/, '');
+        if (!text.startsWith(TRIGGER_PREFIX)) return null;
+        const query = text.slice(TRIGGER_PREFIX.length);
+        if (query.startsWith('/')) return null;        // "///" 视为用户想输入字面斜杠
+        if (/\s/.test(query)) return null;             // 关键词中含空白即退出触发态
+        if (query.length > MAX_QUERY_LENGTH) return null;
+        return { query };
+    }
 
     class PromptQuickMenu {
         constructor(config = {}) {
@@ -37,13 +48,66 @@
             this.isEnabled = config.isEnabled || (() => true);
             this.onInsert = config.onInsert || (() => {});
             this.t = config.t || ((key) => key);
-            this.isOpen = false;
             this.menuEl = null;
             this.items = [];
             this.activeIndex = 0;
             this.query = '';
             this.composer = null;
-            this._composerChangeTimer = null;
+            this.isOpen = false;
+            // Esc 抑制：用户明确关闭后，同一轮 "//" 输入不再重开；
+            // 文本离开触发态后抑制自动解除
+            this.suppressed = false;
+            this._started = false;
+        }
+
+        // ==================== 生命周期 ====================
+
+        start() {
+            if (this._started) return;
+            this._started = true;
+            this._onInput = (e) => this.handleInput(e);
+            this._onKeyDown = (e) => this.handleKeyDown(e);
+            this._onMouseDown = (e) => this.handleMouseDown(e);
+            this._onResize = () => {
+                if (this.isOpen) this.positionMenu();
+            };
+            // capture 阶段监听：菜单打开时需要在 ChatGPT 的 Enter 处理之前拿到按键
+            document.addEventListener('input', this._onInput, true);
+            document.addEventListener('keydown', this._onKeyDown, true);
+            document.addEventListener('mousedown', this._onMouseDown, true);
+            window.addEventListener('resize', this._onResize);
+        }
+
+        stop() {
+            if (!this._started) return;
+            this._started = false;
+            document.removeEventListener('input', this._onInput, true);
+            document.removeEventListener('keydown', this._onKeyDown, true);
+            document.removeEventListener('mousedown', this._onMouseDown, true);
+            window.removeEventListener('resize', this._onResize);
+            this.close();
+        }
+
+        destroy() {
+            this.stop();
+            if (this.menuEl && this.menuEl.parentNode) {
+                this.menuEl.parentNode.removeChild(this.menuEl);
+            }
+            this.menuEl = null;
+        }
+
+        // ==================== 事件处理 ====================
+
+        // 仅识别 ChatGPT 对话输入框，避免在页面其他 textarea/input 中误触发
+        isComposerEvent(e) {
+            const target = e.target;
+            if (!target || target.nodeType !== 1) return false;
+            if (target.id === 'prompt-textarea') return true;
+            if (target.matches && target.matches('div[contenteditable="true"][role="textbox"]')) return true;
+            if (target.matches && target.matches('textarea[data-id="root"]')) return true;
+            if (target.matches && target.matches('textarea[placeholder*="Message"]')) return true;
+            if (target.matches && target.matches('textarea[placeholder*="消息"]')) return true;
+            return false;
         }
 
         getComposer() {
@@ -64,159 +128,35 @@
             return el.textContent || '';
         }
 
-        start() {
-            if (this._started) return;
-            this._started = true;
-            this._onInput = (e) => this.handleInput(e);
-            this._onKeyDown = (e) => this.handleKeyDown(e);
-            this._onMouseDown = (e) => this.handleMouseDown(e);
-            // capture 阶段监听，确保在 ChatGPT 自己的 Enter 处理之前拿到按键
-            document.addEventListener('input', this._onInput, true);
-            document.addEventListener('keydown', this._onKeyDown, true);
-            document.addEventListener('mousedown', this._onMouseDown, true);
-            // 窗口尺寸变化时，若菜单开着则重新贴位（输入框为固定定位，随之移动）
-            this._onResize = () => {
-                if (this.isOpen) this.positionMenu();
-            };
-            window.addEventListener('resize', this._onResize);
-            // 页面切换 / 输入框重建时关闭菜单
-            this._onSelectionChange = () => {
-                if (this.isOpen && !this.getComposer()) this.close();
-            };
-            document.addEventListener('selectionchange', this._onSelectionChange);
-        }
-
-        stop() {
-            if (!this._started) return;
-            this._started = false;
-            document.removeEventListener('input', this._onInput, true);
-            document.removeEventListener('keydown', this._onKeyDown, true);
-            document.removeEventListener('mousedown', this._onMouseDown, true);
-            document.removeEventListener('selectionchange', this._onSelectionChange);
-            if (this._onResize) {
-                window.removeEventListener('resize', this._onResize);
-            }
-            this.cancelSlashDefer();
-            this.close();
-        }
-
-        // 仅识别 ChatGPT 对话输入框，避免在页面其他 textarea/input 中误触发
-        isComposerEvent(e) {
-            const target = e.target;
-            if (!target || target.nodeType !== 1) return false;
-            if (target.id === 'prompt-textarea') return true;
-            if (target.matches && target.matches('div[contenteditable="true"][role="textbox"]')) return true;
-            if (target.matches && target.matches('textarea[data-id="root"]')) return true;
-            if (target.matches && target.matches('textarea[placeholder*="Message"]')) return true;
-            if (target.matches && target.matches('textarea[placeholder*="消息"]')) return true;
-            return false;
-        }
-
+        // 核心入口：每次输入后，用纯函数重新推导菜单状态。
+        // 单个 "/" 在这里得到 null，因此菜单保持关闭——没有任何副作用或延迟逻辑。
         handleInput(e) {
-            if (e.type === 'input' && e.isComposing) return; // IME 组合输入中不处理
-            if (!this.isEnabled()) {
+            if (!this._started) return;
+            if (e.isComposing) return; // IME 组合输入中不处理
+            if (!this.isComposerEvent(e)) return;
+            this.composer = e.target;
+
+            const trigger = this.isEnabled()
+                ? parseTrigger(this.getComposerText(this.composer))
+                : null;
+
+            if (!trigger) {
+                // 离开触发态（包括单 "/"），解除 Esc 抑制
+                this.suppressed = false;
                 if (this.isOpen) this.close();
                 return;
             }
-            if (!this.isComposerEvent(e)) {
-                return;
-            }
-            this.composer = e.target;
-            const rawText = this.getComposerText(this.composer);
-            const text = rawText.replace(/^[\s]+/, '');
-            this.cancelSlashDefer();
-
-            if (text.startsWith(TRIGGER_PREFIX)) {
-                // "//" 强制触发，不做让位探测
-                const query = text.slice(TRIGGER_PREFIX.length);
-                if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith('/')) {
-                    this.close();
-                    return;
-                }
-                this.query = query;
-                this.open();
-                return;
-            }
-
-            if (text.startsWith('/') && !text.startsWith(TRIGGER_PREFIX)) {
-                // 单斜杠：先给 ChatGPT 原生命令菜单一个出现窗口；
-                // 它出现了就让位，没出现就弹出我们的菜单
-                const query = text.slice(1);
-                if (query.length > MAX_QUERY_LENGTH || /\s/.test(query) || query.startsWith('/')) {
-                    this.close();
-                    return;
-                }
-                if (this.isOpen) {
-                    // 菜单已由我们接管：直接更新过滤结果，不再重复探测
-                    this.query = query;
-                    this.open();
-                    return;
-                }
-                const snapshot = text;
-                this._slashDeferTimer = setTimeout(() => {
-                    this._slashDeferTimer = null;
-                    try {
-                        if (!this.isEnabled()) return;
-                        const current = this.getComposerText(this.composer).replace(/^[\s]+/, '');
-                        if (current !== snapshot) return; // 文本已变化，等下一个输入事件
-                        if (this.hasNativeComposerMenu()) return; // 原生菜单在场，让位
-                        this.query = snapshot.slice(1);
-                        this.open();
-                    } catch (err) {
-                        // ignore
-                    }
-                }, SINGLE_SLASH_DEFER_MS);
-                return;
-            }
-
-            if (this.isOpen) {
-                this.close();
-            }
+            if (this.suppressed) return; // 用户按过 Esc，本轮不重开
+            this.query = trigger.query;
+            this.show();
         }
 
-        cancelSlashDefer() {
-            if (this._slashDeferTimer) {
-                clearTimeout(this._slashDeferTimer);
-                this._slashDeferTimer = null;
-            }
-        }
-
-        // 探测输入框附近是否出现了 ChatGPT 原生弹层（斜杠命令/提及等）
-        hasNativeComposerMenu() {
-            if (!this.composer || !this.composer.getBoundingClientRect) return false;
-            const cRect = this.composer.getBoundingClientRect();
-            for (const selector of NATIVE_MENU_SELECTORS) {
-                let nodes = [];
-                try {
-                    nodes = document.querySelectorAll(selector);
-                } catch (e) {
-                    continue;
-                }
-                for (const node of nodes) {
-                    if (!(node instanceof HTMLElement)) continue;
-                    if (typeof node.id === 'string' && node.id.startsWith('chatgpt-helper')) continue;
-                    if (this.menuEl && (node === this.menuEl || this.menuEl.contains(node))) continue;
-                    const r = node.getBoundingClientRect();
-                    if (r.width < 40 || r.height < 16) continue;
-                    const style = window.getComputedStyle(node);
-                    if (style.visibility === 'hidden' || style.display === 'none' || Number(style.opacity) === 0) continue;
-                    // 输入框上方 520px 带宽内（原生斜杠菜单的标准位置）
-                    if (r.bottom <= cRect.top + 24 && r.top >= cRect.top - 520) return true;
-                }
-            }
-            return false;
-        }
-
+        // 仅当菜单打开时才处理按键；菜单关闭时本方法立即返回，
+        // 不 preventDefault / stopPropagation，ChatGPT 原生菜单不受任何影响
         handleKeyDown(e) {
-            // 菜单未打开但探测等待中，Esc 也要能取消（否则会“凭空弹出”）
-            if (e.key === 'Escape' && this._slashDeferTimer) {
-                this.cancelSlashDefer();
-                e.stopPropagation();
-                return;
-            }
             if (!this.isOpen) return;
-            // IME 组合输入期间完全放行
             if (e.isComposing || e.keyCode === 229) return;
+
             if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                 e.preventDefault();
                 e.stopPropagation();
@@ -234,7 +174,7 @@
             }
             if (e.key === 'Escape') {
                 e.stopPropagation();
-                this.cancelSlashDefer();
+                this.suppressed = true;
                 this.close();
             }
         }
@@ -245,6 +185,8 @@
             if (this.composer && this.composer.contains && this.composer.contains(e.target)) return;
             this.close();
         }
+
+        // ==================== 过滤与渲染 ====================
 
         filterPrompts() {
             const prompts = this.getPrompts() || [];
@@ -261,9 +203,8 @@
             return matched.slice(0, MAX_VISIBLE_ITEMS);
         }
 
-        open() {
-            const filtered = this.filterPrompts();
-            this.items = filtered;
+        show() {
+            this.items = this.filterPrompts();
             this.activeIndex = 0;
             if (!this.menuEl) {
                 this.menuEl = this.buildMenu();
@@ -284,15 +225,6 @@
                 this.menuEl.classList.remove('open');
             }
             this.isOpen = false;
-            this.cancelSlashDefer();
-        }
-
-        destroy() {
-            this.stop();
-            if (this.menuEl && this.menuEl.parentNode) {
-                this.menuEl.parentNode.removeChild(this.menuEl);
-            }
-            this.menuEl = null;
         }
 
         buildMenu() {
@@ -397,6 +329,8 @@
             this.menuEl.style.top = `${Math.round(top)}px`;
         }
 
+        // ==================== 插入 ====================
+
         insertActive() {
             const prompt = this.items[this.activeIndex];
             if (!prompt) return;
@@ -458,7 +392,9 @@
         }
     }
 
+    // 便于在控制台/测试中直接验证触发规则
     Object.assign(H, {
-        PromptQuickMenu
+        PromptQuickMenu,
+        parseQuickMenuTrigger: parseTrigger
     });
 })();
