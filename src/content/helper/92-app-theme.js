@@ -1085,7 +1085,6 @@
                         --sidebar-surface-primary: transparent;
                         --sidebar-surface-secondary: transparent;
                         --sidebar-surface-tertiary: transparent;
-                        --bg-elevated-secondary: transparent;
                         background: transparent !important;
                         background-color: transparent !important;
                         background-image: none !important;
@@ -1115,7 +1114,6 @@
                     --sidebar-surface-primary: transparent;
                     --sidebar-surface-secondary: transparent;
                     --sidebar-surface-tertiary: transparent;
-                    --bg-elevated-secondary: transparent;
                     background: transparent !important;
                     background-color: transparent !important;
                     background-image: none !important;
@@ -1365,7 +1363,6 @@
                     --sidebar-surface-primary: transparent;
                     --sidebar-surface-secondary: transparent;
                     --sidebar-surface-tertiary: transparent;
-                    --bg-elevated-secondary: transparent;
                     background: transparent !important;
                 }
 
@@ -1485,6 +1482,23 @@
                     backdrop-filter: blur(calc(var(--gh-msg-blur) - 2px));
                     -webkit-backdrop-filter: blur(calc(var(--gh-msg-blur) - 2px));
                     box-shadow: inset 0 0 1px 0 var(--gh-msg-border);
+                }
+
+                /* Current ChatGPT message surfaces, anchored by semantic attributes. */
+                :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [data-user-message-bubble="true"] {
+                    background: var(--gh-msg-user-bg) !important;
+                    backdrop-filter: blur(var(--gh-msg-blur));
+                    -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [data-markdown-text-style="assistant-message"] {
+                    background: var(--gh-msg-assistant-bg) !important;
+                    backdrop-filter: blur(var(--gh-msg-blur));
+                    -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                    border-radius: 24px;
+                    padding: 14px 18px;
                 }
 
                 :root[data-gh-bg-enabled="true"] #thread-bottom-container,
@@ -1894,9 +1908,8 @@
                     --sidebar-surface-primary: transparent;
                     --sidebar-surface-secondary: transparent;
                     --sidebar-surface-tertiary: transparent;
-                    --bg-elevated-secondary: transparent;
                     background: var(--gh-page-sidebar-bg-light) !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                    box-shadow: none !important;
                 }
 
                 :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] #stage-slideover-sidebar,
@@ -2709,27 +2722,8 @@
                 className: 'chatgpt-helper-theme-launch-btn',
                 type: 'button'
             }, this.t('themeRemoveImage') || 'Remove');
-            const diagBtn = createElement('button', {
-                className: 'chatgpt-helper-theme-launch-btn chatgpt-helper-theme-diag-btn',
-                type: 'button',
-                title: this.t('themeCopyDiagnostics') || 'Copy Theme Diagnostics'
-            }, this.t('themeCopyDiagnostics') || 'Copy Theme Diagnostics');
-            diagBtn.addEventListener('click', () => {
-                const report = JSON.stringify(this.collectThemeDiagnostics(), null, 2);
-                const done = () => this.showToast('诊断信息已复制');
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(report).then(done, () => {
-                        this.showToast('复制失败，请查看控制台');
-                        console.log('[ChatGPT Helper] 主题诊断信息:\n' + report);
-                    });
-                } else {
-                    console.log('[ChatGPT Helper] 主题诊断信息:\n' + report);
-                    this.showToast('诊断信息已输出到控制台');
-                }
-            });
             uploadButtons.appendChild(selectFileBtn);
             uploadButtons.appendChild(removeFileBtn);
-            uploadButtons.appendChild(diagBtn);
             uploadContent.appendChild(uploadButtons);
             uploadDrop.appendChild(uploadBg);
             uploadDrop.appendChild(uploadContent);

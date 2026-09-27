@@ -1117,7 +1117,7 @@
                 }
 
                 /* 通用隐藏类（用于大纲搜索/折叠） */
-                .outline-hidden {
+                #chatgpt-helper-right #outline-content .outline-hidden {
                     display: none !important;
                 }
 
@@ -5563,9 +5563,30 @@
 
                 .chatgpt-helper-theme-row input[type="range"] {
                     width: 100% !important;
-                    height: 4px;
+                    height: 20px;
+                    appearance: none !important;
+                    -webkit-appearance: none !important;
+                    background: transparent;
                     accent-color: var(--gh-primary);
                     cursor: pointer;
+                }
+
+                .chatgpt-helper-theme-row input[type="range"]::-webkit-slider-runnable-track {
+                    height: 4px;
+                    border-radius: 999px;
+                    background: color-mix(in srgb, var(--gh-text-secondary), transparent 62%);
+                }
+
+                .chatgpt-helper-theme-row input[type="range"]::-webkit-slider-thumb {
+                    appearance: none;
+                    -webkit-appearance: none;
+                    width: 16px;
+                    height: 16px;
+                    margin-top: -6px;
+                    border: 2px solid var(--gh-panel-card);
+                    border-radius: 50%;
+                    background: var(--gh-primary);
+                    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.24);
                 }
 
                 .chatgpt-helper-theme-row input[type="range"]:disabled {

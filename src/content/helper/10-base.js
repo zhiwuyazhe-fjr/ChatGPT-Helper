@@ -196,7 +196,6 @@
             themeFileTypes: '支持 PNG、JPG、WebP，最大 5MB',
             themeSelectFile: '选择文件',
             themeRemoveImage: '移除背景图',
-            themeCopyDiagnostics: '复制主题诊断',
             themeBlur: '模糊',
             themeMessageGlass: '消息毛玻璃效果',
             themeMessageGlassIntensity: '消息毛玻璃强度',
@@ -508,7 +507,6 @@
             themeFileTypes: 'PNG/JPG/WebP up to 5MB',
             themeSelectFile: 'Select File',
             themeRemoveImage: 'Remove Background',
-            themeCopyDiagnostics: 'Copy Theme Diagnostics',
             themeBlur: 'Blur',
             themeMessageGlass: 'Message Glass Effect',
             themeMessageGlassIntensity: 'Message Glass Intensity',
@@ -773,7 +771,7 @@
     const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
     const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
     const EXTENSION_NAME = 'ChatGPT Helper';
-    const EXTENSION_VERSION = '2.4.7';
+    const EXTENSION_VERSION = '2.4.8';
     const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
     const EXTENSION_LICENSE = 'MIT';
     const THEME_HOST_ATTRS = [

@@ -188,7 +188,6 @@
         themeFileTypes: "\u652F\u6301 PNG\u3001JPG\u3001WebP\uFF0C\u6700\u5927 5MB",
         themeSelectFile: "\u9009\u62E9\u6587\u4EF6",
         themeRemoveImage: "\u79FB\u9664\u80CC\u666F\u56FE",
-        themeCopyDiagnostics: "\u590D\u5236\u4E3B\u9898\u8BCA\u65AD",
         themeBlur: "\u6A21\u7CCA",
         themeMessageGlass: "\u6D88\u606F\u6BDB\u73BB\u7483\u6548\u679C",
         themeMessageGlassIntensity: "\u6D88\u606F\u6BDB\u73BB\u7483\u5F3A\u5EA6",
@@ -500,7 +499,6 @@
         themeFileTypes: "PNG/JPG/WebP up to 5MB",
         themeSelectFile: "Select File",
         themeRemoveImage: "Remove Background",
-        themeCopyDiagnostics: "Copy Theme Diagnostics",
         themeBlur: "Blur",
         themeMessageGlass: "Message Glass Effect",
         themeMessageGlassIntensity: "Message Glass Intensity",
@@ -754,7 +752,7 @@
     const REPO_URL = "https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper";
     const AUTHOR_GITHUB_URL = "https://github.com/zhiwuyazhe-fjr";
     const EXTENSION_NAME = "ChatGPT Helper";
-    const EXTENSION_VERSION = "2.4.7";
+    const EXTENSION_VERSION = "2.4.8";
     const EXTENSION_AUTHOR = "zhiwuyazhe_fjr";
     const EXTENSION_LICENSE = "MIT";
     const THEME_HOST_ATTRS = [
@@ -8525,7 +8523,6 @@
                         --sidebar-surface-primary: transparent;
                         --sidebar-surface-secondary: transparent;
                         --sidebar-surface-tertiary: transparent;
-                        --bg-elevated-secondary: transparent;
                         background: transparent !important;
                         background-color: transparent !important;
                         background-image: none !important;
@@ -8555,7 +8552,6 @@
                     --sidebar-surface-primary: transparent;
                     --sidebar-surface-secondary: transparent;
                     --sidebar-surface-tertiary: transparent;
-                    --bg-elevated-secondary: transparent;
                     background: transparent !important;
                     background-color: transparent !important;
                     background-image: none !important;
@@ -8805,7 +8801,6 @@
                     --sidebar-surface-primary: transparent;
                     --sidebar-surface-secondary: transparent;
                     --sidebar-surface-tertiary: transparent;
-                    --bg-elevated-secondary: transparent;
                     background: transparent !important;
                 }
 
@@ -8925,6 +8920,23 @@
                     backdrop-filter: blur(calc(var(--gh-msg-blur) - 2px));
                     -webkit-backdrop-filter: blur(calc(var(--gh-msg-blur) - 2px));
                     box-shadow: inset 0 0 1px 0 var(--gh-msg-border);
+                }
+
+                /* Current ChatGPT message surfaces, anchored by semantic attributes. */
+                :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [data-user-message-bubble="true"] {
+                    background: var(--gh-msg-user-bg) !important;
+                    backdrop-filter: blur(var(--gh-msg-blur));
+                    -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                }
+
+                :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [data-markdown-text-style="assistant-message"] {
+                    background: var(--gh-msg-assistant-bg) !important;
+                    backdrop-filter: blur(var(--gh-msg-blur));
+                    -webkit-backdrop-filter: blur(var(--gh-msg-blur));
+                    box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-msg-shadow);
+                    border-radius: 24px;
+                    padding: 14px 18px;
                 }
 
                 :root[data-gh-bg-enabled="true"] #thread-bottom-container,
@@ -9334,9 +9346,8 @@
                     --sidebar-surface-primary: transparent;
                     --sidebar-surface-secondary: transparent;
                     --sidebar-surface-tertiary: transparent;
-                    --bg-elevated-secondary: transparent;
                     background: var(--gh-page-sidebar-bg-light) !important;
-                    box-shadow: inset 0 0 0 1px var(--gh-panel-card-border);
+                    box-shadow: none !important;
                 }
 
                 :root[data-gh-page-theme="true"][data-gh-mode="dark"][data-gh-bg-enabled="false"] #stage-slideover-sidebar,
@@ -10052,27 +10063,8 @@
           className: "chatgpt-helper-theme-launch-btn",
           type: "button"
         }, this.t("themeRemoveImage") || "Remove");
-        const diagBtn = createElement("button", {
-          className: "chatgpt-helper-theme-launch-btn chatgpt-helper-theme-diag-btn",
-          type: "button",
-          title: this.t("themeCopyDiagnostics") || "Copy Theme Diagnostics"
-        }, this.t("themeCopyDiagnostics") || "Copy Theme Diagnostics");
-        diagBtn.addEventListener("click", () => {
-          const report = JSON.stringify(this.collectThemeDiagnostics(), null, 2);
-          const done = () => this.showToast("\u8BCA\u65AD\u4FE1\u606F\u5DF2\u590D\u5236");
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(report).then(done, () => {
-              this.showToast("\u590D\u5236\u5931\u8D25\uFF0C\u8BF7\u67E5\u770B\u63A7\u5236\u53F0");
-              console.log("[ChatGPT Helper] \u4E3B\u9898\u8BCA\u65AD\u4FE1\u606F:\n" + report);
-            });
-          } else {
-            console.log("[ChatGPT Helper] \u4E3B\u9898\u8BCA\u65AD\u4FE1\u606F:\n" + report);
-            this.showToast("\u8BCA\u65AD\u4FE1\u606F\u5DF2\u8F93\u51FA\u5230\u63A7\u5236\u53F0");
-          }
-        });
         uploadButtons.appendChild(selectFileBtn);
         uploadButtons.appendChild(removeFileBtn);
-        uploadButtons.appendChild(diagBtn);
         uploadContent.appendChild(uploadButtons);
         uploadDrop.appendChild(uploadBg);
         uploadDrop.appendChild(uploadContent);
@@ -11481,7 +11473,7 @@
                 }
 
                 /* \u901A\u7528\u9690\u85CF\u7C7B\uFF08\u7528\u4E8E\u5927\u7EB2\u641C\u7D22/\u6298\u53E0\uFF09 */
-                .outline-hidden {
+                #chatgpt-helper-right #outline-content .outline-hidden {
                     display: none !important;
                 }
 
@@ -15927,9 +15919,30 @@
 
                 .chatgpt-helper-theme-row input[type="range"] {
                     width: 100% !important;
-                    height: 4px;
+                    height: 20px;
+                    appearance: none !important;
+                    -webkit-appearance: none !important;
+                    background: transparent;
                     accent-color: var(--gh-primary);
                     cursor: pointer;
+                }
+
+                .chatgpt-helper-theme-row input[type="range"]::-webkit-slider-runnable-track {
+                    height: 4px;
+                    border-radius: 999px;
+                    background: color-mix(in srgb, var(--gh-text-secondary), transparent 62%);
+                }
+
+                .chatgpt-helper-theme-row input[type="range"]::-webkit-slider-thumb {
+                    appearance: none;
+                    -webkit-appearance: none;
+                    width: 16px;
+                    height: 16px;
+                    margin-top: -6px;
+                    border: 2px solid var(--gh-panel-card);
+                    border-radius: 50%;
+                    background: var(--gh-primary);
+                    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.24);
                 }
 
                 .chatgpt-helper-theme-row input[type="range"]:disabled {
