@@ -89,6 +89,8 @@
                     reject(error);
                 }
             });
+            // 失败的 Promise 不缓存：否则一次瞬时错误（版本升级阻塞/配额/节流）会让本页所有读写永远失败
+            this.dbPromise.catch(() => { this.dbPromise = null; });
             return this.dbPromise;
         }
 

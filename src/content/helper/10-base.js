@@ -672,7 +672,8 @@
     // 语言检测函数
     function detectLanguage() {
         const savedLang = window.GM_getValue(SETTING_KEYS.LANGUAGE, 'auto');
-        if (savedLang !== 'auto' && I18N[savedLang]) {
+        // hasOwnProperty 白名单：防止存储被污染时（如 'constructor'）沿原型链取到非法语言
+        if (savedLang !== 'auto' && Object.prototype.hasOwnProperty.call(I18N, savedLang)) {
             return savedLang;
         }
         const lang = navigator.language || navigator.userLanguage || 'en';
@@ -887,6 +888,24 @@
     const DEFAULT_PROMPTS = createDefaultPrompts();
 
     // ==================== 工具函数 ====================
+    // createElement 属性白名单：这些键走 el[key] 原生属性赋值（类型安全）。
+    // 白名单外一律 setAttribute；事件属性与 HTML 注入键直接拒绝，
+    // 防止未来任何调用点把不受信数据（备份导入/页面 DOM）变成可执行属性。
+    const ELEMENT_PROP_WHITELIST = new Set([
+        'id', 'name', 'type', 'value', 'title', 'placeholder', 'checked', 'disabled',
+        'readOnly', 'min', 'max', 'step', 'alt', 'draggable', 'download', 'accept',
+        'htmlFor', 'tabIndex', 'spellcheck', 'indeterminate', 'selected', 'maxLength',
+        'rows', 'cols', 'wrap', 'target', 'rel', 'dir', 'lang', 'inputMode'
+    ]);
+
+    function isSafeElementUrl(key, value) {
+        if (typeof value !== 'string' || !value) return true;
+        const v = value.trim().toLowerCase();
+        if (v.startsWith('javascript:') || v.startsWith('vbscript:') || v.startsWith('data:text/html')) return false;
+        if ((key === 'src' || key === 'srcset') && v.startsWith('data:') && !v.startsWith('data:image/')) return false;
+        return true;
+    }
+
     function createElement(tag, attrs = {}, text = '') {
         const el = document.createElement(tag);
         if (typeof attrs === 'string') {
@@ -898,10 +917,21 @@
                 el.className = value;
             } else if (key === 'style' && typeof value === 'object') {
                 Object.assign(el.style, value);
+            } else if (key === 'style' && typeof value === 'string') {
+                // 样式字符串走 cssText：拒绝 url(...) 中的脚本型 scheme
+                if (!/url\(/i.test(value)) el.style.cssText = value;
             } else if (key.startsWith('data-') || key.startsWith('aria-') || key === 'role') {
                 el.setAttribute(key, value);
-            } else {
+            } else if (/^on/i.test(key) || key === 'innerHTML' || key === 'outerHTML' || key === 'srcdoc' || key === 'formAction') {
+                // 事件属性与 HTML 注入键：永不接受
+                console.warn('[ChatGPT Helper] createElement 拒绝危险属性:', key);
+            } else if (key === 'href' || key === 'src') {
+                if (isSafeElementUrl(key, value)) el.setAttribute(key, value);
+                else console.warn('[ChatGPT Helper] createElement 拒绝不安全 URL 属性:', key);
+            } else if (ELEMENT_PROP_WHITELIST.has(key)) {
                 el[key] = value;
+            } else {
+                el.setAttribute(key, value);
             }
         });
         if (text) el.textContent = text;

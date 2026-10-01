@@ -2079,12 +2079,16 @@
             }
 
             let url = null;
+            let readFailed = false;
             try {
                 url = await this.resolveThemeBackgroundObjectUrl(cfg.backgroundAssetId);
             } catch (error) {
-                console.error('[ChatGPT Helper] 读取背景图片失败:', error);
+                // 瞬时错误（IndexedDB 版本升级阻塞/配额/标签页节流）不允许触发破坏性自愈：
+                // 只有确认资产行不存在时才清配置，否则保留配置下次重试
+                readFailed = true;
+                console.error('[ChatGPT Helper] 读取背景图片失败（保留配置，稍后重试）:', error);
             }
-            if (!url) {
+            if (!url && !readFailed) {
                 cfg.backgroundImageEnabled = false;
                 cfg.backgroundAssetId = null;
                 cfg.updatedAt = new Date().toISOString();

@@ -85,6 +85,8 @@
             this.autoSyncInterval = null;
             this.syncPromise = null;
             this.lastSyncTime = 0; // 记录上次同步时间
+            // 缓存晚就绪（慢盘/冷启动）时用磁盘真实数据替换默认结构，避免后续保存覆盖用户数据
+            window.addEventListener('ch-helper-storage-ready', () => this.reloadData(), { once: true });
             // 启动自动同步（每5分钟同步一次）
             this.startAutoSync();
         }

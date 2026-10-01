@@ -81,6 +81,15 @@
                     throw e; // 如果 adapter 创建失败，无法继续
                 }
                 
+                // 模块加载时 currentLang 已被固化为 navigator 推断值（彼时存储缓存未就绪）。
+                // 构造器此刻缓存已就绪：重设语言，让保存的语言偏好对 t() 生效，
+                // 并保证 loadPrompts 生成的默认提示词使用正确语言。
+                try {
+                    setCurrentLang(detectLanguage());
+                } catch (e) {
+                    console.error('[ChatGPT Helper] 语言初始化错误:', e);
+                }
+
                 try {
                     this.prompts = this.loadPrompts();
                 } catch (e) {
@@ -92,7 +101,13 @@
                     this.settings = this.loadSettings();
                 } catch (e) {
                     console.error('[ChatGPT Helper] loadSettings 错误:', e);
-                    this.settings = DEFAULT_SETTINGS; // 使用默认值
+                    // 不能直接引用共享的 DEFAULT_SETTINGS：getThemeConfig 等会就地修改配置对象，
+                    // 共享引用会把"默认值"本身污染，殃及后续实例
+                    try {
+                        this.settings = this.normalizeRuntimeSettings({});
+                    } catch (e2) {
+                        this.settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+                    }
                 }
                 
                 this.isCollapsed = !this.settings.defaultPanelState;

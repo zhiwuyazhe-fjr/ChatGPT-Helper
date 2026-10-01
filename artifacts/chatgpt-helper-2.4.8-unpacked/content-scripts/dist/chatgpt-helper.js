@@ -662,7 +662,7 @@
     };
     function detectLanguage() {
       const savedLang = window.GM_getValue(SETTING_KEYS.LANGUAGE, "auto");
-      if (savedLang !== "auto" && I18N[savedLang]) {
+      if (savedLang !== "auto" && Object.prototype.hasOwnProperty.call(I18N, savedLang)) {
         return savedLang;
       }
       const lang = navigator.language || navigator.userLanguage || "en";
@@ -863,6 +863,45 @@
       ];
     }
     const DEFAULT_PROMPTS = createDefaultPrompts();
+    const ELEMENT_PROP_WHITELIST = /* @__PURE__ */ new Set([
+      "id",
+      "name",
+      "type",
+      "value",
+      "title",
+      "placeholder",
+      "checked",
+      "disabled",
+      "readOnly",
+      "min",
+      "max",
+      "step",
+      "alt",
+      "draggable",
+      "download",
+      "accept",
+      "htmlFor",
+      "tabIndex",
+      "spellcheck",
+      "indeterminate",
+      "selected",
+      "maxLength",
+      "rows",
+      "cols",
+      "wrap",
+      "target",
+      "rel",
+      "dir",
+      "lang",
+      "inputMode"
+    ]);
+    function isSafeElementUrl(key, value) {
+      if (typeof value !== "string" || !value) return true;
+      const v = value.trim().toLowerCase();
+      if (v.startsWith("javascript:") || v.startsWith("vbscript:") || v.startsWith("data:text/html")) return false;
+      if ((key === "src" || key === "srcset") && v.startsWith("data:") && !v.startsWith("data:image/")) return false;
+      return true;
+    }
     function createElement(tag, attrs = {}, text = "") {
       const el = document.createElement(tag);
       if (typeof attrs === "string") {
@@ -874,10 +913,19 @@
           el.className = value;
         } else if (key === "style" && typeof value === "object") {
           Object.assign(el.style, value);
+        } else if (key === "style" && typeof value === "string") {
+          if (!/url\(/i.test(value)) el.style.cssText = value;
         } else if (key.startsWith("data-") || key.startsWith("aria-") || key === "role") {
           el.setAttribute(key, value);
-        } else {
+        } else if (/^on/i.test(key) || key === "innerHTML" || key === "outerHTML" || key === "srcdoc" || key === "formAction") {
+          console.warn("[ChatGPT Helper] createElement \u62D2\u7EDD\u5371\u9669\u5C5E\u6027:", key);
+        } else if (key === "href" || key === "src") {
+          if (isSafeElementUrl(key, value)) el.setAttribute(key, value);
+          else console.warn("[ChatGPT Helper] createElement \u62D2\u7EDD\u4E0D\u5B89\u5168 URL \u5C5E\u6027:", key);
+        } else if (ELEMENT_PROP_WHITELIST.has(key)) {
           el[key] = value;
+        } else {
+          el.setAttribute(key, value);
         }
       });
       if (text) el.textContent = text;
@@ -1770,6 +1818,9 @@
             reject(error);
           }
         });
+        this.dbPromise.catch(() => {
+          this.dbPromise = null;
+        });
         return this.dbPromise;
       }
       async getAsset(id) {
@@ -1928,6 +1979,7 @@
         this.autoSyncInterval = null;
         this.syncPromise = null;
         this.lastSyncTime = 0;
+        window.addEventListener("ch-helper-storage-ready", () => this.reloadData(), { once: true });
         this.startAutoSync();
       }
       loadData() {
@@ -7069,6 +7121,11 @@
             throw e;
           }
           try {
+            setCurrentLang(detectLanguage());
+          } catch (e) {
+            console.error("[ChatGPT Helper] \u8BED\u8A00\u521D\u59CB\u5316\u9519\u8BEF:", e);
+          }
+          try {
             this.prompts = this.loadPrompts();
           } catch (e) {
             console.error("[ChatGPT Helper] loadPrompts \u9519\u8BEF:", e);
@@ -7078,7 +7135,11 @@
             this.settings = this.loadSettings();
           } catch (e) {
             console.error("[ChatGPT Helper] loadSettings \u9519\u8BEF:", e);
-            this.settings = DEFAULT_SETTINGS;
+            try {
+              this.settings = this.normalizeRuntimeSettings({});
+            } catch (e2) {
+              this.settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+            }
           }
           this.isCollapsed = !this.settings.defaultPanelState;
           this.currentTab = this.settings.tabOrder && this.settings.tabOrder.length > 0 ? this.settings.tabOrder[0] : "prompts";
@@ -9563,12 +9624,14 @@
           return;
         }
         let url = null;
+        let readFailed = false;
         try {
           url = await this.resolveThemeBackgroundObjectUrl(cfg.backgroundAssetId);
         } catch (error) {
-          console.error("[ChatGPT Helper] \u8BFB\u53D6\u80CC\u666F\u56FE\u7247\u5931\u8D25:", error);
+          readFailed = true;
+          console.error("[ChatGPT Helper] \u8BFB\u53D6\u80CC\u666F\u56FE\u7247\u5931\u8D25\uFF08\u4FDD\u7559\u914D\u7F6E\uFF0C\u7A0D\u540E\u91CD\u8BD5\uFF09:", error);
         }
-        if (!url) {
+        if (!url && !readFailed) {
           cfg.backgroundImageEnabled = false;
           cfg.backgroundAssetId = null;
           cfg.updatedAt = (/* @__PURE__ */ new Date()).toISOString();
@@ -21475,6 +21538,9 @@
             const prompt2 = { ...p };
             if (typeof prompt2.title !== "string") prompt2.title = String(prompt2.title ?? "");
             if (typeof prompt2.content !== "string") prompt2.content = String(prompt2.content ?? "");
+            if (prompt2.category !== void 0 && typeof prompt2.category !== "string") {
+              prompt2.category = String(prompt2.category);
+            }
             return prompt2;
           }).slice(0, 5e3);
         }

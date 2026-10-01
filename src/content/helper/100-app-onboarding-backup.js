@@ -250,8 +250,12 @@
             if (Array.isArray(data.prompts)) {
                 safe.prompts = data.prompts.filter(p => p && typeof p === 'object').map((p) => {
                     const prompt = { ...p };
+                    // 提示词页会对 title/category 做 toLowerCase 等字符串操作：畸形类型会让整个面板崩溃
                     if (typeof prompt.title !== 'string') prompt.title = String(prompt.title ?? '');
                     if (typeof prompt.content !== 'string') prompt.content = String(prompt.content ?? '');
+                    if (prompt.category !== undefined && typeof prompt.category !== 'string') {
+                        prompt.category = String(prompt.category);
+                    }
                     return prompt;
                 }).slice(0, 5000);
             }

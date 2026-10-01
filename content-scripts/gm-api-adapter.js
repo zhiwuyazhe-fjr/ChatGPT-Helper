@@ -50,6 +50,13 @@
          * @returns {Promise<void>}
          */
         async setValue(key, value) {
+            // 与同步版同一闸门：存储不可用/缓存未就绪时拒绝写盘，保护磁盘上的真实数据
+            if (window.__MY_EXT__.storageUnavailable) {
+                return Promise.reject(new Error('storage unavailable; write rejected'));
+            }
+            if (!window.__MY_EXT__.storageCacheInitialized && window.__MY_EXT__.storageCache === undefined) {
+                return Promise.reject(new Error('storage cache not ready; write rejected'));
+            }
             try {
                 // 使用 Promise 包装，避免 message channel 错误
                 return new Promise((resolve, reject) => {
@@ -67,6 +74,7 @@
                 });
             } catch (error) {
                 console.error('[GM API Adapter] setValue error:', error);
+                return Promise.reject(error);
             }
         },
 
@@ -136,8 +144,47 @@
     };
 
     // ==================== 同步版本的 GM_* API（兼容原有代码） ====================
-    // 注意：这些是同步包装器，内部使用异步操作，但会立即返回默认值
-    // 对于需要立即返回值的场景，建议使用异步版本
+
+    // 存储读取失败时置 true：此时内存态是默认值，任何写回都会清掉磁盘上的真实数据
+    function markStorageUnavailable() {
+        window.__MY_EXT__.storageUnavailable = true;
+        window.__MY_EXT__.storageCacheInitialized = true; // 允许 UI 以只读模式启动
+        window.__MY_EXT__.storageCache = window.__MY_EXT__.storageCache || {};
+        console.error('[GM API Adapter] 存储不可用：本页以只读模式运行，拒绝一切写操作以保护既有数据');
+    }
+
+    // 缓存就绪前若发生过写入（缓存里只有被写过的键），就绪回调必须合并而不是整体替换，否则写入被吞
+    function mergeCacheFromStorage(allData) {
+        const pendingWrites = window.__MY_EXT__.storageCache || {};
+        const pendingDeletes = window.__MY_EXT__.storagePendingDeletes;
+        const merged = Object.assign({}, allData, pendingWrites);
+        if (pendingDeletes) {
+            for (const key of pendingDeletes) delete merged[key];
+            pendingDeletes.clear();
+        }
+        window.__MY_EXT__.storageCache = merged;
+    }
+
+    // 缓存就绪通知：晚初始化场景下让上层（如会话管理器）重新加载真实数据
+    function notifyStorageReady() {
+        window.__MY_EXT__.storageCacheInitialized = true;
+        try {
+            window.dispatchEvent(new CustomEvent('ch-helper-storage-ready'));
+        } catch (e) { /* ignore */ }
+    }
+
+    function writeGateAllowed(key) {
+        if (window.__MY_EXT__.storageUnavailable) {
+            console.warn('[GM API Adapter] 存储不可用，拒绝写入以保护既有数据:', key);
+            return false;
+        }
+        // 缓存从未就绪（读取回调一直没回来）：内存态可能是默认值，写回会覆盖磁盘真实数据
+        if (!window.__MY_EXT__.storageCacheInitialized && window.__MY_EXT__.storageCache === undefined) {
+            console.warn('[GM API Adapter] 存储缓存尚未就绪，拒绝写入:', key);
+            return false;
+        }
+        return true;
+    }
 
     const GM_getValue_sync = (key, defaultValue) => {
         // 同步版本：优先从缓存读取
@@ -154,6 +201,7 @@
                 chrome.storage.local.get(key, (result) => {
                     if (chrome.runtime.lastError) {
                         console.error('[GM API Adapter] 同步读取单个键错误:', chrome.runtime.lastError);
+                        markStorageUnavailable();
                         return;
                     }
                     if (!window.__MY_EXT__.storageCache) {
@@ -168,16 +216,14 @@
             }
             // 同时加载所有数据到缓存
             chrome.storage.local.get(null, (allData) => {
+                window.__MY_EXT__.storageCacheLoading = false;
                 if (chrome.runtime.lastError) {
                     console.error('[GM API Adapter] 加载所有数据错误:', chrome.runtime.lastError);
-                    window.__MY_EXT__.storageCache = {};
-                    window.__MY_EXT__.storageCacheInitialized = true;
-                    window.__MY_EXT__.storageCacheLoading = false;
+                    markStorageUnavailable();
                     return;
                 }
-                window.__MY_EXT__.storageCache = allData || {};
-                window.__MY_EXT__.storageCacheInitialized = true;
-                window.__MY_EXT__.storageCacheLoading = false;
+                mergeCacheFromStorage(allData || {});
+                notifyStorageReady();
             });
         }
         // 如果缓存中没有，返回默认值
@@ -186,19 +232,30 @@
     };
 
     const GM_setValue_sync = (key, value) => {
+        if (!writeGateAllowed(key)) return;
         // 更新缓存
         if (!window.__MY_EXT__.storageCache) {
             window.__MY_EXT__.storageCache = {};
         }
         window.__MY_EXT__.storageCache[key] = value;
+        // 缓存未就绪时记录待落盘写入（就绪时由 onChanged 之外的路径补写）
+        if (!window.__MY_EXT__.storageCacheInitialized) {
+            if (!window.__MY_EXT__.storagePendingWrites) window.__MY_EXT__.storagePendingWrites = new Map();
+            window.__MY_EXT__.storagePendingWrites.set(key, value);
+        }
         // 异步保存
         StorageAdapter.setValue(key, value).catch(console.error);
     };
 
     const GM_deleteValue_sync = (key) => {
+        if (!writeGateAllowed(key)) return;
         // 从缓存删除
         if (window.__MY_EXT__.storageCache) {
             delete window.__MY_EXT__.storageCache[key];
+        }
+        if (!window.__MY_EXT__.storageCacheInitialized) {
+            if (!window.__MY_EXT__.storagePendingDeletes) window.__MY_EXT__.storagePendingDeletes = new Set();
+            window.__MY_EXT__.storagePendingDeletes.add(key);
         }
         // 异步删除
         StorageAdapter.deleteValue(key).catch(console.error);
@@ -208,12 +265,12 @@
     async function initStorageCache() {
         try {
             const allData = await chrome.storage.local.get(null);
-            window.__MY_EXT__.storageCache = allData;
-            window.__MY_EXT__.storageCacheInitialized = true;
+            if (window.__MY_EXT__.storageUnavailable) return;
+            mergeCacheFromStorage(allData);
+            notifyStorageReady();
         } catch (error) {
             console.error('[GM API Adapter] Init cache error:', error);
-            window.__MY_EXT__.storageCache = {};
-            window.__MY_EXT__.storageCacheInitialized = true;
+            markStorageUnavailable();
         }
     }
 
@@ -264,24 +321,36 @@
             try {
                 if (chrome.runtime.lastError) {
                     console.error('[GM API Adapter] 缓存初始化错误:', chrome.runtime.lastError);
-                    window.__MY_EXT__.storageCache = {};
-                    window.__MY_EXT__.storageCacheInitialized = true;
+                    markStorageUnavailable();
                     return;
                 }
-                window.__MY_EXT__.storageCache = allData || {};
-                window.__MY_EXT__.storageCacheInitialized = true;
+                mergeCacheFromStorage(allData || {});
+                notifyStorageReady();
                 // 不打印具体键名与数据内容，避免把用户的提示词/会话标题泄露到页面控制台
                 console.log('[GM API Adapter] 缓存初始化完成，已加载', Object.keys(allData || {}).length, '个键');
+                // 缓存就绪前发生的写入只进了内存：这里补写到磁盘
+                const pendingWrites = window.__MY_EXT__.storagePendingWrites;
+                const pendingDeletes = window.__MY_EXT__.storagePendingDeletes;
+                if (pendingWrites && pendingWrites.size > 0) {
+                    for (const [key, value] of pendingWrites) {
+                        StorageAdapter.setValue(key, value).catch((e) => console.error('[GM API Adapter] 补写待落盘键失败:', key, e));
+                    }
+                    pendingWrites.clear();
+                }
+                if (pendingDeletes && pendingDeletes.size > 0) {
+                    for (const key of pendingDeletes) {
+                        StorageAdapter.deleteValue(key).catch((e) => console.error('[GM API Adapter] 补删待落盘键失败:', key, e));
+                    }
+                    pendingDeletes.clear();
+                }
             } catch (error) {
                 console.error('[GM API Adapter] 缓存初始化错误:', error);
-                window.__MY_EXT__.storageCache = {};
-                window.__MY_EXT__.storageCacheInitialized = true;
+                markStorageUnavailable();
             }
         });
     } catch (error) {
         console.error('[GM API Adapter] 存储访问错误:', error);
-        window.__MY_EXT__.storageCache = {};
-        window.__MY_EXT__.storageCacheInitialized = true;
+        markStorageUnavailable();
     }
 
     console.log('[GM API Adapter] 已初始化');
