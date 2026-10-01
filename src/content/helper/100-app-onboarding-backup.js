@@ -243,24 +243,76 @@
             }
         },
 
-        async applyBackupData(data) {
+        // 备份文件是不可信输入（可能来自网络分享）：落盘前做结构校验与字段裁剪，
+        // 防止畸形数据进入运行时，也防止把超量垃圾写满 chrome.storage。
+        sanitizeBackupData(data) {
+            const safe = {};
             if (Array.isArray(data.prompts)) {
-                window.GM_setValue(SETTING_KEYS.PROMPTS, data.prompts);
+                safe.prompts = data.prompts.filter(p => p && typeof p === 'object').map((p) => {
+                    const prompt = { ...p };
+                    if (typeof prompt.title !== 'string') prompt.title = String(prompt.title ?? '');
+                    if (typeof prompt.content !== 'string') prompt.content = String(prompt.content ?? '');
+                    return prompt;
+                }).slice(0, 5000);
             }
-            if (data.settings && typeof data.settings === 'object') {
-                window.GM_setValue(SETTING_KEYS.SETTINGS, data.settings);
+            if (data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)) {
+                // 只保留普通键值，去掉 __proto__/constructor 这类原型污染键
+                const settings = {};
+                Object.keys(data.settings).forEach((key) => {
+                    if (key === '__proto__' || key === 'constructor' || key === 'prototype') return;
+                    settings[key] = data.settings[key];
+                });
+                safe.settings = settings;
             }
-            if (typeof data.language === 'string' && data.language) {
-                window.GM_setValue(SETTING_KEYS.LANGUAGE, data.language);
+            if (typeof data.language === 'string' && /^[a-z]{2}(-[A-Za-z0-9]{2,8})?$/.test(data.language)) {
+                safe.language = data.language;
             }
-            if (data.conversations && typeof data.conversations === 'object') {
-                window.GM_setValue(SETTING_KEYS.CONVERSATIONS, data.conversations);
+            if (data.conversations && typeof data.conversations === 'object' && !Array.isArray(data.conversations)
+                && data.conversations.conversations && typeof data.conversations.conversations === 'object') {
+                const conversations = { ...data.conversations, conversations: {} };
+                // 会话 URL 的 scheme/域名白名单校验在 ConversationManager.loadData 统一执行
+                Object.entries(data.conversations.conversations).forEach(([id, conv]) => {
+                    if (!conv || typeof conv !== 'object') return;
+                    // 跳过 __proto__ 等危险键：bracket 赋值会触发原型 setter
+                    if (id === '__proto__' || id === 'constructor' || id === 'prototype') return;
+                    conversations.conversations[id] = conv;
+                });
+                safe.conversations = conversations;
             }
-            if (data.readingProgress && typeof data.readingProgress === 'object') {
-                window.GM_setValue(SETTING_KEYS.READING_PROGRESS, data.readingProgress);
+            if (data.readingProgress && typeof data.readingProgress === 'object' && !Array.isArray(data.readingProgress)) {
+                const progress = {};
+                Object.keys(data.readingProgress).forEach((key) => {
+                    if (key === '__proto__' || key === 'constructor' || key === 'prototype') return;
+                    const value = data.readingProgress[key];
+                    if (value && typeof value === 'object') progress[key] = value;
+                });
+                safe.readingProgress = progress;
             }
-            if (data.promptLibraryVersion != null) {
-                window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, data.promptLibraryVersion);
+            if (data.promptLibraryVersion != null && Number.isFinite(Number(data.promptLibraryVersion))) {
+                safe.promptLibraryVersion = Number(data.promptLibraryVersion);
+            }
+            return safe;
+        },
+
+        async applyBackupData(data) {
+            const safeData = this.sanitizeBackupData(data);
+            if (safeData.prompts) {
+                window.GM_setValue(SETTING_KEYS.PROMPTS, safeData.prompts);
+            }
+            if (safeData.settings) {
+                window.GM_setValue(SETTING_KEYS.SETTINGS, safeData.settings);
+            }
+            if (safeData.language) {
+                window.GM_setValue(SETTING_KEYS.LANGUAGE, safeData.language);
+            }
+            if (safeData.conversations) {
+                window.GM_setValue(SETTING_KEYS.CONVERSATIONS, safeData.conversations);
+            }
+            if (safeData.readingProgress) {
+                window.GM_setValue(SETTING_KEYS.READING_PROGRESS, safeData.readingProgress);
+            }
+            if (safeData.promptLibraryVersion != null) {
+                window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, safeData.promptLibraryVersion);
             }
 
             let assetCount = 0;
@@ -271,6 +323,8 @@
                     }
                     for (const asset of data.themeAssets) {
                         if (!asset || !asset.id || !asset.dataBase64) continue;
+                        // base64 合法性先验证，避免半途异常中断整个恢复流程
+                        if (!/^[A-Za-z0-9+/=\s]+$/.test(String(asset.dataBase64))) continue;
                         const blob = base64ToBlob(asset.dataBase64, asset.mimeType);
                         await this.themeAssetRepository.putAsset(blob, asset.mimeType, asset.id);
                         assetCount++;
@@ -280,9 +334,9 @@
                 }
             }
 
-            const promptCount = Array.isArray(data.prompts) ? data.prompts.length : 0;
-            const conversationCount = data.conversations && data.conversations.conversations
-                ? Object.keys(data.conversations.conversations || {}).length
+            const promptCount = Array.isArray(safeData.prompts) ? safeData.prompts.length : 0;
+            const conversationCount = safeData.conversations && safeData.conversations.conversations
+                ? Object.keys(safeData.conversations.conversations || {}).length
                 : 0;
             const summary = (this.t('backupIncludeHint') || '')
                 .replace('{prompts}', String(promptCount))

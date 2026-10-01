@@ -95,7 +95,7 @@ function conversationToHtml(conversation: ConversationResult, avatar: string, me
         const model = message?.metadata?.model_slug === 'gpt-4' ? 'GPT-4' : 'GPT-3'
         const authorType = message.author.role === 'user' ? 'user' : model
         const avatarEl = message.author.role === 'user'
-            ? `<img alt="${author}" />`
+            ? `<img alt="${escapeHtml(author)}" />`
             : '<svg width="41" height="41"><use xlink:href="#chatgpt" /></svg>'
 
         let postSteps: Array<(input: string) => string> = []
@@ -190,7 +190,7 @@ function conversationToHtml(conversation: ConversationResult, avatar: string, me
                 .replace('{create_time}', unixTimestampToISOString(createTime))
                 .replace('{update_time}', unixTimestampToISOString(updateTime))
 
-            return [name, val] as const
+            return [escapeHtml(name), escapeHtml(val)] as const
         })
     ?? []
     const detailsHtml = _metaList.length > 0
@@ -204,17 +204,19 @@ function conversationToHtml(conversation: ConversationResult, avatar: string, me
 
     const enhancedConversationHtml = enhanceExportedContent(conversationHtml)
 
+    // escapeHtml for {{title}}/<a> text context; lambda replacement avoids `$`-pattern re-interpretation
+    const safeTitle = escapeHtml(title)
     const html = templateHtml
-        .replaceAll('{{headStyles}}', exportedHtmlStyles)
-        .replaceAll('{{title}}', title)
-        .replaceAll('{{date}}', date)
-        .replaceAll('{{time}}', time)
-        .replaceAll('{{source}}', source)
-        .replaceAll('{{lang}}', lang)
-        .replaceAll('{{theme}}', theme)
-        .replaceAll('{{avatar}}', avatar)
-        .replaceAll('{{details}}', detailsHtml)
-        .replaceAll('{{content}}', enhancedConversationHtml)
+        .replaceAll('{{headStyles}}', () => exportedHtmlStyles)
+        .replaceAll('{{title}}', () => safeTitle)
+        .replaceAll('{{date}}', () => date)
+        .replaceAll('{{time}}', () => time)
+        .replaceAll('{{source}}', () => escapeHtml(source))
+        .replaceAll('{{lang}}', () => escapeHtml(lang))
+        .replaceAll('{{theme}}', () => escapeHtml(theme))
+        .replaceAll('{{avatar}}', () => escapeHtml(avatar))
+        .replaceAll('{{details}}', () => detailsHtml)
+        .replaceAll('{{content}}', () => enhancedConversationHtml)
     return html
 }
 
@@ -318,7 +320,7 @@ function transformContent(
             if (metadata?.aggregate_result?.messages) {
                 return metadata.aggregate_result.messages
                     .filter(msg => msg.message_type === 'image')
-                    .map(msg => `<img src="${msg.image_url}" height="${msg.height}" width="${msg.width}" />`)
+                    .map(msg => `<img src="${escapeHtml(sanitizeUrl(msg.image_url, 'image'))}" height="${escapeHtml(String(msg.height))}" width="${escapeHtml(String(msg.width))}" />`)
                     .join('\n')
             }
             return postProcess(`Result:\n\`\`\`\n${content.text}\n\`\`\`` || '')
@@ -338,8 +340,8 @@ function transformContent(
         case 'multimodal_text': {
             return content.parts?.map((part) => {
                 if (typeof part === 'string') return postProcess(part)
-                if (part.content_type === 'image_asset_pointer') return `<img src="${part.asset_pointer}" height="${part.height}" width="${part.width}" />`
-                if (part.content_type === 'audio_transcription') return `<div style="font-style: italic; opacity: 0.65;">“${part.text}”</div>`
+                if (part.content_type === 'image_asset_pointer') return `<img src="${escapeHtml(sanitizeUrl(part.asset_pointer, 'image'))}" height="${escapeHtml(String(part.height))}" width="${escapeHtml(String(part.width))}" />`
+                if (part.content_type === 'audio_transcription') return `<div style="font-style: italic; opacity: 0.65;">“${escapeHtml(part.text)}”</div>`
                 if (part.content_type === 'audio_asset_pointer') return null
                 if (part.content_type === 'real_time_user_audio_video_asset_pointer') return null
                 return postProcess('[Unsupported multimodal content]')
@@ -386,15 +388,69 @@ function escapeHtml(html: string) {
         .replace(/'/g, '&#039;')
 }
 
+/**
+ * Neutralize script-capable URL schemes in exported markup. Relative URLs and
+ * fragment references (e.g. the inline `#chatgpt` SVG symbol) stay untouched.
+ */
+function sanitizeUrl(url: string, context: 'link' | 'image'): string {
+    if (!url) return ''
+    const scheme = /^\s*([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(url)?.[1]?.toLowerCase()
+    if (!scheme) return url.trim() // relative path / fragment — inert in a static file
+    const linkAllowed = scheme === 'http' || scheme === 'https' || scheme === 'mailto'
+    const imageAllowed = linkAllowed || scheme === 'data' && /^data:image\//i.test(url.trim())
+    const allowed = context === 'link' ? linkAllowed : imageAllowed
+    return allowed ? url.trim() : (context === 'link' ? '#' : '')
+}
+
 function enhanceExportedContent(html: string): string {
-    const container = document.createElement('div')
-    container.innerHTML = html
+    // Parse in an inert document: DOMParser does not execute scripts, fire image
+    // error handlers, or run inline handlers, so any markup smuggled through the
+    // conversation data cannot execute while we post-process it.
+    const doc = new DOMParser().parseFromString(html, 'text/html')
+    sanitizeExportedDom(doc.body)
 
-    highlightCodeBlocks(container)
-    renderMath(container)
-    alignKatexBlocks(container)
+    highlightCodeBlocks(doc.body)
+    renderMath(doc.body)
+    alignKatexBlocks(doc.body)
 
-    return container.innerHTML
+    return doc.body.innerHTML
+}
+
+/**
+ * Defense-in-depth pass over the exported DOM: drop active content elements and
+ * event-handler attributes, and neutralize dangerous link schemes.
+ */
+function sanitizeExportedDom(root: Element) {
+    root.querySelectorAll('script, iframe, object, embed, form, link, meta').forEach(el => el.remove())
+    root.querySelectorAll('*').forEach((el) => {
+        for (const attr of Array.from(el.attributes)) {
+            const name = attr.name.toLowerCase()
+            if (name.startsWith('on')) {
+                el.removeAttribute(attr.name)
+            }
+            else if (name === 'href' || name === 'xlink:href') {
+                const safe = sanitizeUrl(attr.value, 'link')
+                if (safe !== attr.value.trim()) {
+                    if (safe) el.setAttribute(attr.name, safe)
+                    else el.removeAttribute(attr.name)
+                }
+            }
+            else if (name === 'src' || name === 'srcset') {
+                const safe = sanitizeUrl(attr.value, 'image')
+                if (safe !== attr.value.trim()) {
+                    if (safe) el.setAttribute(attr.name, safe)
+                    else el.removeAttribute(attr.name)
+                }
+            }
+        }
+    })
+    // KaTeX/style integrity: remove inline style urls pointing at script-capable schemes
+    root.querySelectorAll('[style]').forEach((el) => {
+        const style = el.getAttribute('style') ?? ''
+        if (/url\(\s*['"]?\s*(javascript|vbscript|data:text\/html)/i.test(style)) {
+            el.removeAttribute('style')
+        }
+    })
 }
 
 function highlightCodeBlocks(container: HTMLElement) {

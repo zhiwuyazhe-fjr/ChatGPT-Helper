@@ -217,6 +217,24 @@
         }
     }
 
+    // 多标签页同步：其它标签页写入时刷新本页缓存，
+    // 避免基于陈旧缓存的整键写覆盖掉别的标签页刚保存的数据。
+    try {
+        chrome.storage.onChanged.addListener((changes, area) => {
+            if (area !== 'local') return;
+            if (!window.__MY_EXT__.storageCache) return;
+            for (const [key, change] of Object.entries(changes)) {
+                if (change.newValue === undefined) {
+                    delete window.__MY_EXT__.storageCache[key];
+                } else {
+                    window.__MY_EXT__.storageCache[key] = change.newValue;
+                }
+            }
+        });
+    } catch (error) {
+        console.warn('[GM API Adapter] 注册 storage.onChanged 失败:', error);
+    }
+
     // ==================== 暴露 API ====================
     // 暴露到 window.__MY_EXT__ 命名空间
     window.__MY_EXT__.GM = {
@@ -252,21 +270,8 @@
                 }
                 window.__MY_EXT__.storageCache = allData || {};
                 window.__MY_EXT__.storageCacheInitialized = true;
-                const keys = Object.keys(allData || {});
-                console.log('[GM API Adapter] 缓存初始化完成，已加载', keys.length, '个键');
-                if (keys.length > 0) {
-                    console.log('[GM API Adapter] 缓存中的键:', keys);
-                    // 检查是否有 chatgpt_conversations
-                    if (allData && allData['chatgpt_conversations']) {
-                        const convData = allData['chatgpt_conversations'];
-                        if (typeof convData === 'object' && convData.conversations) {
-                            const convCount = Object.keys(convData.conversations || {}).length;
-                            console.log('[GM API Adapter] 发现 chatgpt_conversations 数据，包含', convCount, '个会话');
-                        }
-                    } else {
-                        console.log('[GM API Adapter] 未找到 chatgpt_conversations 键');
-                    }
-                }
+                // 不打印具体键名与数据内容，避免把用户的提示词/会话标题泄露到页面控制台
+                console.log('[GM API Adapter] 缓存初始化完成，已加载', Object.keys(allData || {}).length, '个键');
             } catch (error) {
                 console.error('[GM API Adapter] 缓存初始化错误:', error);
                 window.__MY_EXT__.storageCache = {};

@@ -47516,7 +47516,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
       const author = transformAuthor$2(message.author);
       const model2 = message?.metadata?.model_slug === "gpt-4" ? "GPT-4" : "GPT-3";
       const authorType = message.author.role === "user" ? "user" : model2;
-      const avatarEl = message.author.role === "user" ? `<img alt="${author}" />` : '<svg width="41" height="41"><use xlink:href="#chatgpt" /></svg>';
+      const avatarEl = message.author.role === "user" ? `<img alt="${escapeHtml(author)}" />` : '<svg width="41" height="41"><use xlink:href="#chatgpt" /></svg>';
       let postSteps = [];
       if (message.author.role === "assistant") {
         postSteps.push((input) => transformFootNotes$2(input, message.metadata));
@@ -47576,7 +47576,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const theme = getColorScheme();
     const _metaList = metaList?.filter((x2) => !!x2.name).map(({ name, value }) => {
       const val = value.replace("{title}", title2).replace("{date}", date).replace("{timestamp}", timestamp()).replace("{source}", source2).replace("{model}", model).replace("{mode_name}", modelSlug).replace("{create_time}", unixTimestampToISOString(createTime)).replace("{update_time}", unixTimestampToISOString(updateTime));
-      return [name, val];
+      return [escapeHtml(name), escapeHtml(val)];
     }) ?? [];
     const detailsHtml = _metaList.length > 0 ? `<details>
     <summary>Metadata</summary>
@@ -47585,7 +47585,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     </div>
 </details>` : "";
     const enhancedConversationHtml = enhanceExportedContent(conversationHtml);
-    const html2 = templateHtml.replaceAll("{{headStyles}}", exportedHtmlStyles).replaceAll("{{title}}", title2).replaceAll("{{date}}", date).replaceAll("{{time}}", time).replaceAll("{{source}}", source2).replaceAll("{{lang}}", lang).replaceAll("{{theme}}", theme).replaceAll("{{avatar}}", avatar).replaceAll("{{details}}", detailsHtml).replaceAll("{{content}}", enhancedConversationHtml);
+    const safeTitle = escapeHtml(title2);
+    const html2 = templateHtml.replaceAll("{{headStyles}}", () => exportedHtmlStyles).replaceAll("{{title}}", () => safeTitle).replaceAll("{{date}}", () => date).replaceAll("{{time}}", () => time).replaceAll("{{source}}", () => escapeHtml(source2)).replaceAll("{{lang}}", () => escapeHtml(lang)).replaceAll("{{theme}}", () => escapeHtml(theme)).replaceAll("{{avatar}}", () => escapeHtml(avatar)).replaceAll("{{details}}", () => detailsHtml).replaceAll("{{content}}", () => enhancedConversationHtml);
     return html2;
   }
   function transformAuthor$2(author) {
@@ -47651,7 +47652,7 @@ ${content2.text}
 \`\`\`` || "";
       case "execution_output":
         if (metadata?.aggregate_result?.messages) {
-          return metadata.aggregate_result.messages.filter((msg) => msg.message_type === "image").map((msg) => `<img src="${msg.image_url}" height="${msg.height}" width="${msg.width}" />`).join("\n");
+          return metadata.aggregate_result.messages.filter((msg) => msg.message_type === "image").map((msg) => `<img src="${escapeHtml(sanitizeUrl(msg.image_url, "image"))}" height="${escapeHtml(String(msg.height))}" width="${escapeHtml(String(msg.width))}" />`).join("\n");
         }
         return postProcess(`Result:
 \`\`\`
@@ -47673,8 +47674,8 @@ ${content2.text}
       case "multimodal_text": {
         return content2.parts?.map((part) => {
           if (typeof part === "string") return postProcess(part);
-          if (part.content_type === "image_asset_pointer") return `<img src="${part.asset_pointer}" height="${part.height}" width="${part.width}" />`;
-          if (part.content_type === "audio_transcription") return `<div style="font-style: italic; opacity: 0.65;">\u201C${part.text}\u201D</div>`;
+          if (part.content_type === "image_asset_pointer") return `<img src="${escapeHtml(sanitizeUrl(part.asset_pointer, "image"))}" height="${escapeHtml(String(part.height))}" width="${escapeHtml(String(part.width))}" />`;
+          if (part.content_type === "audio_transcription") return `<div style="font-style: italic; opacity: 0.65;">\u201C${escapeHtml(part.text)}\u201D</div>`;
           if (part.content_type === "audio_asset_pointer") return null;
           if (part.content_type === "real_time_user_audio_video_asset_pointer") return null;
           return postProcess("[Unsupported multimodal content]");
@@ -47701,13 +47702,51 @@ ${content2.text}
   function escapeHtml(html2) {
     return html2.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
+  function sanitizeUrl(url, context) {
+    if (!url) return "";
+    const scheme = /^\s*([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(url)?.[1]?.toLowerCase();
+    if (!scheme) return url.trim();
+    const linkAllowed = scheme === "http" || scheme === "https" || scheme === "mailto";
+    const imageAllowed = linkAllowed || scheme === "data" && /^data:image\//i.test(url.trim());
+    const allowed = context === "link" ? linkAllowed : imageAllowed;
+    return allowed ? url.trim() : context === "link" ? "#" : "";
+  }
   function enhanceExportedContent(html2) {
-    const container = document.createElement("div");
-    container.innerHTML = html2;
-    highlightCodeBlocks(container);
-    renderMath(container);
-    alignKatexBlocks(container);
-    return container.innerHTML;
+    const doc = new DOMParser().parseFromString(html2, "text/html");
+    sanitizeExportedDom(doc.body);
+    highlightCodeBlocks(doc.body);
+    renderMath(doc.body);
+    alignKatexBlocks(doc.body);
+    return doc.body.innerHTML;
+  }
+  function sanitizeExportedDom(root2) {
+    root2.querySelectorAll("script, iframe, object, embed, form, link, meta").forEach((el) => el.remove());
+    root2.querySelectorAll("*").forEach((el) => {
+      for (const attr of Array.from(el.attributes)) {
+        const name = attr.name.toLowerCase();
+        if (name.startsWith("on")) {
+          el.removeAttribute(attr.name);
+        } else if (name === "href" || name === "xlink:href") {
+          const safe2 = sanitizeUrl(attr.value, "link");
+          if (safe2 !== attr.value.trim()) {
+            if (safe2) el.setAttribute(attr.name, safe2);
+            else el.removeAttribute(attr.name);
+          }
+        } else if (name === "src" || name === "srcset") {
+          const safe2 = sanitizeUrl(attr.value, "image");
+          if (safe2 !== attr.value.trim()) {
+            if (safe2) el.setAttribute(attr.name, safe2);
+            else el.removeAttribute(attr.name);
+          }
+        }
+      }
+    });
+    root2.querySelectorAll("[style]").forEach((el) => {
+      const style = el.getAttribute("style") ?? "";
+      if (/url\(\s*['"]?\s*(javascript|vbscript|data:text\/html)/i.test(style)) {
+        el.removeAttribute("style");
+      }
+    });
   }
   function highlightCodeBlocks(container) {
     container.querySelectorAll("pre code").forEach((block) => {

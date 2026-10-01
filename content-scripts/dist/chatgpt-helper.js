@@ -925,6 +925,20 @@
         }
       }
     }
+    const CONVERSATION_URL_ALLOWED_HOSTS = /* @__PURE__ */ new Set(["chatgpt.com", "chat.openai.com", "new.oaifree.com"]);
+    function sanitizeConversationUrl(value) {
+      if (typeof value !== "string") return null;
+      const trimmed = value.trim();
+      if (!trimmed) return null;
+      try {
+        const url = new URL(trimmed, window.location.origin);
+        if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+        if (!CONVERSATION_URL_ALLOWED_HOSTS.has(url.hostname.toLowerCase())) return null;
+        return url.href;
+      } catch (e) {
+        return null;
+      }
+    }
     async function copyTextToClipboard(text) {
       if (!text) return false;
       try {
@@ -1649,6 +1663,7 @@
       getExtensionAssetUrl,
       getExtensionManifestMeta,
       openExternalLink,
+      sanitizeConversationUrl,
       copyTextToClipboard,
       createHelperLogoNode,
       SVG_ICON_DEFS,
@@ -1865,6 +1880,7 @@
       getExtensionAssetUrl,
       getExtensionManifestMeta,
       openExternalLink,
+      sanitizeConversationUrl,
       copyTextToClipboard,
       createHelperLogoNode,
       SVG_ICON_DEFS,
@@ -1944,8 +1960,11 @@
             conversations: conversationCount,
             lastUsedFolderId: saved.lastUsedFolderId
           });
+          this.sanitizeLoadedData(saved);
+          this._loadedWithUnreadyCache = false;
           return saved;
         }
+        this._loadedWithUnreadyCache = !!(window.__MY_EXT__ && window.__MY_EXT__.storageCache && !window.__MY_EXT__.storageCacheInitialized);
         console.log("[ChatGPT Helper] \u4F7F\u7528\u9ED8\u8BA4\u4F1A\u8BDD\u6570\u636E\u7ED3\u6784\uFF08\u672A\u627E\u5230\u4FDD\u5B58\u7684\u6570\u636E\uFF09");
         if (window.__MY_EXT__ && window.__MY_EXT__.GM && window.__MY_EXT__.GM.getValue) {
           window.__MY_EXT__.GM.getValue("chatgpt_conversations", null).then((asyncValue) => {
@@ -1980,7 +1999,36 @@
         }
       }
       saveData() {
+        if (this._loadedWithUnreadyCache) {
+          console.warn("[ChatGPT Helper] \u5B58\u50A8\u7F13\u5B58\u672A\u5C31\u7EEA\uFF0C\u8DF3\u8FC7\u672C\u6B21\u4F1A\u8BDD\u6570\u636E\u5199\u5165");
+          return;
+        }
         window.GM_setValue("chatgpt_conversations", this.data);
+      }
+      // 存储数据可能来自备份导入或损坏的旧版本：在这里做一次性净化，
+      // 保证后续任何 location.href / DOM 渲染只接触安全值。
+      sanitizeLoadedData(data) {
+        try {
+          if (!Array.isArray(data.folders)) data.folders = [];
+          if (!Array.isArray(data.tags)) data.tags = [];
+          if (!data.conversations || typeof data.conversations !== "object" || Array.isArray(data.conversations)) {
+            data.conversations = {};
+          }
+          Object.entries(data.conversations).forEach(([id, conv]) => {
+            if (!conv || typeof conv !== "object") {
+              delete data.conversations[id];
+              return;
+            }
+            const safeUrl = sanitizeConversationUrl(conv.url);
+            if (safeUrl) {
+              conv.url = safeUrl;
+            } else {
+              delete conv.url;
+            }
+          });
+        } catch (e) {
+          console.error("[ChatGPT Helper] \u4F1A\u8BDD\u6570\u636E\u51C0\u5316\u5931\u8D25:", e);
+        }
       }
       ensureInboxFolder() {
         if (!Array.isArray(this.data.folders)) {
@@ -2198,7 +2246,7 @@
             this.listContainer.querySelectorAll(".chatgpt-helper-folder-item.expanded").forEach((el) => {
               if (el !== folderItem) {
                 el.classList.remove("expanded");
-                const otherList = this.listContainer.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${el.dataset.folderId}"]`);
+                const otherList = this.listContainer.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${CSS.escape(el.dataset.folderId || "")}"]`);
                 if (otherList) {
                   otherList.style.display = "none";
                 }
@@ -2400,7 +2448,10 @@
                 this.updateBatchToolbar();
               }
             } else if (!this.batchMode && conv.url) {
-              window.location.href = conv.url;
+              const safeUrl = sanitizeConversationUrl(conv.url);
+              if (safeUrl) {
+                window.location.href = safeUrl;
+              }
             }
           });
           container.appendChild(item);
@@ -2430,7 +2481,7 @@
               if (!item || !item.id) return;
               const id = item.id;
               const title = item.title || this.t("untitledConversation");
-              const url = item.url;
+              const url = sanitizeConversationUrl(item.url) || void 0;
               const remoteCreatedAt = item.createdAt || null;
               const remoteUpdatedAt = item.updatedAt || remoteCreatedAt;
               const localConversation = this.data.conversations[id];
@@ -2476,7 +2527,7 @@
             this.saveData();
             this.renderConversationList();
             if ((newCount > 0 || updatedCount > 0) && this.expandedFolderId) {
-              const expandedFolderList = this.listContainer?.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${this.expandedFolderId}"]`);
+              const expandedFolderList = this.listContainer?.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${CSS.escape(this.expandedFolderId || "")}"]`);
               if (expandedFolderList) {
                 this.renderConversationsInFolder(this.expandedFolderId, expandedFolderList);
               }
@@ -2593,7 +2644,8 @@
         this.showToast(this.t("exportedConversations").replace("{count}", this.selectedIds.size));
       }
       async exportConversation(conv, format = "markdown") {
-        if (window.location.href !== conv.url) {
+        const currentConvId = (window.location.pathname.match(/\/c\/([^/?]+)/) || [])[1];
+        if (!currentConvId || currentConvId !== conv.id) {
           this.showToast(this.t("openConversationFirst").replace("{title}", conv.title || this.t("untitledConversation")));
           return;
         }
@@ -2602,8 +2654,9 @@
           this.showToast(this.t("noContent") || "\u672A\u627E\u5230\u5BF9\u8BDD\u5185\u5BB9");
           return;
         }
+        const safeTitle = String(conv.title || this.t("untitledConversation")).replace(/[\\/:*?"<>|\r\n]+/g, "_").replace(/\s+/g, " ").trim().slice(0, 80) || "conversation";
         let content = "";
-        const filename = `${conv.title || this.t("untitledConversation")}_${Date.now()}`;
+        const filename = `${safeTitle}_${Date.now()}`;
         switch (format) {
           case "markdown":
             content = this.formatToMarkdown(conv, messages);
@@ -21413,24 +21466,71 @@
           this.showToast(this.t("operationFailed"));
         }
       },
-      async applyBackupData(data) {
+      // 备份文件是不可信输入（可能来自网络分享）：落盘前做结构校验与字段裁剪，
+      // 防止畸形数据进入运行时，也防止把超量垃圾写满 chrome.storage。
+      sanitizeBackupData(data) {
+        const safe = {};
         if (Array.isArray(data.prompts)) {
-          window.GM_setValue(SETTING_KEYS.PROMPTS, data.prompts);
+          safe.prompts = data.prompts.filter((p) => p && typeof p === "object").map((p) => {
+            const prompt2 = { ...p };
+            if (typeof prompt2.title !== "string") prompt2.title = String(prompt2.title ?? "");
+            if (typeof prompt2.content !== "string") prompt2.content = String(prompt2.content ?? "");
+            return prompt2;
+          }).slice(0, 5e3);
         }
-        if (data.settings && typeof data.settings === "object") {
-          window.GM_setValue(SETTING_KEYS.SETTINGS, data.settings);
+        if (data.settings && typeof data.settings === "object" && !Array.isArray(data.settings)) {
+          const settings = {};
+          Object.keys(data.settings).forEach((key) => {
+            if (key === "__proto__" || key === "constructor" || key === "prototype") return;
+            settings[key] = data.settings[key];
+          });
+          safe.settings = settings;
         }
-        if (typeof data.language === "string" && data.language) {
-          window.GM_setValue(SETTING_KEYS.LANGUAGE, data.language);
+        if (typeof data.language === "string" && /^[a-z]{2}(-[A-Za-z0-9]{2,8})?$/.test(data.language)) {
+          safe.language = data.language;
         }
-        if (data.conversations && typeof data.conversations === "object") {
-          window.GM_setValue(SETTING_KEYS.CONVERSATIONS, data.conversations);
+        if (data.conversations && typeof data.conversations === "object" && !Array.isArray(data.conversations) && data.conversations.conversations && typeof data.conversations.conversations === "object") {
+          const conversations = { ...data.conversations, conversations: {} };
+          Object.entries(data.conversations.conversations).forEach(([id, conv]) => {
+            if (!conv || typeof conv !== "object") return;
+            if (id === "__proto__" || id === "constructor" || id === "prototype") return;
+            conversations.conversations[id] = conv;
+          });
+          safe.conversations = conversations;
         }
-        if (data.readingProgress && typeof data.readingProgress === "object") {
-          window.GM_setValue(SETTING_KEYS.READING_PROGRESS, data.readingProgress);
+        if (data.readingProgress && typeof data.readingProgress === "object" && !Array.isArray(data.readingProgress)) {
+          const progress = {};
+          Object.keys(data.readingProgress).forEach((key) => {
+            if (key === "__proto__" || key === "constructor" || key === "prototype") return;
+            const value = data.readingProgress[key];
+            if (value && typeof value === "object") progress[key] = value;
+          });
+          safe.readingProgress = progress;
         }
-        if (data.promptLibraryVersion != null) {
-          window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, data.promptLibraryVersion);
+        if (data.promptLibraryVersion != null && Number.isFinite(Number(data.promptLibraryVersion))) {
+          safe.promptLibraryVersion = Number(data.promptLibraryVersion);
+        }
+        return safe;
+      },
+      async applyBackupData(data) {
+        const safeData = this.sanitizeBackupData(data);
+        if (safeData.prompts) {
+          window.GM_setValue(SETTING_KEYS.PROMPTS, safeData.prompts);
+        }
+        if (safeData.settings) {
+          window.GM_setValue(SETTING_KEYS.SETTINGS, safeData.settings);
+        }
+        if (safeData.language) {
+          window.GM_setValue(SETTING_KEYS.LANGUAGE, safeData.language);
+        }
+        if (safeData.conversations) {
+          window.GM_setValue(SETTING_KEYS.CONVERSATIONS, safeData.conversations);
+        }
+        if (safeData.readingProgress) {
+          window.GM_setValue(SETTING_KEYS.READING_PROGRESS, safeData.readingProgress);
+        }
+        if (safeData.promptLibraryVersion != null) {
+          window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, safeData.promptLibraryVersion);
         }
         let assetCount = 0;
         if (Array.isArray(data.themeAssets) && data.themeAssets.length > 0) {
@@ -21440,6 +21540,7 @@
             }
             for (const asset of data.themeAssets) {
               if (!asset || !asset.id || !asset.dataBase64) continue;
+              if (!/^[A-Za-z0-9+/=\s]+$/.test(String(asset.dataBase64))) continue;
               const blob = base64ToBlob(asset.dataBase64, asset.mimeType);
               await this.themeAssetRepository.putAsset(blob, asset.mimeType, asset.id);
               assetCount++;
@@ -21448,8 +21549,8 @@
             console.warn("[ChatGPT Helper] \u6062\u590D\u4E3B\u9898\u58C1\u7EB8\u5931\u8D25:", e);
           }
         }
-        const promptCount = Array.isArray(data.prompts) ? data.prompts.length : 0;
-        const conversationCount = data.conversations && data.conversations.conversations ? Object.keys(data.conversations.conversations || {}).length : 0;
+        const promptCount = Array.isArray(safeData.prompts) ? safeData.prompts.length : 0;
+        const conversationCount = safeData.conversations && safeData.conversations.conversations ? Object.keys(safeData.conversations.conversations || {}).length : 0;
         const summary = (this.t("backupIncludeHint") || "").replace("{prompts}", String(promptCount)).replace("{conversations}", String(conversationCount)).replace("{assets}", String(assetCount));
         this.showToast(`${this.t("backupImportSuccess")} \xB7 ${summary}`);
         setTimeout(() => {

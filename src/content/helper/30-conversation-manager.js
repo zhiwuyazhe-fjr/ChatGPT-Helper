@@ -35,6 +35,7 @@
         getExtensionAssetUrl,
         getExtensionManifestMeta,
         openExternalLink,
+        sanitizeConversationUrl,
         copyTextToClipboard,
         createHelperLogoNode,
         SVG_ICON_DEFS,
@@ -126,8 +127,13 @@
                     conversations: conversationCount,
                     lastUsedFolderId: saved.lastUsedFolderId
                 });
+                this.sanitizeLoadedData(saved);
+                this._loadedWithUnreadyCache = false;
                 return saved;
             }
+            // GM 适配器存在但缓存未就绪：读到的是默认空结构，标记禁止落盘，
+            // 防止随后的自动同步把用户已有数据整键覆盖（丢数据）。
+            this._loadedWithUnreadyCache = !!(window.__MY_EXT__ && window.__MY_EXT__.storageCache && !window.__MY_EXT__.storageCacheInitialized);
             console.log('[ChatGPT Helper] 使用默认会话数据结构（未找到保存的数据）');
             // 尝试直接从 Chrome storage 读取（异步方式，用于调试）
             if (window.__MY_EXT__ && window.__MY_EXT__.GM && window.__MY_EXT__.GM.getValue) {
@@ -166,7 +172,38 @@
         }
 
         saveData() {
+            // 数据来自缓存未就绪时的默认空结构：写盘会把用户已有数据整键覆盖（丢数据），等 reloadData 拿到真实数据后再写
+            if (this._loadedWithUnreadyCache) {
+                console.warn('[ChatGPT Helper] 存储缓存未就绪，跳过本次会话数据写入');
+                return;
+            }
             window.GM_setValue('chatgpt_conversations', this.data);
+        }
+
+        // 存储数据可能来自备份导入或损坏的旧版本：在这里做一次性净化，
+        // 保证后续任何 location.href / DOM 渲染只接触安全值。
+        sanitizeLoadedData(data) {
+            try {
+                if (!Array.isArray(data.folders)) data.folders = [];
+                if (!Array.isArray(data.tags)) data.tags = [];
+                if (!data.conversations || typeof data.conversations !== 'object' || Array.isArray(data.conversations)) {
+                    data.conversations = {};
+                }
+                Object.entries(data.conversations).forEach(([id, conv]) => {
+                    if (!conv || typeof conv !== 'object') {
+                        delete data.conversations[id];
+                        return;
+                    }
+                    const safeUrl = sanitizeConversationUrl(conv.url);
+                    if (safeUrl) {
+                        conv.url = safeUrl;
+                    } else {
+                        delete conv.url; // 点击时按无 URL 处理，不跳转
+                    }
+                });
+            } catch (e) {
+                console.error('[ChatGPT Helper] 会话数据净化失败:', e);
+            }
         }
 
         ensureInboxFolder() {
@@ -445,7 +482,7 @@
                     this.listContainer.querySelectorAll('.chatgpt-helper-folder-item.expanded').forEach((el) => {
                         if (el !== folderItem) {
                             el.classList.remove('expanded');
-                            const otherList = this.listContainer.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${el.dataset.folderId}"]`);
+                            const otherList = this.listContainer.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${CSS.escape(el.dataset.folderId || '')}"]`);
                             if (otherList) {
                                 otherList.style.display = 'none';
                             }
@@ -695,7 +732,11 @@
                             this.updateBatchToolbar();
                         }
                     } else if (!this.batchMode && conv.url) {
-                        window.location.href = conv.url;
+                        // 最后一道防线：即使存储被污染也绝不导航到任意 scheme
+                        const safeUrl = sanitizeConversationUrl(conv.url);
+                        if (safeUrl) {
+                            window.location.href = safeUrl;
+                        }
                     }
                 });
 
@@ -736,7 +777,8 @@
                         if (!item || !item.id) return;
                         const id = item.id;
                         const title = item.title || this.t('untitledConversation');
-                        const url = item.url;
+                        // 同步来源包含 DOM 扫描回退，href 可能被页面上其它脚本污染，入库前过白名单
+                        const url = sanitizeConversationUrl(item.url) || undefined;
                         const remoteCreatedAt = item.createdAt || null;
                         const remoteUpdatedAt = item.updatedAt || remoteCreatedAt;
                         const localConversation = this.data.conversations[id];
@@ -789,7 +831,7 @@
                     this.renderConversationList();
 
                     if ((newCount > 0 || updatedCount > 0) && this.expandedFolderId) {
-                        const expandedFolderList = this.listContainer?.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${this.expandedFolderId}"]`);
+                        const expandedFolderList = this.listContainer?.querySelector(`.chatgpt-helper-conversations-list[data-folder-id="${CSS.escape(this.expandedFolderId || '')}"]`);
                         if (expandedFolderList) {
                             this.renderConversationsInFolder(this.expandedFolderId, expandedFolderList);
                         }
@@ -935,8 +977,10 @@
         }
 
         async exportConversation(conv, format = 'markdown') {
-            // 需要打开会话才能导出内容
-            if (window.location.href !== conv.url) {
+            // 需要打开会话才能导出内容：按路径中的会话 ID 比较，
+            // 避免页面 URL 带 hash/query 或归一化差异导致永远判不相等
+            const currentConvId = (window.location.pathname.match(/\/c\/([^/?]+)/) || [])[1];
+            if (!currentConvId || currentConvId !== conv.id) {
                 this.showToast(this.t('openConversationFirst').replace('{title}', conv.title || this.t('untitledConversation')));
                 return;
             }
@@ -947,8 +991,14 @@
                 return;
             }
 
+            // 会话标题来自页面 DOM/API，含路径分隔符或非法字符会破坏下载文件名
+            const safeTitle = String(conv.title || this.t('untitledConversation'))
+                .replace(/[\\/:*?"<>|\r\n]+/g, '_')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .slice(0, 80) || 'conversation';
             let content = '';
-            const filename = `${conv.title || this.t('untitledConversation')}_${Date.now()}`;
+            const filename = `${safeTitle}_${Date.now()}`;
 
             switch (format) {
                 case 'markdown':

@@ -954,6 +954,24 @@
         }
     }
 
+    // 会话跳转 URL 白名单：只允许 http(s) 且落在已知 ChatGPT 站点上。
+    // 备份导入/损坏存储可能塞入 javascript:、data: 或第三方 URL，绝不能直接赋给 location.href。
+    const CONVERSATION_URL_ALLOWED_HOSTS = new Set(['chatgpt.com', 'chat.openai.com', 'new.oaifree.com']);
+
+    function sanitizeConversationUrl(value) {
+        if (typeof value !== 'string') return null;
+        const trimmed = value.trim();
+        if (!trimmed) return null;
+        try {
+            const url = new URL(trimmed, window.location.origin);
+            if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
+            if (!CONVERSATION_URL_ALLOWED_HOSTS.has(url.hostname.toLowerCase())) return null;
+            return url.href;
+        } catch (e) {
+            return null;
+        }
+    }
+
     async function copyTextToClipboard(text) {
         if (!text) return false;
         try {
@@ -1891,6 +1909,7 @@
         getExtensionAssetUrl,
         getExtensionManifestMeta,
         openExternalLink,
+        sanitizeConversationUrl,
         copyTextToClipboard,
         createHelperLogoNode,
         SVG_ICON_DEFS,
