@@ -82,7 +82,6 @@
             this.tableCopyInitialized = false;
             this.formulaDblClickHandler = null;
             this.tableObserver = null;
-            this.injectedButtons = new Set();
         }
 
         // ==================== Formula Copy ====================
@@ -290,8 +289,10 @@
          * 为表格注入复制按钮
          */
         injectTableButton(table) {
-            if (this.injectedButtons.has(table)) return;
-            this.injectedButtons.add(table);
+            // 用 dataset 标记去重而不是 Set 存元素引用：
+            // Set 会永久持有已脱离 DOM 的表格（及其整个子树），会话切换后内存持续增长
+            if (table.dataset && table.dataset.ghTableBtn === '1') return;
+            if (table.dataset) table.dataset.ghTableBtn = '1';
 
             try {
                 // 找到表格容器
@@ -421,8 +422,10 @@
             document.querySelectorAll('.chatgpt-helper-table-container').forEach(container => {
                 container.classList.remove('chatgpt-helper-table-container');
             });
-
-            this.injectedButtons.clear();
+            // 同时清掉去重标记，下次 init 可重新注入
+            document.querySelectorAll('table[data-gh-table-btn]').forEach(table => {
+                delete table.dataset.ghTableBtn;
+            });
         }
 
         /**

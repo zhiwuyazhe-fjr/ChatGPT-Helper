@@ -83,6 +83,8 @@
             this.isRunning = false;
             this.aiState = 'idle'; // 'idle' | 'generating' | 'completed'
             this.lastAiState = 'idle';
+            this.generationObserver = null;
+            this.observerTarget = null;
             this.notificationAudioContext = null;
             this.notificationAudioUnlocked = false;
             this.pendingNotificationTone = false;
@@ -98,7 +100,21 @@
             }
 
             const intervalMs = 3000;
-            this.intervalId = setInterval(() => this.updateTabName(), intervalMs);
+            this.intervalId = setInterval(() => {
+                this.updateTabName();
+                // SPA 路由切换会重建响应容器：observer 仍盯着旧的分离子树则重新挂载
+                if (this.generationObserver) {
+                    const current = this.adapter.getResponseContainer();
+                    if (current && current !== this.observerTarget) {
+                        this.generationObserver.observe(current, {
+                            childList: true,
+                            subtree: true,
+                            characterData: true
+                        });
+                        this.observerTarget = current;
+                    }
+                }
+            }, intervalMs);
 
             this.startGenerationObserver();
         }
@@ -116,6 +132,7 @@
                 this.generationObserver.disconnect();
                 this.generationObserver = null;
             }
+            this.observerTarget = null;
 
             this.teardownNotificationAudioUnlock();
         }
@@ -131,6 +148,11 @@
         startGenerationObserver() {
             if (this.generationObserver) return;
 
+            const container = this.adapter.getResponseContainer();
+            // 容器未就绪时不创建 observer：提前创建会让上面的 return 守卫阻止后续重试，
+            // 生成状态（⏳/✅）与完成提示音从此静默失效
+            if (!container) return;
+
             this.generationObserver = new MutationObserver(() => {
                 const isGenerating = this.adapter.isGenerating();
                 if (isGenerating && this.aiState !== 'generating') {
@@ -141,14 +163,12 @@
                 }
             });
 
-            const container = this.adapter.getResponseContainer();
-            if (container) {
-                this.generationObserver.observe(container, {
-                    childList: true,
-                    subtree: true,
-                    characterData: true
-                });
-            }
+            this.generationObserver.observe(container, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+            this.observerTarget = container;
         }
 
         onAiComplete() {

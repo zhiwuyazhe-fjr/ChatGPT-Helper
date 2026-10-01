@@ -3033,6 +3033,7 @@
     class ScrollManager {
       constructor(adapter) {
         this.adapter = adapter;
+        this._scrollGeneration = 0;
       }
       get container() {
         return this.adapter.getResponseContainer();
@@ -3054,6 +3055,22 @@
         return this.container ? this.container.clientHeight : window.innerHeight;
       }
       scrollTo(options) {
+        const generation = ++this._scrollGeneration;
+        const isStale = () => generation !== this._scrollGeneration;
+        const abortOnUserInput = (cleanup) => {
+          const onUserInput = (e) => {
+            if (!e || e.isTrusted === false) return;
+            this._scrollGeneration++;
+            cleanup();
+            window.removeEventListener("wheel", onUserInput, true);
+            window.removeEventListener("touchstart", onUserInput, true);
+            window.removeEventListener("keydown", onUserInput, true);
+          };
+          window.addEventListener("wheel", onUserInput, true);
+          window.addEventListener("touchstart", onUserInput, true);
+          window.addEventListener("keydown", onUserInput, true);
+          return onUserInput;
+        };
         const container = this.container;
         if (!container) {
           const isAtBottomWindow = window.innerHeight + window.scrollY >= document.body.scrollHeight - 50;
@@ -3063,9 +3080,24 @@
           if (isAtBottomWindow && needsScroll2) {
             console.log("[ChatGPT Helper] scrollTo (window): \u5728\u5E95\u90E8\uFF0C\u4F7F\u7528\u5F3A\u5236\u6EDA\u52A8\u65B9\u6CD5\uFF0C\u76EE\u6807\u4F4D\u7F6E:", targetTop2, "\u5F53\u524D\u4F4D\u7F6E:", currentTop2);
             const scrollElement = document.scrollingElement || document.documentElement || document.body;
-            window.__ghBypassLock = true;
+            let scrollInterval = null;
+            const cleanup = () => {
+              if (scrollInterval) clearInterval(scrollInterval);
+              setTimeout(() => {
+                try {
+                  delete window.__ghBypassLock;
+                } catch (e) {
+                }
+              }, 100);
+            };
+            const detachUserInputGuard = abortOnUserInput(cleanup);
             const forceScroll = () => {
+              if (isStale()) {
+                cleanup();
+                return;
+              }
               try {
+                window.__ghBypassLock = true;
                 scrollElement.scrollTop = targetTop2;
                 if (document.documentElement) {
                   document.documentElement.scrollTop = targetTop2;
@@ -3079,23 +3111,33 @@
               }
             };
             forceScroll();
-            setTimeout(() => forceScroll(), 0);
-            setTimeout(() => forceScroll(), 10);
-            setTimeout(() => forceScroll(), 20);
+            setTimeout(() => {
+              if (!isStale()) forceScroll();
+            }, 0);
+            setTimeout(() => {
+              if (!isStale()) forceScroll();
+            }, 10);
+            setTimeout(() => {
+              if (!isStale()) forceScroll();
+            }, 20);
             let attempts = 0;
-            const maxAttempts = 100;
-            const scrollInterval = setInterval(() => {
+            const maxAttempts = 30;
+            scrollInterval = setInterval(() => {
               attempts++;
+              if (isStale()) {
+                cleanup();
+                return;
+              }
               const before = window.scrollY;
-              window.__ghBypassLock = true;
               forceScroll();
               const current = window.scrollY;
               if (Math.abs(current - targetTop2) <= 5 || attempts >= maxAttempts) {
-                clearInterval(scrollInterval);
-                setTimeout(() => delete window.__ghBypassLock, 100);
-                console.log("[ChatGPT Helper] window \u5F3A\u5236\u6EDA\u52A8\u5B8C\u6210\uFF0C\u6700\u7EC8\u4F4D\u7F6E:", current, "\u76EE\u6807\u4F4D\u7F6E:", targetTop2);
+                cleanup();
+                window.removeEventListener("wheel", detachUserInputGuard, true);
+                window.removeEventListener("touchstart", detachUserInputGuard, true);
+                window.removeEventListener("keydown", detachUserInputGuard, true);
               } else if (Math.abs(current - before) > 1) ;
-              else if (attempts > 20) {
+              else if (attempts > 10) {
                 try {
                   if (targetTop2 < currentTop2) {
                     const firstElement = document.body.firstElementChild || document.body.firstChild;
@@ -3111,8 +3153,10 @@
                 } catch (e) {
                   console.error("[ChatGPT Helper] window scrollIntoView \u5931\u8D25:", e);
                 }
-                clearInterval(scrollInterval);
-                setTimeout(() => delete window.__ghBypassLock, 100);
+                cleanup();
+                window.removeEventListener("wheel", detachUserInputGuard, true);
+                window.removeEventListener("touchstart", detachUserInputGuard, true);
+                window.removeEventListener("keydown", detachUserInputGuard, true);
               }
             }, 10);
           } else {
@@ -3142,16 +3186,31 @@
           window.__ghBypassLock = true;
           const proto = Object.getPrototypeOf(container);
           const descriptor = Object.getOwnPropertyDescriptor(proto, "scrollTop") || Object.getOwnPropertyDescriptor(HTMLElement.prototype, "scrollTop") || Object.getOwnPropertyDescriptor(Element.prototype, "scrollTop");
+          let scrollInterval = null;
+          const cleanup = () => {
+            if (scrollInterval) clearInterval(scrollInterval);
+            setTimeout(() => {
+              try {
+                delete container.__ghBypassLock;
+              } catch (e) {
+              }
+              try {
+                delete window.__ghBypassLock;
+              } catch (e) {
+              }
+            }, 100);
+          };
+          const detachUserInputGuard = abortOnUserInput(cleanup);
           const forceScroll = () => {
+            if (isStale()) {
+              cleanup();
+              return;
+            }
             try {
               if (descriptor && descriptor.set) {
                 descriptor.set.call(container, targetTop);
               } else {
-                Object.defineProperty(container, "scrollTop", {
-                  value: targetTop,
-                  writable: true,
-                  configurable: true
-                });
+                container.scrollTop = targetTop;
               }
             } catch (e) {
               try {
@@ -3163,19 +3222,13 @@
           };
           forceScroll();
           setTimeout(() => {
-            container.__ghBypassLock = true;
-            window.__ghBypassLock = true;
-            forceScroll();
+            if (!isStale()) forceScroll();
           }, 0);
           setTimeout(() => {
-            container.__ghBypassLock = true;
-            window.__ghBypassLock = true;
-            forceScroll();
+            if (!isStale()) forceScroll();
           }, 10);
           setTimeout(() => {
-            container.__ghBypassLock = true;
-            window.__ghBypassLock = true;
-            forceScroll();
+            if (!isStale()) forceScroll();
           }, 20);
           try {
             container.scrollTo({ top: targetTop, behavior: options?.behavior || "instant", __bypassLock: true });
@@ -3183,20 +3236,22 @@
             console.log("[ChatGPT Helper] scrollTo \u5931\u8D25:", e);
           }
           let attempts = 0;
-          const maxAttempts = 50;
-          const scrollInterval = setInterval(() => {
+          const maxAttempts = 30;
+          scrollInterval = setInterval(() => {
             attempts++;
+            if (isStale()) {
+              cleanup();
+              return;
+            }
             const before = container.scrollTop;
             container.__ghBypassLock = true;
-            window.__ghBypassLock = true;
             forceScroll();
             const current = container.scrollTop;
             if (Math.abs(current - targetTop) <= 5 || attempts >= maxAttempts) {
-              clearInterval(scrollInterval);
-              setTimeout(() => {
-                delete container.__ghBypassLock;
-                delete window.__ghBypassLock;
-              }, 100);
+              cleanup();
+              window.removeEventListener("wheel", detachUserInputGuard, true);
+              window.removeEventListener("touchstart", detachUserInputGuard, true);
+              window.removeEventListener("keydown", detachUserInputGuard, true);
               console.log("[ChatGPT Helper] \u5F3A\u5236\u6EDA\u52A8\u5B8C\u6210\uFF0C\u6700\u7EC8\u4F4D\u7F6E:", current, "\u76EE\u6807\u4F4D\u7F6E:", targetTop, "\u5C1D\u8BD5\u6B21\u6570:", attempts);
             } else if (Math.abs(current - before) > 1) ;
             else if (attempts > 10) {
@@ -3209,11 +3264,10 @@
               } catch (e) {
                 console.error("[ChatGPT Helper] scrollIntoView \u5931\u8D25:", e);
               }
-              clearInterval(scrollInterval);
-              setTimeout(() => {
-                delete container.__ghBypassLock;
-                delete window.__ghBypassLock;
-              }, 100);
+              cleanup();
+              window.removeEventListener("wheel", detachUserInputGuard, true);
+              window.removeEventListener("touchstart", detachUserInputGuard, true);
+              window.removeEventListener("keydown", detachUserInputGuard, true);
             }
           }, 10);
           return;
@@ -3428,6 +3482,7 @@
         this.isRecording = false;
         this.scrollHandler = null;
         this.restoredTop = null;
+        this.trailingSaveTimer = null;
       }
       startRecording() {
         if (this.isRecording) return;
@@ -3451,6 +3506,10 @@
           window.removeEventListener("scroll", this.scrollHandler, { capture: true });
           this.scrollHandler = null;
         }
+        if (this.trailingSaveTimer) {
+          clearTimeout(this.trailingSaveTimer);
+          this.trailingSaveTimer = null;
+        }
       }
       handleScroll() {
         if (!this.settings.readingHistory?.persistence) return;
@@ -3459,11 +3518,17 @@
           this.saveProgress();
           this.lastSaveTime = now;
         }
+        if (this.trailingSaveTimer) clearTimeout(this.trailingSaveTimer);
+        this.trailingSaveTimer = setTimeout(() => {
+          this.trailingSaveTimer = null;
+          this.saveProgress();
+        }, 1200);
       }
       getKey() {
         const url = window.location.href;
         const match = url.match(/\/c\/([^\/\?]+)/) || url.match(/\/chat\/([^\/\?]+)/);
-        return match ? `chatgpt:${match[1]}` : `chatgpt:${url}`;
+        if (match) return `chatgpt:${match[1]}`;
+        return null;
       }
       saveProgress() {
         if (!this.isRecording) return;
@@ -3471,11 +3536,13 @@
         const scrollTop = this.scrollManager.scrollTop;
         if (scrollTop < 0) return;
         const key = this.getKey();
+        if (!key) return;
         const data = {
           top: scrollTop,
           ts: Date.now()
         };
-        const allData = window.GM_getValue("chatgpt_reading_progress", {});
+        const allData = (typeof window.GM_getValue === "function" ? window.GM_getValue("chatgpt_reading_progress", {}) : {}) || {};
+        if (!allData || typeof allData !== "object") return;
         allData[key] = data;
         window.GM_setValue("chatgpt_reading_progress", allData);
       }
@@ -3490,13 +3557,28 @@
         return new Promise((resolve) => {
           let attempts = 0;
           const maxAttempts = 30;
+          const onUserInput = (e) => {
+            if (!e || e.isTrusted === false) return;
+            cleanupGuard();
+            resolve(false);
+          };
+          const cleanupGuard = () => {
+            window.removeEventListener("wheel", onUserInput, true);
+            window.removeEventListener("touchstart", onUserInput, true);
+            window.removeEventListener("keydown", onUserInput, true);
+          };
+          window.addEventListener("wheel", onUserInput, true);
+          window.addEventListener("touchstart", onUserInput, true);
+          window.addEventListener("keydown", onUserInput, true);
           const tryScroll = () => {
             if (attempts > maxAttempts) {
               if (data.top !== void 0 && container.scrollHeight >= data.top) {
                 this.scrollManager.scrollTo({ top: data.top, behavior: "instant" });
                 this.restoredTop = data.top;
+                cleanupGuard();
                 resolve(true);
               } else {
+                cleanupGuard();
                 resolve(false);
               }
               return;
@@ -3506,6 +3588,7 @@
             if (data.top !== void 0 && currentHeight >= data.top) {
               this.scrollManager.scrollTo({ top: data.top, behavior: "instant" });
               this.restoredTop = data.top;
+              cleanupGuard();
               resolve(true);
             } else {
               container.scrollTop = 0;
@@ -4265,8 +4348,7 @@
         });
         this.observer.observe(document.body, {
           childList: true,
-          subtree: true,
-          characterData: true
+          subtree: true
         });
       }
       stopObserver() {
@@ -4278,6 +4360,12 @@
           clearTimeout(this.updateDebounceTimer);
           this.updateDebounceTimer = null;
         }
+      }
+      // SPA 路由切换时的完整清理：漏掉 stopObserver 会把监听 document.body 的
+      // observer 连同整个 manager 闭包泄漏掉（每次导航泄漏一个，永久后台轮询）
+      destroy() {
+        this.stopObserver();
+        this.stopSyncScroll();
       }
       triggerAutoUpdate() {
         const interval = (this.settings.outline?.updateInterval || 5) * 1e3;
@@ -5595,7 +5683,6 @@
         this.tableCopyInitialized = false;
         this.formulaDblClickHandler = null;
         this.tableObserver = null;
-        this.injectedButtons = /* @__PURE__ */ new Set();
       }
       // ==================== Formula Copy ====================
       /**
@@ -5755,8 +5842,8 @@
        * 为表格注入复制按钮
        */
       injectTableButton(table) {
-        if (this.injectedButtons.has(table)) return;
-        this.injectedButtons.add(table);
+        if (table.dataset && table.dataset.ghTableBtn === "1") return;
+        if (table.dataset) table.dataset.ghTableBtn = "1";
         try {
           let container = table.parentElement;
           if (!container) return;
@@ -5848,7 +5935,9 @@
         document.querySelectorAll(".chatgpt-helper-table-container").forEach((container) => {
           container.classList.remove("chatgpt-helper-table-container");
         });
-        this.injectedButtons.clear();
+        document.querySelectorAll("table[data-gh-table-btn]").forEach((table) => {
+          delete table.dataset.ghTableBtn;
+        });
       }
       /**
        * 初始化所有复制功能
@@ -5980,8 +6069,11 @@
       }
       toggle(turn, check) {
         const message = this.extractTurnMessage(turn);
-        const key = `${message.role}::${message.content}`;
-        const existingIndex = this.selections.findIndex((item) => item.key === key);
+        if (!turn.dataset.ghSelId) {
+          turn.dataset.ghSelId = `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+        }
+        const turnId = turn.dataset.ghSelId;
+        const existingIndex = this.selections.findIndex((item) => item.turnId === turnId);
         if (existingIndex !== -1) {
           this.selections.splice(existingIndex, 1);
           turn.classList.remove("gh-msg-selected");
@@ -5990,7 +6082,7 @@
             check.setAttribute("aria-pressed", "false");
           }
         } else {
-          this.selections.push({ key, role: message.role, content: message.content });
+          this.selections.push({ turnId, key: `${message.role}::${message.content}`, role: message.role, content: message.content });
           turn.classList.add("gh-msg-selected");
           if (check) {
             check.classList.add("checked");
@@ -6265,6 +6357,8 @@
         this.isRunning = false;
         this.aiState = "idle";
         this.lastAiState = "idle";
+        this.generationObserver = null;
+        this.observerTarget = null;
         this.notificationAudioContext = null;
         this.notificationAudioUnlocked = false;
         this.pendingNotificationTone = false;
@@ -6278,7 +6372,20 @@
           this.ensureNotificationAudioUnlock();
         }
         const intervalMs = 3e3;
-        this.intervalId = setInterval(() => this.updateTabName(), intervalMs);
+        this.intervalId = setInterval(() => {
+          this.updateTabName();
+          if (this.generationObserver) {
+            const current = this.adapter.getResponseContainer();
+            if (current && current !== this.observerTarget) {
+              this.generationObserver.observe(current, {
+                childList: true,
+                subtree: true,
+                characterData: true
+              });
+              this.observerTarget = current;
+            }
+          }
+        }, intervalMs);
         this.startGenerationObserver();
       }
       stop() {
@@ -6292,6 +6399,7 @@
           this.generationObserver.disconnect();
           this.generationObserver = null;
         }
+        this.observerTarget = null;
         this.teardownNotificationAudioUnlock();
       }
       restartInterval() {
@@ -6303,6 +6411,8 @@
       }
       startGenerationObserver() {
         if (this.generationObserver) return;
+        const container = this.adapter.getResponseContainer();
+        if (!container) return;
         this.generationObserver = new MutationObserver(() => {
           const isGenerating = this.adapter.isGenerating();
           if (isGenerating && this.aiState !== "generating") {
@@ -6312,14 +6422,12 @@
             this.onAiComplete();
           }
         });
-        const container = this.adapter.getResponseContainer();
-        if (container) {
-          this.generationObserver.observe(container, {
-            childList: true,
-            subtree: true,
-            characterData: true
-          });
-        }
+        this.generationObserver.observe(container, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+        this.observerTarget = container;
       }
       onAiComplete() {
         const wasGenerating = this.aiState === "generating";
@@ -18290,6 +18398,9 @@
           item.classList.add("dragging");
           item.style.opacity = "0.5";
           document.body.style.cursor = "grabbing";
+          document.addEventListener("mousemove", handleMouseMove);
+          document.addEventListener("mouseup", handleMouseUp);
+          window.addEventListener("blur", handleMouseUp);
         });
         const handleMouseMove = (e) => {
           if (!isDragging) return;
@@ -18342,9 +18453,8 @@
           }
           document.removeEventListener("mousemove", handleMouseMove);
           document.removeEventListener("mouseup", handleMouseUp);
+          window.removeEventListener("blur", handleMouseUp);
         };
-        document.addEventListener("mousemove", handleMouseMove);
-        document.addEventListener("mouseup", handleMouseUp);
       },
       reorderPrompts(draggedPromptId, targetIndex) {
         const fromIndex = this.prompts.findIndex((p) => p.id === draggedPromptId);
@@ -21264,13 +21374,21 @@
               this.queueThemeHostRefresh();
               if (this.currentTab === "outline") {
                 if (this.outlineManager) {
-                  this.outlineManager.stopSyncScroll();
+                  this.outlineManager.destroy();
                   this.outlineManager = null;
                 }
                 const content = this.panel?.querySelector("#outline-content");
                 if (content) {
                   this.renderOutline(content);
                 }
+              }
+              try {
+                if (this.readingProgressManager && this.settings.readingHistory?.persistence) {
+                  this.readingProgressManager.stopRecording();
+                  this.readingProgressManager.startRecording();
+                }
+              } catch (e) {
+                console.error("[ChatGPT Helper] \u91CD\u542F\u9605\u8BFB\u8FDB\u5EA6\u5F55\u5236\u5931\u8D25:", e);
               }
               if (enteredNewConversation && this.conversationManager) {
                 setTimeout(() => {
@@ -21293,7 +21411,7 @@
             this.queueThemeHostRefresh();
             if (this.currentTab === "outline") {
               if (this.outlineManager) {
-                this.outlineManager.stopSyncScroll();
+                this.outlineManager.destroy();
                 this.outlineManager = null;
               }
               const content = this.panel?.querySelector("#outline-content");

@@ -395,6 +395,11 @@
                 item.classList.add('dragging');
                 item.style.opacity = '0.5';
                 document.body.style.cursor = 'grabbing';
+                // 监听器只在拖拽期间存在：挂在渲染期会随每次列表重建永久堆积（搜索每敲一键就重建一次）
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+                // 拖拽中窗口失焦（如切到其它窗口松开鼠标）也要终止，否则进入幽灵拖拽
+                window.addEventListener('blur', handleMouseUp);
             });
 
             // 鼠标移动
@@ -442,7 +447,7 @@
                 const listContainer = this.panel.querySelector('#prompt-list');
                 if (listContainer) {
                     const items = Array.from(listContainer.querySelectorAll('.chatgpt-helper-prompt-item'));
-                    
+
                     // 先找到目标位置（在移除drag-over类之前）
                     const draggedPromptId = prompt.id;
                     let targetIndex = draggedIndex;
@@ -472,10 +477,8 @@
 
                 document.removeEventListener('mousemove', handleMouseMove);
                 document.removeEventListener('mouseup', handleMouseUp);
+                window.removeEventListener('blur', handleMouseUp);
             };
-
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
         },
 
         reorderPrompts(draggedPromptId, targetIndex) {

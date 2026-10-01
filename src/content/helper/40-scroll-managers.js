@@ -71,6 +71,8 @@
     class ScrollManager {
         constructor(adapter) {
             this.adapter = adapter;
+            // 强制滚动的世代令牌：新调用使旧 interval 立即失效，避免多个 interval 互相拉锯
+            this._scrollGeneration = 0;
         }
 
         get container() {
@@ -98,6 +100,26 @@
         }
 
         scrollTo(options) {
+            // 世代令牌：并发调用（大纲点击 + 阅读恢复 + 锁修正）时只有最新一次生效
+            const generation = ++this._scrollGeneration;
+            const isStale = () => generation !== this._scrollGeneration;
+            // 强制滚动期间检测到真实用户输入立即放弃：不能跟用户抢滚动条
+            const abortOnUserInput = (cleanup) => {
+                const onUserInput = (e) => {
+                    // 只信任真实用户输入：合成 wheel（isTrusted=false）不得中止本次滚动
+                    if (!e || e.isTrusted === false) return;
+                    this._scrollGeneration++;
+                    cleanup();
+                    window.removeEventListener('wheel', onUserInput, true);
+                    window.removeEventListener('touchstart', onUserInput, true);
+                    window.removeEventListener('keydown', onUserInput, true);
+                };
+                window.addEventListener('wheel', onUserInput, true);
+                window.addEventListener('touchstart', onUserInput, true);
+                window.addEventListener('keydown', onUserInput, true);
+                return onUserInput;
+            };
+
             const container = this.container;
             if (!container) {
                 // 如果没有容器，使用window滚动
@@ -106,15 +128,23 @@
                 const targetTop = options && typeof options === 'object' ? (options.top !== undefined ? options.top : window.scrollY) : (typeof options === 'number' ? options : window.scrollY);
                 const currentTop = window.scrollY;
                 const needsScroll = Math.abs(targetTop - currentTop) > 1;
-                
+
                 if (isAtBottomWindow && needsScroll) {
                     // 在底部且需要滚动，使用强制滚动
                     console.log('[ChatGPT Helper] scrollTo (window): 在底部，使用强制滚动方法，目标位置:', targetTop, '当前位置:', currentTop);
                     const scrollElement = document.scrollingElement || document.documentElement || document.body;
-                    window.__ghBypassLock = true;
-                    
+
+                    let scrollInterval = null;
+                    const cleanup = () => {
+                        if (scrollInterval) clearInterval(scrollInterval);
+                        setTimeout(() => { try { delete window.__ghBypassLock; } catch (e) { } }, 100);
+                    };
+                    const detachUserInputGuard = abortOnUserInput(cleanup);
+
                     const forceScroll = () => {
+                        if (isStale()) { cleanup(); return; }
                         try {
+                            window.__ghBypassLock = true;
                             // 直接设置 scrollTop
                             scrollElement.scrollTop = targetTop;
                             if (document.documentElement) {
@@ -129,31 +159,32 @@
                             console.error('[ChatGPT Helper] window 强制滚动失败:', e);
                         }
                     };
-                    
+
                     // 立即执行多次
                     forceScroll();
-                    setTimeout(() => forceScroll(), 0);
-                    setTimeout(() => forceScroll(), 10);
-                    setTimeout(() => forceScroll(), 20);
-                    
-                    // 使用 setInterval 确保滚动成功
+                    setTimeout(() => { if (!isStale()) forceScroll(); }, 0);
+                    setTimeout(() => { if (!isStale()) forceScroll(); }, 10);
+                    setTimeout(() => { if (!isStale()) forceScroll(); }, 20);
+
+                    // 使用 setInterval 确保滚动成功（上限 30 次 ≈ 300ms，缩短滚动劫持窗口）
                     let attempts = 0;
-                    const maxAttempts = 100;
-                    const scrollInterval = setInterval(() => {
+                    const maxAttempts = 30;
+                    scrollInterval = setInterval(() => {
                         attempts++;
+                        if (isStale()) { cleanup(); return; }
                         const before = window.scrollY;
-                        window.__ghBypassLock = true;
                         forceScroll();
                         const current = window.scrollY;
-                        
+
                         if (Math.abs(current - targetTop) <= 5 || attempts >= maxAttempts) {
-                            clearInterval(scrollInterval);
-                            setTimeout(() => delete window.__ghBypassLock, 100);
-                            console.log('[ChatGPT Helper] window 强制滚动完成，最终位置:', current, '目标位置:', targetTop);
+                            cleanup();
+                            window.removeEventListener('wheel', detachUserInputGuard, true);
+                            window.removeEventListener('touchstart', detachUserInputGuard, true);
+                            window.removeEventListener('keydown', detachUserInputGuard, true);
                         } else if (Math.abs(current - before) > 1) {
                             // 位置有变化，继续尝试
-                        } else if (attempts > 20) {
-                            // 20次尝试后仍然没有变化，尝试 scrollIntoView
+                        } else if (attempts > 10) {
+                            // 10次尝试后仍然没有变化，尝试 scrollIntoView
                             try {
                                 if (targetTop < currentTop) {
                                     const firstElement = document.body.firstElementChild || document.body.firstChild;
@@ -169,8 +200,10 @@
                             } catch (e) {
                                 console.error('[ChatGPT Helper] window scrollIntoView 失败:', e);
                             }
-                            clearInterval(scrollInterval);
-                            setTimeout(() => delete window.__ghBypassLock, 100);
+                            cleanup();
+                            window.removeEventListener('wheel', detachUserInputGuard, true);
+                            window.removeEventListener('touchstart', detachUserInputGuard, true);
+                            window.removeEventListener('keydown', detachUserInputGuard, true);
                         }
                     }, 10);
                 } else {
@@ -201,32 +234,40 @@
             const isScrollingUp = targetTop < currentTop;
             if (isAtBottomContainer && needsScroll && isScrollingUp) {
                 console.log('[ChatGPT Helper] scrollTo: 在底部且向上滚动，使用强制滚动方法，目标位置:', targetTop, '当前位置:', currentTop);
-                
+
                 // 设置 bypassLock 标志，绕过所有滚动锁定
                 container.__ghBypassLock = true;
                 window.__ghBypassLock = true;
-                
+
                 // 获取原生 scrollTop setter（从原型链获取，绕过可能的拦截）
                 const proto = Object.getPrototypeOf(container);
                 const descriptor = Object.getOwnPropertyDescriptor(proto, 'scrollTop') ||
                     Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTop') ||
                     Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop');
 
+                let scrollInterval = null;
+                const cleanup = () => {
+                    if (scrollInterval) clearInterval(scrollInterval);
+                    setTimeout(() => {
+                        try { delete container.__ghBypassLock; } catch (e) { }
+                        try { delete window.__ghBypassLock; } catch (e) { }
+                    }, 100);
+                };
+                const detachUserInputGuard = abortOnUserInput(cleanup);
+
                 const forceScroll = () => {
+                    if (isStale()) { cleanup(); return; }
                     try {
                         // 方法1: 使用原生 setter（如果可用）
                         if (descriptor && descriptor.set) {
                             descriptor.set.call(container, targetTop);
                         } else {
-                            // 方法2: 直接操作属性，绕过所有拦截
-                            Object.defineProperty(container, 'scrollTop', {
-                                value: targetTop,
-                                writable: true,
-                                configurable: true
-                            });
+                            // 方法2: 直接赋值。
+                            // 不再用 Object.defineProperty 兜底：own 数据属性会永久遮蔽原型 accessor，
+                            // 之后所有 scrollTop 赋值都不再真正滚动，滚动锁也会静默失效
+                            container.scrollTop = targetTop;
                         }
                     } catch (e) {
-                        // 方法3: 直接赋值（最后的备用方案）
                         try {
                             container.scrollTop = targetTop;
                         } catch (e2) {
@@ -237,21 +278,9 @@
 
                 // 立即执行多次，确保生效
                 forceScroll();
-                setTimeout(() => {
-                    container.__ghBypassLock = true;
-                    window.__ghBypassLock = true;
-                    forceScroll();
-                }, 0);
-                setTimeout(() => {
-                    container.__ghBypassLock = true;
-                    window.__ghBypassLock = true;
-                    forceScroll();
-                }, 10);
-                setTimeout(() => {
-                    container.__ghBypassLock = true;
-                    window.__ghBypassLock = true;
-                    forceScroll();
-                }, 20);
+                setTimeout(() => { if (!isStale()) forceScroll(); }, 0);
+                setTimeout(() => { if (!isStale()) forceScroll(); }, 10);
+                setTimeout(() => { if (!isStale()) forceScroll(); }, 20);
 
                 // 也使用 scrollTo 作为备用
                 try {
@@ -260,24 +289,23 @@
                     console.log('[ChatGPT Helper] scrollTo 失败:', e);
                 }
 
-                // 使用 setInterval 持续尝试，确保滚动成功
+                // 使用 setInterval 持续尝试，确保滚动成功（上限 30 次 ≈ 300ms）
                 let attempts = 0;
-                const maxAttempts = 50;
-                const scrollInterval = setInterval(() => {
+                const maxAttempts = 30;
+                scrollInterval = setInterval(() => {
                     attempts++;
+                    if (isStale()) { cleanup(); return; }
                     const before = container.scrollTop;
                     container.__ghBypassLock = true; // 确保标志始终存在
-                    window.__ghBypassLock = true;
                     forceScroll();
                     const current = container.scrollTop;
-                    
+
                     // 检查是否到达目标位置
                     if (Math.abs(current - targetTop) <= 5 || attempts >= maxAttempts) {
-                        clearInterval(scrollInterval);
-                        setTimeout(() => {
-                            delete container.__ghBypassLock;
-                            delete window.__ghBypassLock;
-                        }, 100);
+                        cleanup();
+                        window.removeEventListener('wheel', detachUserInputGuard, true);
+                        window.removeEventListener('touchstart', detachUserInputGuard, true);
+                        window.removeEventListener('keydown', detachUserInputGuard, true);
                         console.log('[ChatGPT Helper] 强制滚动完成，最终位置:', current, '目标位置:', targetTop, '尝试次数:', attempts);
                     } else if (Math.abs(current - before) > 1) {
                         // 位置有变化，继续尝试
@@ -293,11 +321,10 @@
                         } catch (e) {
                             console.error('[ChatGPT Helper] scrollIntoView 失败:', e);
                         }
-                        clearInterval(scrollInterval);
-                        setTimeout(() => {
-                            delete container.__ghBypassLock;
-                            delete window.__ghBypassLock;
-                        }, 100);
+                        cleanup();
+                        window.removeEventListener('wheel', detachUserInputGuard, true);
+                        window.removeEventListener('touchstart', detachUserInputGuard, true);
+                        window.removeEventListener('keydown', detachUserInputGuard, true);
                     }
                 }, 10);
                 return;
@@ -560,6 +587,7 @@
             this.isRecording = false;
             this.scrollHandler = null;
             this.restoredTop = null;
+            this.trailingSaveTimer = null;
         }
 
         startRecording() {
@@ -588,6 +616,10 @@
                 window.removeEventListener('scroll', this.scrollHandler, { capture: true });
                 this.scrollHandler = null;
             }
+            if (this.trailingSaveTimer) {
+                clearTimeout(this.trailingSaveTimer);
+                this.trailingSaveTimer = null;
+            }
         }
 
         handleScroll() {
@@ -598,12 +630,20 @@
                 this.saveProgress();
                 this.lastSaveTime = now;
             }
+            // 补一个 trailing 保存：停止滚动后的最后一段位移（1s 节流窗口内）也能落盘
+            if (this.trailingSaveTimer) clearTimeout(this.trailingSaveTimer);
+            this.trailingSaveTimer = setTimeout(() => {
+                this.trailingSaveTimer = null;
+                this.saveProgress();
+            }, 1200);
         }
 
         getKey() {
             const url = window.location.href;
             const match = url.match(/\/c\/([^\/\?]+)/) || url.match(/\/chat\/([^\/\?]+)/);
-            return match ? `chatgpt:${match[1]}` : `chatgpt:${url}`;
+            if (match) return `chatgpt:${match[1]}`;
+            // 非会话页（首页/搜索页）不记录进度，避免 query 参数差异导致键无限膨胀
+            return null;
         }
 
         saveProgress() {
@@ -614,12 +654,17 @@
             if (scrollTop < 0) return;
 
             const key = this.getKey();
+            if (!key) return;
             const data = {
                 top: scrollTop,
                 ts: Date.now()
             };
 
-            const allData = window.GM_getValue('chatgpt_reading_progress', {});
+            // 读-改-写前强制从最新缓存取值（GM 适配器的 onChanged 已同步多标签页缓存）
+            const allData = (typeof window.GM_getValue === 'function'
+                ? window.GM_getValue('chatgpt_reading_progress', {})
+                : {}) || {};
+            if (!allData || typeof allData !== 'object') return;
             allData[key] = data;
             window.GM_setValue('chatgpt_reading_progress', allData);
         }
@@ -639,14 +684,31 @@
             return new Promise((resolve) => {
                 let attempts = 0;
                 const maxAttempts = 30;
+                // 恢复期间检测到真实用户输入立即放弃：不能跟用户抢滚动条
+                const onUserInput = (e) => {
+                    // 只信任真实用户输入：本函数自己派发的合成 wheel 事件 isTrusted=false
+                    if (!e || e.isTrusted === false) return;
+                    cleanupGuard();
+                    resolve(false);
+                };
+                const cleanupGuard = () => {
+                    window.removeEventListener('wheel', onUserInput, true);
+                    window.removeEventListener('touchstart', onUserInput, true);
+                    window.removeEventListener('keydown', onUserInput, true);
+                };
+                window.addEventListener('wheel', onUserInput, true);
+                window.addEventListener('touchstart', onUserInput, true);
+                window.addEventListener('keydown', onUserInput, true);
 
                 const tryScroll = () => {
                     if (attempts > maxAttempts) {
                         if (data.top !== undefined && container.scrollHeight >= data.top) {
                             this.scrollManager.scrollTo({ top: data.top, behavior: 'instant' });
                             this.restoredTop = data.top;
+                            cleanupGuard();
                             resolve(true);
                         } else {
+                            cleanupGuard();
                             resolve(false);
                         }
                         return;
@@ -658,6 +720,7 @@
                     if (data.top !== undefined && currentHeight >= data.top) {
                         this.scrollManager.scrollTo({ top: data.top, behavior: 'instant' });
                         this.restoredTop = data.top;
+                        cleanupGuard();
                         resolve(true);
                     } else {
                         container.scrollTop = 0;

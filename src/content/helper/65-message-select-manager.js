@@ -124,8 +124,13 @@
 
         toggle(turn, check) {
             const message = this.extractTurnMessage(turn);
-            const key = `${message.role}::${message.content}`;
-            const existingIndex = this.selections.findIndex((item) => item.key === key);
+            // 以 turn 元素身份识别选中态：两条内容完全相同的消息（很常见）也必须能各自独立勾选，
+            // 用 role+content 当 key 会让第二条的勾选反向取消第一条
+            if (!turn.dataset.ghSelId) {
+                turn.dataset.ghSelId = `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+            }
+            const turnId = turn.dataset.ghSelId;
+            const existingIndex = this.selections.findIndex((item) => item.turnId === turnId);
             if (existingIndex !== -1) {
                 this.selections.splice(existingIndex, 1);
                 turn.classList.remove('gh-msg-selected');
@@ -134,7 +139,7 @@
                     check.setAttribute('aria-pressed', 'false');
                 }
             } else {
-                this.selections.push({ key, role: message.role, content: message.content });
+                this.selections.push({ turnId, key: `${message.role}::${message.content}`, role: message.role, content: message.content });
                 turn.classList.add('gh-msg-selected');
                 if (check) {
                     check.classList.add('checked');

@@ -1743,13 +1743,23 @@
                         if (this.currentTab === 'outline') {
                             // 重置大纲管理器，强制重新初始化
                             if (this.outlineManager) {
-                                this.outlineManager.stopSyncScroll();
+                                this.outlineManager.destroy();
                                 this.outlineManager = null;
                             }
                             const content = this.panel?.querySelector('#outline-content');
                             if (content) {
                                 this.renderOutline(content);
                             }
+                        }
+
+                        // SPA 路由切换后滚动容器已重建：重启阅读进度录制以重新绑定新容器
+                        try {
+                            if (this.readingProgressManager && this.settings.readingHistory?.persistence) {
+                                this.readingProgressManager.stopRecording();
+                                this.readingProgressManager.startRecording();
+                            }
+                        } catch (e) {
+                            console.error('[ChatGPT Helper] 重启阅读进度录制失败:', e);
                         }
                         
                         // 如果进入新会话页面，自动同步并更新已展开的文件夹
@@ -1779,7 +1789,7 @@
                     // 重置大纲管理器
                     if (this.currentTab === 'outline') {
                         if (this.outlineManager) {
-                            this.outlineManager.stopSyncScroll();
+                            this.outlineManager.destroy();
                             this.outlineManager = null;
                         }
                         const content = this.panel?.querySelector('#outline-content');

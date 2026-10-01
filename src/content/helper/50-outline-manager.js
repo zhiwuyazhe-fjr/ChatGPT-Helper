@@ -274,10 +274,10 @@
             this.observer = new MutationObserver(() => {
                 this.triggerAutoUpdate();
             });
+            // 不订阅 characterData：流式输出时它每秒触发几十次回调，而大纲只关心结构变化
             this.observer.observe(document.body, {
                 childList: true,
                 subtree: true,
-                characterData: true,
             });
         }
 
@@ -290,6 +290,13 @@
                 clearTimeout(this.updateDebounceTimer);
                 this.updateDebounceTimer = null;
             }
+        }
+
+        // SPA 路由切换时的完整清理：漏掉 stopObserver 会把监听 document.body 的
+        // observer 连同整个 manager 闭包泄漏掉（每次导航泄漏一个，永久后台轮询）
+        destroy() {
+            this.stopObserver();
+            this.stopSyncScroll();
         }
 
         triggerAutoUpdate() {
