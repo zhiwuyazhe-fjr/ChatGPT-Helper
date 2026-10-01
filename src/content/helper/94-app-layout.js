@@ -245,8 +245,11 @@
                     rafId = null;
                     const delta = startX - latestClientX;
                     let newWidth = startWidth + delta;
-                    const minWidth = 220;
-                    const maxWidth = 640;
+                    // 与 normalizeRuntimeSettings 共用同一套钳制常量：
+                    // 两边不一致时（曾为 220-640 vs 200-600）拖到 >600 松手，持久化归一化
+                    // 会把内存值改成 600 而面板 style 仍是 640，主区 margin 与面板错位
+                    const minWidth = H.PANEL_WIDTH_MIN;
+                    const maxWidth = H.PANEL_WIDTH_MAX;
                     if (newWidth < minWidth) newWidth = minWidth;
                     if (newWidth > maxWidth) newWidth = maxWidth;
 
@@ -271,6 +274,9 @@
                 }
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
+                // 在浏览器窗口外/开发者工具上松开鼠标时 document 收不到 mouseup：
+                // 不兜底会进入幽灵拖拽（之后任意移动鼠标面板宽度都跟着变）
+                window.removeEventListener('blur', onMouseUp);
                 document.body.style.userSelect = '';
                 document.body.classList.remove('gh-resizing');
                 if (this.panel) this.panel.classList.remove('gh-resizing');
@@ -291,6 +297,7 @@
                 lastLayoutUpdateTs = 0; // 确保第一帧就能更新一次布局
                 document.addEventListener('mousemove', onMouseMove);
                 document.addEventListener('mouseup', onMouseUp);
+                window.addEventListener('blur', onMouseUp);
             });
         },
 
@@ -615,7 +622,8 @@
             });
             newChatBtn.appendChild(createSvgIconNode('plus', { size: 15 }));
             newChatBtn.addEventListener('click', () => {
-                window.open('https://chatgpt.com', '_blank');
+                // 走统一的 openExternalLink：带 noopener/noreferrer，防 reverse tabnabbing
+                openExternalLink('https://chatgpt.com');
             });
 
             // 刷新按钮

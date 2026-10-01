@@ -130,7 +130,8 @@
             const saved = source && typeof source === 'object' ? source : {};
             const settings = {
                 ...DEFAULT_SETTINGS,
-                panelWidth: Math.max(200, Math.min(600, parseInt(saved.panelWidth) || DEFAULT_SETTINGS.panelWidth)),
+                // 与拖拽钳制共用常量（220-640）：不一致会导致拖宽后持久化值缩水、布局错位
+                panelWidth: Math.max(H.PANEL_WIDTH_MIN, Math.min(H.PANEL_WIDTH_MAX, parseInt(saved.panelWidth) || DEFAULT_SETTINGS.panelWidth)),
                 defaultPanelState: saved.defaultPanelState !== undefined
                     ? Boolean(saved.defaultPanelState)
                     : DEFAULT_SETTINGS.defaultPanelState,

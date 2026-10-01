@@ -702,6 +702,15 @@
             if (!prompt) return;
             const variables = extractPromptVariables(prompt.content);
             if (variables.length > 0) {
+                // 变量对话框期间输入框里还留着 "//关键词"：
+                // 先清掉触发文本，避免用户此时直接点发送把触发词原样发出去
+                if (options.replaceComposer && this.promptQuickMenu) {
+                    try {
+                        this.promptQuickMenu.replaceComposerText('');
+                    } catch (e) {
+                        // ignore
+                    }
+                }
                 this.showPromptVariablesDialog(prompt, variables, (content) => {
                     this.trackPromptUsage(prompt.id);
                     this.applyPromptToComposer(content, options);

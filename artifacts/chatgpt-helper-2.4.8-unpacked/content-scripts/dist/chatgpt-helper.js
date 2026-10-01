@@ -863,6 +863,8 @@
       ];
     }
     const DEFAULT_PROMPTS = createDefaultPrompts();
+    const PANEL_WIDTH_MIN = 220;
+    const PANEL_WIDTH_MAX = 640;
     const ELEMENT_PROP_WHITELIST = /* @__PURE__ */ new Set([
       "id",
       "name",
@@ -1700,6 +1702,8 @@
       EXTENSION_LICENSE,
       THEME_HOST_ATTRS,
       DEFAULT_THEME_CONFIG,
+      PANEL_WIDTH_MIN,
+      PANEL_WIDTH_MAX,
       DEFAULT_SETTINGS,
       DEFAULT_PROMPTS,
       createDefaultPrompts,
@@ -2881,6 +2885,8 @@
         });
       }
       showContextMenu(e, conv) {
+        const existingMenu = document.querySelector(".chatgpt-helper-context-menu");
+        if (existingMenu) existingMenu.remove();
         const menu = createElement("div", {
           className: "chatgpt-helper-context-menu",
           style: {
@@ -5316,6 +5322,7 @@
         this.isOpen = false;
         this.suppressed = false;
         this._started = false;
+        this._suppressInput = false;
       }
       // ==================== 生命周期 ====================
       start() {
@@ -5381,6 +5388,10 @@
       handleInput(e) {
         if (!this._started) return;
         if (e.isComposing) return;
+        if (this._suppressInput) {
+          this._suppressInput = false;
+          return;
+        }
         if (!this.isComposerEvent(e)) return;
         this.composer = e.target;
         const trigger = this.isEnabled() ? parseTrigger(this.getComposerText(this.composer)) : null;
@@ -5398,6 +5409,10 @@
       handleKeyDown(e) {
         if (!this.isOpen) return;
         if (e.isComposing || e.keyCode === 229) return;
+        if (!this.isComposerEvent(e)) {
+          this.close();
+          return;
+        }
         if (e.key === "ArrowDown" || e.key === "ArrowUp") {
           e.preventDefault();
           e.stopPropagation();
@@ -5414,7 +5429,6 @@
           return;
         }
         if (e.key === "Escape") {
-          e.stopPropagation();
           this.suppressed = true;
           this.close();
         }
@@ -5574,6 +5588,7 @@
           el.focus();
           if (el.tagName === "TEXTAREA" || el.tagName === "INPUT") {
             el.value = text;
+            this._suppressInput = true;
             el.dispatchEvent(new Event("input", { bubbles: true }));
             el.dispatchEvent(new Event("change", { bubbles: true }));
             return true;
@@ -5586,13 +5601,16 @@
             selection.addRange(range);
           };
           selectAll();
+          this._suppressInput = true;
           document.execCommand("insertText", false, text);
           if (normalize(el.textContent) === normalize(text)) {
+            this._suppressInput = true;
             el.dispatchEvent(new Event("input", { bubbles: true }));
             return true;
           }
           try {
             selectAll();
+            this._suppressInput = true;
             document.execCommand("delete");
           } catch (err) {
           }
@@ -7496,7 +7514,8 @@
         const saved = source && typeof source === "object" ? source : {};
         const settings = {
           ...DEFAULT_SETTINGS,
-          panelWidth: Math.max(200, Math.min(600, parseInt(saved.panelWidth) || DEFAULT_SETTINGS.panelWidth)),
+          // 与拖拽钳制共用常量（220-640）：不一致会导致拖宽后持久化值缩水、布局错位
+          panelWidth: Math.max(H.PANEL_WIDTH_MIN, Math.min(H.PANEL_WIDTH_MAX, parseInt(saved.panelWidth) || DEFAULT_SETTINGS.panelWidth)),
           defaultPanelState: saved.defaultPanelState !== void 0 ? Boolean(saved.defaultPanelState) : DEFAULT_SETTINGS.defaultPanelState,
           preventAutoScroll: Boolean(saved.preventAutoScroll),
           prompts: { enabled: true },
@@ -17609,8 +17628,8 @@
             rafId = null;
             const delta = startX - latestClientX;
             let newWidth = startWidth + delta;
-            const minWidth = 220;
-            const maxWidth = 640;
+            const minWidth = H.PANEL_WIDTH_MIN;
+            const maxWidth = H.PANEL_WIDTH_MAX;
             if (newWidth < minWidth) newWidth = minWidth;
             if (newWidth > maxWidth) newWidth = maxWidth;
             this.settings.panelWidth = newWidth;
@@ -17631,6 +17650,7 @@
           }
           document.removeEventListener("mousemove", onMouseMove);
           document.removeEventListener("mouseup", onMouseUp);
+          window.removeEventListener("blur", onMouseUp);
           document.body.style.userSelect = "";
           document.body.classList.remove("gh-resizing");
           if (this.panel) this.panel.classList.remove("gh-resizing");
@@ -17649,6 +17669,7 @@
           lastLayoutUpdateTs = 0;
           document.addEventListener("mousemove", onMouseMove);
           document.addEventListener("mouseup", onMouseUp);
+          window.addEventListener("blur", onMouseUp);
         });
       },
       initTabResponsiveSpacing(tabsContainer) {
@@ -17897,7 +17918,7 @@
         });
         newChatBtn.appendChild(createSvgIconNode("plus", { size: 15 }));
         newChatBtn.addEventListener("click", () => {
-          window.open("https://chatgpt.com", "_blank");
+          openExternalLink("https://chatgpt.com");
         });
         const refreshBtn = createElement("button", {
           className: "chatgpt-helper-header-btn",
@@ -18620,6 +18641,12 @@
         if (!prompt2) return;
         const variables = extractPromptVariables(prompt2.content);
         if (variables.length > 0) {
+          if (options.replaceComposer && this.promptQuickMenu) {
+            try {
+              this.promptQuickMenu.replaceComposerText("");
+            } catch (e) {
+            }
+          }
           this.showPromptVariablesDialog(prompt2, variables, (content) => {
             this.trackPromptUsage(prompt2.id);
             this.applyPromptToComposer(content, options);

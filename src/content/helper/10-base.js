@@ -888,6 +888,11 @@
     const DEFAULT_PROMPTS = createDefaultPrompts();
 
     // ==================== 工具函数 ====================
+    // 面板宽度钳制上下限：拖拽（94-app-layout）与设置归一化（91-app-storage-init）
+    // 必须共用同一来源，否则拖到超限宽度松手后持久化值与面板实际宽度错位
+    const PANEL_WIDTH_MIN = 220;
+    const PANEL_WIDTH_MAX = 640;
+
     // createElement 属性白名单：这些键走 el[key] 原生属性赋值（类型安全）。
     // 白名单外一律 setAttribute；事件属性与 HTML 注入键直接拒绝，
     // 防止未来任何调用点把不受信数据（备份导入/页面 DOM）变成可执行属性。
@@ -1928,6 +1933,8 @@
         EXTENSION_LICENSE,
         THEME_HOST_ATTRS,
         DEFAULT_THEME_CONFIG,
+        PANEL_WIDTH_MIN,
+        PANEL_WIDTH_MAX,
         DEFAULT_SETTINGS,
         DEFAULT_PROMPTS,
         createDefaultPrompts,

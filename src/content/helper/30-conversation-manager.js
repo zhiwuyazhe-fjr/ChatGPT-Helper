@@ -1200,6 +1200,9 @@
 
         showContextMenu(e, conv) {
             // 简单的右键菜单实现
+            // 连续右键不触发 click 关闭逻辑：先移除已存在的菜单，防止多个菜单和监听器叠加
+            const existingMenu = document.querySelector('.chatgpt-helper-context-menu');
+            if (existingMenu) existingMenu.remove();
             const menu = createElement('div', {
                 className: 'chatgpt-helper-context-menu',
                 style: {

@@ -58,6 +58,8 @@
             // 文本离开触发态后抑制自动解除
             this.suppressed = false;
             this._started = false;
+            // 插入提示词产生的原生/合成 input 事件的重入抑制（见 replaceComposerText）
+            this._suppressInput = false;
         }
 
         // ==================== 生命周期 ====================
@@ -133,6 +135,12 @@
         handleInput(e) {
             if (!this._started) return;
             if (e.isComposing) return; // IME 组合输入中不处理
+            // 本模块自己派发的合成 input（插入提示词后）会重入这里：
+            // 插入以 "//" 开头的提示词会被再次识别为触发态，菜单瞬间重弹、Enter 误插第二条
+            if (this._suppressInput) {
+                this._suppressInput = false;
+                return;
+            }
             if (!this.isComposerEvent(e)) return;
             this.composer = e.target;
 
@@ -156,6 +164,12 @@
         handleKeyDown(e) {
             if (!this.isOpen) return;
             if (e.isComposing || e.keyCode === 229) return;
+            // 键盘劫持防线：焦点已不在输入框（侧栏搜索、设置面板输入等）时立即收起菜单并放行按键，
+            // 否则菜单打开期间全页面的 Enter/Tab/方向键都会被吞掉
+            if (!this.isComposerEvent(e)) {
+                this.close();
+                return;
+            }
 
             if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                 e.preventDefault();
@@ -173,7 +187,8 @@
                 return;
             }
             if (e.key === 'Escape') {
-                e.stopPropagation();
+                // 不 stopPropagation：输入 "//" 必然先经过 "/" 态，ChatGPT 原生斜杠菜单此刻
+                // 与本菜单并存，截断事件会让原生菜单需要按第二次 Esc 才能关闭
                 this.suppressed = true;
                 this.close();
             }
@@ -355,6 +370,7 @@
                 el.focus();
                 if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
                     el.value = text;
+                    this._suppressInput = true;
                     el.dispatchEvent(new Event('input', { bubbles: true }));
                     el.dispatchEvent(new Event('change', { bubbles: true }));
                     return true;
@@ -369,10 +385,14 @@
                 };
 
                 selectAll();
+                // execCommand 会同步触发一个原生 input：抑制标志必须先于 execCommand 就位
+                this._suppressInput = true;
                 document.execCommand('insertText', false, text);
 
                 if (normalize(el.textContent) === normalize(text)) {
-                    // 内容已就位（无论 execCommand 返回值如何）
+                    // 内容已就位（无论 execCommand 返回值如何）。
+                    // 插入以 "//" 开头的提示词时，这次合成 input 会把自己重新带进触发态——再抑制一轮
+                    this._suppressInput = true;
                     el.dispatchEvent(new Event('input', { bubbles: true }));
                     return true;
                 }
@@ -380,6 +400,7 @@
                 // 未生效：清空输入内容后交由调用方走 adapter.insertPrompt 兜底
                 try {
                     selectAll();
+                    this._suppressInput = true;
                     document.execCommand('delete');
                 } catch (err) {
                     // ignore
