@@ -179,31 +179,48 @@ function startTimestampObserver() {
             if (!currentChatId || currentChatId === chatId) return
             chatId = currentChatId
 
-            const rawConversation = await fetchConversation(chatId, false)
-            const { conversationNodes } = processConversation(rawConversation)
+            try {
+                const rawConversation = await fetchConversation(chatId, false)
+                // 请求返回后用户可能已切换会话：把旧会话的时间戳插进新会话 DOM 是数据串页
+                if (getChatIdFromUrl() !== chatId) return
+                const { conversationNodes } = processConversation(rawConversation)
 
-            const threadContents = Array.from(document.querySelectorAll('main [data-testid^="conversation-turn-"] [data-message-id]'))
-            if (threadContents.length === 0) return
+                // 按消息 id 精确配对，避免隐藏/合并节点导致数组下标错位
+                const nodesByMessageId = new Map<string, number>()
+                conversationNodes.forEach((node, index) => {
+                    const id = node?.message?.id
+                    if (id) nodesByMessageId.set(id, index)
+                })
 
-            threadContents.forEach((thread, index) => {
-                const createTime = conversationNodes[index]?.message?.create_time
-                if (!createTime) return
+                const threadContents = Array.from(document.querySelectorAll('main [data-testid^="conversation-turn-"] [data-message-id]'))
+                if (threadContents.length === 0) return
 
-                const date = new Date(createTime * 1000)
-                const timestamp = document.createElement('time')
-                timestamp.className = 'w-full text-gray-500 dark:text-gray-400 text-sm text-right'
-                timestamp.dateTime = date.toISOString()
-                timestamp.title = date.toLocaleString()
+                threadContents.forEach((thread) => {
+                    const messageId = thread.getAttribute('data-message-id') ?? ''
+                    const index = nodesByMessageId.get(messageId)
+                    if (index == null) return
+                    const createTime = conversationNodes[index]?.message?.create_time
+                    if (!createTime) return
 
-                const hour12 = document.createElement('span')
-                hour12.setAttribute('data-time-format', '12')
-                hour12.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-                const hour24 = document.createElement('span')
-                hour24.setAttribute('data-time-format', '24')
-                hour24.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
-                timestamp.append(hour12, hour24)
-                thread.append(timestamp)
-            })
+                    const date = new Date(createTime * 1000)
+                    const timestamp = document.createElement('time')
+                    timestamp.className = 'w-full text-gray-500 dark:text-gray-400 text-sm text-right'
+                    timestamp.dateTime = date.toISOString()
+                    timestamp.title = date.toLocaleString()
+
+                    const hour12 = document.createElement('span')
+                    hour12.setAttribute('data-time-format', '12')
+                    hour12.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                    const hour24 = document.createElement('span')
+                    hour24.setAttribute('data-time-format', '24')
+                    hour24.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+                    timestamp.append(hour12, hour24)
+                    thread.append(timestamp)
+                })
+            }
+            catch (error) {
+                console.error('[ChatGPT Helper Export] Failed to render timestamps:', error)
+            }
         })
     })
 }

@@ -412,17 +412,29 @@ const DialogContent: FC<DialogContentProps> = ({ format }) => {
     const onUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const file = (e.target as HTMLInputElement)?.files?.[0]
         if (!file) return
+        // 防御畸形/超大文件把标签页卡死（导入文件是不可信输入）
+        if (file.size > 200 * 1024 * 1024) {
+            alert(t('Invalid File Format'))
+            return
+        }
         const fileReader = new FileReader()
         fileReader.onload = () => {
-            const data = JSON.parse(fileReader.result as string)
-            if (!Array.isArray(data)) {
-                alert(t('Invalid File Format'))
-                return
+            try {
+                const data = JSON.parse(fileReader.result as string)
+                if (!Array.isArray(data)) {
+                    alert(t('Invalid File Format'))
+                    return
+                }
+                setSelected([])
+                setExportSource('Local')
+                setLocalConversations(data)
             }
-            setSelected([])
-            setExportSource('Local')
-            setLocalConversations(data)
+            catch (err) {
+                console.error('[Exporter] Failed to parse imported conversations file:', err)
+                alert(t('Invalid File Format'))
+            }
         }
+        fileReader.onerror = () => alert(t('Invalid File Format'))
         fileReader.readAsText(file)
     }, [t])
 
@@ -466,28 +478,40 @@ const DialogContent: FC<DialogContentProps> = ({ format }) => {
     }, [deleteQueue])
 
     useEffect(() => {
+        // 订阅时的世代快照：对话框卸载/重新挂载后，旧的 done 回调不得再触发下载
+        const gen = fetchGenRef.current
+        const alive = () => gen === fetchGenRef.current
         const off = requestQueue.on('done', async (results) => {
             // If the user cancelled, just stop — don't download or start the next batch
             if (cancelledRef.current) {
                 cancelledRef.current = false
-                setProcessing(false)
-                exportingRef.current = false
                 return
             }
+            if (!alive()) return
             const batchIdx = batchIndexRef.current
             const totalBatches = totalBatchesRef.current
             const partIndex = batchIdx + 1
             const callback = exportAllOptions.find(o => o.label === exportType)?.callback
-            if (callback) {
-                await callback(format, results, metaList, selectedProject?.display.name, partIndex, totalBatches)
+            // 异常兜底：单个会话数据畸形不能把 processing 卡死（否则对话框永远关不上）
+            try {
+                if (callback) {
+                    await callback(format, results, metaList, selectedProject?.display.name, partIndex, totalBatches)
+                }
+                if (partIndex < totalBatches) {
+                    await sleep(400)
+                    if (!alive() || cancelledRef.current) return
+                    batchIndexRef.current++
+                    const nextChunk = pendingBatchesRef.current[batchIndexRef.current]
+                    if (nextChunk) startApiBatch(nextChunk)
+                    else setProcessing(false)
+                }
+                else {
+                    setProcessing(false)
+                }
             }
-            if (partIndex < totalBatches) {
-                await sleep(400)
-                batchIndexRef.current++
-                const nextChunk = pendingBatchesRef.current[batchIndexRef.current]
-                if (nextChunk) startApiBatch(nextChunk)
-            }
-            else {
+            catch (err) {
+                console.error('[Exporter] Export batch failed:', err)
+                alert(err instanceof Error ? err.message : String(err))
                 setProcessing(false)
             }
         })
@@ -496,6 +520,7 @@ const DialogContent: FC<DialogContentProps> = ({ format }) => {
 
     useEffect(() => {
         const off = archiveQueue.on('done', () => {
+            if (cancelledRef.current) return
             setProcessing(false)
             setApiConversations(prev => prev.filter(c => !selected.some(s => s.id === c.id)))
             setSelected([])
@@ -506,6 +531,7 @@ const DialogContent: FC<DialogContentProps> = ({ format }) => {
 
     useEffect(() => {
         const off = deleteQueue.on('done', () => {
+            if (cancelledRef.current) return
             setProcessing(false)
             setApiConversations(prev => prev.filter(c => !selected.some(s => s.id === c.id)))
             setSelected([])
@@ -514,11 +540,18 @@ const DialogContent: FC<DialogContentProps> = ({ format }) => {
         return () => off()
     }, [deleteQueue, selected, t])
 
+    // 队列因限流重试耗尽而自动停止时，必须复位 processing，否则对话框死锁
+    useEffect(() => {
+        const offs = [requestQueue, archiveQueue, deleteQueue].map(q => q.on('stopped', () => setProcessing(false)))
+        return () => offs.forEach(off => off())
+    }, [requestQueue, archiveQueue, deleteQueue])
+
     const cancelExport = useCallback(() => {
         cancelledRef.current = true
         requestQueue.stop()
         archiveQueue.stop()
         deleteQueue.stop()
+        setProcessing(false)
     }, [requestQueue, archiveQueue, deleteQueue])
 
     const exportAllFromApi = useCallback(() => {
@@ -548,11 +581,21 @@ const DialogContent: FC<DialogContentProps> = ({ format }) => {
         if (!callback) return
         const chunks = chunkArray(results, EXPORT_OPERATION_BATCH)
         setProcessing(true)
-        for (let i = 0; i < chunks.length; i++) {
-            await callback(format, chunks[i], metaList, selectedProject?.display.name, i + 1, chunks.length)
-            if (i < chunks.length - 1) await sleep(400)
+        try {
+            for (let i = 0; i < chunks.length; i++) {
+                // 单个会话数据畸形只跳过该分卷，不中断整批
+                try {
+                    await callback(format, chunks[i], metaList, selectedProject?.display.name, i + 1, chunks.length)
+                }
+                catch (err) {
+                    console.error(`[Exporter] Local export part ${i + 1} failed:`, err)
+                }
+                if (i < chunks.length - 1) await sleep(400)
+            }
         }
-        setProcessing(false)
+        finally {
+            setProcessing(false)
+        }
     }, [disabled, selected, localConversations, exportAllOptions, exportType, format, metaList, selectedProject])
 
     const exportAll = useMemo(() => {
@@ -632,7 +675,10 @@ const DialogContent: FC<DialogContentProps> = ({ format }) => {
         if (loadingMore) return
         setLoadingMore(true)
         try {
+            // 世代校验：点击后立刻切换项目时，旧项目的页数据不得拼进新列表
+            const gen = ++fetchGenRef.current
             const page = await fetchConversationsPage(selectedProjectId, apiConversations.length, EXPORT_OPERATION_BATCH)
+            if (gen !== fetchGenRef.current) return
             setApiConversations(prev => [...prev, ...page.items])
             if (page.total !== null) setTotalAvailable(page.total)
             setHasMore(

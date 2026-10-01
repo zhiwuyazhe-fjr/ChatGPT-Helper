@@ -134,7 +134,6 @@ export async function exportToPng(fileNameFormat: string) {
     const chatId = getChatIdFromUrl() || undefined
     const fileName = getFileNameWithFormat(fileNameFormat, 'png', { chatId })
     downloadUrl(fileName, dataUrl)
-    window.URL.revokeObjectURL(dataUrl)
 
     return true
 }

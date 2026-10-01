@@ -10,9 +10,16 @@ export function downloadFile(filename: string, type: string, content: string | B
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
+    // 批量导出时每个分卷一个 ZIP blob（可达数百 MB）：不回收会常驻内存直到刷新
+    setTimeout(() => URL.revokeObjectURL(url), 30_000)
 }
 
 export function downloadUrl(filename: string, url: string) {
+    // 该辅助函数只应触发下载，绝不能被用来导航到任意 scheme（javascript: 等）
+    if (!/^(data:|blob:)/i.test(url)) {
+        console.warn('[Exporter] downloadUrl rejected non-download scheme:', new URL(url, location.href).protocol)
+        return
+    }
     const a = document.createElement('a')
     a.href = url
     a.download = filename
@@ -69,12 +76,15 @@ export function getFileNameWithFormat(format: string, ext: string, {
     const _createTime = unixTimestampToISOString(createTime)
     const _updateTime = unixTimestampToISOString(updateTime)
 
-    return format
+    // chatId 可能来自本地导入的 conversations.json（完全可控），
+    // 模板本身也是用户自由文本：整名最后统一消毒并截断，堵住 zip 路径穿越（Zip Slip）
+    const name = format
         .replace('{title}', _title)
         .replace('{date}', dateStr())
         .replace('{timestamp}', timestamp())
-        .replace('{chat_id}', chatId)
+        .replace('{chat_id}', chatId.replace(/[^\w.-]+/g, '_'))
         .replace('{create_time}', _createTime)
         .replace('{update_time}', _updateTime)
         .concat(`.${ext}`)
+    return sanitize(name).slice(0, 120)
 }

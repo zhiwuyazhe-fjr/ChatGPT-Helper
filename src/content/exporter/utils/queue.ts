@@ -1,5 +1,5 @@
 import EventEmitter from 'mitt'
-import { RateLimitError } from '../api'
+import { HttpError, RateLimitError } from '../api'
 import { sleep } from './utils'
 
 type RequestFn<T> = () => Promise<T>
@@ -44,6 +44,8 @@ export class RequestQueue<T> {
     private eventEmitter = EventEmitter<{
         done: T[]
         progress: ProgressEvent
+        /** Emitted when the queue aborts itself (e.g. rate-limit retries exhausted) — not a success */
+        stopped: []
     } & Record<string, any[]>>()
 
     private queue: Array<InternalRequestObject<T>> = []
@@ -56,6 +58,14 @@ export class RequestQueue<T> {
 
     private total = 0
     private completed = 0
+
+    /**
+     * Monotonic token: bumped by stop()/clear(). Every in-flight process()
+     * chain captures the token at start and bails out after any await if the
+     * token changed — otherwise a cleared/stopped queue's tail would keep
+     * running and emit a ghost `done` (triggering unwanted downloads).
+     */
+    private generation = 0
 
     /**
      * Timestamp (ms since epoch) until which the whole queue is frozen after
@@ -77,16 +87,22 @@ export class RequestQueue<T> {
     start() {
         if (this.status === 'IDLE') {
             this.total = this.queue.length
-            this.process()
+            this.process(this.generation)
         }
     }
 
+    /**
+     * Stop the queue. Deliberately does NOT emit `done`: `done` means
+     * "finished successfully", and UI callbacks react to it by downloading
+     * files / mutating lists / showing success alerts.
+     */
     stop() {
+        this.generation++
         this.status = 'STOPPED'
-        this.eventEmitter.emit('done', this.results)
     }
 
     clear() {
+        this.generation++
         this.queue = []
         this.results = []
         this.status = 'IDLE'
@@ -99,12 +115,14 @@ export class RequestQueue<T> {
 
     on(event: 'progress', fn: (progress: ProgressEvent) => void): () => void
     on(event: 'done', fn: (result: T[]) => void): () => void
+    on(event: 'stopped', fn: () => void): () => void
     on(event: string, fn: (...args: any[]) => void): () => void {
         this.eventEmitter.on(event, fn)
         return () => this.eventEmitter.off(event, fn)
     }
 
-    private async process() {
+    private async process(generation: number) {
+        if (generation !== this.generation) return
         if (this.status === 'STOPPED' || this.status === 'COMPLETED') {
             return
         }
@@ -124,6 +142,7 @@ export class RequestQueue<T> {
             // Broadcast the pause status for every item currently at the front
             this.progress(this.queue[0].name, 'rate_limited', waitSecs)
             await sleep(remaining)
+            if (generation !== this.generation) return
             this.pauseUntil = 0
         }
 
@@ -136,6 +155,7 @@ export class RequestQueue<T> {
         try {
             this.progress(name, 'processing')
             const result = await request()
+            if (generation !== this.generation) return
             this.results.push(result)
             this.completed++
             this.progress(name, 'processing')
@@ -143,12 +163,15 @@ export class RequestQueue<T> {
             requestObject.retries = 0
         }
         catch (error) {
+            if (generation !== this.generation) return
             if (error instanceof RateLimitError) {
                 this.globalPauses++
                 if (this.globalPauses > MAX_GLOBAL_PAUSES) {
                     // Rate limit persists even after several long pauses — abort.
                     console.warn('[Exporter] Queue stopped: API rate limit did not clear after', MAX_GLOBAL_PAUSES, 'pauses')
                     this.stop()
+                    // 通知 UI 复位状态（区别于成功完成的 done）
+                    this.eventEmitter.emit('stopped')
                     return
                 }
                 // Freeze the whole queue. Exponentially increase the pause so
@@ -163,6 +186,11 @@ export class RequestQueue<T> {
                 // Put this item back — it will be retried after the pause clears
                 this.queue.unshift(requestObject)
                 waitMs = 0 // the sleep is handled at the top of the next process() call
+            }
+            else if (error instanceof HttpError && error.status >= 400 && error.status < 500) {
+                // 4xx 是确定性失败（参数/权限问题）：重试不可能成功，直接跳过
+                console.warn(`[Exporter] "${name}" skipped: ${error.status} ${error.message}`)
+                waitMs = 0
             }
             else {
                 console.error(`[Exporter] "${name}" failed:`, error)
@@ -181,7 +209,8 @@ export class RequestQueue<T> {
         }
 
         await sleep(waitMs)
-        this.process()
+        if (generation !== this.generation) return
+        this.process(generation)
     }
 
     private progress(name: string, status: RequestStatus, rateLimitWaitSecs?: number) {

@@ -428,6 +428,12 @@ const enum ChatGPTCookie {
 }
 
 const sessionApi = urlcat(baseUrl, '/api/auth/session')
+// urlcat 对 path 段是纯字符串替换、不做编码：id 必须先过白名单，
+// 否则会话数据（asset_pointer/gizmo/chatId）可注入 ../、? 等改写请求目标
+function safePathId(id: string | undefined | null): string | null {
+    const trimmed = String(id ?? '').trim()
+    return /^[\w-]{1,128}$/.test(trimmed) ? trimmed : null
+}
 const conversationApi = (id: string) => urlcat(apiUrl, '/conversation/:id', { id })
 const conversationsApi = (offset: number, limit: number) => urlcat(apiUrl, '/conversations', { offset, limit })
 const fileDownloadApi = (id: string) => urlcat(apiUrl, '/files/download/:id', { id, post_id: '', inline: false })
@@ -453,13 +459,28 @@ export async function getCurrentChatId(): Promise<string> {
 
 async function fetchImageFromPointer(uri: string) {
     const pointer = uri.replace('sediment://', '')
+    // asset_pointer 来自会话数据：拒绝包含路径/查询注入的值，避免带 Bearer 请求任意后端路径
+    if (!safePathId(pointer)) {
+        console.warn('[Exporter] Ignoring image asset pointer with unsafe characters')
+        return null
+    }
     const imageDetails = await fetchApi<ApiFileDownload>(fileDownloadApi(pointer))
     if (imageDetails.status === 'error') {
         console.error('Failed to fetch image asset', imageDetails.error_code, imageDetails.error_message)
         return null
     }
 
-    const image = await fetch(imageDetails.download_url)
+    // download_url 完全来自响应体，只允许 https 且拒绝本地文件回环目标
+    let downloadUrl: URL
+    try {
+        downloadUrl = new URL(imageDetails.download_url)
+    }
+    catch {
+        return null
+    }
+    if (downloadUrl.protocol !== 'https:') return null
+
+    const image = await fetch(downloadUrl)
     const blob = await image.blob()
     const base64 = await blobToDataURL(blob)
     return base64.replace(/^data:.*?;/, `data:${image.headers.get('content-type')};`)
@@ -529,7 +550,12 @@ export async function fetchConversation(chatId: string, shouldReplaceAssets: boo
         }
     }
 
-    const url = conversationApi(chatId)
+    // chatId 进入 URL path 段：拒绝包含路径/查询注入字符的值（导入的 conversations.json 中 id 完全可控）
+    const safeChatId = safePathId(chatId)
+    if (!safeChatId) {
+        throw new Error(`Invalid chat id: ${chatId}`)
+    }
+    const url = conversationApi(safeChatId)
     const conversation = await fetchApi<ApiConversation>(url)
 
     if (shouldReplaceAssets) {
@@ -545,11 +571,13 @@ export async function fetchConversation(chatId: string, shouldReplaceAssets: boo
 export async function fetchProjects(): Promise<ApiProjectInfo[]> {
     let cursor: number | null = null
     const allItems: ApiGizmo[] = []
-    while (true) {
+    // 防御 cursor 不前进导致的死循环（服务端异常/中间层改写）
+    for (let iteration = 0; iteration < 200; iteration++) {
         const url = projectsApi(cursor)
         const { items, cursor: nextCursor = null } = await fetchApi<{ cursor: number | null; items: ApiGizmo[] }>(url)
+        if (nextCursor !== null && nextCursor === cursor) break
         cursor = nextCursor
-        allItems.push(...items)
+        for (const item of items) allItems.push(item)
         if (nextCursor === null) break
     }
 
@@ -565,7 +593,12 @@ async function fetchConversations(offset = 0, limit = 20, project: string | null
 }
 
 async function fetchProjectConversations(project: string, cursor: string | number = 0, limit = 20): Promise<ApiConversations> {
-    const url = projectConversationsApi(project, cursor, limit)
+    // project id 进入 URL path 段，拒绝包含路径/查询注入字符的值
+    const safeProject = safePathId(project)
+    if (!safeProject) {
+        throw new Error(`Invalid project id: ${String(project)}`)
+    }
+    const url = projectConversationsApi(safeProject, cursor, limit)
     const { items, cursor: nextCursor } = await fetchApi<{ items: ApiConversationItem[]; cursor: string | null }>(url)
     return {
         has_missing_conversations: false,
@@ -595,7 +628,11 @@ export async function fetchAllConversations(project: string | null = null, maxCo
     const limit = project === null ? 100 : 50 // gizmos api uses a smaller limit
     let offset = 0
     let cursor: string | number = 0 // project conversations use alphanumeric cursors
-    while (true) {
+    // 防御异常响应导致的死循环：cursor/offset 原地踏步或 cursor 循环时立即终止
+    const seenCursors = new Set<string | number>()
+    const maxIterations = Math.ceil(maxConversations / limit) + 10
+    let truncated = false
+    for (let iteration = 0; iteration < maxIterations; iteration++) {
         try {
             const result: ApiConversations = project === null
                 ? await fetchConversations(offset, limit)
@@ -605,20 +642,28 @@ export async function fetchAllConversations(project: string | null = null, maxCo
                 console.warn('fetchAllConversations received no items at offset:', offset)
                 break
             }
-            conversations.push(...result.items)
+            for (const item of result.items) conversations.push(item)
             if (result.items.length === 0) break
             onBatch?.(result.items)
             // Stop if the API signals no more pages (no total count and no next cursor)
             if (result.total == null && result.cursor == null) break
             // Stop if we've reached the total reported by the API OR the user-defined limit
             if (result.total !== null && offset + limit >= result.total) break
-            if (conversations.length >= maxConversations) break
-            // Use the alphanumeric cursor for project conversations, fall back to numeric offset otherwise
-            if (result.cursor != null) {
+            if (conversations.length >= maxConversations) {
+                truncated = true
+                break
+            }
+            if (project === null) {
+                // 主列表分支的请求永远用 offset：只有 offset 前进才继续，防止 cursor 字段导致同一页反复抓取
+                offset += limit
+            }
+            else if (result.cursor != null) {
+                if (seenCursors.has(result.cursor)) break // cursor 循环，停止
+                seenCursors.add(result.cursor)
                 cursor = result.cursor
             }
             else {
-                offset += limit
+                cursor = Number(cursor) + limit
             }
         }
         catch (error) {
@@ -627,9 +672,9 @@ export async function fetchAllConversations(project: string | null = null, maxCo
         }
     }
     // Ensure we don't return more than the requested limit if the last batch pushed us over
-    const result = conversations.slice(0, maxConversations)
-    // Let the caller know whether the fetch was cut off by the user limit vs the API having no more data
-    onHasMore?.(result.length >= maxConversations)
+    const result = truncated ? conversations.slice(0, maxConversations) : conversations
+    // hasMore 只在确实因上限截断时为真，避免"恰好等于上限的自然结束"误报
+    onHasMore?.(truncated && result.length >= maxConversations)
     return result
 }
 
@@ -675,6 +720,20 @@ export async function deleteConversation(chatId: string): Promise<boolean> {
         body: JSON.stringify({ is_visible: false }),
     })
     return success
+}
+
+/**
+ * Thrown when the API responds with a non-429 error status.
+ * Lets callers (e.g. the request queue) distinguish deterministic 4xx
+ * failures from transient 5xx/network errors and skip retrying them.
+ */
+export class HttpError extends Error {
+    readonly status: number
+    constructor(status: number, statusText: string) {
+        super(statusText || `HTTP ${status}`)
+        this.name = 'HttpError'
+        this.status = status
+    }
 }
 
 /**
@@ -736,7 +795,7 @@ async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
         if (response.status === 429) {
             throw new RateLimitError(response.headers.get('Retry-After'))
         }
-        throw new Error(response.statusText)
+        throw new HttpError(response.status, response.statusText)
     }
     return response.json()
 }
@@ -789,7 +848,21 @@ async function _fetchSession(): Promise<ApiSession> {
     return response.json()
 }
 
-const fetchSession = memorize(_fetchSession)
+// 会话 token 有时效：过期后必须重新获取，而不是沿用缓存的旧 token 打 401
+let cachedSession: { session: ApiSession; fetchedAt: number } | null = null
+
+async function fetchSession(): Promise<ApiSession> {
+    if (cachedSession) {
+        const expiresAt = cachedSession.session.expires ? Date.parse(cachedSession.session.expires) : Number.NaN
+        const stillValid = Number.isFinite(expiresAt)
+            ? expiresAt - 60_000 > Date.now()
+            : Date.now() - cachedSession.fetchedAt < 3_600_000
+        if (stillValid) return cachedSession.session
+    }
+    const session = await _fetchSession()
+    cachedSession = { session, fetchedAt: Date.now() }
+    return session
+}
 
 async function getAccessToken(): Promise<string> {
     const pageAccessToken = getPageAccessToken()

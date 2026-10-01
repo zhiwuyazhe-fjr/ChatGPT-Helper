@@ -583,11 +583,16 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       }
       const result = fn2(...args);
       cache.set(key2, result);
+      Promise.resolve(result).catch(() => cache.delete(key2));
       return result;
     };
     return memorized;
   }
   const sessionApi = _default(baseUrl, "/api/auth/session");
+  function safePathId(id) {
+    const trimmed = String(id ?? "").trim();
+    return /^[\w-]{1,128}$/.test(trimmed) ? trimmed : null;
+  }
   const conversationApi = (id) => _default(apiUrl, "/conversation/:id", { id });
   const conversationsApi = (offset, limit) => _default(apiUrl, "/conversations", { offset, limit });
   const fileDownloadApi = (id) => _default(apiUrl, "/files/download/:id", { id, post_id: "", inline: false });
@@ -608,12 +613,23 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
   }
   async function fetchImageFromPointer(uri) {
     const pointer = uri.replace("sediment://", "");
+    if (!safePathId(pointer)) {
+      console.warn("[Exporter] Ignoring image asset pointer with unsafe characters");
+      return null;
+    }
     const imageDetails = await fetchApi(fileDownloadApi(pointer));
     if (imageDetails.status === "error") {
       console.error("Failed to fetch image asset", imageDetails.error_code, imageDetails.error_message);
       return null;
     }
-    const image2 = await fetch(imageDetails.download_url);
+    let downloadUrl;
+    try {
+      downloadUrl = new URL(imageDetails.download_url);
+    } catch {
+      return null;
+    }
+    if (downloadUrl.protocol !== "https:") return null;
+    const image2 = await fetch(downloadUrl);
     const blob = await image2.blob();
     const base64 = await blobToDataURL(blob);
     return base64.replace(/^data:.*?;/, `data:${image2.headers.get("content-type")};`);
@@ -662,7 +678,11 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
         ...shareConversation
       };
     }
-    const url = conversationApi(chatId);
+    const safeChatId = safePathId(chatId);
+    if (!safeChatId) {
+      throw new Error(`Invalid chat id: ${chatId}`);
+    }
+    const url = conversationApi(safeChatId);
     const conversation = await fetchApi(url);
     if (shouldReplaceAssets) {
       await replaceImageAssets(conversation);
@@ -675,11 +695,12 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
   async function fetchProjects() {
     let cursor = null;
     const allItems = [];
-    while (true) {
+    for (let iteration = 0; iteration < 200; iteration++) {
       const url = projectsApi(cursor);
       const { items, cursor: nextCursor = null } = await fetchApi(url);
+      if (nextCursor !== null && nextCursor === cursor) break;
       cursor = nextCursor;
-      allItems.push(...items);
+      for (const item of items) allItems.push(item);
       if (nextCursor === null) break;
     }
     return allItems.map((gizmo) => gizmo.gizmo.gizmo);
@@ -692,7 +713,11 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     return fetchApi(url);
   }
   async function fetchProjectConversations(project, cursor = 0, limit = 20) {
-    const url = projectConversationsApi(project, cursor, limit);
+    const safeProject = safePathId(project);
+    if (!safeProject) {
+      throw new Error(`Invalid project id: ${String(project)}`);
+    }
+    const url = projectConversationsApi(safeProject, cursor, limit);
     const { items, cursor: nextCursor } = await fetchApi(url);
     return {
       has_missing_conversations: false,
@@ -711,31 +736,41 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     const limit = project === null ? 100 : 50;
     let offset = 0;
     let cursor = 0;
-    while (true) {
+    const seenCursors = /* @__PURE__ */ new Set();
+    const maxIterations = Math.ceil(maxConversations / limit) + 10;
+    let truncated = false;
+    for (let iteration = 0; iteration < maxIterations; iteration++) {
       try {
         const result2 = project === null ? await fetchConversations(offset, limit) : await fetchProjectConversations(project, cursor, limit);
         if (!result2.items) {
           console.warn("fetchAllConversations received no items at offset:", offset);
           break;
         }
-        conversations.push(...result2.items);
+        for (const item of result2.items) conversations.push(item);
         if (result2.items.length === 0) break;
         onBatch?.(result2.items);
         if (result2.total == null && result2.cursor == null) break;
         if (result2.total !== null && offset + limit >= result2.total) break;
-        if (conversations.length >= maxConversations) break;
-        if (result2.cursor != null) {
+        if (conversations.length >= maxConversations) {
+          truncated = true;
+          break;
+        }
+        if (project === null) {
+          offset += limit;
+        } else if (result2.cursor != null) {
+          if (seenCursors.has(result2.cursor)) break;
+          seenCursors.add(result2.cursor);
           cursor = result2.cursor;
         } else {
-          offset += limit;
+          cursor = Number(cursor) + limit;
         }
       } catch (error2) {
         console.error("Error fetching conversations batch:", error2);
         break;
       }
     }
-    const result = conversations.slice(0, maxConversations);
-    onHasMore?.(result.length >= maxConversations);
+    const result = truncated ? conversations.slice(0, maxConversations) : conversations;
+    onHasMore?.(truncated && result.length >= maxConversations);
     return result;
   }
   async function archiveConversation(chatId) {
@@ -755,6 +790,14 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       body: JSON.stringify({ is_visible: false })
     });
     return success;
+  }
+  class HttpError extends Error {
+    constructor(status, statusText) {
+      super(statusText || `HTTP ${status}`);
+      __publicField(this, "status");
+      this.name = "HttpError";
+      this.status = status;
+    }
   }
   class RateLimitError extends Error {
     constructor(retryAfterHeader) {
@@ -802,7 +845,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       if (response.status === 429) {
         throw new RateLimitError(response.headers.get("Retry-After"));
       }
-      throw new Error(response.statusText);
+      throw new HttpError(response.status, response.statusText);
     }
     return response.json();
   }
@@ -839,7 +882,17 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     }
     return response.json();
   }
-  const fetchSession = memorize(_fetchSession);
+  let cachedSession = null;
+  async function fetchSession() {
+    if (cachedSession) {
+      const expiresAt = cachedSession.session.expires ? Date.parse(cachedSession.session.expires) : Number.NaN;
+      const stillValid = Number.isFinite(expiresAt) ? expiresAt - 6e4 > Date.now() : Date.now() - cachedSession.fetchedAt < 36e5;
+      if (stillValid) return cachedSession.session;
+    }
+    const session = await _fetchSession();
+    cachedSession = { session, fetchedAt: Date.now() };
+    return session;
+  }
   async function getAccessToken() {
     const pageAccessToken = getPageAccessToken();
     if (pageAccessToken) return pageAccessToken;
@@ -36191,6 +36244,7 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     document.body.appendChild(a2);
     a2.click();
     document.body.removeChild(a2);
+    setTimeout(() => URL.revokeObjectURL(url), 3e4);
   }
   function normalizeProjectName(projectName) {
     return projectName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -36227,7 +36281,8 @@ For more information, see https://radix-ui.com/primitives/docs/components/${titl
     const _title = sanitize$1(title2).replace(/\s+/g, "_");
     const _createTime = unixTimestampToISOString(createTime);
     const _updateTime = unixTimestampToISOString(updateTime);
-    return format.replace("{title}", _title).replace("{date}", dateStr()).replace("{timestamp}", timestamp()).replace("{chat_id}", chatId).replace("{create_time}", _createTime).replace("{update_time}", _updateTime).concat(`.${ext}`);
+    const name = format.replace("{title}", _title).replace("{date}", dateStr()).replace("{timestamp}", timestamp()).replace("{chat_id}", chatId.replace(/[^\w.-]+/g, "_")).replace("{create_time}", _createTime).replace("{update_time}", _updateTime).concat(`.${ext}`);
+    return sanitize$1(name).slice(0, 120);
   }
   class Schema {
     /**
@@ -48376,6 +48431,13 @@ ${content2}`;
       __publicField(this, "total", 0);
       __publicField(this, "completed", 0);
       /**
+       * Monotonic token: bumped by stop()/clear(). Every in-flight process()
+       * chain captures the token at start and bails out after any await if the
+       * token changed — otherwise a cleared/stopped queue's tail would keep
+       * running and emit a ghost `done` (triggering unwanted downloads).
+       */
+      __publicField(this, "generation", 0);
+      /**
        * Timestamp (ms since epoch) until which the whole queue is frozen after
        * receiving a 429. While Date.now() < pauseUntil every process() iteration
        * waits out the remainder before making the next request.
@@ -48393,14 +48455,20 @@ ${content2}`;
     start() {
       if (this.status === "IDLE") {
         this.total = this.queue.length;
-        this.process();
+        this.process(this.generation);
       }
     }
+    /**
+     * Stop the queue. Deliberately does NOT emit `done`: `done` means
+     * "finished successfully", and UI callbacks react to it by downloading
+     * files / mutating lists / showing success alerts.
+     */
     stop() {
+      this.generation++;
       this.status = "STOPPED";
-      this.eventEmitter.emit("done", this.results);
     }
     clear() {
+      this.generation++;
       this.queue = [];
       this.results = [];
       this.status = "IDLE";
@@ -48414,7 +48482,8 @@ ${content2}`;
       this.eventEmitter.on(event, fn2);
       return () => this.eventEmitter.off(event, fn2);
     }
-    async process() {
+    async process(generation) {
+      if (generation !== this.generation) return;
       if (this.status === "STOPPED" || this.status === "COMPLETED") {
         return;
       }
@@ -48427,6 +48496,7 @@ ${content2}`;
         const waitSecs = Math.ceil(remaining / 1e3);
         this.progress(this.queue[0].name, "rate_limited", waitSecs);
         await sleep(remaining);
+        if (generation !== this.generation) return;
         this.pauseUntil = 0;
       }
       this.status = "IN_PROGRESS";
@@ -48436,17 +48506,20 @@ ${content2}`;
       try {
         this.progress(name, "processing");
         const result = await request();
+        if (generation !== this.generation) return;
         this.results.push(result);
         this.completed++;
         this.progress(name, "processing");
         this.backoff = this.minBackoff;
         requestObject.retries = 0;
       } catch (error2) {
+        if (generation !== this.generation) return;
         if (error2 instanceof RateLimitError) {
           this.globalPauses++;
           if (this.globalPauses > MAX_GLOBAL_PAUSES) {
             console.warn("[Exporter] Queue stopped: API rate limit did not clear after", MAX_GLOBAL_PAUSES, "pauses");
             this.stop();
+            this.eventEmitter.emit("stopped");
             return;
           }
           const pauseMs = Math.max(
@@ -48457,6 +48530,9 @@ ${content2}`;
           this.progress(name, "rate_limited", Math.round(pauseMs / 1e3));
           console.warn(`[Exporter] Rate limited (429). Pausing queue for ${Math.round(pauseMs / 1e3)}s (pause #${this.globalPauses})`);
           this.queue.unshift(requestObject);
+          waitMs = 0;
+        } else if (error2 instanceof HttpError && error2.status >= 400 && error2.status < 500) {
+          console.warn(`[Exporter] "${name}" skipped: ${error2.status} ${error2.message}`);
           waitMs = 0;
         } else {
           console.error(`[Exporter] "${name}" failed:`, error2);
@@ -48473,7 +48549,8 @@ ${content2}`;
         }
       }
       await sleep(waitMs);
-      this.process();
+      if (generation !== this.generation) return;
+      this.process(generation);
     }
     progress(name, status, rateLimitWaitSecs) {
       this.eventEmitter.emit("progress", {
@@ -49060,17 +49137,27 @@ ${content2}`;
     const onUpload = q$1((e2) => {
       const file = e2.target?.files?.[0];
       if (!file) return;
+      if (file.size > 200 * 1024 * 1024) {
+        alert(t2("Invalid File Format"));
+        return;
+      }
       const fileReader = new FileReader();
       fileReader.onload = () => {
-        const data = JSON.parse(fileReader.result);
-        if (!Array.isArray(data)) {
+        try {
+          const data = JSON.parse(fileReader.result);
+          if (!Array.isArray(data)) {
+            alert(t2("Invalid File Format"));
+            return;
+          }
+          setSelected([]);
+          setExportSource("Local");
+          setLocalConversations(data);
+        } catch (err) {
+          console.error("[Exporter] Failed to parse imported conversations file:", err);
           alert(t2("Invalid File Format"));
-          return;
         }
-        setSelected([]);
-        setExportSource("Local");
-        setLocalConversations(data);
       };
+      fileReader.onerror = () => alert(t2("Invalid File Format"));
       fileReader.readAsText(file);
     }, [t2]);
     const startApiBatch = q$1((chunk) => {
@@ -49109,26 +49196,35 @@ ${content2}`;
       return () => off();
     }, [deleteQueue]);
     y$1(() => {
+      const gen = fetchGenRef.current;
+      const alive = () => gen === fetchGenRef.current;
       const off = requestQueue.on("done", async (results) => {
         if (cancelledRef.current) {
           cancelledRef.current = false;
-          setProcessing(false);
-          exportingRef.current = false;
           return;
         }
+        if (!alive()) return;
         const batchIdx = batchIndexRef.current;
         const totalBatches2 = totalBatchesRef.current;
         const partIndex = batchIdx + 1;
         const callback = exportAllOptions.find((o2) => o2.label === exportType)?.callback;
-        if (callback) {
-          await callback(format, results, metaList, selectedProject?.display.name, partIndex, totalBatches2);
-        }
-        if (partIndex < totalBatches2) {
-          await sleep(400);
-          batchIndexRef.current++;
-          const nextChunk = pendingBatchesRef.current[batchIndexRef.current];
-          if (nextChunk) startApiBatch(nextChunk);
-        } else {
+        try {
+          if (callback) {
+            await callback(format, results, metaList, selectedProject?.display.name, partIndex, totalBatches2);
+          }
+          if (partIndex < totalBatches2) {
+            await sleep(400);
+            if (!alive() || cancelledRef.current) return;
+            batchIndexRef.current++;
+            const nextChunk = pendingBatchesRef.current[batchIndexRef.current];
+            if (nextChunk) startApiBatch(nextChunk);
+            else setProcessing(false);
+          } else {
+            setProcessing(false);
+          }
+        } catch (err) {
+          console.error("[Exporter] Export batch failed:", err);
+          alert(err instanceof Error ? err.message : String(err));
           setProcessing(false);
         }
       });
@@ -49136,6 +49232,7 @@ ${content2}`;
     }, [requestQueue, exportAllOptions, exportType, format, metaList, startApiBatch, selectedProject]);
     y$1(() => {
       const off = archiveQueue.on("done", () => {
+        if (cancelledRef.current) return;
         setProcessing(false);
         setApiConversations((prev) => prev.filter((c2) => !selected.some((s2) => s2.id === c2.id)));
         setSelected([]);
@@ -49145,6 +49242,7 @@ ${content2}`;
     }, [archiveQueue, selected, t2]);
     y$1(() => {
       const off = deleteQueue.on("done", () => {
+        if (cancelledRef.current) return;
         setProcessing(false);
         setApiConversations((prev) => prev.filter((c2) => !selected.some((s2) => s2.id === c2.id)));
         setSelected([]);
@@ -49152,11 +49250,16 @@ ${content2}`;
       });
       return () => off();
     }, [deleteQueue, selected, t2]);
+    y$1(() => {
+      const offs = [requestQueue, archiveQueue, deleteQueue].map((q2) => q2.on("stopped", () => setProcessing(false)));
+      return () => offs.forEach((off) => off());
+    }, [requestQueue, archiveQueue, deleteQueue]);
     const cancelExport = q$1(() => {
       cancelledRef.current = true;
       requestQueue.stop();
       archiveQueue.stop();
       deleteQueue.stop();
+      setProcessing(false);
     }, [requestQueue, archiveQueue, deleteQueue]);
     const exportAllFromApi = q$1(() => {
       if (disabled) return;
@@ -49184,11 +49287,18 @@ ${content2}`;
       if (!callback) return;
       const chunks = chunkArray(results, EXPORT_OPERATION_BATCH);
       setProcessing(true);
-      for (let i2 = 0; i2 < chunks.length; i2++) {
-        await callback(format, chunks[i2], metaList, selectedProject?.display.name, i2 + 1, chunks.length);
-        if (i2 < chunks.length - 1) await sleep(400);
+      try {
+        for (let i2 = 0; i2 < chunks.length; i2++) {
+          try {
+            await callback(format, chunks[i2], metaList, selectedProject?.display.name, i2 + 1, chunks.length);
+          } catch (err) {
+            console.error(`[Exporter] Local export part ${i2 + 1} failed:`, err);
+          }
+          if (i2 < chunks.length - 1) await sleep(400);
+        }
+      } finally {
+        setProcessing(false);
       }
-      setProcessing(false);
     }, [disabled, selected, localConversations, exportAllOptions, exportType, format, metaList, selectedProject]);
     const exportAll = T$4(() => {
       return exportSource === "API" ? exportAllFromApi : exportAllFromLocal;
@@ -49257,7 +49367,9 @@ ${content2}`;
       if (loadingMore) return;
       setLoadingMore(true);
       try {
+        const gen = ++fetchGenRef.current;
         const page = await fetchConversationsPage(selectedProjectId, apiConversations.length, EXPORT_OPERATION_BATCH);
+        if (gen !== fetchGenRef.current) return;
         setApiConversations((prev) => [...prev, ...page.items]);
         if (page.total !== null) setTotalAvailable(page.total);
         setHasMore(
@@ -50436,27 +50548,40 @@ ${content2}`;
         const currentChatId = getChatIdFromUrl();
         if (!currentChatId || currentChatId === chatId) return;
         chatId = currentChatId;
-        const rawConversation = await fetchConversation(chatId, false);
-        const { conversationNodes } = processConversation(rawConversation);
-        const threadContents = Array.from(document.querySelectorAll('main [data-testid^="conversation-turn-"] [data-message-id]'));
-        if (threadContents.length === 0) return;
-        threadContents.forEach((thread, index2) => {
-          const createTime = conversationNodes[index2]?.message?.create_time;
-          if (!createTime) return;
-          const date = new Date(createTime * 1e3);
-          const timestamp2 = document.createElement("time");
-          timestamp2.className = "w-full text-gray-500 dark:text-gray-400 text-sm text-right";
-          timestamp2.dateTime = date.toISOString();
-          timestamp2.title = date.toLocaleString();
-          const hour12 = document.createElement("span");
-          hour12.setAttribute("data-time-format", "12");
-          hour12.textContent = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-          const hour24 = document.createElement("span");
-          hour24.setAttribute("data-time-format", "24");
-          hour24.textContent = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
-          timestamp2.append(hour12, hour24);
-          thread.append(timestamp2);
-        });
+        try {
+          const rawConversation = await fetchConversation(chatId, false);
+          if (getChatIdFromUrl() !== chatId) return;
+          const { conversationNodes } = processConversation(rawConversation);
+          const nodesByMessageId = /* @__PURE__ */ new Map();
+          conversationNodes.forEach((node2, index2) => {
+            const id = node2?.message?.id;
+            if (id) nodesByMessageId.set(id, index2);
+          });
+          const threadContents = Array.from(document.querySelectorAll('main [data-testid^="conversation-turn-"] [data-message-id]'));
+          if (threadContents.length === 0) return;
+          threadContents.forEach((thread) => {
+            const messageId = thread.getAttribute("data-message-id") ?? "";
+            const index2 = nodesByMessageId.get(messageId);
+            if (index2 == null) return;
+            const createTime = conversationNodes[index2]?.message?.create_time;
+            if (!createTime) return;
+            const date = new Date(createTime * 1e3);
+            const timestamp2 = document.createElement("time");
+            timestamp2.className = "w-full text-gray-500 dark:text-gray-400 text-sm text-right";
+            timestamp2.dateTime = date.toISOString();
+            timestamp2.title = date.toLocaleString();
+            const hour12 = document.createElement("span");
+            hour12.setAttribute("data-time-format", "12");
+            hour12.textContent = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+            const hour24 = document.createElement("span");
+            hour24.setAttribute("data-time-format", "24");
+            hour24.textContent = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+            timestamp2.append(hour12, hour24);
+            thread.append(timestamp2);
+          });
+        } catch (error2) {
+          console.error("[ChatGPT Helper Export] Failed to render timestamps:", error2);
+        }
       });
     });
   }
