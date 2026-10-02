@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Adversarial Test | ChatGPT Helper</title>
+<style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #fff; color: #0d0d0d; }
+    .mock-shell { display: flex; height: 100vh; }
+    .mock-sidebar { width: 240px; background: #f9f9f9; border-right: 1px solid #e5e5e5; padding: 12px; overflow-y: auto; }
+    .mock-sidebar a { display: block; padding: 8px; color: #0d0d0d; text-decoration: none; border-radius: 8px; }
+    .mock-main { flex: 1; overflow-y: auto; padding: 24px 48px; }
+    .mock-msg-user { background: #f4f4f4; border-radius: 16px; padding: 12px 16px; margin: 12px 0; max-width: 70%; }
+    table { border-collapse: collapse; margin: 12px 0; }
+    th, td { border: 1px solid #ccc; padding: 6px 12px; }
+    .mock-composer { padding: 16px; border-top: 1px solid #e5e5e5; }
+    #prompt-textarea { width: 100%; min-height: 48px; border: 1px solid #ccc; border-radius: 12px; padding: 12px; box-sizing: border-box; }
+    #xss-canary { position: fixed; top: 0; left: 0; background: red; color: #fff; padding: 4px 8px; z-index: 99999; display: none; }
+</style>
+</head>
+<body>
+<div id="xss-canary">XSS-EXECUTED</div>
+<div class="mock-shell">
+    <nav class="mock-sidebar">
+        <a href="/c/conv-mock-1">Mock conversation one</a>
+        <a href="/c/conv-mock-2">Mock conversation two</a>
+    </nav>
+    <div style="flex:1;display:flex;flex-direction:column;">
+        <main class="mock-main" id="mock-main">
+            <article data-testid="conversation-turn-item">
+                <div data-message-author-role="user"><div class="mock-msg-user">给我一份项目计划表格和分层说明</div></div>
+            </article>
+            <article data-testid="conversation-turn-item">
+                <div data-message-author-role="assistant"><div class="mock-msg-ai">
+                    <h1>项目总览</h1>
+                    <h2>阶段一：调研</h2>
+                    <h3>用户访谈</h3>
+                    <h3>竞品分析</h3>
+                    <h2>阶段二：开发</h2>
+                    <table>
+                        <thead><tr><th>任务</th><th>负责人</th></tr></thead>
+                        <tbody><tr><td>前端</td><td>张三</td></tr><tr><td>后端</td><td>李四</td></tr></tbody>
+                    </table>
+                    <h2>阶段三：发布</h2>
+                    <span class="katex"><span class="katex-mathml">E=mc^2</span></span>
+                    <h3>尾部标题</h3>
+                </div></div>
+            </article>
+            <article data-testid="conversation-turn-item">
+                <div data-message-author-role="user"><div class="mock-msg-user">重复消息 A</div></div>
+            </article>
+            <article data-testid="conversation-turn-item">
+                <div data-message-author-role="user"><div class="mock-msg-user">重复消息 A</div></div>
+            </article>
+        </main>
+        <form class="mock-composer">
+            <div id="prompt-textarea" contenteditable="true" role="textbox" aria-label="询问任何问题"></div>
+        </form>
+    </div>
+</div>
+
+<script>
+(function () {
+    window.__TEST__ = {
+        opens: [], dialogs: [], clipboard: [], downloads: [], toasts: [], console: [],
+        onMessageListeners: [],
+        storageSetCalls: [],
+        persist: location.search.includes('persist=1')
+    };
+    window.open = function (url, target) { window.__TEST__.opens.push({ url, target }); return { focus() {} }; };
+    window.confirm = function (msg) { window.__TEST__.dialogs.push({ type: 'confirm', msg }); return window.__TEST__.confirmAnswer !== undefined ? window.__TEST__.confirmAnswer : true; };
+    window.prompt = function (msg, def) { window.__TEST__.dialogs.push({ type: 'prompt', msg, def }); return window.__TEST__.promptAnswer !== undefined ? window.__TEST__.promptAnswer : def; };
+    window.alert = function (msg) { window.__TEST__.dialogs.push({ type: 'alert', msg }); };
+
+    // XSS 金丝雀：任何脚本执行（eval/inline）都会亮起
+    window.__XSS_HIT__ = function (where) {
+        var c = document.getElementById('xss-canary');
+        if (c) c.style.display = 'block';
+        window.__TEST__.xssHits = window.__TEST__.xssHits || [];
+        window.__TEST__.xssHits.push(where);
+    };
+
+    const LS_KEY = '__mock_chrome_storage__';
+    if (!window.__TEST__.persist) localStorage.removeItem(LS_KEY);
+    const readAll = () => { try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) { return {}; } };
+    const writeAll = (obj) => localStorage.setItem(LS_KEY, JSON.stringify(obj));
+    const listeners = [];
+    window.chrome = {
+        runtime: {
+            id: 'mock-extension-id',
+            getURL: (p) => p,
+            getManifest: () => ({ version: '2.5.0-test', name: 'ChatGPT Helper' }),
+            sendMessage: (msg, cb) => {
+                if (msg && msg.type === 'ch-helper-inject-export-deps') {
+                    ['/libs/jszip.min.js', '/libs/html2canvas.min.js', '/content-scripts/dist/chatgpt-exporter.js'].forEach(src => {
+                        const s = document.createElement('script');
+                        s.src = src;
+                        document.head.appendChild(s);
+                    });
+                    if (cb) cb({ ok: true });
+                }
+            },
+            onMessage: {
+                addListener: (fn) => { window.__TEST__.onMessageListeners.push(fn); }
+            }
+        },
+        storage: {
+            local: {
+                get: (keys, cb) => setTimeout(() => {
+                    const all = readAll();
+                    if (keys === null || keys === undefined) { cb(all); return; }
+                    const out = {};
+                    (typeof keys === 'string' ? [keys] : Array.isArray(keys) ? keys : Object.keys(keys)).forEach(k => {
+                        if (k in all) out[k] = all[k];
+                    });
+                    cb(out);
+                }, 0),
+                set: (obj, cb) => setTimeout(() => {
+                    const all = readAll();
+                    const changes = {};
+                    Object.entries(obj).forEach(([k, v]) => { changes[k] = { oldValue: all[k], newValue: v }; all[k] = v; });
+                    writeAll(all);
+                    window.__TEST__.storageSetCalls.push(Object.keys(obj));
+                    if (cb) cb();
+                    listeners.forEach(fn => { try { fn(changes, 'local'); } catch (e) { } });
+                }, window.__TEST__.storageDelayMs || 0),
+                remove: (keys, cb) => setTimeout(() => {
+                    const all = readAll();
+                    (typeof keys === 'string' ? [keys] : keys || []).forEach(k => delete all[k]);
+                    writeAll(all);
+                    if (cb) cb();
+                }, 0)
+            },
+            onChanged: { addListener: (fn) => listeners.push(fn) }
+        },
+        notifications: { create: async (o) => 'mock', clear: async () => true }
+    };
+})();
+</script>
+<script src="/content-scripts/gm-api-adapter.js"></script>
+<script src="/content-scripts/dist/chatgpt-helper.js"></script>
+</body>
+</html>

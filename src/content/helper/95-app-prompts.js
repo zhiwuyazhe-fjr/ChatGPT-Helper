@@ -609,6 +609,8 @@
                 type: 'button'
             }, this.t('save'));
             saveBtn.addEventListener('click', () => {
+                // 防重入：快速连点会多次执行（overlay 移除后 listener 仍挂在分离元素上），造成重复添加
+                if (!overlay.isConnected) return;
                 const title = titleInput.value.trim();
                 const content = contentTextarea.value.trim();
                 const category = categoryInput.value.trim();
@@ -782,6 +784,8 @@
                 type: 'button'
             }, this.t('promptInsert'));
             insertBtn.addEventListener('click', () => {
+                // 防重入：快速连点会重复插入提示词
+                if (!overlay.isConnected) return;
                 const values = {};
                 variables.forEach((name) => {
                     values[name] = (inputs[name].value || '').trim();

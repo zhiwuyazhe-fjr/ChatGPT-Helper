@@ -266,6 +266,11 @@
                     if (key === '__proto__' || key === 'constructor' || key === 'prototype') return;
                     settings[key] = data.settings[key];
                 });
+                // 数值设置就地钳制（如 panelWidth=99999）：加载层 normalize 是最终防线，
+                // 但导入层先把明显非法值压回合法域，避免存储里长期存在病态数据
+                if (Number.isFinite(Number(settings.panelWidth))) {
+                    settings.panelWidth = Math.max(H.PANEL_WIDTH_MIN, Math.min(H.PANEL_WIDTH_MAX, Number(settings.panelWidth)));
+                }
                 safe.settings = settings;
             }
             if (typeof data.language === 'string' && /^[a-z]{2}(-[A-Za-z0-9]{2,8})?$/.test(data.language)) {

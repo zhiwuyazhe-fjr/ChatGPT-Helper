@@ -2856,6 +2856,7 @@
           type: "button"
         }, this.t("confirm"));
         confirmBtn.addEventListener("click", () => {
+          if (!overlay.isConnected) return;
           const folderId = folderSelect.value;
           if (isBatch) {
             this.selectedIds.forEach((id) => {
@@ -18570,6 +18571,7 @@
           type: "button"
         }, this.t("save"));
         saveBtn.addEventListener("click", () => {
+          if (!overlay.isConnected) return;
           const title2 = titleInput.value.trim();
           const content = contentTextarea.value.trim();
           const category = categoryInput.value.trim();
@@ -18714,6 +18716,7 @@
           type: "button"
         }, this.t("promptInsert"));
         insertBtn.addEventListener("click", () => {
+          if (!overlay.isConnected) return;
           const values = {};
           variables.forEach((name) => {
             values[name] = (inputs[name].value || "").trim();
@@ -21695,6 +21698,9 @@
             if (key === "__proto__" || key === "constructor" || key === "prototype") return;
             settings[key] = data.settings[key];
           });
+          if (Number.isFinite(Number(settings.panelWidth))) {
+            settings.panelWidth = Math.max(H.PANEL_WIDTH_MIN, Math.min(H.PANEL_WIDTH_MAX, Number(settings.panelWidth)));
+          }
           safe.settings = settings;
         }
         if (typeof data.language === "string" && /^[a-z]{2}(-[A-Za-z0-9]{2,8})?$/.test(data.language)) {

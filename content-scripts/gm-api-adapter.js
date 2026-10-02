@@ -281,6 +281,9 @@
             if (area !== 'local') return;
             if (!window.__MY_EXT__.storageCache) return;
             for (const [key, change] of Object.entries(changes)) {
+                // 防御畸形载荷：非 {oldValue,newValue} 对象的 change 直接跳过，
+                // 避免外部 stub/异常实现把缓存键误删
+                if (!change || typeof change !== 'object') continue;
                 if (change.newValue === undefined) {
                     delete window.__MY_EXT__.storageCache[key];
                 } else {

@@ -1168,6 +1168,8 @@
                 type: 'button'
             }, this.t('confirm'));
             confirmBtn.addEventListener('click', () => {
+                // 防重入：快速连点会重复执行移动/保存操作
+                if (!overlay.isConnected) return;
                 const folderId = folderSelect.value;
                 if (isBatch) {
                     this.selectedIds.forEach(id => {
