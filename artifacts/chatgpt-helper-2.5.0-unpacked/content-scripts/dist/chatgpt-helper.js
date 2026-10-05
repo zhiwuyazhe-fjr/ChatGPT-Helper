@@ -8196,7 +8196,7 @@
         while (current && current !== document.body && current !== document.documentElement && depth < 6) {
           if (options.kind === "sidebar") {
             const rect = current.getBoundingClientRect();
-            const isLikelySidebarShell = rect.width >= 140 && rect.width <= Math.max(520, Math.floor(window.innerWidth * 0.42)) && rect.height >= Math.floor(window.innerHeight * 0.45) && rect.left <= 80;
+            const isLikelySidebarShell = rect.width >= 44 && rect.width <= Math.max(520, Math.floor(window.innerWidth * 0.42)) && rect.height >= Math.floor(window.innerHeight * 0.45) && rect.left <= 80;
             if (!isLikelySidebarShell) {
               if (depth === 0) {
                 return false;
@@ -8232,13 +8232,19 @@
           if (!(element instanceof HTMLElement)) return false;
           const rect = element.getBoundingClientRect();
           const maxWidth = Math.max(520, Math.floor(window.innerWidth * 0.42));
-          const isLeftRail = rect.left <= 80 && rect.width >= 140 && rect.width <= maxWidth && rect.height >= Math.floor(window.innerHeight * 0.45);
+          const isLeftRail = rect.left <= 80 && rect.width >= 44 && rect.width <= maxWidth && rect.height >= Math.floor(window.innerHeight * 0.45);
           if (!isLeftRail) return false;
-          const signals = [
+          const structuralSignals = [
             element.id,
             getElementClassName(element),
             element.getAttribute("data-testid"),
-            element.getAttribute("aria-label"),
+            element.getAttribute("aria-label")
+          ].filter(Boolean).join(" ");
+          if (rect.width < 140) {
+            return /sidebar|slideover|侧边栏/i.test(structuralSignals);
+          }
+          const signals = [
+            structuralSignals,
             (element.textContent || "").slice(0, 600)
           ].filter(Boolean).join(" ");
           return /sidebar|slideover|Chat history|聊天历史|侧边栏|新聊天|搜索聊天|项目|最近|New chat|Search chats|Projects|Recent|ChatGPT|Codex/i.test(signals);
@@ -8410,9 +8416,18 @@
             if (!(child instanceof HTMLElement)) continue;
             if (typeof child.id === "string" && child.id.startsWith("chatgpt-helper")) continue;
             const rect = child.getBoundingClientRect();
-            if (rect.left > 80 || rect.width < 140 || rect.height < minHeight) continue;
+            if (rect.left > 80 || rect.width < 44 || rect.height < minHeight) continue;
             if (rect.width <= maxWidth) {
               if (child.querySelector('main, [role="main"]')) continue;
+              if (rect.width < 140) {
+                const structural = [
+                  child.id,
+                  typeof child.className === "string" ? child.className : "",
+                  child.getAttribute("data-testid") || "",
+                  child.getAttribute("aria-label") || ""
+                ].join(" ");
+                if (!/sidebar|slideover/i.test(structural)) continue;
+              }
               if (!rail) rail = child;
             } else if (!wrapper) {
               wrapper = child;
@@ -8485,6 +8500,12 @@
       // 页面容器（可能含有 fixed 后代/原生弹层）永远不会因它产生包含块问题。
       ensureThemeGlassLayer(host, variant) {
         if (!(host instanceof HTMLElement)) return null;
+        try {
+          if (getComputedStyle(host).position === "static") {
+            host.style.position = "relative";
+          }
+        } catch (e) {
+        }
         const id = variant === "composer" ? "chatgpt-helper-glass-composer" : "chatgpt-helper-glass-sidebar";
         let layer = document.getElementById(id);
         if (layer && layer.parentElement !== host) {

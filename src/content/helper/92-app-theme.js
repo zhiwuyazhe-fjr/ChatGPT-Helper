@@ -441,7 +441,9 @@
             while (current && current !== document.body && current !== document.documentElement && depth < 6) {
                 if (options.kind === 'sidebar') {
                     const rect = current.getBoundingClientRect();
-                    const isLikelySidebarShell = rect.width >= 140
+                    // 2026-10 改版后侧栏可收起成 ~52px 图标栏（#stage-sidebar-tiny-bar），
+                    // 宽度下限放宽到 44，否则收起态整条侧栏链都会断掉
+                    const isLikelySidebarShell = rect.width >= 44
                         && rect.width <= Math.max(520, Math.floor(window.innerWidth * 0.42))
                         && rect.height >= Math.floor(window.innerHeight * 0.45)
                         && rect.left <= 80;
@@ -491,16 +493,25 @@
                 const rect = element.getBoundingClientRect();
                 const maxWidth = Math.max(520, Math.floor(window.innerWidth * 0.42));
                 const isLeftRail = rect.left <= 80
-                    && rect.width >= 140
+                    && rect.width >= 44
                     && rect.width <= maxWidth
                     && rect.height >= Math.floor(window.innerHeight * 0.45);
                 if (!isLeftRail) return false;
 
-                const signals = [
+                // 窄栏（收起后的图标栏）只认结构性信号：id/类/testid/aria。
+                // 文本匹配在 52px 宽的窄列上误判率太高，不参与。
+                const structuralSignals = [
                     element.id,
                     getElementClassName(element),
                     element.getAttribute('data-testid'),
-                    element.getAttribute('aria-label'),
+                    element.getAttribute('aria-label')
+                ].filter(Boolean).join(' ');
+                if (rect.width < 140) {
+                    return /sidebar|slideover|侧边栏/i.test(structuralSignals);
+                }
+
+                const signals = [
+                    structuralSignals,
                     (element.textContent || '').slice(0, 600)
                 ].filter(Boolean).join(' ');
 
@@ -713,10 +724,21 @@
                     if (!(child instanceof HTMLElement)) continue;
                     if (typeof child.id === 'string' && child.id.startsWith('chatgpt-helper')) continue;
                     const rect = child.getBoundingClientRect();
-                    if (rect.left > 80 || rect.width < 140 || rect.height < minHeight) continue;
+                    if (rect.left > 80 || rect.width < 44 || rect.height < minHeight) continue;
                     if (rect.width <= maxWidth) {
                         // 左栏候选：排除主区本身（窄视口下主区可能贴左）
                         if (child.querySelector('main, [role="main"]')) continue;
+                        // 窄栏（收起的图标栏）必须有结构性侧栏信号才认，
+                        // 纯几何判定只在宽面板（>=140）上保留
+                        if (rect.width < 140) {
+                            const structural = [
+                                child.id,
+                                typeof child.className === 'string' ? child.className : '',
+                                child.getAttribute('data-testid') || '',
+                                child.getAttribute('aria-label') || ''
+                            ].join(' ');
+                            if (!/sidebar|slideover/i.test(structural)) continue;
+                        }
                         if (!rail) rail = child;
                     } else if (!wrapper) {
                         wrapper = child;
@@ -796,6 +818,18 @@
         // 页面容器（可能含有 fixed 后代/原生弹层）永远不会因它产生包含块问题。
         ensureThemeGlassLayer(host, variant) {
             if (!(host instanceof HTMLElement)) return null;
+            // 玻璃层以 absolute + inset:0 盖住宿主。宿主若是 static，inset 会沿祖先链
+            // 解析到更外层的定位元素，玻璃层可能被放大到整页（2026-10 新版 DOM 的
+            // composer 容器链全 static，实测铺满视口变成一块深色蒙版）。
+            // position:relative 不会为 fixed 后代创建包含块（transform/backdrop-filter
+            // 才会），符合“页面容器永不做包含块炸弹”的架构约束，这里只补定位。
+            try {
+                if (getComputedStyle(host).position === 'static') {
+                    host.style.position = 'relative';
+                }
+            } catch (e) {
+                // ignore
+            }
             const id = variant === 'composer'
                 ? 'chatgpt-helper-glass-composer'
                 : 'chatgpt-helper-glass-sidebar';
