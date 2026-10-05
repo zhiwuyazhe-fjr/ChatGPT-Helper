@@ -8652,7 +8652,13 @@
             };
           }),
           geometricShell: describe(this.findSidebarShellByGeometry()),
-          coverProbe: this.probeThemeCoverStack()
+          coverProbe: (() => {
+            try {
+              return this.probeThemeCoverStack();
+            } catch (e) {
+              return "probe failed: " + e.message;
+            }
+          })()
         };
       },
       ensureThemeRuntimeStyle() {
