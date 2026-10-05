@@ -8530,6 +8530,56 @@
           node.remove();
         });
       },
+      // 覆盖层探查：在主区/侧栏/输入区取点，几何遍历所有命中元素（含
+      // pointer-events:none 的绘制层），列出每个会"画东西"的元素——定位
+      // 壁纸被谁盖住时，最靠前的不透明项就是答案。
+      probeThemeCoverStack() {
+        const points = [];
+        const pushPoint = (label, el, fx, fy) => {
+          if (!(el instanceof HTMLElement)) return;
+          const rect = el.getBoundingClientRect();
+          if (rect.width < 40 || rect.height < 40) return;
+          points.push({
+            label,
+            x: Math.round(rect.left + rect.width * fx),
+            y: Math.round(rect.top + rect.height * fy)
+          });
+        };
+        pushPoint("main", document.querySelector("main") || document.querySelector('[role="main"]'), 0.5, 0.3);
+        pushPoint("sidebar", document.querySelector('[data-gh-theme-host-sidebar-shell="true"]'), 0.5, 0.5);
+        pushPoint("composer", document.querySelector('[data-gh-theme-host-composer-surface="true"]'), 0.5, 0.5);
+        const isOurElement = (el) => typeof el.id === "string" && (el.id.startsWith("chatgpt-helper") || el.id === "chatgpt-helper-theme-bg-layer") || typeof el.className === "string" && el.className.includes("chatgpt-helper");
+        const results = {};
+        for (const point of points) {
+          const painters = [];
+          const all = document.querySelectorAll("*");
+          for (const el of all) {
+            if (!(el instanceof HTMLElement) || el === document.documentElement || el === document.body) continue;
+            if (isOurElement(el)) continue;
+            const rect = el.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) continue;
+            if (point.x < rect.left || point.x > rect.right || point.y < rect.top || point.y > rect.bottom) continue;
+            const cs = getComputedStyle(el);
+            const bgAlphaMatch = /^rgba\((?:\d+,\s*){3},\s*([\d.]+)\)/.exec(cs.backgroundColor);
+            const bgAlpha = bgAlphaMatch ? parseFloat(bgAlphaMatch[1]) : cs.backgroundColor !== "transparent" && cs.backgroundColor !== "" ? 1 : 0;
+            const hasGradient = cs.backgroundImage !== "none";
+            const hasBackdrop = cs.backdropFilter !== "none" && cs.backdropFilter !== "";
+            if (bgAlpha <= 0.04 && !hasGradient && !hasBackdrop) continue;
+            painters.push({
+              tag: el.tagName.toLowerCase(),
+              id: el.id || void 0,
+              cls: (typeof el.className === "string" ? el.className : "").slice(0, 80) || void 0,
+              bg: cs.backgroundColor.slice(0, 36),
+              bi: hasGradient ? cs.backgroundImage.slice(0, 50) : void 0,
+              bdk: hasBackdrop ? cs.backdropFilter.slice(0, 30) : void 0,
+              z: cs.zIndex,
+              pos: cs.position
+            });
+          }
+          results[point.label] = painters.slice(0, 12);
+        }
+        return results;
+      },
       collectThemeDiagnostics() {
         const shell = document.querySelector('[data-gh-theme-host-sidebar-shell="true"]');
         const describe = (el) => {
@@ -8601,7 +8651,8 @@
               pointerEvents: cs.pointerEvents
             };
           }),
-          geometricShell: describe(this.findSidebarShellByGeometry())
+          geometricShell: describe(this.findSidebarShellByGeometry()),
+          coverProbe: this.probeThemeCoverStack()
         };
       },
       ensureThemeRuntimeStyle() {
