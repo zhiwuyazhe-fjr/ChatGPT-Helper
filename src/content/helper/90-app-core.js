@@ -251,6 +251,19 @@
                     console.error('[ChatGPT Helper] init 调用错误:', e);
                     console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
                 }
+
+                // 只读诊断出口：站点改版导致主题失效时，用户在控制台执行
+                // __MY_EXT__.getThemeDiagnostics() 即可取到现场数据。不暴露实例
+                // 本身，页面脚本无法借此调用任何写操作。
+                try {
+                    root.getThemeDiagnostics = () => (
+                        typeof this.collectThemeDiagnostics === 'function'
+                            ? this.collectThemeDiagnostics()
+                            : null
+                    );
+                } catch (e) {
+                    // ignore
+                }
             } catch (e) {
                 console.error('[ChatGPT Helper] 构造函数严重错误:', e);
                 console.error('[ChatGPT Helper] 错误堆栈:', e.stack);

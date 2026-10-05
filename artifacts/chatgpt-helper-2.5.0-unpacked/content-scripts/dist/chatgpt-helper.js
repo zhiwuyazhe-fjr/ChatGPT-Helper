@@ -7386,6 +7386,10 @@
             console.error("[ChatGPT Helper] init \u8C03\u7528\u9519\u8BEF:", e);
             console.error("[ChatGPT Helper] \u9519\u8BEF\u5806\u6808:", e.stack);
           }
+          try {
+            root.getThemeDiagnostics = () => typeof this.collectThemeDiagnostics === "function" ? this.collectThemeDiagnostics() : null;
+          } catch (e) {
+          }
         } catch (e) {
           console.error("[ChatGPT Helper] \u6784\u9020\u51FD\u6570\u4E25\u91CD\u9519\u8BEF:", e);
           console.error("[ChatGPT Helper] \u9519\u8BEF\u5806\u6808:", e.stack);
