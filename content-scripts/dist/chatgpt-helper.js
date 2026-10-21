@@ -5818,6 +5818,9 @@
       this.findTextarea();
     }
     findTextarea() {
+      this.textarea = null;
+      const container = this.getChatContainer();
+      if (!container) return;
       const selectors = [
         '[data-composer-markdown][contenteditable="true"]',
         "#prompt-textarea",
@@ -5829,8 +5832,8 @@
         "textarea"
       ];
       for (const selector of selectors) {
-        const el = Array.from(document.querySelectorAll(selector)).find((element) => !element.closest('[data-oai-writing-block-surface], [id^="chatgpt-helper"]'));
-        if (el && el.offsetParent !== null) {
+        const el = Array.from(container.querySelectorAll(selector)).find((element) => !element.closest('[data-oai-writing-block-surface], [id^="chatgpt-helper"], [data-app-shell-active-page="false"], [hidden], [inert]') && element.getClientRects().length > 0 && getComputedStyle(element).visibility !== "hidden");
+        if (el) {
           this.textarea = el;
           return;
         }
@@ -5840,7 +5843,10 @@
       return document.querySelector('nav[aria-label*="Chat history"]') || document.querySelector('nav[aria-label*="\u804A\u5929\u5386\u53F2"]') || document.querySelector('aside[aria-label*="Chat history"]') || document.querySelector('aside[aria-label*="\u804A\u5929\u5386\u53F2"]') || document.querySelector('[data-testid="sidebar"]') || document.querySelector("nav") || document.querySelector("aside");
     }
     getChatContainer() {
-      return document.querySelector("main") || document.querySelector('[role="main"]');
+      const candidates = Array.from(document.querySelectorAll('main, [role="main"]')).filter((element) => !element.closest('[data-app-shell-active-page="false"], [hidden]'));
+      const active = candidates.filter((element) => element.closest('[data-app-shell-active-page="true"]'));
+      const visible = (element) => element.getClientRects().length > 0 && getComputedStyle(element).visibility !== "hidden";
+      return active.find(visible) || active[0] || candidates.find(visible) || null;
     }
     getMessageRole(message) {
       const searchUnit = message?.getAttribute("data-content-search-unit-key") || message?.getAttribute("data-chatgpt-search-unit-key");
@@ -5884,7 +5890,8 @@
       if (!this.lastResponseContainer) {
         return null;
       }
-      if (!this.isScrollableCandidate(this.lastResponseContainer)) {
+      const main = this.getChatContainer();
+      if (!main?.contains(this.lastResponseContainer) || !this.isScrollableCandidate(this.lastResponseContainer)) {
         this.lastResponseContainer = null;
         return null;
       }
@@ -6843,7 +6850,7 @@
     },
     syncNativeThemeScopes(mode = this.currentEffectiveTheme) {
       const scopes = /* @__PURE__ */ new Set();
-      document.querySelectorAll("main [data-dil-message-id], main [data-oai-writing-block-surface]").forEach((content) => {
+      this.adapter?.getChatContainer?.()?.querySelectorAll("[data-dil-message-id], [data-oai-writing-block-surface]").forEach((content) => {
         const scope = content.closest("[data-theme]");
         if (scope && scope !== document.documentElement && scope !== document.body) scopes.add(scope);
       });
@@ -6929,10 +6936,13 @@
           mark(current, "data-gh-theme-host-clear");
         }
       };
-      const main = document.querySelector('main, [role="main"]') || this.adapter?.getChatContainer?.();
+      const main = this.adapter?.getChatContainer?.();
       mark(main, "data-gh-theme-host-main");
       mark(main, "data-gh-theme-host-chat-list");
       clearPath(main);
+      main?.querySelectorAll('.thread-scroll-container, [data-thread-find-target="conversation"], [data-thread-user-message-navigation-content]').forEach((container) => {
+        clearPath(container, main);
+      });
       const messages = this.adapter?.getChatMessages?.() || [];
       messages.forEach((message) => {
         clearPath(message.parentElement, main);
@@ -6947,7 +6957,7 @@
       }
       this.themeHostLastFoundShell = Boolean(sidebar);
       this.adapter?.findTextarea?.();
-      const input = this.adapter?.textarea || document.querySelector("[data-composer-markdown], #prompt-textarea");
+      const input = this.adapter?.textarea;
       const composer = input?.closest('[data-composer-body], form, [data-testid="composer"]');
       const surface = input?.closest('[data-composer-surface-variant], [data-composer-surface], [class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]') || composer?.querySelector('[class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]') || composer;
       mark(composer, "data-gh-theme-host-composer");
@@ -6978,12 +6988,12 @@
       this.themeHostTargets = { main, sidebar, composer, surface };
     },
     queueThemeHostRefresh() {
-      if (this.themeHostRefreshQueued) return;
+      if (this.destroyed || this.themeHostRefreshQueued) return;
       this.themeHostRefreshQueued = true;
       this.themeHostRefreshTimer = setTimeout(() => {
         this.themeHostRefreshQueued = false;
         this.themeHostRefreshTimer = null;
-        this.refreshThemeHostTargets();
+        if (!this.destroyed) this.refreshThemeHostTargets();
       }, 80);
     },
     findSidebarShellByGeometry() {
@@ -7000,6 +7010,8 @@
       this.themeHostWatchdog = new MutationObserver((records) => {
         if (!records.some((record) => {
           if (record.type === "attributes") {
+            if (record.attributeName === "data-app-shell-active-page") return true;
+            if (record.target.matches('[data-app-shell-active-page], [data-app-shell-page-surface], main, [role="main"]')) return true;
             return record.target.matches('[data-gh-native-theme="true"]') && record.target.getAttribute("data-theme") !== this.currentEffectiveTheme;
           }
           if ([...record.addedNodes].some((node) => node.nodeType === 1 && (node.matches("[data-theme], [data-dil-message-id]") || node.querySelector("[data-dil-message-id]")))) return true;
@@ -7008,7 +7020,12 @@
         })) return;
         this.queueThemeHostRefresh();
       });
-      this.themeHostWatchdog.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-theme"] });
+      this.themeHostWatchdog.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["data-theme", "data-app-shell-active-page", "style", "class", "hidden", "aria-hidden", "inert"]
+      });
     },
     stopThemeHostWatchdog() {
       this.themeHostWatchdog?.disconnect();
@@ -17192,30 +17209,37 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
       this.pageScope?.dispose();
       const scope = this.pageScope = new RuntimeScope();
       let lastPath = location.pathname;
+      let lastMain = this.adapter.getChatContainer();
       const refreshHost = () => {
         const routeChanged = lastPath !== location.pathname;
         lastPath = location.pathname;
+        const currentMain = this.adapter.getChatContainer();
+        const pageChanged = currentMain !== lastMain;
+        lastMain = currentMain;
         this.adapter.findTextarea();
         this.updateLayout();
         this.queueThemeHostRefresh();
-        if (!routeChanged) return;
+        if (!routeChanged && !pageChanged) return;
         this.scrollManager.cancel();
-        this.anchorManager?.reset();
-        this.savedAnchorTop = null;
-        this.hideAnchorMarker();
-        this.updateManualAnchorButtons();
+        if (routeChanged) {
+          this.anchorManager?.reset();
+          this.savedAnchorTop = null;
+          this.hideAnchorMarker();
+          this.updateManualAnchorButtons();
+        }
         this.scrollLockManager?.clearCache();
         this.scrollLockManager?.refreshContainerListener();
         this.readingProgressManager?.stopRecording();
         this.readingProgressManager?.startRecording();
         if (this.currentTab === "outline") this.refreshOutline();
-        if (lastPath.includes("/c/") && this.conversationManager) {
+        if (routeChanged && lastPath.includes("/c/") && this.conversationManager) {
           scope.schedule("sync-conversations", () => this.conversationManager.syncConversations(), 1500);
         }
       };
       const schedule = () => scope.schedule("host", refreshHost, 120);
-      scope.observe(document.body, { childList: true, subtree: true }, (mutations) => {
+      scope.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-app-shell-active-page"] }, (mutations) => {
         if (lastPath !== location.pathname || mutations.some((mutation) => {
+          if (mutation.type === "attributes") return true;
           if (isHelperMutation(mutation)) return false;
           const target = mutation.target.nodeType === 1 ? mutation.target : mutation.target.parentElement;
           return !target?.closest("[data-message-author-role]");

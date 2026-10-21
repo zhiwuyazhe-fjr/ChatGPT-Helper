@@ -23,6 +23,7 @@
 
 - Helper 使用显式 ESM 导入；`src/content/helper/app.js` 统一组合功能对象，禁止恢复依赖脚本顺序的全局解构与分散原型补丁
 - `15-runtime.js` 管理事件/观察器/延迟任务生命周期；正文消息及滚动容器识别集中在 `80-chatgpt-adapter.js`
+- ChatGPT 会缓存隐藏的多个主区；功能代码通过 `adapter.getChatContainer()` 获取当前激活主区，不要用第一个 `main` 代替当前对话
 - 所有阅读导航通过 `ScrollManager`，不要修改原生滚动 API 或重复派发强制滚动
 - 助手 CSS 在 `src/content/helper/styles/helper.css`，宿主主题 CSS 在 `21-theme-runtime.js`；主题状态和资产读取分别归属 `92-app-theme.js` 与 `20-theme-assets.js`
 - 架构说明与回归运行方法见 `docs/architecture.md`；核心行为改动需执行 `npm run test:browser`（使用已安装 Playwright）

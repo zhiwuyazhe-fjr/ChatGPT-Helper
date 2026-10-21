@@ -137,7 +137,7 @@ export const ThemeFeature = {
         // The current ChatGPT renderer owns its own palette below html. Updating
         // html alone leaves DIL text and writing blocks in the previous mode.
         const scopes = new Set();
-        document.querySelectorAll('main [data-dil-message-id], main [data-oai-writing-block-surface]').forEach(content => {
+        this.adapter?.getChatContainer?.()?.querySelectorAll('[data-dil-message-id], [data-oai-writing-block-surface]').forEach(content => {
             const scope = content.closest('[data-theme]');
             if (scope && scope !== document.documentElement && scope !== document.body) scopes.add(scope);
         });
@@ -233,10 +233,15 @@ export const ThemeFeature = {
                 mark(current, 'data-gh-theme-host-clear');
             }
         };
-        const main = document.querySelector('main, [role="main"]') || this.adapter?.getChatContainer?.();
+        const main = this.adapter?.getChatContainer?.();
         mark(main, 'data-gh-theme-host-main');
         mark(main, 'data-gh-theme-host-chat-list');
         clearPath(main);
+        // Clear the active thread shell even before its messages/composer arrive.
+        // Cached pages and staged route loading must not make this depend on content.
+        main?.querySelectorAll('.thread-scroll-container, [data-thread-find-target="conversation"], [data-thread-user-message-navigation-content]').forEach(container => {
+            clearPath(container, main);
+        });
         // Clear only message ancestors. Rich cards, code blocks, menus and message
         // bubbles retain their own backgrounds, even as the site adds new wrappers.
         const messages = this.adapter?.getChatMessages?.() || [];
@@ -254,7 +259,7 @@ export const ThemeFeature = {
         this.themeHostLastFoundShell = Boolean(sidebar);
 
         this.adapter?.findTextarea?.();
-        const input = this.adapter?.textarea || document.querySelector('[data-composer-markdown], #prompt-textarea');
+        const input = this.adapter?.textarea;
         const composer = input?.closest('[data-composer-body], form, [data-testid="composer"]');
         const surface = input?.closest('[data-composer-surface-variant], [data-composer-surface], [class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]')
             || composer?.querySelector('[class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]')
@@ -293,12 +298,12 @@ export const ThemeFeature = {
     },
 
     queueThemeHostRefresh() {
-        if (this.themeHostRefreshQueued) return;
+        if (this.destroyed || this.themeHostRefreshQueued) return;
         this.themeHostRefreshQueued = true;
         this.themeHostRefreshTimer = setTimeout(() => {
             this.themeHostRefreshQueued = false;
             this.themeHostRefreshTimer = null;
-            this.refreshThemeHostTargets();
+            if (!this.destroyed) this.refreshThemeHostTargets();
         }, 80);
     },
 
@@ -320,6 +325,8 @@ export const ThemeFeature = {
             // outside the extension can require another role reconciliation.
             if (!records.some(record => {
                 if (record.type === 'attributes') {
+                    if (record.attributeName === 'data-app-shell-active-page') return true;
+                    if (record.target.matches('[data-app-shell-active-page], [data-app-shell-page-surface], main, [role="main"]')) return true;
                     return record.target.matches('[data-gh-native-theme="true"]') &&
                         record.target.getAttribute('data-theme') !== this.currentEffectiveTheme;
                 }
@@ -331,7 +338,10 @@ export const ThemeFeature = {
             })) return;
             this.queueThemeHostRefresh();
         });
-        this.themeHostWatchdog.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-theme'] });
+        this.themeHostWatchdog.observe(document.body, {
+            childList: true, subtree: true, attributes: true,
+            attributeFilter: ['data-theme', 'data-app-shell-active-page', 'style', 'class', 'hidden', 'aria-hidden', 'inert']
+        });
     },
 
     stopThemeHostWatchdog() {

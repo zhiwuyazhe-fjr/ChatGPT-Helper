@@ -112,6 +112,43 @@ const appearance = async mode => {
   await page.waitForFunction(expected => document.documentElement.getAttribute('data-gh-mode') === expected || document.documentElement.getAttribute('data-theme') === expected, mode);
 };
 const getStorage = () => page.evaluate(() => JSON.parse(localStorage.getItem('fixture-storage')));
+const assertActiveCache = async (label,{empty=false}={}) => {
+  await page.waitForFunction(({label,empty}) => {
+    const main=document.querySelector(`main[data-fixture-cache="${label}"]`);
+    return main?.getAttribute('data-gh-theme-host-main')==='true' &&
+      getComputedStyle(main.querySelector('.modern-thread-shell'),'::before').backgroundColor==='rgba(0, 0, 0, 0)' &&
+      (empty || document.querySelector('#chatgpt-helper-glass-composer')?.closest('main')===main);
+  },{label,empty});
+  const state=await page.evaluate(label => {
+    const adapter=window.__fixtureCachedAdapter;
+    adapter.findTextarea();
+    const current=adapter.getChatContainer();
+    const scroll=adapter.getScrollContainer();
+    return {
+      main:current?.dataset.fixtureCache,
+      editor:adapter.textarea?.closest('main')?.dataset.fixtureCache || null,
+      editorVisible:adapter.textarea?.hasAttribute('data-fixture-visible-composer') || false,
+      scroll:scroll?.closest('main')?.dataset.fixtureCache || null,
+      messages:adapter.getChatMessages().map(message => ({owner:message.closest('main').dataset.fixtureCache,role:adapter.getMessageRole(message)})),
+      glass:document.querySelector('#chatgpt-helper-glass-composer')?.closest('main')?.dataset.fixtureCache || null,
+      marked:Array.from(document.querySelectorAll('main[data-gh-theme-host-main="true"]')).map(main=>main.dataset.fixtureCache)
+    };
+  },label);
+  assert.equal(state.main,label);
+  assert.deepEqual(state.marked,[label]);
+  if (empty) {
+    assert.equal(state.editor,null);
+    assert.deepEqual(state.messages,[]);
+  } else {
+    assert.equal(state.editor,label,'Composer belongs to an inactive workspace');
+    assert.equal(state.editorVisible,true,'Adapter selected the hidden first matching editor');
+    assert.equal(state.scroll,label,'Scroll container belongs to an inactive workspace');
+    assert.equal(state.glass,label,'Composer glass remains in the inactive workspace');
+    assert.deepEqual(state.messages,[{owner:label,role:'user'},{owner:label,role:'assistant'}]);
+    await page.locator('#outline-list .outline-item-text').filter({hasText:`缓存会话 ${label} 章节`}).waitFor();
+    assert.equal(await page.locator('#outline-list .outline-item-text').filter({hasText:`缓存会话 ${label==='A'?'B':'A'} 章节`}).count(),0);
+  }
+};
 const assertContrast = async (selector='#fixture-prose') => {
   const colors = await page.locator(selector).evaluate(element => {
     let bg = element;
@@ -604,6 +641,93 @@ try {
     const styles=await glassStyles();assert.equal(styles.assistant.blur,'blur(16px)');assert.equal(styles.right.blur,'blur(20px)');
     assert.equal(styles.left.enhancement,styles.right.enhancement);assert.equal(styles.previewPanel.enhancement,styles.right.enhancement);
     await closeTheme();
+  });
+  await page.addScriptTag({path:join(root,'scripts/fixtures/cached-workspaces.js')});
+  await test('cached workspaces select the active main, messages, composer, scroll and wallpaper hosts', async () => {
+    await page.evaluate(() => {
+      window.__fixtureCache.setup();
+      history.replaceState({fixtureCache:'A'},'', '/c/cached-a');
+      window.__fixtureCachedAdapter=new window.__MY_EXT__.helper.ChatGPTAdapter();
+      window.__fixtureCachedAdapter.getScrollContainer();
+      window.__fixtureCacheNodes=Array.from(document.querySelectorAll('main[data-fixture-cache]'));
+      window.__fixtureCachedWallpaper=getComputedStyle(document.querySelector('#chatgpt-helper-theme-bg-layer')).backgroundImage;
+      const prototype=window.__MY_EXT__.helper.ChatGPTHelper.prototype;
+      const original=prototype.refreshThemeHostTargets;
+      window.__fixtureHostRefreshes=0;
+      prototype.refreshThemeHostTargets=function(...args) { window.__fixtureHostRefreshes++;return original.apply(this,args); };
+      window.__fixtureRestoreHostRefresh=() => { prototype.refreshThemeHostTargets=original; };
+      const createObjectURL=URL.createObjectURL;
+      window.__fixtureNewObjectURLs=0;
+      URL.createObjectURL=function(...args) { window.__fixtureNewObjectURLs++;return createObjectURL.apply(this,args); };
+      window.__fixtureRestoreCreateURL=() => { URL.createObjectURL=createObjectURL; };
+    });
+    await page.locator('#outline-tab').click();
+    await assertActiveCache('A');
+    await page.evaluate(() => window.__fixtureCache.activate('B'));
+    await assertActiveCache('B');
+    assert.equal(await page.evaluate(() => document.querySelector('main').dataset.fixtureCache),'A','Fixture must keep stale A before active B');
+    const oldTop=await page.locator('main[data-fixture-cache="A"] .thread-scroll-container').evaluate(el=>el.scrollTop);
+    await page.locator('#scroll-bottom-btn').click();
+    await page.waitForFunction(() => document.querySelector('main[data-fixture-cache="B"] .thread-scroll-container').scrollTop>500);
+    assert.equal(await page.locator('main[data-fixture-cache="A"] .thread-scroll-container').evaluate(el=>el.scrollTop),oldTop);
+    await page.screenshot({path:join(output,'cached-active-b-wallpaper.png')});
+  });
+  await test('attribute-only cache activation changes outline and targets repeatedly without changing URL', async () => {
+    const unchangedUrl=page.url();
+    for (const label of ['A','B','A','B']) {
+      await page.evaluate(label => window.__fixtureCache.activate(label),label);
+      await assertActiveCache(label);
+      assert.equal(page.url(),unchangedUrl);
+      assert.equal(await page.evaluate(() => window.__fixtureCacheNodes.every(node=>node.isConnected)),true);
+    }
+    await page.locator('#prompts-tab').click();
+    await page.locator('#prompts-content .chatgpt-helper-search-input').fill('资料精读');
+    const oldEditor=await page.locator('main[data-fixture-cache="A"] [data-fixture-visible-composer]').innerText();
+    await page.locator('.chatgpt-helper-prompt-title').click();
+    assert.ok((await page.locator('main[data-fixture-cache="B"] [data-fixture-visible-composer]').innerText()).includes('请作为严谨的研究助理'));
+    assert.equal(await page.locator('main[data-fixture-cache="A"] [data-fixture-visible-composer]').innerText(),oldEditor);
+    await page.locator('#outline-tab').click();
+  });
+  await test('real history back and forward restores the corresponding cached workspace', async () => {
+    await page.evaluate(() => { history.replaceState({fixtureCache:'A'},'', '/c/cached-a');window.__fixtureCache.activate('A'); });
+    await assertActiveCache('A');
+    await page.evaluate(() => { history.pushState({fixtureCache:'B'},'', '/c/cached-b');window.__fixtureCache.activate('B'); });
+    await assertActiveCache('B');
+    await page.goBack();
+    await assertActiveCache('A');assert.ok(page.url().endsWith('/c/cached-a'));
+    await page.goForward();
+    await assertActiveCache('B');assert.ok(page.url().endsWith('/c/cached-b'));
+  });
+  await test('an activated empty shell receives wallpaper before delayed content and composer arrive', async () => {
+    await page.evaluate(() => {
+      window.__fixtureCache.activate('A');
+      const target=window.__fixtureCache.main('B');
+      target.querySelector('[data-thread-find-target="conversation"]').replaceChildren();
+      target.querySelector('.modern-composer-footer').remove();
+    });
+    await assertActiveCache('A');
+    await page.evaluate(() => window.__fixtureCache.activate('B'));
+    await assertActiveCache('B',{empty:true});
+    await page.waitForFunction(() => document.querySelectorAll('#outline-list .outline-item').length===0);
+    await page.evaluate(() => window.__fixtureCache.hydrate('B'));
+    await assertActiveCache('B');
+  });
+  await test('cache switching reuses the wallpaper URL and single layers without a refresh feedback loop', async () => {
+    const stable=await page.evaluate(() => ({
+      wallpaper:getComputedStyle(document.querySelector('#chatgpt-helper-theme-bg-layer')).backgroundImage===window.__fixtureCachedWallpaper,
+      urls:window.__fixtureNewObjectURLs,
+      backgroundLayers:document.querySelectorAll('#chatgpt-helper-theme-bg-layer').length,
+      composerLayers:document.querySelectorAll('#chatgpt-helper-glass-composer').length,
+      sidebarLayers:document.querySelectorAll('#chatgpt-helper-glass-sidebar').length
+    }));
+    assert.deepEqual(stable,{wallpaper:true,urls:0,backgroundLayers:1,composerLayers:1,sidebarLayers:1});
+    // Allow queued host work to finish; an idle page must not keep scheduling itself.
+    await page.waitForTimeout(700);
+    const before=await page.evaluate(()=>window.__fixtureHostRefreshes);
+    await page.waitForTimeout(700);
+    const after=await page.evaluate(()=>window.__fixtureHostRefreshes);
+    assert.ok(after-before<=1,`Idle cache generated ${after-before} host refreshes in 700ms`);
+    await page.evaluate(() => { window.__fixtureRestoreHostRefresh();window.__fixtureRestoreCreateURL(); });
   });
   await test('no browser runtime or extension initialization errors', async () => assert.deepEqual(errors,[]));
 } finally {

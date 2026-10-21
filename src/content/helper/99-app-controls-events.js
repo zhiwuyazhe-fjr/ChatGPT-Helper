@@ -401,30 +401,37 @@ export const ControlsFeature = {
         this.pageScope?.dispose();
         const scope = this.pageScope = new RuntimeScope();
         let lastPath = location.pathname;
+        let lastMain = this.adapter.getChatContainer();
         const refreshHost = () => {
             const routeChanged = lastPath !== location.pathname;
             lastPath = location.pathname;
+            const currentMain = this.adapter.getChatContainer();
+            const pageChanged = currentMain !== lastMain;
+            lastMain = currentMain;
             this.adapter.findTextarea();
             this.updateLayout();
             this.queueThemeHostRefresh();
-            if (!routeChanged) return;
+            if (!routeChanged && !pageChanged) return;
             this.scrollManager.cancel();
-            this.anchorManager?.reset();
-            this.savedAnchorTop = null;
-            this.hideAnchorMarker();
-            this.updateManualAnchorButtons();
+            if (routeChanged) {
+                this.anchorManager?.reset();
+                this.savedAnchorTop = null;
+                this.hideAnchorMarker();
+                this.updateManualAnchorButtons();
+            }
             this.scrollLockManager?.clearCache();
             this.scrollLockManager?.refreshContainerListener();
             this.readingProgressManager?.stopRecording();
             this.readingProgressManager?.startRecording();
             if (this.currentTab === 'outline') this.refreshOutline();
-            if (lastPath.includes('/c/') && this.conversationManager) {
+            if (routeChanged && lastPath.includes('/c/') && this.conversationManager) {
                 scope.schedule('sync-conversations', () => this.conversationManager.syncConversations(), 1500);
             }
         };
         const schedule = () => scope.schedule('host', refreshHost, 120);
-        scope.observe(document.body, { childList: true, subtree: true }, mutations => {
+        scope.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-app-shell-active-page'] }, mutations => {
             if (lastPath !== location.pathname || mutations.some(mutation => {
+                if (mutation.type === 'attributes') return true;
                 if (isHelperMutation(mutation)) return false;
                 // Token streaming belongs to OutlineManager, not host layout/theme refresh.
                 const target = mutation.target.nodeType === 1 ? mutation.target : mutation.target.parentElement;

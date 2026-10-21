@@ -13,6 +13,9 @@ class ChatGPTAdapter {
     }
 
     findTextarea() {
+        this.textarea = null;
+        const container = this.getChatContainer();
+        if (!container) return;
         // ChatGPT 的输入框选择器（按优先级）
         const selectors = [
             '[data-composer-markdown][contenteditable="true"]',
@@ -25,9 +28,10 @@ class ChatGPTAdapter {
             'textarea',
         ];
         for (const selector of selectors) {
-            const el = Array.from(document.querySelectorAll(selector)).find(element =>
-                !element.closest('[data-oai-writing-block-surface], [id^="chatgpt-helper"]'));
-            if (el && el.offsetParent !== null) { // 确保元素可见
+            const el = Array.from(container.querySelectorAll(selector)).find(element =>
+                !element.closest('[data-oai-writing-block-surface], [id^="chatgpt-helper"], [data-app-shell-active-page="false"], [hidden], [inert]') &&
+                element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden');
+            if (el) {
                 this.textarea = el;
                 return;
             }
@@ -46,8 +50,14 @@ class ChatGPTAdapter {
     }
 
     getChatContainer() {
-        // Semantic boundaries keep extension UI and sidebar cards out of chat features.
-        return document.querySelector('main') || document.querySelector('[role="main"]');
+        // ChatGPT keeps inactive workspaces mounted. DOM order is not page order.
+        const candidates = Array.from(document.querySelectorAll('main, [role="main"]'))
+            .filter(element => !element.closest('[data-app-shell-active-page="false"], [hidden]'));
+        const active = candidates.filter(element => element.closest('[data-app-shell-active-page="true"]'));
+        const visible = element => element.getClientRects().length > 0 &&
+            getComputedStyle(element).visibility !== 'hidden';
+        // An activated workspace may still be waiting for its first layout/content.
+        return active.find(visible) || active[0] || candidates.find(visible) || null;
     }
 
     getMessageRole(message) {
@@ -112,7 +122,8 @@ class ChatGPTAdapter {
             return null;
         }
 
-        if (!this.isScrollableCandidate(this.lastResponseContainer)) {
+        const main = this.getChatContainer();
+        if (!main?.contains(this.lastResponseContainer) || !this.isScrollableCandidate(this.lastResponseContainer)) {
             this.lastResponseContainer = null;
             return null;
         }
