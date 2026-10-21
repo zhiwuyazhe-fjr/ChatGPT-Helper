@@ -3356,11 +3356,11 @@ body[data-gh-mode="dark"] .chatgpt-helper-theme-modal-dialog {
 
 .chatgpt-helper-theme-preview-bg {
     position: absolute;
-    inset: -12px;
+    inset: calc(var(--gh-preview-blur, 0px) * -2);
     background-size: cover;
     background-position: center;
     filter: blur(var(--gh-preview-blur, 5px));
-    transform: scale(1.06);
+    transform: none;
     opacity: 0;
     transition: opacity 0.2s ease;
 }
@@ -5526,20 +5526,12 @@ body[data-gh-mode="dark"] .chatgpt-helper-theme-modal-dialog {
 
 .chatgpt-helper-theme-preview-bg {
     z-index: 0;
-    background-position: center 42% !important;
-    filter: blur(calc(var(--gh-preview-blur, 0px) + 1px)) brightness(0.62) saturate(0.9) !important;
-    opacity: 0.92 !important;
+    background-position: center !important;
+    filter: blur(var(--gh-preview-blur, 0px)) !important;
 }
 
 .chatgpt-helper-theme-preview.has-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-        linear-gradient(90deg, color-mix(in srgb, #020617, transparent 40%) 0%, transparent 34%),
-        linear-gradient(180deg, transparent 42%, color-mix(in srgb, #020617, transparent 34%) 100%);
+    content: none;
 }
 
 .chatgpt-helper-theme-preview-inner {

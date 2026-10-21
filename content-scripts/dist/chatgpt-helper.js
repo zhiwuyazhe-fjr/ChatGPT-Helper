@@ -6549,7 +6549,6 @@
         --gh-page-surface: #ffffff;
         --gh-page-sidebar: var(--gh-page-sidebar-bg-light, #f9f9f9);
         --gh-page-composer: var(--gh-page-composer-bg-light, #ffffff);
-        --gh-wallpaper-tint: rgba(255, 255, 255, .48);
     }
     :root[data-gh-mode="dark"] {
         --gh-page-text: #ececf1;
@@ -6557,7 +6556,6 @@
         --gh-page-surface: #212121;
         --gh-page-sidebar: var(--gh-page-sidebar-bg-dark, #171717);
         --gh-page-composer: var(--gh-page-composer-bg-dark, #2f2f2f);
-        --gh-wallpaper-tint: rgba(12, 15, 20, .52);
     }
     /* Native markdown may retain a prose-invert class after a theme change.
        Override its semantic palette, leaving code blocks and embedded cards alone. */
@@ -6594,18 +6592,12 @@
     :root[data-gh-bg-enabled="true"] body { isolation: isolate; }
     #chatgpt-helper-theme-bg-layer {
         position: fixed;
-        inset: -40px;
+        inset: calc(var(--gh-bg-blur, 5px) * -2);
         z-index: -1;
         pointer-events: none;
         display: none;
         background: var(--gh-bg-image, none) center / cover no-repeat;
         filter: blur(var(--gh-bg-blur, 5px));
-    }
-    #chatgpt-helper-theme-bg-layer::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: var(--gh-wallpaper-tint);
     }
     :root[data-gh-bg-enabled="true"] #chatgpt-helper-theme-bg-layer { display: block; }
     :root[data-gh-bg-enabled="true"] :is(
@@ -6910,10 +6902,17 @@
       this.adapter?.findTextarea?.();
       const input = this.adapter?.textarea || document.querySelector("[data-composer-markdown], #prompt-textarea");
       const composer = input?.closest('[data-composer-body], form, [data-testid="composer"]');
-      const surface = input?.closest('[data-composer-surface], [class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]') || composer?.querySelector('[class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]') || composer;
+      const surface = input?.closest('[data-composer-surface-variant], [data-composer-surface], [class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]') || composer?.querySelector('[class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]') || composer;
       mark(composer, "data-gh-theme-host-composer");
       mark(surface, "data-gh-theme-host-composer-surface");
       clearPath(surface);
+      for (let ancestor = surface?.parentElement; ancestor && ancestor !== main && ancestor !== document.body; ancestor = ancestor.parentElement) {
+        for (const child of ancestor.children) {
+          if (child.matches(".pointer-events-none.absolute.inset-x-0.bg-surface") && !child.contains(input)) {
+            mark(child, "data-gh-theme-host-clear");
+          }
+        }
+      }
       for (const attr of [...THEME_HOST_ATTRS, "data-gh-theme-host-clear"]) {
         document.querySelectorAll(`[${attr}]`).forEach((node) => {
           if (!targets.get(node)?.has(attr)) node.removeAttribute(attr);
@@ -11377,11 +11376,11 @@ body[data-gh-mode="dark"] .chatgpt-helper-theme-modal-dialog {
 
 .chatgpt-helper-theme-preview-bg {
     position: absolute;
-    inset: -12px;
+    inset: calc(var(--gh-preview-blur, 0px) * -2);
     background-size: cover;
     background-position: center;
     filter: blur(var(--gh-preview-blur, 5px));
-    transform: scale(1.06);
+    transform: none;
     opacity: 0;
     transition: opacity 0.2s ease;
 }
@@ -13547,20 +13546,12 @@ body[data-gh-mode="dark"] .chatgpt-helper-theme-modal-dialog {
 
 .chatgpt-helper-theme-preview-bg {
     z-index: 0;
-    background-position: center 42% !important;
-    filter: blur(calc(var(--gh-preview-blur, 0px) + 1px)) brightness(0.62) saturate(0.9) !important;
-    opacity: 0.92 !important;
+    background-position: center !important;
+    filter: blur(var(--gh-preview-blur, 0px)) !important;
 }
 
 .chatgpt-helper-theme-preview.has-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-        linear-gradient(90deg, color-mix(in srgb, #020617, transparent 40%) 0%, transparent 34%),
-        linear-gradient(180deg, transparent 42%, color-mix(in srgb, #020617, transparent 34%) 100%);
+    content: none;
 }
 
 .chatgpt-helper-theme-preview-inner {

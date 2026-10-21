@@ -256,12 +256,22 @@ export const ThemeFeature = {
         this.adapter?.findTextarea?.();
         const input = this.adapter?.textarea || document.querySelector('[data-composer-markdown], #prompt-textarea');
         const composer = input?.closest('[data-composer-body], form, [data-testid="composer"]');
-        const surface = input?.closest('[data-composer-surface], [class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]')
+        const surface = input?.closest('[data-composer-surface-variant], [data-composer-surface], [class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]')
             || composer?.querySelector('[class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]')
             || composer;
         mark(composer, 'data-gh-theme-host-composer');
         mark(surface, 'data-gh-theme-host-composer-surface');
         clearPath(surface);
+        // The native footer paints a full-width surface in a non-interactive sibling,
+        // not an input ancestor. elementsFromPoint cannot discover pointer-events:none.
+        // Only clear that background; controls, attachments and menus remain intact.
+        for (let ancestor = surface?.parentElement; ancestor && ancestor !== main && ancestor !== document.body; ancestor = ancestor.parentElement) {
+            for (const child of ancestor.children) {
+                if (child.matches('.pointer-events-none.absolute.inset-x-0.bg-surface') && !child.contains(input)) {
+                    mark(child, 'data-gh-theme-host-clear');
+                }
+            }
+        }
         // Diff role marks rather than remove/re-add all attributes every update.
         for (const attr of [...THEME_HOST_ATTRS, 'data-gh-theme-host-clear']) {
             document.querySelectorAll(`[${attr}]`).forEach(node => {

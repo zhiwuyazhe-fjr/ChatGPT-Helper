@@ -369,6 +369,53 @@ try {
     assert.equal(await page.locator('[data-composer-body]').getAttribute('data-gh-theme-host-composer'),'true');
     assert.equal(await page.locator('[data-oai-writing-block-surface]').getAttribute('data-gh-theme-host-composer'),null);
   });
+  await test('wallpaper removes the native footer strip and keeps a rounded composer in both modes', async () => {
+    await openTheme();
+    for (const mode of ['light','dark']) {
+      await appearance(mode);
+      await page.waitForFunction(() => getComputedStyle(document.querySelector('.modern-composer-backdrop')).backgroundColor==='rgba(0, 0, 0, 0)');
+      const glass=await page.locator('#chatgpt-helper-glass-composer').evaluate(el => ({
+        root:el.parentElement.hasAttribute('data-composer-surface-variant'),
+        radius:parseFloat(getComputedStyle(el).borderRadius),
+        width:el.getBoundingClientRect().width,
+        footerWidth:document.querySelector('.modern-composer-footer').getBoundingClientRect().width
+      }));
+      assert.equal(glass.root,true);
+      assert.ok(glass.radius>=24);
+      assert.ok(glass.width<glass.footerWidth);
+    }
+    const wallpaper=page.locator('#chatgpt-helper-theme-modal input[type="checkbox"]').first();
+    await wallpaper.uncheck();
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('.modern-composer-backdrop')).backgroundColor!=='rgba(0, 0, 0, 0)');
+    await wallpaper.check();
+    await page.waitForFunction(() => document.documentElement.getAttribute('data-gh-bg-enabled')==='true');
+    await closeTheme();
+  });
+  await test('zero wallpaper blur has no forced tint, dimming or extra preview blur', async () => {
+    await openTheme();
+    await page.locator('#chatgpt-helper-theme-modal input[type="range"]').first().evaluate(el => {
+      el.value='0'; el.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+    for (const mode of ['light','dark']) {
+      await appearance(mode);
+      const styles=await page.evaluate(() => {
+        const wallpaper=document.querySelector('#chatgpt-helper-theme-bg-layer');
+        const preview=document.querySelector('.chatgpt-helper-theme-preview-bg');
+        const s=getComputedStyle(wallpaper),p=getComputedStyle(preview);
+        return {filter:s.filter,inset:s.top,opacity:s.opacity,overlay:getComputedStyle(wallpaper,'::after').content,
+          previewFilter:p.filter,previewOpacity:p.opacity,previewOverlay:getComputedStyle(preview.parentElement,'::after').content};
+      });
+      assert.equal(styles.filter,'blur(0px)');
+      assert.equal(styles.inset,'0px');
+      assert.equal(styles.opacity,'1');
+      assert.equal(styles.overlay,'none');
+      assert.equal(styles.previewFilter,'blur(0px)');
+      assert.equal(styles.previewOpacity,'1');
+      assert.equal(styles.previewOverlay,'none');
+    }
+    await closeTheme();
+    await page.screenshot({path:join(output,'modern-clear-wallpaper-rounded-composer.png')});
+  });
   await test('no browser runtime or extension initialization errors', async () => assert.deepEqual(errors,[]));
 } finally {
   await writeFile(join(output,'results.json'),JSON.stringify({results,errors},null,2));

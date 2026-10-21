@@ -36,6 +36,10 @@
     [data-oai-writing-block-surface] { padding:16px; border:1px solid #808080; background:var(--dil-surface); color:var(--dil-text); }
     [data-composer-body] { margin:16px 30px; padding:16px; background:var(--bg-secondary); border-radius:24px; }
     [data-composer-markdown] { min-height:60px; outline:none; }
+    .modern-composer-footer { position:relative; padding:16px 30px; }
+    .modern-composer-backdrop { position:absolute; inset:0; pointer-events:none; background:var(--bg-primary); }
+    [data-composer-surface-variant] { position:relative; border-radius:28px; background:var(--bg-secondary); }
+    [data-composer-surface-variant] [data-composer-body] { margin:0; border-radius:0; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   </style>
   <script>
@@ -92,7 +96,10 @@
         <div data-chatgpt-selection-message-id="modern-answer-1"><div data-markdown-text-style="assistant-message"><div data-theme="dark"><div data-dil-message-id="dil-answer-1"><p data-d-component="text">没有标题时使用正文摘要作为大纲入口。</p></div></div></div></div>
       </div></div>
     </div></div>
-    <div data-composer-body><div data-composer-markdown contenteditable="true" role="textbox" aria-label="消息"></div></div>
+    <div class="modern-composer-footer">
+      <div class="modern-composer-backdrop pointer-events-none absolute inset-x-0 bg-surface"></div>
+      <form data-chatgpt-composer><div data-composer-surface-variant="default"><div data-composer-body><div data-composer-markdown contenteditable="true" role="textbox" aria-label="消息"></div></div></div></form>
+    </div>
   </template>
   <script>
     if (new URLSearchParams(location.search).get('fixture') === 'modern') {

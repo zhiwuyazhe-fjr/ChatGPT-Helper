@@ -7,7 +7,6 @@ const THEME_RUNTIME_CSS = `
         --gh-page-surface: #ffffff;
         --gh-page-sidebar: var(--gh-page-sidebar-bg-light, #f9f9f9);
         --gh-page-composer: var(--gh-page-composer-bg-light, #ffffff);
-        --gh-wallpaper-tint: rgba(255, 255, 255, .48);
     }
     :root[data-gh-mode="dark"] {
         --gh-page-text: #ececf1;
@@ -15,7 +14,6 @@ const THEME_RUNTIME_CSS = `
         --gh-page-surface: #212121;
         --gh-page-sidebar: var(--gh-page-sidebar-bg-dark, #171717);
         --gh-page-composer: var(--gh-page-composer-bg-dark, #2f2f2f);
-        --gh-wallpaper-tint: rgba(12, 15, 20, .52);
     }
     /* Native markdown may retain a prose-invert class after a theme change.
        Override its semantic palette, leaving code blocks and embedded cards alone. */
@@ -52,18 +50,12 @@ const THEME_RUNTIME_CSS = `
     :root[data-gh-bg-enabled="true"] body { isolation: isolate; }
     #chatgpt-helper-theme-bg-layer {
         position: fixed;
-        inset: -40px;
+        inset: calc(var(--gh-bg-blur, 5px) * -2);
         z-index: -1;
         pointer-events: none;
         display: none;
         background: var(--gh-bg-image, none) center / cover no-repeat;
         filter: blur(var(--gh-bg-blur, 5px));
-    }
-    #chatgpt-helper-theme-bg-layer::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: var(--gh-wallpaper-tint);
     }
     :root[data-gh-bg-enabled="true"] #chatgpt-helper-theme-bg-layer { display: block; }
     :root[data-gh-bg-enabled="true"] :is(
