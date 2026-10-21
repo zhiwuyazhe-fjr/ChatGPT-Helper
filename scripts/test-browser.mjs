@@ -7,10 +7,12 @@
  */
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
+import { createHash } from 'node:crypto';
 import { readFile, mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import { resolve, extname, sep, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { pathToFileURL, fileURLToPath } from 'node:url';
+import { FORMULA_SOURCES, createFormulaFixture, assertFormulaRenders } from './fixtures/formulas.mjs';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const output = process.env.BROWSER_TEST_OUTPUT || await mkdtemp(join(tmpdir(), 'chatgpt-helper-browser-'));
@@ -18,14 +20,17 @@ await mkdir(output, { recursive:true });
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE_PATH ? pathToFileURL(resolve(process.env.PLAYWRIGHT_MODULE_PATH)).href : 'playwright').catch(error => {
   throw new Error('Playwright is required for browser regressions. Set PLAYWRIGHT_MODULE_PATH to an existing playwright/index.mjs, or install it as a development tool.', { cause:error });
 });
-await readFile(join(root, 'content-scripts/dist/chatgpt-helper.js'));
+// One run always tests one immutable build, including its isolated contexts and
+// reloads. A parallel package build must not remove or replace a served script.
+const helperBundle=await readFile(join(root,'content-scripts/dist/chatgpt-helper.js'));
+const bundleSha256=createHash('sha256').update(helperBundle).digest('hex');
 const server = createServer(async (req,res) => {
   const pathname = new URL(req.url,'http://localhost').pathname;
   const file = pathname.startsWith('/c/') || pathname === '/' ? join(root,'scripts/fixtures/chatgpt.html') : resolve(root,'.' + decodeURIComponent(pathname));
   if (!file.startsWith(root + sep)) { res.writeHead(403).end(); return; }
   try {
-    const content = await readFile(file);
-    res.writeHead(200,{'Content-Type': ({'.js':'text/javascript','.html':'text/html; charset=utf-8','.svg':'image/svg+xml','.png':'image/png'})[extname(file)] || 'application/octet-stream'}).end(content);
+    const content = pathname==='/content-scripts/dist/chatgpt-helper.js' ? helperBundle : await readFile(file);
+    res.writeHead(200,{'Content-Type': ({'.js':'text/javascript','.html':'text/html; charset=utf-8','.css':'text/css','.woff':'font/woff','.woff2':'font/woff2','.ttf':'font/ttf','.svg':'image/svg+xml','.png':'image/png'})[extname(file)] || 'application/octet-stream'}).end(content);
   } catch { res.writeHead(404).end(); }
 });
 await new Promise(resolve => server.listen(0,'127.0.0.1',resolve));
@@ -185,6 +190,55 @@ const replayTour = async tourPage => {
   await trigger.click();
   await waitTourStep(tourPage,'welcome');
   return trigger;
+};
+const withFormulaPage = async (name,run,{enabled=true}={}) => withTourPage(`formula-${name}`,{
+  chatgpt_onboarding_done:true,
+  chatgpt_settings:{defaultPanelState:true,panelWidth:360,themeConfig:{appearanceMode:'dark',presetKey:'original'},readingHistory:{persistence:false,autoRestore:false},formulaCopy:{enabled}}
+},async formulaPage=>{
+  await formulaPage.locator('#prompts-tab').waitFor({state:'visible'});
+  await formulaPage.addStyleTag({url:origin+'/node_modules/katex/dist/katex.min.css'});
+  await formulaPage.evaluate(html=>{
+    document.querySelector('.modern-thread-shell').innerHTML=html;
+    // Only the clipboard boundary is mocked; actual browser double clicks and
+    // real KaTeX DOM/fonts exercise the production event handler and extraction.
+    window.__fixtureClipboard={text:'unchanged clipboard sentinel',attempts:[],fail:false};
+    Object.defineProperty(navigator,'clipboard',{configurable:true,value:{
+      async writeText(value) {
+        const state=window.__fixtureClipboard;
+        state.attempts.push(String(value));
+        if(state.fail) throw new DOMException('Synthetic clipboard permission denial','NotAllowedError');
+        state.text=String(value);
+      },
+      async readText() { return window.__fixtureClipboard.text; }
+    }});
+  },createFormulaFixture());
+  await formulaPage.evaluate(()=>document.fonts.ready);
+  await run(formulaPage);
+});
+const resetFormulaClipboard = formulaPage => formulaPage.evaluate(()=>{
+  window.__fixtureClipboard.text='unchanged clipboard sentinel';
+  window.__fixtureClipboard.attempts=[];
+});
+const clickFormulaPart = async (formulaPage,selector,double=true) => {
+  const target=formulaPage.locator(selector).first();
+  await target.scrollIntoViewIfNeeded();
+  const rect=await target.boundingBox();
+  assert.ok(rect && rect.width>0 && rect.height>0,`Formula part is not visible: ${selector}`);
+  // KaTeX's transparent fbox/vlist layout spans can cover a visible glyph.
+  // Click its actual screen position, allowing the native hit target within the
+  // same formula instead of forcing a synthetic event onto a chosen DOM node.
+  const x=rect.x+rect.width/2,y=rect.y+rect.height/2;
+  if(double) await formulaPage.mouse.dblclick(x,y);
+  else await formulaPage.mouse.click(x,y);
+};
+const assertFormulaClipboard = async (formulaPage,source,displayMode) => {
+  const expected=displayMode?`$$\n${source}\n$$`:`$${source}$`;
+  await formulaPage.waitForFunction(expected=>window.__fixtureClipboard.text===expected,expected);
+  const actual=await formulaPage.evaluate(()=>window.__fixtureClipboard.text);
+  assert.deepEqual(Buffer.from(actual,'utf8'),Buffer.from(expected,'utf8'),'Copied source bytes differ');
+  const unwrapped=actual.slice(displayMode?3:1,displayMode?-3:-1);
+  assert.doesNotThrow(()=>assertFormulaRenders(unwrapped,displayMode),'Copied formula cannot be rendered by KaTeX');
+  assert.equal(await formulaPage.evaluate(()=>window.__fixtureClipboard.attempts.length),1);
 };
 const assertContrast = async (selector='#fixture-prose') => {
   const colors = await page.locator(selector).evaluate(element => {
@@ -933,9 +987,103 @@ try {
       await tourAction(tourPage,'finish').click();await tourRoot(tourPage).waitFor({state:'detached'});
     });
   });
+  for(const [id,key] of [['formula-catalan','catalan'],['formula-fourth','fourth']]) {
+    await test(`double-clicking ${key} glyph, fraction bar, numerator and denominator copies the complete KaTeX source`,async()=>{
+      await withFormulaPage(key,async formulaPage=>{
+        const selectors=[
+          `#${id} .katex-html .mathnormal`,
+          `#${id} .katex-html .frac-line`,
+          `#${id} .mfrac > .vlist-t > .vlist-r:first-child > .vlist > span:nth-child(3) > .mord`,
+          `#${id} .mfrac > .vlist-t > .vlist-r:first-child > .vlist > span:first-child > .mord`
+        ];
+        await clickFormulaPart(formulaPage,selectors[0],false);
+        assert.equal(await formulaPage.evaluate(()=>window.__fixtureClipboard.attempts.length),0,'Single click should not copy a formula');
+        for(const selector of selectors) {
+          await resetFormulaClipboard(formulaPage);
+          await clickFormulaPart(formulaPage,selector);
+          await assertFormulaClipboard(formulaPage,FORMULA_SOURCES[key],true);
+        }
+        if(key==='catalan') {
+          await formulaPage.locator('.thread-scroll-container').evaluate(element=>{element.scrollTop=0;});
+          await formulaPage.screenshot({path:join(output,'formula-real-katex.png')});
+        }
+      });
+    });
+  }
+  await test('tall inline fractions and nested binomials retain inline delimiters',async()=>{
+    await withFormulaPage('inline',async formulaPage=>{
+      assert.ok((await formulaPage.locator('#formula-inline .katex').boundingBox()).height>40,'Fixture must exceed the obsolete height heuristic');
+      await clickFormulaPart(formulaPage,'#formula-inline .mfrac .mathnormal');
+      await assertFormulaClipboard(formulaPage,FORMULA_SOURCES.inline,false);
+    });
+  });
+  await test('annotation wins over speech labels and sourced wrappers preserve escapes/newlines without joining neighbors',async()=>{
+    await withFormulaPage('sources',async formulaPage=>{
+      await formulaPage.locator('#formula-priority .katex').evaluate(element=>element.setAttribute('aria-label','spoken C sub n equals a fraction'));
+      for(const [id,key,display] of [
+        ['formula-priority','inline',false],['formula-adjacent','adjacent',false],
+        ['formula-data-latex','multiline',true],['formula-data-math','adjacent',false],['formula-data-formula','fourth',true]
+      ]) {
+        await resetFormulaClipboard(formulaPage);
+        await formulaPage.locator(`#${id} .katex-html .mathnormal`).first().dblclick();
+        await assertFormulaClipboard(formulaPage,FORMULA_SOURCES[key],display);
+      }
+    });
+  });
+  await test('formulas without trusted source show an explanation and leave the clipboard unchanged',async()=>{
+    await withFormulaPage('missing-source',async formulaPage=>{
+      await formulaPage.locator('#formula-source-missing .katex-html .mathnormal').first().dblclick();
+      await formulaPage.getByText('未找到公式源码，未复制',{exact:true}).waitFor({state:'visible'});
+      assert.deepEqual(await formulaPage.evaluate(()=>({text:window.__fixtureClipboard.text,attempts:window.__fixtureClipboard.attempts})),{text:'unchanged clipboard sentinel',attempts:[]});
+    });
+  });
+  await test('KaTeX inside code and ordinary math-related classes do not trigger formula copy',async()=>{
+    await withFormulaPage('excluded-text',async formulaPage=>{
+      await formulaPage.locator('#formula-code .katex-html .mathnormal').first().dblclick();
+      await formulaPage.locator('#formula-ordinary').dblclick();
+      assert.deepEqual(await formulaPage.evaluate(()=>({text:window.__fixtureClipboard.text,attempts:window.__fixtureClipboard.attempts})),{text:'unchanged clipboard sentinel',attempts:[]});
+      assert.equal(await formulaPage.locator('#chatgpt-helper-toast').count(),0);
+    });
+  });
+  await test('formula-copy preference disables double-click copying and can be re-enabled from settings',async()=>{
+    await withFormulaPage('preference',async formulaPage=>{
+      const target=formulaPage.locator('#formula-fourth .katex-html .mathnormal').first();
+      await target.dblclick();
+      assert.equal(await formulaPage.evaluate(()=>window.__fixtureClipboard.attempts.length),0);
+      await formulaPage.locator('#chatgpt-helper-settings-btn').click();
+      await formulaPage.locator('[data-settings-section="content-processing"] .chatgpt-helper-settings-compact-title-btn').click();
+      const toggle=formulaPage.getByRole('button',{name:'启用公式复制',exact:true});
+      assert.equal(await toggle.getAttribute('aria-pressed'),'false');
+      await toggle.click();
+      await target.dblclick();await assertFormulaClipboard(formulaPage,FORMULA_SOURCES.fourth,true);
+      await toggle.click();await resetFormulaClipboard(formulaPage);await target.dblclick();
+      assert.equal(await formulaPage.evaluate(()=>window.__fixtureClipboard.attempts.length),0);
+    },{enabled:false});
+  });
+  await test('clipboard API and legacy-copy failure report failure without claiming a copied formula',async()=>{
+    await withFormulaPage('clipboard-failure',async formulaPage=>{
+      await formulaPage.evaluate(()=>{
+        window.__fixtureClipboard.fail=true;
+        window.__fixtureClipboard.fallbackAttempts=0;
+        const original=document.execCommand.bind(document);
+        document.execCommand=(command,...args)=>{
+          if(command==='copy') { window.__fixtureClipboard.fallbackAttempts++;return false; }
+          return original(command,...args);
+        };
+      });
+      await formulaPage.locator('#formula-fourth .katex-html .mathnormal').first().dblclick();
+      await formulaPage.getByText('复制失败',{exact:true}).waitFor({state:'visible'});
+      const state=await formulaPage.evaluate(()=>window.__fixtureClipboard);
+      assert.equal(state.text,'unchanged clipboard sentinel');
+      assert.equal(state.attempts.length,1);assert.equal(state.fallbackAttempts,1);
+      assert.equal(state.attempts[0],`$$\n${FORMULA_SOURCES.fourth}\n$$`);
+      assert.equal(await formulaPage.getByText('公式已复制',{exact:true}).count(),0);
+    });
+  });
   await test('no browser runtime or extension initialization errors', async () => assert.deepEqual(errors,[]));
 } finally {
-  await writeFile(join(output,'results.json'),JSON.stringify({results,errors},null,2));
+  await writeFile(join(output,'results.json'),JSON.stringify({bundleSha256,results,errors},null,2));
+  console.log(`Browser bundle SHA-256: ${bundleSha256}`);
   console.log(`Browser artifacts: ${output}`);
   await context.close();
   await browser.close();

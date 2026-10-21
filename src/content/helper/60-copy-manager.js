@@ -1,4 +1,5 @@
-import { createSvgIconNode, setButtonIcon } from './10-base.js';
+import { copyTextToClipboard, createSvgIconNode, setButtonIcon } from './10-base.js';
+import { FORMULA_SELECTOR, readFormulaSource, formatFormula } from './58-formula-source.js';
 // Chrome Extension Content Script - ChatGPT Helper Copy Manager
 
 
@@ -35,90 +36,35 @@ class CopyManager {
             const style = document.createElement('style');
             style.id = styleId;
             style.textContent = `
-                /* ChatGPT 公式元素选择器 */
-                [class*="katex"],
-                [class*="math"],
-                .katex-display,
-                .katex-html {
-                    user-select: none !important;
-                    cursor: pointer !important;
+                :is(${FORMULA_SELECTOR}):not(pre *):not(code *):not([contenteditable="true"] *) {
+                    cursor: copy;
                 }
-                [class*="katex"]:hover,
-                [class*="math"]:hover,
-                .katex-display:hover {
-                    outline: 2px solid var(--gh-primary, #10a37f);
-                    outline-offset: 2px;
-                    border-radius: 4px;
+                .katex:hover, math:not(.katex *):hover,
+                [data-latex]:not(:has(.katex)):hover,
+                [data-math]:not(:has(.katex)):hover,
+                [data-formula]:not(:has(.katex)):hover {
+                    outline: 1px solid var(--gh-primary, #64748b);
+                    outline-offset: 3px;
+                    border-radius: 3px;
                 }
             `;
             document.head.appendChild(style);
         }
 
         // 双击事件委托处理
-        this.formulaDblClickHandler = (e) => {
-            // ChatGPT 使用 KaTeX 渲染公式
-            const mathEl = e.target.closest('[class*="katex"], [class*="math"], .katex-display');
-            if (!mathEl) return;
-
-            let latex = null;
-
-            // 方法1: 尝试从 data 属性获取
-            latex = mathEl.getAttribute('data-latex') ||
-                mathEl.getAttribute('data-math') ||
-                mathEl.getAttribute('data-formula');
-
-            // 方法2: 尝试从 KaTeX 的 annotation 元素获取
-            if (!latex) {
-                const annotation = mathEl.querySelector('[data-latex], [data-math], annotation[encoding="application/x-tex"]');
-                if (annotation) {
-                    latex = annotation.getAttribute('data-latex') ||
-                        annotation.getAttribute('data-math') ||
-                        annotation.textContent;
-                }
-            }
-
-            // 方法3: 尝试从 KaTeX 的 aria-label 获取
-            if (!latex) {
-                const ariaLabel = mathEl.getAttribute('aria-label');
-                if (ariaLabel) {
-                    latex = ariaLabel;
-                }
-            }
-
-            // 方法4: 尝试从文本内容提取（作为最后手段）
-            if (!latex) {
-                const text = mathEl.textContent || mathEl.innerText;
-                if (text && text.trim()) {
-                    // 尝试提取 LaTeX 格式的文本
-                    latex = text.trim();
-                }
-            }
-
-            if (!latex) {
-                console.warn('[FormulaCopy] No LaTeX found');
+        this.formulaDblClickHandler = async (event) => {
+            if (this.settings.formulaCopy?.enabled === false) return;
+            const formula = readFormulaSource(event.target);
+            if (!formula) return;
+            event.preventDefault();
+            event.stopPropagation();
+            const copyText = formatFormula(formula);
+            if (!copyText) {
+                this.showToast(this.t('formulaSourceUnavailable'));
                 return;
             }
-
-            // 清理 LaTeX（移除可能的转义字符）
-            latex = latex.trim().replace(/^\\\(|\\\)$/g, '').replace(/^\\\[|\\\]$/g, '');
-
-            const isBlock = mathEl.classList.contains('katex-display') ||
-                mathEl.offsetHeight > 40 ||
-                mathEl.closest('[class*="block"]');
-            const copyText = isBlock ? `$$${latex}$$` : `$${latex}$`;
-
-            navigator.clipboard
-                .writeText(copyText)
-                .then(() => {
-                    this.showToast(this.t('formulaCopied'));
-                })
-                .catch((err) => {
-                    console.error('[FormulaCopy] Copy failed:', err);
-                    this.showToast(this.t('copyFailed'));
-                });
-
-            e.preventDefault();
-            e.stopPropagation();
+            const copied = await copyTextToClipboard(copyText);
+            this.showToast(this.t(copied ? 'formulaCopied' : 'copyFailed'));
         };
 
         document.addEventListener('dblclick', this.formulaDblClickHandler, true);

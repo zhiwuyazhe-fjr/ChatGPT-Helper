@@ -96,3 +96,13 @@ npm run test:browser
 - `chatgpt_onboarding_done` 兼容旧布尔 `true`；新状态记录 `in-progress`、`completed`、`skipped` 和当前步骤。进行中可在刷新后续看，完成或跳过后不自动重复。设置内保留重看入口。
 - 控制器拥有事件、观察器和位置调度的完整生命周期；重复打开复用实例，销毁时释放，不依赖页面固定尺寸或某个对话 DOM。
 - 回归覆盖首次／重看、完整流程、跳过与焦点、草稿保护、实际入口、收展状态、断点恢复、缺失目标、中英文及窄屏，总计 43 项；已在真实页面走通提示词、大纲、会话、导出、收展和主题入口。
+
+## 公式双击复制
+
+`58-formula-source.js` 统一处理公式根节点、源码和定界符，`60-copy-manager.js` 负责双击及剪贴板反馈。点击 KaTeX 字符、上下标或分数线时，先定位完整 `.katex`，再读取与 HTML 排版层同级的 MathML `annotation[encoding="application/x-tex"]`。明确的 `data-latex`、`data-math`、`data-formula` 可作为备用来源。
+
+- 不使用 `.mathnormal` / `.katex-html` 的拼接文本、朗读用的 `aria-label` 或整段回复文字猜测 LaTeX；没有可靠源码时提示未复制，保留原剪贴板。
+- 独立公式根据 `.katex-display`、DIL `data-d-block` 或 MathML `display="block"` 判断；高的行内分数仍是行内公式。只去掉成对外层定界符，保留反斜杠、括号、下标及多行结构。
+- 代码块和可编辑区域保留原交互。此模块处理双击公式；整段回复复制及导出使用各自的原有路径。
+- 回归使用真实 KaTeX 生成 HTML+MathML，包括卡特兰数 `C_n=\frac{1}{n+1}\binom{2n}{n}=\frac{(2n)!}{n!(n+1)!}` 及 `C_4=\frac{8!}{4!\times5!}=14`，对复制字节和重新渲染分别验证。
+- 新增八组双击回归，总计 51 项。卡特兰总式还在登录页面双击后由实际粘贴结果确认，完整保留 `\boxed`、分数、组合数和下标。浏览器自动化的隔离剪贴板不能直接读取网页写入的系统剪贴板，不能以空的工具读数判定真实复制失败。

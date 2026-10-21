@@ -107,6 +107,7 @@
       pleaseWait: "\u8BF7\u7A0D\u5019...",
       stop: "\u505C\u6B62",
       formulaCopied: "\u516C\u5F0F\u5DF2\u590D\u5236",
+      formulaSourceUnavailable: "\u672A\u627E\u5230\u516C\u5F0F\u6E90\u7801\uFF0C\u672A\u590D\u5236",
       copyFailed: "\u590D\u5236\u5931\u8D25",
       copyAsMarkdown: "\u590D\u5236\u4E3A Markdown",
       tableCopied: "\u8868\u683C\u5DF2\u590D\u5236",
@@ -442,6 +443,7 @@
       pleaseWait: "Please wait...",
       stop: "Stop",
       formulaCopied: "Formula copied",
+      formulaSourceUnavailable: "Formula source unavailable; nothing was copied",
       copyFailed: "Copy failed",
       copyAsMarkdown: "Copy as Markdown",
       tableCopied: "Table copied",
@@ -5018,6 +5020,67 @@
       }
     }
   }
+  const SOURCE_ATTRIBUTES = ["data-latex", "data-math", "data-formula"];
+  const SOURCE_SELECTOR = SOURCE_ATTRIBUTES.map((name) => `[${name}]`).join(", ");
+  const FORMULA_SELECTOR = `.katex, .katex-display, [data-d-component="math"], math, mjx-container, .MathJax, ${SOURCE_SELECTOR}`;
+  const CONTENT_BOUNDARY = "body, html, main, article, p, li, td, th, [data-message-author-role], [data-markdown-text-style], [data-content-search-unit-key]";
+  function resolveFormulaRoot(target) {
+    const element = target?.nodeType === 1 ? target : target?.parentElement;
+    if (!element?.closest || element.closest('pre, code, textarea, [contenteditable="true"]')) return null;
+    const katex = element.closest(".katex");
+    if (katex) return katex;
+    const boundary = element.closest(FORMULA_SELECTOR);
+    if (!boundary) return null;
+    const formulas = boundary.querySelectorAll(".katex");
+    if (formulas.length > 1) return null;
+    return formulas[0] || boundary;
+  }
+  function unwrapSource(value) {
+    let latex = String(value || "").trim();
+    let display;
+    for (const [open, close, block] of [["$$", "$$", true], ["\\[", "\\]", true], ["\\(", "\\)", false], ["$", "$", false]]) {
+      if (latex.length > open.length + close.length && latex.startsWith(open) && latex.endsWith(close)) {
+        const ending = latex.slice(0, -close.length).match(/\\+$/)?.[0].length || 0;
+        if (close === "$" && ending % 2) continue;
+        latex = latex.slice(open.length, -close.length).trim();
+        display = block;
+        break;
+      }
+    }
+    return { latex: latex || null, display };
+  }
+  function explicitSource(element) {
+    for (const attribute of SOURCE_ATTRIBUTES) {
+      const value = element.getAttribute(attribute);
+      if (value?.trim()) return value;
+    }
+    return null;
+  }
+  function readFormulaSource(target) {
+    const root2 = resolveFormulaRoot(target);
+    if (!root2) return null;
+    const annotations = Array.from(root2.querySelectorAll('annotation[encoding="application/x-tex" i], annotation[encoding="text/x-tex" i]')).map((annotation) => annotation.textContent).filter((value) => value?.trim());
+    let raw = annotations.length === 1 ? annotations[0] : null;
+    if (!raw) raw = explicitSource(root2);
+    if (!raw && annotations.length <= 1) {
+      const sources = Array.from(root2.querySelectorAll(SOURCE_SELECTOR)).map(explicitSource).filter(Boolean);
+      if (sources.length === 1) raw = sources[0];
+    }
+    for (let scope = root2.parentElement; !raw && scope && !scope.matches(CONTENT_BOUNDARY); scope = scope.parentElement) {
+      if (scope.querySelectorAll(".katex").length > 1) break;
+      raw = explicitSource(scope);
+    }
+    const source = unwrapSource(raw);
+    const math = root2.matches("math") ? root2 : root2.querySelector("math");
+    const display = Boolean(root2.closest('.katex-display, [data-d-component="math"][data-d-block]') || math?.getAttribute("display") === "block" || source.display === true);
+    return { root: root2, latex: source.latex, display };
+  }
+  function formatFormula(formula) {
+    if (!formula?.latex) return null;
+    return formula.display ? `$$
+${formula.latex}
+$$` : `$${formula.latex}$`;
+  }
   class CopyManager {
     constructor(settings, showToastFunc, i18n) {
       this.settings = settings;
@@ -5042,62 +5105,33 @@
         const style = document.createElement("style");
         style.id = styleId;
         style.textContent = `
-                /* ChatGPT \u516C\u5F0F\u5143\u7D20\u9009\u62E9\u5668 */
-                [class*="katex"],
-                [class*="math"],
-                .katex-display,
-                .katex-html {
-                    user-select: none !important;
-                    cursor: pointer !important;
+                :is(${FORMULA_SELECTOR}):not(pre *):not(code *):not([contenteditable="true"] *) {
+                    cursor: copy;
                 }
-                [class*="katex"]:hover,
-                [class*="math"]:hover,
-                .katex-display:hover {
-                    outline: 2px solid var(--gh-primary, #10a37f);
-                    outline-offset: 2px;
-                    border-radius: 4px;
+                .katex:hover, math:not(.katex *):hover,
+                [data-latex]:not(:has(.katex)):hover,
+                [data-math]:not(:has(.katex)):hover,
+                [data-formula]:not(:has(.katex)):hover {
+                    outline: 1px solid var(--gh-primary, #64748b);
+                    outline-offset: 3px;
+                    border-radius: 3px;
                 }
             `;
         document.head.appendChild(style);
       }
-      this.formulaDblClickHandler = (e) => {
-        const mathEl = e.target.closest('[class*="katex"], [class*="math"], .katex-display');
-        if (!mathEl) return;
-        let latex = null;
-        latex = mathEl.getAttribute("data-latex") || mathEl.getAttribute("data-math") || mathEl.getAttribute("data-formula");
-        if (!latex) {
-          const annotation = mathEl.querySelector('[data-latex], [data-math], annotation[encoding="application/x-tex"]');
-          if (annotation) {
-            latex = annotation.getAttribute("data-latex") || annotation.getAttribute("data-math") || annotation.textContent;
-          }
-        }
-        if (!latex) {
-          const ariaLabel = mathEl.getAttribute("aria-label");
-          if (ariaLabel) {
-            latex = ariaLabel;
-          }
-        }
-        if (!latex) {
-          const text = mathEl.textContent || mathEl.innerText;
-          if (text && text.trim()) {
-            latex = text.trim();
-          }
-        }
-        if (!latex) {
-          console.warn("[FormulaCopy] No LaTeX found");
+      this.formulaDblClickHandler = async (event) => {
+        if (this.settings.formulaCopy?.enabled === false) return;
+        const formula = readFormulaSource(event.target);
+        if (!formula) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const copyText = formatFormula(formula);
+        if (!copyText) {
+          this.showToast(this.t("formulaSourceUnavailable"));
           return;
         }
-        latex = latex.trim().replace(/^\\\(|\\\)$/g, "").replace(/^\\\[|\\\]$/g, "");
-        const isBlock = mathEl.classList.contains("katex-display") || mathEl.offsetHeight > 40 || mathEl.closest('[class*="block"]');
-        const copyText = isBlock ? `$$${latex}$$` : `$${latex}$`;
-        navigator.clipboard.writeText(copyText).then(() => {
-          this.showToast(this.t("formulaCopied"));
-        }).catch((err) => {
-          console.error("[FormulaCopy] Copy failed:", err);
-          this.showToast(this.t("copyFailed"));
-        });
-        e.preventDefault();
-        e.stopPropagation();
+        const copied = await copyTextToClipboard(copyText);
+        this.showToast(this.t(copied ? "formulaCopied" : "copyFailed"));
       };
       document.addEventListener("dblclick", this.formulaDblClickHandler, true);
     }
