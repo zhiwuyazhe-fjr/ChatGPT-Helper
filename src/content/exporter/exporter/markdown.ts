@@ -1,81 +1,16 @@
-import { getExportHost } from '../host'
-import { fetchConversation, getCurrentChatId, processConversation, shouldSkipMessageInExport } from '../api'
-import { KEY_THINKING_ENABLED, KEY_TIMESTAMP_24H, KEY_TIMESTAMP_ENABLED, KEY_TIMESTAMP_MARKDOWN, baseUrl } from '../constants'
-import i18n from '../i18n'
-import { checkIfConversationStarted } from '../page'
-import { buildZipFileName, downloadFile, getFileNameWithFormat } from '../utils/download'
+import type { ExportOptions } from '../model/options';
+import { shouldSkipMessageInExport } from '../model'
 import { fromMarkdown, toMarkdown } from '../utils/markdown'
-import { ScriptStorage } from '../utils/storage'
-import { standardizeLineBreaks } from '../utils/text'
 import { dateStr, timestamp, unixTimestampToISOString } from '../utils/utils'
-import type { ApiConversationWithId, Citation, ConversationNodeMessage, ConversationResult, ThinkingContent } from '../api'
+import type { ApiConversationWithId, Citation, ConversationNodeMessage, ConversationResult, ThinkingContent } from '../model'
 import type { ExportMeta } from '../ui/SettingContext'
-import type { PartInfo } from '../utils/download'
-
-export async function exportToMarkdown(fileNameFormat: string, metaList: ExportMeta[]) {
-    if (!checkIfConversationStarted()) {
-        alert(i18n.t('Please start a conversation first'))
-        return false
-    }
-
-    const chatId = await getCurrentChatId()
-    const rawConversation = await fetchConversation(chatId, true)
-    const enableThinking = ScriptStorage.get<boolean>(KEY_THINKING_ENABLED) ?? false
-    const conversation = processConversation(rawConversation, { enableThinking })
-    const markdown = conversationToMarkdown(conversation, metaList)
-
-    const fileName = getFileNameWithFormat(fileNameFormat, 'md', { title: conversation.title, chatId, createTime: conversation.createTime, updateTime: conversation.updateTime })
-    downloadFile(fileName, 'text/markdown', standardizeLineBreaks(markdown))
-
-    return true
-}
-
-export async function exportAllToMarkdown(fileNameFormat: string, apiConversations: ApiConversationWithId[], metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number, signal?: AbortSignal) {
-    const JSZip = await getExportHost().loadDependency('zip')
-    const zip = new JSZip()
-    const filenameMap = new Map<string, number>()
-    const enableThinking = ScriptStorage.get<boolean>(KEY_THINKING_ENABLED) ?? false
-    const conversations = apiConversations.map(x => processConversation(x, { enableThinking }))
-    conversations.forEach((conversation) => {
-        let fileName = getFileNameWithFormat(fileNameFormat, 'md', {
-            title: conversation.title,
-            chatId: conversation.id,
-            createTime: conversation.createTime,
-            updateTime: conversation.updateTime,
-        })
-        if (filenameMap.has(fileName)) {
-            const count = filenameMap.get(fileName) ?? 1
-            filenameMap.set(fileName, count + 1)
-            fileName = `${fileName.slice(0, -3)} (${count}).md`
-        }
-        else {
-            filenameMap.set(fileName, 1)
-        }
-        const content = conversationToMarkdown(conversation, metaList)
-        zip.file(fileName, content)
-    })
-
-    const blob = await zip.generateAsync({
-        type: 'blob',
-        compression: 'DEFLATE',
-        compressionOptions: {
-            level: 9,
-        },
-    })
-    const partInfo: PartInfo | undefined = (partIndex != null && totalParts != null)
-        ? { part: partIndex, total: totalParts }
-        : undefined
-    signal?.throwIfAborted()
-    downloadFile(buildZipFileName('markdown', projectName, partInfo), 'application/zip', blob)
-
-    return true
-}
 
 const LatexRegex = /(\s\$\$.+\$\$\s|\s\$.+\$\s|\\\[.+\\\]|\\\(.+\\\))|(^\$$[\S\s]+^\$$)|(^\$\$[\S\s]+^\$\$$)/gm
 
-function conversationToMarkdown(conversation: ConversationResult, metaList?: ExportMeta[]) {
+export function conversationToMarkdown(conversation: ConversationResult, options: ExportOptions) {
+    const metaList = options.enableMeta ? options.exportMetaList : [];
     const { id, title, model, modelSlug, createTime, updateTime, conversationNodes } = conversation
-    const source = `${baseUrl}/c/${id}`
+    const source = `${options.origin}/c/${id}`
 
     const _metaList = metaList
         ?.filter(x => !!x.name)
@@ -90,16 +25,16 @@ function conversationToMarkdown(conversation: ConversationResult, metaList?: Exp
                 .replace('{create_time}', unixTimestampToISOString(createTime))
                 .replace('{update_time}', unixTimestampToISOString(updateTime))
 
-            return `${name}: ${val}`
+            return `${JSON.stringify(name)}: ${JSON.stringify(val)}`
         })
     ?? []
     const frontMatter = _metaList.length > 0
         ? `---\n${_metaList.join('\n')}\n---\n\n`
         : ''
 
-    const enableTimestamp = ScriptStorage.get<boolean>(KEY_TIMESTAMP_ENABLED) ?? false
-    const timeStampMarkdown = ScriptStorage.get<boolean>(KEY_TIMESTAMP_MARKDOWN) ?? false
-    const timeStamp24H = ScriptStorage.get<boolean>(KEY_TIMESTAMP_24H) ?? false
+    const enableTimestamp = options.enableTimestamp
+    const timeStampMarkdown = options.enableTimestampMarkdown
+    const timeStamp24H = options.timeStamp24H
 
     const content = conversationNodes.map(({ message, thinking }) => {
         if (!message || !message.content) return null
@@ -107,10 +42,10 @@ function conversationToMarkdown(conversation: ConversationResult, metaList?: Exp
         if (shouldSkipMessageInExport(message)) return null
 
         const timestamp = message?.create_time ?? ''
-        const showTimestamp = enableTimestamp && timeStampMarkdown && timestamp
+        const showTimestamp = enableTimestamp && timeStampMarkdown && unixTimestampToISOString(timestamp)
         let timestampHtml = ''
         if (showTimestamp) {
-            const date = new Date(timestamp * 1000)
+            const date = new Date(unixTimestampToISOString(timestamp))
             // format: 20:12 / 08:12 PM
             const conversationTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: !timeStamp24H })
             timestampHtml = `<time datetime="${date.toISOString()}" title="${date.toLocaleString()}">${conversationTime}</time>\n\n`

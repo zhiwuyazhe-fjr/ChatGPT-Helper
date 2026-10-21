@@ -92,5 +92,7 @@
   "All conversations": "所有会话",
   "Import file": "导入文件",
   "Search conversations": "搜索会话",
-  "Load next page": "加载更多"
+  "Load next page": "加载更多",
+  "Selected": "已选",
+  "Not selected": "未选"
 }

@@ -1,6 +1,5 @@
 import { exportedHtmlStyles } from '../generated/html-assets';
-import { getExportHost } from '../host';
-import { downloadFile, getFileNameWithFormat } from '../utils/download';
+import { getFileNameWithFormat } from '../utils/download';
 import type { MessageSnapshot } from '../host';
 
 export interface ImageOptions {
@@ -99,16 +98,15 @@ export function getImageSlices(root: HTMLElement, maxHeight: number) {
     return slices;
 }
 
-export async function saveMessageImage(frame: HTMLIFrameElement, title: string, options: ImageOptions, filenameFormat: string, signal: AbortSignal, progress: (done: number, total: number) => void) {
-    const host = getExportHost();
+export async function saveMessageImage(frame: HTMLIFrameElement, title: string, options: ImageOptions, filenameFormat: string, signal: AbortSignal, progress: (done: number, total: number) => void, output: { language: string; zip(): Promise<any>; save(filename: string, blob: Blob): void }) {
     checkCancelled(signal);
     const root = frame.contentDocument?.getElementById('export-image');
     if (!root) throw new Error('Image preview unavailable');
     const height = Math.ceil(root.getBoundingClientRect().height);
     const maxHeight = Math.min(16000 / options.scale, Math.floor(16000000 / (options.width * options.scale ** 2)));
-    if (!options.paged && height > maxHeight) throw new Error(host.getContext().language.startsWith('zh') ? '图片过长，请选择分页或降低清晰度。' : 'Image is too long. Choose pages or standard resolution.');
+    if (!options.paged && height > maxHeight) throw new Error(output.language.startsWith('zh') ? '图片过长，请选择分页或降低清晰度。' : 'Image is too long. Choose pages or standard resolution.');
     const slices = getImageSlices(root, options.paged ? Math.min(2400, maxHeight) : height);
-    const ZIP = slices.length > 1 ? await host.loadDependency('zip') : null;
+    const ZIP = slices.length > 1 ? await output.zip() : null;
     const zip = ZIP ? new ZIP() : null;
     for (let index = 0; index < slices.length; index++) {
         checkCancelled(signal);
@@ -143,14 +141,14 @@ export async function saveMessageImage(frame: HTMLIFrameElement, title: string, 
             checkCancelled(signal);
             const filename = getFileNameWithFormat(filenameFormat, options.format === 'jpeg' ? 'jpg' : 'png', { title });
             if (zip) zip.file(`${String(index + 1).padStart(3, '0')}-${filename}`, blob);
-            else downloadFile(filename, blob.type, blob);
+            else output.save(filename, blob);
         } finally { canvas.width = 0; canvas.height = 0; }
         progress(index + 1, slices.length);
     }
     if (zip) {
         const blob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
         checkCancelled(signal);
-        downloadFile(getFileNameWithFormat(filenameFormat, 'zip', { title }), 'application/zip', blob);
+        output.save(getFileNameWithFormat(filenameFormat, 'zip', { title }), blob);
     }
     return slices.length;
 }

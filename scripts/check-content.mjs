@@ -141,7 +141,7 @@ if (JSON.stringify(scripts) !== JSON.stringify(expectedScripts)) {
 // 导出引擎改为按需注入后，service worker 与注入清单必须存在且接线正确
 execFileSync(process.execPath, ['--check', path.join(root, 'background', 'sw.js')], { stdio: 'inherit' })
 const swSource = fs.readFileSync(path.join(root, 'background', 'sw.js'), 'utf8')
-for (const requiredSnippet of ["'libs/jszip.min.js'", "'content-scripts/dist/chatgpt-exporter.js'", 'toggle-helper-panel', 'ch-helper-inject-export-deps']) {
+for (const requiredSnippet of ['libs/jszip.min.js', 'content-scripts/dist/chatgpt-exporter.js', 'toggle-helper-panel', 'ch-helper-inject-export-deps']) {
     if (!swSource.includes(requiredSnippet)) {
         throw new Error(`background/sw.js is missing lazy export engine wiring: ${requiredSnippet}`)
     }
@@ -258,6 +258,9 @@ const context = {
     JSON,
     Number,
     String,
+    structuredClone,
+    AbortController,
+    DOMException,
     Boolean,
     RegExp,
     Array,
@@ -372,11 +375,29 @@ async function runConversationSyncRegression() {
         }
     }
     finally {
-        manager.stopAutoSync()
+        manager.destroy()
     }
 }
 
 await runConversationSyncRegression()
+
+// Disposed features must not commit a late network result to extension storage.
+{
+    const { ConversationManager } = window.__MY_EXT__.helper;
+    let completeRequest;
+    let writes = 0;
+    const originalSet = window.GM_setValue;
+    window.GM_setValue = () => { writes++; };
+    const manager = new ConversationManager({container:makeElement('div'),settings:{},adapter:{getConversationList:()=>new Promise(resolve=>{completeRequest=resolve;})},i18n:key=>key});
+    manager.showToast = () => {};
+    const operation = manager.syncConversations();
+    manager.destroy();
+    completeRequest([{id:'late',title:'Late response',url:'https://chatgpt.com/c/late'}]);
+    await operation;
+    window.GM_setValue = originalSet;
+    if (writes || manager.data.conversations.late) throw new Error('Disposed conversation manager committed a late sync result');
+}
+
 
 // Lifecycle races are hard to reproduce with ordinary sequential UI clicks.
 const { ChatGPTHelper, ScrollLockManager } = window.__MY_EXT__.helper

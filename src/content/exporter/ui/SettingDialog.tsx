@@ -1,11 +1,8 @@
-import { getExportPortal } from '../host'
+import { useExportSession } from './SessionContext'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useState } from 'preact/hooks'
 import { useTranslation } from 'react-i18next'
 import sanitize from 'sanitize-filename'
-import { baseUrl } from '../constants'
-import { useTitle } from '../hooks/useTitle'
-import { getChatIdFromUrl } from '../page'
 import { getFileNameWithFormat } from '../utils/download'
 import { timestamp as _timestamp, dateStr, unixTimestampToISOString } from '../utils/utils'
 import { IconCross, IconTrash } from './Icons'
@@ -64,6 +61,7 @@ export const SettingDialog: FC<SettingDialogProps> = ({
     onOpenChange,
     children,
 }) => {
+    const session = useExportSession();
     const {
         format, setFormat,
         enableTimestamp, setEnableTimestamp,
@@ -76,17 +74,18 @@ export const SettingDialog: FC<SettingDialogProps> = ({
         exportAllLimit, setExportAllLimit,
     } = useSettingContext()
     const { t } = useTranslation()
-    const _title = useTitle()
+    const context = session.host.getContext()
+    const _title = context.title
     const date = dateStr()
     const timestamp = _timestamp()
     const title = sanitize(_title).replace(/\s+/g, '_')
-    const chatId = getChatIdFromUrl() || 'this-is-a-mock-chat-id'
+    const chatId = context.conversationId || 'conversation'
     const now = Date.now() / 1000
     const createTime = now
     const updateTime = now
     const preview = getFileNameWithFormat(format, '{ext}', { title, chatId, createTime, updateTime })
 
-    const source = `${baseUrl}/${chatId}`
+    const source = `${context.origin}/c/${chatId}`
 
     return (
         <Dialog.Root
@@ -96,7 +95,7 @@ export const SettingDialog: FC<SettingDialogProps> = ({
             <Dialog.Trigger asChild>
                 {children}
             </Dialog.Trigger>
-            <Dialog.Portal container={getExportPortal()}>
+            <Dialog.Portal container={session.portal}>
                 <Dialog.Overlay className="DialogOverlay" />
                 <Dialog.Content className="DialogContent" aria-describedby={undefined}>
                     <Dialog.Title className="DialogTitle">{t('Exporter Settings')}</Dialog.Title>

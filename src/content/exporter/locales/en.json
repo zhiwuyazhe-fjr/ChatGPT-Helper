@@ -109,5 +109,7 @@
   "Project": "Project",
   "Import file": "Import file",
   "Search conversations": "Search conversations",
-  "Load next page": "Load next page"
+  "Load next page": "Load next page",
+  "Selected": "Selected",
+  "Not selected": "Not selected"
 }

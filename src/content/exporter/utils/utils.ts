@@ -1,5 +1,3 @@
-export function noop() {}
-
 export function nonNullable<T>(x: T): x is NonNullable<T> {
     return x != null
 }
@@ -19,9 +17,10 @@ export function getColorScheme(): 'light' | 'dark' {
     return document.documentElement.style.getPropertyValue('color-scheme') as 'light' | 'dark'
 }
 
-export function unixTimestampToISOString(timestamp: number) {
-    if (!timestamp) return ''
-    return (new Date(timestamp * 1000)).toISOString()
+export function unixTimestampToISOString(timestamp: number | string | undefined) {
+    if (timestamp == null || timestamp === '') return '';
+    const value = typeof timestamp === 'number' ? (timestamp < 1e12 ? timestamp * 1000 : timestamp) : Date.parse(timestamp);
+    return Number.isFinite(value) ? new Date(value).toISOString() : '';
 }
 
 export function jsonlStringify(list: any[]): string {

@@ -1,13 +1,3 @@
-const API_MAPPING: Record<string, string> = {
-    'https://chat.openai.com': 'https://chat.openai.com/backend-api',
-    'https://chatgpt.com': 'https://chatgpt.com/backend-api',
-}
-
-// export const baseUrl = 'https://chat.openai.com'
-export const baseUrl = new URL(location.href).origin
-export const apiUrl = API_MAPPING[baseUrl] || `${baseUrl}/backend-api`
-
-export const KEY_LANGUAGE = 'exporter:language'
 export const KEY_FILENAME_FORMAT = 'exporter:filename_format'
 // export const KEY_OFFICIAL_JSON_FORMAT = 'exporter:official_json_format'
 export const KEY_TIMESTAMP_ENABLED = 'exporter:enable_timestamp'
@@ -19,7 +9,6 @@ export const KEY_META_LIST = 'exporter:meta_list'
 export const KEY_THINKING_ENABLED = 'exporter:enable_thinking'
 export const KEY_EXPORT_ALL_LIMIT = 'exporter:export_all_limit'
 
-export const KEY_OAI_LOCALE = 'oai/apps/locale'
 
 /**
  * Fixed batch size for both the per-conversation API fetch loop and each

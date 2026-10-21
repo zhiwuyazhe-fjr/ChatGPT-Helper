@@ -14,25 +14,9 @@ export function downloadFile(filename: string, type: string, content: string | B
     setTimeout(() => URL.revokeObjectURL(url), 30_000)
 }
 
-export function downloadUrl(filename: string, url: string) {
-    // 该辅助函数只应触发下载，绝不能被用来导航到任意 scheme（javascript: 等）
-    if (!/^(data:|blob:)/i.test(url)) {
-        console.warn('[Exporter] downloadUrl rejected non-download scheme:', new URL(url, location.href).protocol)
-        return
-    }
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-}
-
 export function normalizeProjectName(projectName: string) {
-    return projectName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
+    return sanitize(projectName).trim().replace(/\s+/g, '-').slice(0, 60) || 'project';
+
 }
 
 export interface PartInfo {
@@ -85,6 +69,6 @@ export function getFileNameWithFormat(format: string, ext: string, {
         .replace('{chat_id}', chatId.replace(/[^\w.-]+/g, '_'))
         .replace('{create_time}', _createTime)
         .replace('{update_time}', _updateTime)
-        .concat(`.${ext}`)
-    return sanitize(name).slice(0, 120)
+    const extension = String(ext).replace(/[^a-z0-9{}]/gi, '') || 'txt';
+    return `${sanitize(name).slice(0, Math.max(1, 119 - extension.length)) || 'ChatGPT'}.${extension}`;
 }

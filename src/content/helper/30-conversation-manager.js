@@ -1,3 +1,4 @@
+import { RuntimeScope } from './15-runtime.js';
 import { DEFAULT_THEME_CONFIG, clearElement, createElement, createSvgIconNode, getCurrentLang, getThemePresetByKey, sanitizeConversationUrl, t } from './10-base.js';
 // Chrome Extension Content Script - ChatGPT Helper Conversation Manager
 
@@ -5,6 +6,8 @@ import { DEFAULT_THEME_CONFIG, clearElement, createElement, createSvgIconNode, g
 // ==================== 会话管理器 ====================
 class ConversationManager {
     constructor(config) {
+        this.scope = new RuntimeScope();
+        this.destroyed = false;
         this.container = config.container;
         this.settings = config.settings;
         this.adapter = config.adapter;
@@ -20,94 +23,42 @@ class ConversationManager {
         this.syncPromise = null;
         this.lastSyncTime = 0; // 记录上次同步时间
         // 缓存晚就绪（慢盘/冷启动）时用磁盘真实数据替换默认结构，避免后续保存覆盖用户数据
-        window.addEventListener('ch-helper-storage-ready', () => this.reloadData(), { once: true });
+        if (this._loadedWithUnreadyCache) this.scope.listen(window, 'ch-helper-storage-ready', () => this.reloadData(), { once: true });
         // 启动自动同步（每5分钟同步一次）
         this.startAutoSync();
     }
 
     loadData() {
-        // 确保从缓存中读取数据
-        let saved = null;
-
-        // 首先检查缓存是否已初始化
-        if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized && window.__MY_EXT__.storageCache) {
-            // 缓存已初始化，直接从缓存读取
-            const cacheKeys = Object.keys(window.__MY_EXT__.storageCache || {});
-            console.log('[ChatGPT Helper] 缓存已初始化，缓存中的键:', cacheKeys);
-            saved = window.__MY_EXT__.storageCache['chatgpt_conversations'];
-            console.log('[ChatGPT Helper] 从已初始化的缓存读取数据:', saved !== undefined && saved !== null ? '找到数据' : '未找到数据');
-            if (saved !== undefined && saved !== null) {
-                console.log('[ChatGPT Helper] 缓存中的数据类型:', typeof saved, Array.isArray(saved) ? '(数组)' : '(对象)');
-            }
-        } else if (window.__MY_EXT__ && window.__MY_EXT__.storageCache) {
-            // 缓存存在但可能未完全初始化，尝试读取
-            saved = window.__MY_EXT__.storageCache['chatgpt_conversations'];
-            console.log('[ChatGPT Helper] 从缓存读取数据（缓存可能未完全初始化）');
-        }
-
-        // 如果缓存中没有，使用 GM_getValue（会触发缓存更新）
-        if (saved === undefined || saved === null) {
-            saved = window.GM_getValue('chatgpt_conversations', null);
-            console.log('[ChatGPT Helper] 使用 GM_getValue 读取数据:', saved ? '找到数据' : '未找到数据');
-            if (saved) {
-                console.log('[ChatGPT Helper] GM_getValue 返回的数据类型:', typeof saved);
-            }
-        }
-
+        const root = window.__MY_EXT__;
+        this._loadedWithUnreadyCache = Boolean(root?.storageCache && !root.storageCacheInitialized);
+        const saved = window.GM_getValue('chatgpt_conversations', null);
         if (saved && typeof saved === 'object') {
-            const conversationCount = Object.keys(saved.conversations || {}).length;
-            console.log('[ChatGPT Helper] 加载会话数据:', conversationCount, '个会话');
-            console.log('[ChatGPT Helper] 会话数据结构:', {
-                folders: saved.folders?.length || 0,
-                tags: saved.tags?.length || 0,
-                conversations: conversationCount,
-                lastUsedFolderId: saved.lastUsedFolderId
-            });
-            this.sanitizeLoadedData(saved);
-            this._loadedWithUnreadyCache = false;
-            return saved;
-        }
-        // GM 适配器存在但缓存未就绪：读到的是默认空结构，标记禁止落盘，
-        // 防止随后的自动同步把用户已有数据整键覆盖（丢数据）。
-        this._loadedWithUnreadyCache = !!(window.__MY_EXT__ && window.__MY_EXT__.storageCache && !window.__MY_EXT__.storageCacheInitialized);
-        console.log('[ChatGPT Helper] 使用默认会话数据结构（未找到保存的数据）');
-        // 尝试直接从 Chrome storage 读取（异步方式，用于调试）
-        if (window.__MY_EXT__ && window.__MY_EXT__.GM && window.__MY_EXT__.GM.getValue) {
-            window.__MY_EXT__.GM.getValue('chatgpt_conversations', null).then((asyncValue) => {
-                if (asyncValue && typeof asyncValue === 'object') {
-                    const asyncCount = Object.keys(asyncValue.conversations || {}).length;
-                    console.log('[ChatGPT Helper] 异步读取发现数据:', asyncCount, '个会话');
-                    if (asyncCount > 0) {
-                        console.warn('[ChatGPT Helper] 警告：异步读取发现数据，但同步读取未找到。可能需要等待缓存初始化。');
-                    }
-                }
-            }).catch((err) => {
-                console.error('[ChatGPT Helper] 异步读取错误:', err);
-            });
+            const data = structuredClone(saved);
+            this.sanitizeLoadedData(data);
+            return data;
         }
         return {
             folders: [{ id: 'inbox', name: '📥 收件箱', icon: '📥', isDefault: true }],
-            tags: [],
-            conversations: {},
-            lastUsedFolderId: 'inbox',
+            tags: [], conversations: {}, lastUsedFolderId: 'inbox',
         };
     }
 
-    // 重新加载数据（用于缓存初始化后）
     reloadData() {
-        const oldCount = Object.keys(this.data.conversations || {}).length;
+        if (this.destroyed) return;
         this.data = this.loadData();
-        const newCount = Object.keys(this.data.conversations || {}).length;
-        if (newCount !== oldCount) {
-            console.log('[ChatGPT Helper] 数据已重新加载，会话数量从', oldCount, '变为', newCount);
-            // 如果 UI 已创建，需要重新渲染
-            if (this.container && this.container.children.length > 0) {
-                this.createUI();
-            }
-        }
+        if (this.container?.children.length) this.createUI();
+    }
+
+    destroy() {
+        if (this.destroyed) return;
+        this.destroyed = true;
+        this.syncController?.abort();
+        this.stopAutoSync();
+        this.scope.dispose();
     }
 
     saveData() {
+        if (this.destroyed) return;
         // 数据来自缓存未就绪时的默认空结构：写盘会把用户已有数据整键覆盖（丢数据），等 reloadData 拿到真实数据后再写
         if (this._loadedWithUnreadyCache) {
             console.warn('[ChatGPT Helper] 存储缓存未就绪，跳过本次会话数据写入');
@@ -200,43 +151,10 @@ class ConversationManager {
     }
 
     createUI() {
-        // 在创建 UI 前，如果缓存已初始化，重新加载数据
-        if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized) {
-            const oldCount = Object.keys(this.data.conversations || {}).length;
-            this.data = this.loadData();
-            const newCount = Object.keys(this.data.conversations || {}).length;
-            if (newCount !== oldCount) {
-                console.log('[ChatGPT Helper] 在 createUI 时重新加载数据，会话数量从', oldCount, '变为', newCount);
-            }
-        } else {
-            // 如果缓存还未初始化，等待初始化后重新加载（但不重新调用 createUI，避免递归）
-            const checkCache = (retries = 50) => {
-                if (window.__MY_EXT__ && window.__MY_EXT__.storageCacheInitialized) {
-                    const oldCount = Object.keys(this.data.conversations || {}).length;
-                    this.data = this.loadData();
-                    const newCount = Object.keys(this.data.conversations || {}).length;
-                    if (newCount !== oldCount) {
-                        console.log('[ChatGPT Helper] 缓存初始化后重新加载数据，会话数量从', oldCount, '变为', newCount);
-                        // 只更新数据，不重新调用 createUI（避免递归）
-                        // UI 会在下次切换标签页时自动更新
-                    }
-                } else if (retries > 0) {
-                    setTimeout(() => checkCache(retries - 1), 100);
-                }
-            };
-            checkCache();
-        }
-
+        if (this.destroyed) return;
+        if (window.__MY_EXT__?.storageCacheInitialized) this.data = this.loadData();
         clearElement(this.container);
-
-        // 如果距离上次同步已经超过1分钟，自动同步一次
-        const now = Date.now();
-        if (now - this.lastSyncTime > 60 * 1000) {
-            // 延迟执行，避免阻塞UI渲染
-            setTimeout(() => {
-                this.syncConversations();
-            }, 500);
-        }
+        if (Date.now() - this.lastSyncTime > 60000) this.scope.schedule('initial-sync', () => this.syncConversations(), 500);
 
         // 工具栏
         const toolbar = createElement('div', {
@@ -682,6 +600,7 @@ class ConversationManager {
     }
 
     async syncConversations(options = {}) {
+        if (this.destroyed) return { total: 0, newCount: 0, updatedCount: 0 };
         if (this.syncPromise) {
             if (options.showAlreadySyncing) {
                 this.showToast(this.t('conversationSyncing') || '正在同步会话...');
@@ -689,10 +608,12 @@ class ConversationManager {
             return this.syncPromise;
         }
 
+        const controller = this.syncController = new AbortController();
         this.syncPromise = (async () => {
             try {
                 // 使用适配器的 getConversationList 方法；优先 API，失败时由适配器回退到 DOM。
-                const conversations = await Promise.resolve(this.adapter.getConversationList());
+                const conversations = await Promise.resolve(this.adapter.getConversationList({ signal: controller.signal }));
+                controller.signal.throwIfAborted();
 
                 // 更新同步时间，避免失败时短时间内反复自动重试打扰页面。
                 this.lastSyncTime = Date.now();
@@ -781,6 +702,7 @@ class ConversationManager {
                 this.showToast(msg);
                 return { total: conversations.length, newCount, updatedCount };
             } catch (error) {
+                if (controller.signal.aborted) return { total: 0, newCount: 0, updatedCount: 0 };
                 console.error('[ChatGPT Helper] 同步会话失败:', error);
                 this.lastSyncTime = Date.now();
                 this.showToast(this.t('conversationSyncFailed') || '会话同步失败，请稍后重试');

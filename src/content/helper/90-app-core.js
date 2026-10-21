@@ -1,3 +1,4 @@
+import { ChatGPTClient } from '../shared/chatgpt-client.js';
 import { detectLanguage, getExtensionRuntime, setCurrentLang, t } from './10-base.js';
 import { ThemeAssetRepository } from './20-theme-assets.js';
 import { AnchorManager, HistoryLoader, ReadingProgressManager, ScrollLockManager, ScrollManager, WidthStyleManager } from './40-scroll-managers.js';
@@ -15,7 +16,8 @@ import { RuntimeScope } from './15-runtime.js';
 class HelperCore {
     constructor() {
         this.scope = new RuntimeScope();
-        this.adapter = new ChatGPTAdapter();
+        this.backend = new ChatGPTClient();
+        this.adapter = new ChatGPTAdapter(this.backend);
         setCurrentLang(detectLanguage());
         this.lang = detectLanguage();
         this.t = t;
@@ -109,7 +111,7 @@ class HelperCore {
         this.tabRenameManager.stop();
         this.promptQuickMenu.destroy();
         this.messageSelectManager.stop();
-        this.conversationManager?.stopAutoSync();
+        this.conversationManager?.destroy();
         if (this.panelMessageHandler) getExtensionRuntime()?.onMessage?.removeListener(this.panelMessageHandler);
     }
 }

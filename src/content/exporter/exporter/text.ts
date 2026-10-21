@@ -1,32 +1,11 @@
-import { fetchConversation, getCurrentChatId, processConversation, shouldSkipMessageInExport } from '../api'
-import i18n from '../i18n'
-import { checkIfConversationStarted } from '../page'
-import { copyToClipboard } from '../utils/clipboard'
+import { shouldSkipMessageInExport } from '../model'
 import { flatMap, fromMarkdown, toMarkdown } from '../utils/markdown'
 import { standardizeLineBreaks } from '../utils/text'
-import type { ConversationNodeMessage } from '../api'
+import type { ConversationNodeMessage, ConversationResult } from '../model'
 import type { Emphasis, Strong } from 'mdast'
 
-export async function exportToText() {
-    if (!checkIfConversationStarted()) {
-        alert(i18n.t('Please start a conversation first'))
-        return false
-    }
-
-    const chatId = await getCurrentChatId()
-    // All image in text output will be replaced with `[image]`
-    // So we don't need to waste time to download them
-    const rawConversation = await fetchConversation(chatId, false)
-
-    const { conversationNodes } = processConversation(rawConversation)
-    const text = conversationNodes
-        .map(({ message }) => transformMessage(message))
-        .filter(Boolean)
-        .join('\n\n')
-
-    await copyToClipboard(standardizeLineBreaks(text))
-
-    return true
+export function conversationToText(conversation: ConversationResult) {
+    return standardizeLineBreaks(conversation.conversationNodes.map(({message}) => transformMessage(message)).filter(Boolean).join('\n\n'));
 }
 
 const LatexRegex = /(\s\$\$.+\$\$\s|\s\$.+\$\s|\\\[.+\\\]|\\\(.+\\\))|(^\$$[\S\s]+^\$$)|(^\$\$[\S\s]+^\$\$$)/gm

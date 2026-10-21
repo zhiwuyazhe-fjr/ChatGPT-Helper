@@ -1,3 +1,5 @@
+import { conversationIdFromPath } from '../shared/conversation-context.js';
+import { BUILD_ID, EXPORT_PROTOCOL } from '../shared/build';
 import { createElement, getCurrentLang } from './10-base.js';
 import { snapshotMessages } from './66-message-snapshot.js';
 
@@ -10,14 +12,14 @@ export const ExportFeature = {
 
     async loadExportDependency(dependency = 'engine') {
         this._exportLoads ||= new Map();
-        const ready = () => dependency === 'engine' ? window.__MY_EXT__?.exporter :
+        const ready = () => dependency === 'engine' ? (window.__MY_EXT__?.exporter?.buildId === BUILD_ID ? window.__MY_EXT__.exporter : null) :
             window.JSZip;
         if (ready()) return ready();
         if (this._exportLoads.has(dependency)) return this._exportLoads.get(dependency);
         const promise = new Promise((resolve, reject) => {
             const runtime = globalThis.chrome?.runtime;
             if (!runtime?.id) return reject(new Error(this.t('exportEngineInjectFailed')));
-            runtime.sendMessage({ type: 'ch-helper-inject-export-deps', dependency }, response => {
+            runtime.sendMessage({ type: 'ch-helper-inject-export-deps', dependency, buildId: BUILD_ID }, response => {
                 const error = runtime.lastError;
                 if (error || !response?.ok || !ready()) reject(new Error(error?.message || response?.error || this.t('exportModuleMissing')));
                 else resolve(ready());
@@ -47,11 +49,13 @@ export const ExportFeature = {
             if (this.destroyed || revision !== this._exportRevision || !host.isConnected) return;
             loading.remove();
             this.exporterController = engine.mount(host, {
-                adapter: this.adapter,
+                protocol: EXPORT_PROTOCOL, buildId: BUILD_ID,
+                request: (path, options) => this.backend.json(path, options),
                 getMessages: () => snapshotMessages(this.adapter),
                 getSelectedMessages: () => this.messageSelectManager.collectSelectedMessages(),
                 subscribe: listener => this.messageSelectManager.subscribe(listener),
                 getContext: () => ({
+                    origin: location.origin, conversationId: conversationIdFromPath(location.pathname),
                     path: location.pathname, title: this.adapter.getSessionName() || 'ChatGPT',
                     language: getCurrentLang(), theme: this.currentEffectiveTheme,
                 }),

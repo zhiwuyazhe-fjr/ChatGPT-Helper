@@ -11,3 +11,5 @@ export * from './65-message-select-manager.js';
 export * from './70-tab-rename-manager.js';
 export * from './80-chatgpt-adapter.js';
 export * from './app.js';
+
+export { ChatGPTClient } from '../shared/chatgpt-client.js';

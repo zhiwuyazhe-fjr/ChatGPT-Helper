@@ -1,14 +1,14 @@
+import { ChatGPTClient } from '../shared/chatgpt-client.js';
 import { t } from './10-base.js';
 // Chrome Extension Content Script - ChatGPT Helper ChatGPT Adapter
 
 
 // ==================== ChatGPT 适配器 ====================
 class ChatGPTAdapter {
-    constructor() {
+    constructor(client = new ChatGPTClient()) {
+        this.client = client;
         this.textarea = null;
         this.lastResponseContainer = null;
-        this.accessTokenPromise = null;
-        this.accountIdPromise = null;
         this.findTextarea();
     }
 
@@ -302,112 +302,12 @@ class ChatGPTAdapter {
         return null;
     }
 
-    getBackendApiBaseUrl() {
-        const origin = window.location?.origin || 'https://chatgpt.com';
-        const apiMapping = {
-            'https://chat.openai.com': 'https://chat.openai.com/backend-api',
-            'https://chatgpt.com': 'https://chatgpt.com/backend-api',
-            'https://new.oaifree.com': 'https://new.oaifree.com/backend-api'
-        };
-        return apiMapping[origin] || `${origin}/backend-api`;
-    }
+    getBackendApiBaseUrl() { return `${this.client.origin}/backend-api`; }
 
-    getPageAccessToken() {
-        return window.__remixContext?.state?.loaderData?.root?.clientBootstrap?.session?.accessToken ||
-            window.__NEXT_DATA__?.props?.pageProps?.session?.accessToken ||
-            null;
-    }
-
-    async fetchSessionAccessToken() {
-        const response = await fetch(`${window.location.origin}/api/auth/session`, {
-            credentials: 'include'
-        });
-        if (!response.ok) {
-            throw new Error(`Session request failed: ${response.status}`);
-        }
-        const session = await response.json();
-        if (!session?.accessToken) {
-            throw new Error('Session response did not include an access token');
-        }
-        this.accessTokenExpiresAt = Date.parse(session.expires) || Date.now() + 3_600_000;
-        return session.accessToken;
-    }
-
-    async getAccessToken() {
-        const pageAccessToken = this.pageAccessTokenRejected ? null : this.getPageAccessToken();
-        if (pageAccessToken) return pageAccessToken;
-
-        if (this.accessTokenExpiresAt && this.accessTokenExpiresAt - 60_000 <= Date.now()) this.accessTokenPromise = null;
-        if (!this.accessTokenPromise) {
-            this.accessTokenPromise = this.fetchSessionAccessToken().catch((error) => {
-                this.accessTokenPromise = null;
-                throw error;
-            });
-        }
-        return this.accessTokenPromise;
-    }
-
-    getCookie(key) {
-        return document.cookie.match(`(^|;)\\s*${key}\\s*=\\s*([^;]+)`)?.pop() || '';
-    }
-
-    async fetchBackendResponse(url, options = {}, includeAccount = true, retried = false) {
-        let accessToken = null;
-        try {
-            accessToken = await this.getAccessToken();
-        } catch (error) {
-            console.warn('[ChatGPT Helper] 未能获取 access token，尝试使用 Cookie 会话请求:', error);
-        }
-
-        const headers = { ...options.headers };
-        if (accessToken) {
-            headers.Authorization = `Bearer ${accessToken}`;
-            headers['X-Authorization'] = `Bearer ${accessToken}`;
-        }
-
-        if (includeAccount) {
-            const accountId = await this.getTeamAccountId();
-            if (accountId) {
-                headers['Chatgpt-Account-Id'] = accountId;
-            }
-        }
-
-        const response = await fetch(url, {
-            credentials: 'include',
-            ...options,
-            headers
-        });
-        if (response.status === 401 && !retried) {
-            this.accessTokenPromise = null;
-            this.pageAccessTokenRejected = true;
-            return this.fetchBackendResponse(url, options, includeAccount, true);
-        }
-        return response;
-    }
-
-    async fetchBackendJson(url, options = {}, includeAccount = true) {
-        const response = await this.fetchBackendResponse(url, options, includeAccount);
-        if (!response.ok) throw new Error(`ChatGPT API request failed: ${response.status} ${response.statusText || ''}`.trim());
-        return response.json();
-    }
-
-    async fetchTeamAccountId() {
-        const workspaceId = this.getCookie('_account');
-        if (!workspaceId) return null;
-
-        const url = `${this.getBackendApiBaseUrl()}/accounts/check/v4-2023-04-27`;
-        const accountsCheck = await this.fetchBackendJson(url, {}, false);
-        return accountsCheck?.accounts?.[workspaceId]?.account?.account_id || null;
-    }
-
-    async getTeamAccountId() {
-        if (!this.accountIdPromise) {
-            this.accountIdPromise = this.fetchTeamAccountId().catch((error) => {
-                console.warn('[ChatGPT Helper] 获取团队账号 ID 失败，继续使用默认账号:', error);
-                return null;
-            });
-        }
-        return this.accountIdPromise;
+    fetchBackendJson(url, options = {}) {
+        const parsed = new URL(url, this.client.origin);
+        if (parsed.origin !== this.client.origin) throw new TypeError('Invalid backend origin');
+        return this.client.json(parsed.pathname + parsed.search, options);
     }
 
     parseConversationTimestamp(value) {
@@ -439,21 +339,27 @@ class ChatGPTAdapter {
         };
     }
 
-    async fetchConversationListFromApi(maxConversations = 1000, pageSize = 100) {
+    async fetchConversationListFromApi(maxConversations = 1000, pageSize = 100, signal) {
         const conversations = [];
         let offset = 0;
 
-        while (conversations.length < maxConversations) {
+        const seen = new Set();
+        let pages = 0;
+        while (conversations.length < maxConversations && pages++ < Math.ceil(maxConversations / pageSize) + 10) {
+            signal?.throwIfAborted();
             const limit = Math.min(pageSize, maxConversations - conversations.length);
             const url = new URL(`${this.getBackendApiBaseUrl()}/conversations`);
             url.searchParams.set('offset', String(offset));
             url.searchParams.set('limit', String(limit));
 
-            const result = await this.fetchBackendJson(url.href);
+            const result = await this.fetchBackendJson(url.href, { signal });
             const items = Array.isArray(result?.items) ? result.items : [];
             if (items.length === 0) break;
 
-            items.forEach((item) => {
+            const fresh = items.filter(item => item?.id && !seen.has(item.id));
+            if (!fresh.length) break;
+            fresh.forEach((item) => {
+                seen.add(item.id);
                 const normalized = this.normalizeConversationApiItem(item);
                 if (normalized && conversations.length < maxConversations) {
                     conversations.push(normalized);
@@ -474,13 +380,15 @@ class ChatGPTAdapter {
         try {
             const conversations = await this.fetchConversationListFromApi(
                 options.maxConversations || 1000,
-                options.pageSize || 100
+                options.pageSize || 100,
+                options.signal
             );
             if (conversations.length > 0) {
                 return conversations;
             }
             console.warn('[ChatGPT Helper] API 未返回历史会话，回退到侧边栏 DOM 扫描');
         } catch (error) {
+            options.signal?.throwIfAborted();
             console.warn('[ChatGPT Helper] API 加载历史会话失败，回退到侧边栏 DOM 扫描:', error);
         }
 

@@ -1,3 +1,4 @@
+import { BUILD_ID } from '../shared/build';
 import * as helper from '../helper/index.js';
 
 const root = window.__MY_EXT__ = window.__MY_EXT__ || {};
@@ -11,8 +12,12 @@ if (!window.chatgptHelperInitialized) {
     const storageReady = root.storageCacheInitialized ? Promise.resolve() : new Promise(resolve => {
         window.addEventListener('ch-helper-storage-ready', resolve, { once: true });
     });
-    Promise.all([documentReady, storageReady]).then(() => {
-        new helper.ChatGPTHelper();
+    Promise.all([documentReady, storageReady]).then(async () => {
+        const application = new helper.ChatGPTHelper();
+        const owner = { buildId: BUILD_ID, dispose: () => application.destroy() };
+        root.application = owner;
+        try { await application.ready; }
+        catch (error) { owner.dispose(); if (root.application === owner) delete root.application; throw error; }
     }).catch(error => {
         window.chatgptHelperInitialized = false;
         console.error('[ChatGPT Helper] 启动失败:', error);

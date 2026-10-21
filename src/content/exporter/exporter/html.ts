@@ -1,90 +1,22 @@
-import { getExportHost } from '../host'
+import type { ExportOptions } from '../model/options';
 import hljs from 'highlight.js/lib/common'
 import renderMathInElement from 'katex/contrib/auto-render'
-import { fetchConversation, getCurrentChatId, processConversation, shouldSkipMessageInExport } from '../api'
-import { KEY_THINKING_ENABLED, KEY_TIMESTAMP_24H, KEY_TIMESTAMP_ENABLED, KEY_TIMESTAMP_HTML, baseUrl } from '../constants'
+import { shouldSkipMessageInExport } from '../model'
 import { exportedHtmlStyles } from '../generated/html-assets'
-import i18n from '../i18n'
-import { checkIfConversationStarted, getUserAvatar } from '../page'
 import templateHtml from '../template.html?raw'
-import { buildZipFileName, downloadFile, getFileNameWithFormat } from '../utils/download'
 import { fromMarkdown, toHtml } from '../utils/markdown'
-import { ScriptStorage } from '../utils/storage'
-import { standardizeLineBreaks } from '../utils/text'
-import { dateStr, getColorScheme, timestamp, unixTimestampToISOString } from '../utils/utils'
-import type { ApiConversationWithId, ConversationNodeMessage, ConversationResult, ThinkingContent } from '../api'
+import { dateStr, timestamp, unixTimestampToISOString } from '../utils/utils'
+import type { ApiConversationWithId, ConversationNodeMessage, ConversationResult, ThinkingContent } from '../model'
 import type { ExportMeta } from '../ui/SettingContext'
-import type { PartInfo } from '../utils/download'
 
-export async function exportToHtml(fileNameFormat: string, metaList: ExportMeta[]) {
-    if (!checkIfConversationStarted()) {
-        alert(i18n.t('Please start a conversation first'))
-        return false
-    }
-
-    const userAvatar = await getUserAvatar()
-
-    const chatId = await getCurrentChatId()
-    const rawConversation = await fetchConversation(chatId, true)
-    const enableThinking = ScriptStorage.get<boolean>(KEY_THINKING_ENABLED) ?? false
-    const conversation = processConversation(rawConversation, { enableThinking })
-    const html = conversationToHtml(conversation, userAvatar, metaList)
-
-    const fileName = getFileNameWithFormat(fileNameFormat, 'html', { title: conversation.title, chatId, createTime: conversation.createTime, updateTime: conversation.updateTime })
-    downloadFile(fileName, 'text/html', standardizeLineBreaks(html))
-
-    return true
-}
-
-export async function exportAllToHtml(fileNameFormat: string, apiConversations: ApiConversationWithId[], metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number, signal?: AbortSignal) {
-    const userAvatar = await getUserAvatar()
-
-    const JSZip = await getExportHost().loadDependency('zip')
-    const zip = new JSZip()
-    const filenameMap = new Map<string, number>()
-    const enableThinking = ScriptStorage.get<boolean>(KEY_THINKING_ENABLED) ?? false
-    const conversations = apiConversations.map(x => processConversation(x, { enableThinking }))
-    conversations.forEach((conversation) => {
-        let fileName = getFileNameWithFormat(fileNameFormat, 'html', {
-            title: conversation.title,
-            chatId: conversation.id,
-            createTime: conversation.createTime,
-            updateTime: conversation.updateTime,
-        })
-        if (filenameMap.has(fileName)) {
-            const count = filenameMap.get(fileName) ?? 1
-            filenameMap.set(fileName, count + 1)
-            fileName = `${fileName.slice(0, -5)} (${count}).html`
-        }
-        else {
-            filenameMap.set(fileName, 1)
-        }
-        const content = conversationToHtml(conversation, userAvatar, metaList)
-        zip.file(fileName, content)
-    })
-
-    const blob = await zip.generateAsync({
-        type: 'blob',
-        compression: 'DEFLATE',
-        compressionOptions: {
-            level: 9,
-        },
-    })
-    const partInfo: PartInfo | undefined = (partIndex != null && totalParts != null)
-        ? { part: partIndex, total: totalParts }
-        : undefined
-    signal?.throwIfAborted()
-    downloadFile(buildZipFileName('html', projectName, partInfo), 'application/zip', blob)
-
-    return true
-}
-
-function conversationToHtml(conversation: ConversationResult, avatar: string, metaList?: ExportMeta[]) {
+export function conversationToHtml(conversation: ConversationResult, options: ExportOptions) {
+    const metaList = options.enableMeta ? options.exportMetaList : [];
+    const avatar = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="#717b70"/></svg>')}`;
     const { id, title, model, modelSlug, createTime, updateTime, conversationNodes } = conversation
 
-    const enableTimestamp = ScriptStorage.get<boolean>(KEY_TIMESTAMP_ENABLED) ?? false
-    const timeStampHtml = ScriptStorage.get<boolean>(KEY_TIMESTAMP_HTML) ?? false
-    const timeStamp24H = ScriptStorage.get<boolean>(KEY_TIMESTAMP_24H) ?? false
+    const enableTimestamp = options.enableTimestamp
+    const timeStampHtml = options.enableTimestampHTML
+    const timeStamp24H = options.timeStamp24H
 
     const LatexRegex = /(\s\$\$.+?\$\$\s|\s\$.+?\$\s|\\\[.+?\\\]|\\\(.+?\\\))|(^\$$[\S\s]+?^\$$)|(^\$\$[\S\s]+?^\$\$\$)/gm
 
@@ -94,7 +26,7 @@ function conversationToHtml(conversation: ConversationResult, avatar: string, me
         if (shouldSkipMessageInExport(message)) return null
 
         const author = transformAuthor(message.author)
-        const model = message?.metadata?.model_slug === 'gpt-4' ? 'GPT-4' : 'GPT-3'
+        const model = 'assistant'
         const authorType = message.author.role === 'user' ? 'user' : model
         const avatarEl = message.author.role === 'user'
             ? `<img alt="${escapeHtml(author)}" />`
@@ -145,12 +77,12 @@ function conversationToHtml(conversation: ConversationResult, avatar: string, me
         const content = transformContent(message.content, message.metadata, postProcess)
 
         const timestamp = message?.create_time ?? ''
-        const showTimestamp = enableTimestamp && timeStampHtml && timestamp
+        const showTimestamp = enableTimestamp && timeStampHtml && unixTimestampToISOString(timestamp)
         let timestampHtml = ''
         let conversationTime = ''
 
         if (showTimestamp) {
-            const date = new Date(timestamp * 1000)
+            const date = new Date(unixTimestampToISOString(timestamp))
             // format: 20:12 / 08:12 PM
             conversationTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: !timeStamp24H })
             timestampHtml = `<time class="time" datetime="${date.toISOString()}" title="${date.toLocaleString()}">${conversationTime}</time>`
@@ -175,9 +107,9 @@ function conversationToHtml(conversation: ConversationResult, avatar: string, me
 
     const date = dateStr()
     const time = new Date().toISOString()
-    const source = `${baseUrl}/c/${id}`
-    const lang = document.documentElement.lang ?? 'en'
-    const theme = getColorScheme()
+    const source = `${options.origin}/c/${id}`
+    const lang = options.language
+    const theme = options.theme
 
     const _metaList = metaList
         ?.filter(x => !!x.name)
@@ -188,7 +120,7 @@ function conversationToHtml(conversation: ConversationResult, avatar: string, me
                 .replace('{timestamp}', timestamp())
                 .replace('{source}', source)
                 .replace('{model}', model)
-                .replace('{mode_name}', modelSlug)
+                .replace('{model_name}', modelSlug)
                 .replace('{create_time}', unixTimestampToISOString(createTime))
                 .replace('{update_time}', unixTimestampToISOString(updateTime))
 
@@ -317,7 +249,7 @@ function transformContent(
         case 'text':
             return postProcess(content.parts?.join('\n') || '')
         case 'code':
-            return `Code:\n\`\`\`\n${content.text}\n\`\`\`` || ''
+            return `<pre><code>${escapeHtml(content.text || '')}</code></pre>`
         case 'execution_output':
             if (metadata?.aggregate_result?.messages) {
                 return metadata.aggregate_result.messages
@@ -382,7 +314,7 @@ function formatThinkingHtml(thinking: ThinkingContent): string {
 }
 
 function escapeHtml(html: string) {
-    return html
+    return String(html ?? '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -395,13 +327,15 @@ function escapeHtml(html: string) {
  * fragment references (e.g. the inline `#chatgpt` SVG symbol) stay untouched.
  */
 function sanitizeUrl(url: string, context: 'link' | 'image'): string {
-    if (!url) return ''
-    const scheme = /^\s*([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(url)?.[1]?.toLowerCase()
-    if (!scheme) return url.trim() // relative path / fragment — inert in a static file
-    const linkAllowed = scheme === 'http' || scheme === 'https' || scheme === 'mailto'
-    const imageAllowed = linkAllowed || scheme === 'data' && /^data:image\//i.test(url.trim())
-    const allowed = context === 'link' ? linkAllowed : imageAllowed
-    return allowed ? url.trim() : (context === 'link' ? '#' : '')
+    if (typeof url !== 'string' || !url.trim()) return '';
+    const cleaned = url.trim();
+    try {
+        const parsed = new URL(cleaned, 'https://export.invalid/');
+        const allowed = ['http:', 'https:', 'mailto:'].includes(parsed.protocol) ||
+            context === 'image' && /^data:image\/(?:png|jpeg|webp|gif|svg\+xml)[;,]/i.test(cleaned);
+        return allowed ? cleaned : context === 'link' ? '#' : '';
+    } catch { return context === 'link' ? '#' : ''; }
+
 }
 
 function enhanceExportedContent(html: string): string {
@@ -437,7 +371,8 @@ function sanitizeExportedDom(root: Element) {
                     else el.removeAttribute(attr.name)
                 }
             }
-            else if (name === 'src' || name === 'srcset') {
+            else if (name === 'srcset') el.removeAttribute(attr.name)
+            else if (name === 'src') {
                 const safe = sanitizeUrl(attr.value, 'image')
                 if (safe !== attr.value.trim()) {
                     if (safe) el.setAttribute(attr.name, safe)
@@ -449,7 +384,7 @@ function sanitizeExportedDom(root: Element) {
     // KaTeX/style integrity: remove inline style urls pointing at script-capable schemes
     root.querySelectorAll('[style]').forEach((el) => {
         const style = el.getAttribute('style') ?? ''
-        if (/url\(\s*['"]?\s*(javascript|vbscript|data:text\/html)/i.test(style)) {
+        if (/url\(/i.test(style)) {
             el.removeAttribute('style')
         }
     })
