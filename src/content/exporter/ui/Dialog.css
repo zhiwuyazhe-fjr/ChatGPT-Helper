@@ -1,12 +1,12 @@
-.DialogOverlay {
+:where(.gh-export-root, .gh-export-portal) .DialogOverlay {
     background-color: rgba(0, 0, 0, 0.44);
     position: fixed;
     inset: 0;
     z-index: 1000;
-    animation: fadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    animation: gh-export-fadeIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.DialogContent {
+:where(.gh-export-root, .gh-export-portal) .DialogContent {
     background-color: #f3f3f3;
     border-radius: 6px;
     box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
@@ -21,24 +21,24 @@
     padding: 16px 24px;
     z-index: 1001;
     outline: none;
-    animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+    animation: gh-export-contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
 }
 
-.dark .DialogContent {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .DialogContent {
     background-color: #2a2a2a;
     border-color: #40414f;
     border-width: 1px;
 }
 
-.DialogContent input[type="checkbox"] {
+:where(.gh-export-root, .gh-export-portal) .DialogContent input[type="checkbox"] {
     border: none;
     outline: none;
     box-shadow: none;
 }
 
-.DialogTitle {
+:where(.gh-export-root, .gh-export-portal) .DialogTitle {
     margin: 0 0 16px 0;
     font-weight: 500;
     color: #1a1523;
@@ -46,30 +46,30 @@
     flex-shrink: 0;
 }
 
-.DialogBody {
+:where(.gh-export-root, .gh-export-portal) .DialogBody {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-.settings-sections {
+:where(.gh-export-root, .gh-export-portal) .settings-sections {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.settings-section {
+:where(.gh-export-root, .gh-export-portal) .settings-section {
     overflow: hidden;
     border-radius: 6px;
     background-color: #fff;
 }
 
-.dark .settings-section {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .settings-section {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-.settings-section-header {
+:where(.gh-export-root, .gh-export-portal) .settings-section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -78,7 +78,7 @@
     padding: 0 14px;
 }
 
-.settings-section-trigger {
+:where(.gh-export-root, .gh-export-portal) .settings-section-trigger {
     display: inline-flex;
     align-items: center;
     min-width: 0;
@@ -95,19 +95,19 @@
     text-align: left;
 }
 
-.settings-section-trigger:hover {
+:where(.gh-export-root, .gh-export-portal) .settings-section-trigger:hover {
     color: #0f7f68;
 }
 
-.dark .settings-section-trigger {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .settings-section-trigger {
     color: #fff;
 }
 
-.dark .settings-section-trigger:hover {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .settings-section-trigger:hover {
     color: #7ddfc4;
 }
 
-.settings-section-chevron {
+:where(.gh-export-root, .gh-export-portal) .settings-section-chevron {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -121,31 +121,31 @@
     transition: transform 150ms ease;
 }
 
-.settings-section-chevron.open {
+:where(.gh-export-root, .gh-export-portal) .settings-section-chevron.open {
     transform: rotate(90deg);
 }
 
-.settings-section-action {
+:where(.gh-export-root, .gh-export-portal) .settings-section-action {
     display: inline-flex;
     align-items: center;
     flex: 0 0 auto;
 }
 
-.settings-section-panel {
+:where(.gh-export-root, .gh-export-portal) .settings-section-panel {
     margin: 0;
     padding: 0 14px 14px 38px;
     color: #374151;
 }
 
-.dark .settings-section-panel {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .settings-section-panel {
     color: #d1d5db;
 }
 
-.dark .DialogTitle {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .DialogTitle {
     color: #fff;
 }
 
-.Button {
+:where(.gh-export-root, .gh-export-portal) .Button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -155,15 +155,15 @@
     line-height: 1;
     height: 35px;
 }
-.Button.green {
+:where(.gh-export-root, .gh-export-portal) .Button.green {
     background-color: #ddf3e4;
     color: #18794e;
 }
-.Button.red {
+:where(.gh-export-root, .gh-export-portal) .Button.red {
     background-color: #f9d9d9;
     color: #a71d2a;
 }
-.Button.neutral {
+:where(.gh-export-root, .gh-export-portal) .Button.neutral {
     background-color: transparent;
     color: #6f6e77;
     border: 1px solid #6f6e77;
@@ -171,30 +171,30 @@
     height: 26px;
     padding: 0 8px;
 }
-.Button.green:hover {
+:where(.gh-export-root, .gh-export-portal) .Button.green:hover {
     background-color: #ccebd7;
 }
-.Button.neutral:hover {
+:where(.gh-export-root, .gh-export-portal) .Button.neutral:hover {
     background-color: rgba(111, 110, 119, 0.1);
 }
-.dark .Button.neutral {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .Button.neutral {
     color: #a0a0a8;
     border-color: #a0a0a8;
 }
-.dark .Button.neutral:hover {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .Button.neutral:hover {
     background-color: rgba(160, 160, 168, 0.1);
 }
-.Button:disabled {
+:where(.gh-export-root, .gh-export-portal) .Button:disabled {
     opacity: 0.5;
     color: #6f6e77;
     background-color: #e0e0e0;
     cursor: not-allowed;
 }
-.Button:disabled:hover {
+:where(.gh-export-root, .gh-export-portal) .Button:disabled:hover {
     background-color: #e0e0e0;
 }
 
-.IconButton {
+:where(.gh-export-root, .gh-export-portal) .IconButton {
     font-family: inherit;
     border-radius: 100%;
     height: 25px;
@@ -204,35 +204,35 @@
     justify-content: center;
     color: #6f6e77;
 }
-.IconButton:hover {
+:where(.gh-export-root, .gh-export-portal) .IconButton:hover {
     background-color: rgba(0, 0, 0, 0.06);
 }
 
-.CloseButton {
+:where(.gh-export-root, .gh-export-portal) .CloseButton {
     position: absolute;
     top: 10px;
     right: 10px;
 }
 
-.Fieldset {
+:where(.gh-export-root, .gh-export-portal) .Fieldset {
     display: flex;
     gap: 20px;
     align-items: center;
     margin-bottom: 15px;
 }
 
-.Label {
+:where(.gh-export-root, .gh-export-portal) .Label {
     font-size: 15px;
     color: #1a1523;
     min-width: 90px;
     text-align: right;
 }
 
-.dark .Label {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .Label {
     color: #fff;
 }
 
-.Input {
+:where(.gh-export-root, .gh-export-portal) .Input {
     width: 100%;
     flex: 1;
     display: inline-flex;
@@ -249,24 +249,24 @@
     outline: none;
 }
 
-.dark .Input {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .Input {
     background-color: #2f2f2f;
     color: #fff;
     box-shadow: 0 0 0 1px #6f6e77;
 }
 
-.Description {
+:where(.gh-export-root, .gh-export-portal) .Description {
     font-size: 13px;
     color: #5a5865;
     text-align: right;
     margin-bottom: 4px;
 }
 
-.dark .Description {
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .Description {
     color: #bcbcbc;
 }
 
-.SelectSearch {
+:where(.gh-export-root, .gh-export-portal) .SelectSearch {
     width: 100%;
     padding: 8px 16px;
     border: 1px solid #6f6e77;
@@ -278,11 +278,11 @@
     outline: none;
     flex-shrink: 0;
 }
-.SelectSearch::placeholder {
+:where(.gh-export-root, .gh-export-portal) .SelectSearch::placeholder {
     color: #9ca3af;
 }
 
-.SelectToolbar {
+:where(.gh-export-root, .gh-export-portal) .SelectToolbar {
     display: flex;
     align-items: center;
     padding: 12px 16px;
@@ -292,11 +292,11 @@
     flex-shrink: 0;
 }
 
-.ProjectSelect .Select {
+:where(.gh-export-root, .gh-export-portal) .ProjectSelect .Select {
     width: auto;
 }
 
-.SelectList {
+:where(.gh-export-root, .gh-export-portal) .SelectList {
     position: relative;
     width: 100%;
     flex: 1;
@@ -309,33 +309,33 @@
     white-space: nowrap;
 }
 
-.SelectItem {
+:where(.gh-export-root, .gh-export-portal) .SelectItem {
     display: flex;
     align-items: center;
     gap: 6px;
     overflow: hidden;
 }
 
-.SelectItem .CheckBoxLabel {
+:where(.gh-export-root, .gh-export-portal) .SelectItem .CheckBoxLabel {
     flex: 1;
     min-width: 0;
 }
 
-.SelectItem .LabelText {
+:where(.gh-export-root, .gh-export-portal) .SelectItem .LabelText {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.SelectItem label, .SelectItem input {
+:where(.gh-export-root, .gh-export-portal) .SelectItem label, :where(.gh-export-root, .gh-export-portal) .SelectItem input {
     cursor: pointer;
 }
 
-.SelectItem span {
+:where(.gh-export-root, .gh-export-portal) .SelectItem span {
     vertical-align: middle;
 }
 
-.SelectItemMeta {
+:where(.gh-export-root, .gh-export-portal) .SelectItemMeta {
     flex-shrink: 0;
     font-size: 0.7rem;
     color: #9ca3af;
@@ -344,16 +344,14 @@
     min-width: 6.5rem;
     text-align: right;
 }
-.SelectItemMetaActive {
+:where(.gh-export-root, .gh-export-portal) .SelectItemMetaActive {
     color: #6b7280;
     font-weight: 600;
 }
-.dark {
-    .SelectItemMetaActive { color: #d1d5db; }
-}
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .SelectItemMetaActive { color: #d1d5db; }
 
 /* ── Sortable column header row ── */
-.SelectListHeader {
+:where(.gh-export-root, .gh-export-portal) .SelectListHeader {
     display: flex;
     align-items: center;
     padding: 0 16px;
@@ -364,11 +362,9 @@
     flex-shrink: 0;
 }
 
-.dark {
-    .SelectListHeader { background: #1f2937; }
-}
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .SelectListHeader { background: #1f2937; }
 
-.SelectListHeaderCell {
+:where(.gh-export-root, .gh-export-portal) .SelectListHeaderCell {
     flex-shrink: 0;
     font-size: 0.68rem;
     font-weight: 600;
@@ -383,24 +379,20 @@
     min-width: 6.5rem;
     text-align: right;
 }
-.SelectListHeaderCell:hover { color: #374151; }
-.dark {
-    .SelectListHeaderCell:hover { color: #e5e7eb; }
-}
-.SelectListHeaderCellTitle {
+:where(.gh-export-root, .gh-export-portal) .SelectListHeaderCell:hover { color: #374151; }
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .SelectListHeaderCell:hover { color: #e5e7eb; }
+:where(.gh-export-root, .gh-export-portal) .SelectListHeaderCellTitle {
     flex: 1;
     text-align: left;
     padding-left: 28px; /* align with checkbox label */
 }
-.SelectListHeaderCellActive {
+:where(.gh-export-root, .gh-export-portal) .SelectListHeaderCellActive {
     color: #2563eb;
 }
-.dark {
-    .SelectListHeaderCellActive { color: #60a5fa; }
-}
+[data-gh-mode="dark"] :where(.gh-export-root, .gh-export-portal) .SelectListHeaderCellActive { color: #60a5fa; }
 
 
-@keyframes contentShow {
+@keyframes gh-export-contentShow {
     from {
         opacity: 0;
         transform: translate(-50%, -48%) scale(0.96);

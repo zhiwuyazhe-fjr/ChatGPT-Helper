@@ -38,5 +38,5 @@ export class RuntimeScope {
 // Text mutations have a Text target; never call Element.closest on that target.
 export function isHelperMutation(mutation) {
     const element = mutation.target?.nodeType === 1 ? mutation.target : mutation.target?.parentElement;
-    return Boolean(element?.closest('[id^="chatgpt-helper"], .chatgpt-helper-dialog-overlay, #outline-content'));
+    return Boolean(element?.closest('[id^="chatgpt-helper"], [data-gh-owned], .chatgpt-helper-dialog-overlay, #outline-content'));
 }

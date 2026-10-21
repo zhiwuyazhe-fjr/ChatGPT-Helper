@@ -1,19 +1,20 @@
 import { copyTextToClipboard, createElement, createSvgIconNode } from './10-base.js';
+import { snapshotMessage } from './66-message-snapshot.js';
+import { isHelperMutation } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper Message Select Manager
 // 支持勾选对话中的部分消息，悬浮工具条提供 MD/JSON/TXT 导出与复制
 
-
-const TURN_SELECTORS = [
-    'article[data-testid^="conversation-turn"]',
-    '.group[data-testid*="conversation-turn"]',
-    '[data-testid="conversation-turn-item"]'
-].join(', ');
 
 class MessageSelectManager {
     constructor(config = {}) {
         this.t = config.t || ((key) => key);
         this.showToast = config.onToast || ((msg) => {});
         this.observer = null;
+        this.adapter = config.adapter;
+        this.onImageExport = config.onImageExport;
+        this.listeners = new Set();
+        this.route = location.pathname;
+        this.main = this.adapter.getChatContainer();
         this.toolbar = null;
         // 勾选时保存内容快照（纯数据，不持有 DOM 引用）：
         // 长对话被虚拟化回收后仍可导出，也不会造成内存泄漏
@@ -27,7 +28,9 @@ class MessageSelectManager {
         this._started = true;
         this.syncTurns();
         if (typeof MutationObserver === 'function') {
-            this.observer = new MutationObserver(() => this.scheduleSync());
+            this.observer = new MutationObserver(records => {
+                if (records.some(record => !isHelperMutation(record))) this.scheduleSync();
+            });
             this.observer.observe(document.body, {
                 childList: true,
                 subtree: true
@@ -63,32 +66,44 @@ class MessageSelectManager {
     }
 
     findTurns() {
-        if (typeof document.querySelectorAll !== 'function') return [];
-        try {
-            return Array.from(document.querySelectorAll(TURN_SELECTORS));
-        } catch (e) {
-            return [];
-        }
+        return this.adapter.getChatMessages().filter(message => ['user', 'assistant'].includes(this.adapter.getMessageRole(message)));
     }
 
-    extractTurnMessage(turn) {
-        const authorEl = turn.querySelector('[data-message-author-role]');
-        const role = authorEl && authorEl.getAttribute('data-message-author-role') === 'user'
-            ? 'user'
-            : 'assistant';
-        let content = '';
-        if (authorEl) {
-            content = (authorEl.innerText || authorEl.textContent || '').trim();
-        } else {
-            content = (turn.innerText || turn.textContent || '').trim();
+    subscribe(listener) {
+        this.listeners.add(listener);
+        return () => this.listeners.delete(listener);
+    }
+
+    notify() { this.listeners.forEach(listener => listener()); }
+
+    refreshContext() {
+        if (this.route !== location.pathname || this.main !== this.adapter.getChatContainer()) {
+            this.route = location.pathname;
+            this.main = this.adapter.getChatContainer();
+            this.clearSelection();
         }
-        return { role, content };
+        this.syncTurns();
+        this.notify();
     }
 
     syncTurns() {
         // 选中状态保存在 selections 数组（纯数据），DOM 回收不影响已选项
+        if (!this._started) return;
+        if (this.route !== location.pathname || this.main !== this.adapter.getChatContainer()) {
+            this.route = location.pathname;
+            this.main = this.adapter.getChatContainer();
+            this.clearSelection();
+        }
         const turns = this.findTurns();
-        turns.forEach((turn) => {
+        turns.forEach((turn, order) => {
+            const id = this.adapter.getMessageIdentity(turn, order);
+            const selected = this.selections.some(item => item.id === id);
+            turn.classList.toggle('gh-msg-selected', selected);
+            const existing = turn.querySelector(':scope > .gh-msg-select-check');
+            if (existing) {
+                existing.classList.toggle('checked', selected);
+                existing.setAttribute('aria-pressed', String(selected));
+            }
             if (turn.querySelector(':scope > .gh-msg-select-check')) return;
             try {
                 turn.classList.add('gh-msg-select-turn');
@@ -97,7 +112,8 @@ class MessageSelectManager {
                     type: 'button',
                     title: this.t('selectMessageTitle'),
                     'aria-label': this.t('selectMessageTitle'),
-                    'aria-pressed': 'false'
+                    'aria-pressed': String(selected),
+                    'data-gh-owned': 'selection'
                 });
                 check.appendChild(createSvgIconNode('check', { size: 11 }));
                 check.addEventListener('click', (e) => {
@@ -115,14 +131,9 @@ class MessageSelectManager {
     }
 
     toggle(turn, check) {
-        const message = this.extractTurnMessage(turn);
-        // 以 turn 元素身份识别选中态：两条内容完全相同的消息（很常见）也必须能各自独立勾选，
-        // 用 role+content 当 key 会让第二条的勾选反向取消第一条
-        if (!turn.dataset.ghSelId) {
-            turn.dataset.ghSelId = `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-        }
-        const turnId = turn.dataset.ghSelId;
-        const existingIndex = this.selections.findIndex((item) => item.turnId === turnId);
+        const order = this.findTurns().indexOf(turn);
+        const message = snapshotMessage(this.adapter, turn, order);
+        const existingIndex = this.selections.findIndex(item => item.id === message.id);
         if (existingIndex !== -1) {
             this.selections.splice(existingIndex, 1);
             turn.classList.remove('gh-msg-selected');
@@ -131,7 +142,7 @@ class MessageSelectManager {
                 check.setAttribute('aria-pressed', 'false');
             }
         } else {
-            this.selections.push({ turnId, key: `${message.role}::${message.content}`, role: message.role, content: message.content });
+            this.selections.push(message);
             turn.classList.add('gh-msg-selected');
             if (check) {
                 check.classList.add('checked');
@@ -139,6 +150,7 @@ class MessageSelectManager {
             }
         }
         this.updateToolbar();
+        this.notify();
     }
 
     clearSelection() {
@@ -152,24 +164,17 @@ class MessageSelectManager {
             }
         });
         this.updateToolbar();
+        this.notify();
     }
 
-    getConversationTitle() {
-        try {
-            const h1 = document.querySelector('main h1, [role="main"] h1');
-            if (h1 && h1.textContent.trim()) return h1.textContent.trim();
-            const title = (document.title || '').split('|')[0].trim();
-            return title || 'conversation';
-        } catch (e) {
-            return 'conversation';
-        }
-    }
+    getConversationTitle() { return this.adapter.getSessionName() || 'ChatGPT'; }
 
     collectSelectedMessages() {
-        // 按勾选顺序返回快照内容
-        return this.selections
-            .filter((item) => item.content)
-            .map((item) => ({ role: item.role, content: item.content }));
+        // Resolve mounted nodes again (streaming edits / branch replacement), retain snapshots
+        // for virtualized nodes, and always export in conversation order.
+        const current = new Map(this.findTurns().map((node, order) => [this.adapter.getMessageIdentity(node, order), node]));
+        return this.selections.map(item => current.has(item.id) ? snapshotMessage(this.adapter, current.get(item.id), item.order) : item)
+            .sort((a, b) => a.order - b.order);
     }
 
     formatToMarkdown(title, messages, exportedAt) {
@@ -206,7 +211,7 @@ class MessageSelectManager {
             title,
             exportedAt,
             source: window.location && window.location.href ? window.location.href : '',
-            messages
+            messages: messages.map(({role, content}) => ({role, content}))
         }, null, 2);
     }
 
@@ -280,7 +285,8 @@ class MessageSelectManager {
             id: 'chatgpt-helper-msg-select-toolbar',
             className: 'gh-msg-select-toolbar',
             role: 'toolbar',
-            'aria-label': 'ChatGPT Helper message export'
+            'aria-label': 'ChatGPT Helper message export',
+            'data-gh-owned': 'selection'
         });
         const count = createElement('span', { className: 'gh-msg-select-toolbar-count' });
         this.toolbar.appendChild(count);
@@ -297,6 +303,7 @@ class MessageSelectManager {
             });
             return btn;
         };
+        this.toolbar.appendChild(makeBtn(this.t('exportSelectedImage'), () => this.onImageExport?.()));
         this.toolbar.appendChild(makeBtn(this.t('exportSelectedMarkdown'), () => this.exportSelected('md')));
         this.toolbar.appendChild(makeBtn(this.t('exportSelectedJson'), () => this.exportSelected('json')));
         this.toolbar.appendChild(makeBtn(this.t('exportSelectedTxt'), () => this.exportSelected('txt')));

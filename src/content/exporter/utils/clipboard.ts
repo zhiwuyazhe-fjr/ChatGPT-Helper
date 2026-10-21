@@ -1,14 +1,14 @@
-export function copyToClipboard(text: string) {
+export async function copyToClipboard(text: string) {
     try {
         // for modern browsers
-        navigator.clipboard.writeText(text)
+        await navigator.clipboard.writeText(text)
     }
     catch {
         const textarea = document.createElement('textarea')
         textarea.value = text
         document.body.appendChild(textarea)
         textarea.select()
-        document.execCommand('copy')
-        document.body.removeChild(textarea)
+        try { if (!document.execCommand('copy')) throw new Error('Clipboard permission denied') }
+        finally { textarea.remove() }
     }
 }

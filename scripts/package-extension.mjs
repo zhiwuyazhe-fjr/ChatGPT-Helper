@@ -17,6 +17,7 @@ if (dirname(artifactsDir) !== resolve(root)) {
 const entries = [
     'manifest.json',
     'LICENSE',
+    'THIRD_PARTY_NOTICES.md',
     'background',
     'content-scripts/gm-api-adapter.js',
     'content-scripts/dist',
@@ -36,6 +37,7 @@ for (const entry of entries) {
 const requiredFiles = [
     'manifest.json',
     'LICENSE',
+    'THIRD_PARTY_NOTICES.md',
     'content-scripts/gm-api-adapter.js',
     'content-scripts/dist/chatgpt-exporter.js',
     'content-scripts/dist/chatgpt-helper.js',
@@ -45,7 +47,6 @@ const requiredFiles = [
     'icons/icon128.png',
     'icons/logo.svg',
     'libs/jszip.min.js',
-    'libs/html2canvas.min.js',
 ]
 
 for (const file of requiredFiles) {

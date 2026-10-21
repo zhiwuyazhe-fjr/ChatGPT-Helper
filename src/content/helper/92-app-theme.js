@@ -1,4 +1,4 @@
-import { AUTHOR_GITHUB_URL, DEFAULT_THEME_CONFIG, EXTENSION_VERSION, ISSUE_URL, REPO_URL, THEME_BACKGROUND_ALLOWED_TYPES, THEME_BACKGROUND_MAX_SIZE, THEME_HOST_ATTRS, THEME_PRESETS, buildThemeSurfaceVars, clampNumber, createElement, createHelperLogoNode, createSvgIconNode, getExtensionManifestMeta, getThemePresetByKey, normalizeThemeConfig, openExternalLink, setButtonIcon } from './10-base.js';
+import { AUTHOR_GITHUB_URL, DEFAULT_THEME_CONFIG, EXTENSION_VERSION, ISSUE_URL, REPO_URL, THEME_BACKGROUND_ALLOWED_TYPES, THEME_BACKGROUND_MAX_SIZE, THEME_HOST_ATTRS, THEME_PRESETS, buildThemeSurfaceVars, clampNumber, createElement, createHelperLogoNode, createSvgIconNode, getExtensionManifestMeta, getExtensionRuntime, getThemePresetByKey, normalizeThemeConfig, openExternalLink, setButtonIcon } from './10-base.js';
 import { THEME_RUNTIME_CSS } from './21-theme-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper App Theme
 
@@ -1026,7 +1026,7 @@ export const ThemeFeature = {
 
         const authorBody = createElement('div', { className: 'chatgpt-helper-about-author-block' });
         const authorAvatar = createElement('div', { className: 'chatgpt-helper-about-avatar' });
-        authorAvatar.appendChild(createSvgIconNode('user', { size: 22, strokeWidth: '2' }));
+        authorAvatar.appendChild(createElement('img', { src: getExtensionRuntime()?.getURL('icons/author-avatar.png') || 'icons/author-avatar.png', alt: this.t('aboutAuthorTitle'), width: 64, height: 64, loading: 'lazy' }));
         authorBody.appendChild(authorAvatar);
         authorBody.appendChild(createElement('p', { className: 'chatgpt-helper-about-section-text chatgpt-helper-about-author-bio' }, this.t('aboutAuthorBio') || 'Author bio coming soon'));
         const authorActions = createActionRow();

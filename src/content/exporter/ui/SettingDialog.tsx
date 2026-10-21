@@ -1,3 +1,4 @@
+import { getExportPortal } from '../host'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useState } from 'preact/hooks'
 import { useTranslation } from 'react-i18next'
@@ -64,7 +65,6 @@ export const SettingDialog: FC<SettingDialogProps> = ({
     children,
 }) => {
     const {
-        /* eslint-disable pionxzh/consistent-list-newline */
         format, setFormat,
         enableTimestamp, setEnableTimestamp,
         timeStamp24H, setTimeStamp24H,
@@ -74,7 +74,6 @@ export const SettingDialog: FC<SettingDialogProps> = ({
         exportMetaList, setExportMetaList,
         enableThinking, setEnableThinking,
         exportAllLimit, setExportAllLimit,
-        /* eslint-enable pionxzh/consistent-list-newline */
     } = useSettingContext()
     const { t } = useTranslation()
     const _title = useTitle()
@@ -97,9 +96,9 @@ export const SettingDialog: FC<SettingDialogProps> = ({
             <Dialog.Trigger asChild>
                 {children}
             </Dialog.Trigger>
-            <Dialog.Portal>
+            <Dialog.Portal container={getExportPortal()}>
                 <Dialog.Overlay className="DialogOverlay" />
-                <Dialog.Content className="DialogContent">
+                <Dialog.Content className="DialogContent" aria-describedby={undefined}>
                     <Dialog.Title className="DialogTitle">{t('Exporter Settings')}</Dialog.Title>
                     <div className="DialogBody">
                         <dl className="settings-sections">
@@ -128,7 +127,7 @@ export const SettingDialog: FC<SettingDialogProps> = ({
                             <SettingsSection
                                 id="thinking"
                                 title={t('Export Thinking Process')}
-                                action={<Toggle label="" checked={enableThinking} onCheckedUpdate={setEnableThinking} />}
+                                action={<Toggle labelHidden label={t('Export Thinking Process')} checked={enableThinking} onCheckedUpdate={setEnableThinking} />}
                             >
                                 <p className="text-sm text-gray-700 dark:text-gray-300">
                                     {t('Export Thinking Process Description')}
@@ -165,7 +164,7 @@ export const SettingDialog: FC<SettingDialogProps> = ({
                             <SettingsSection
                                 id="conversation-timestamp"
                                 title={t('Conversation Timestamp')}
-                                action={<Toggle label="" checked={enableTimestamp} onCheckedUpdate={setEnableTimestamp} />}
+                                action={<Toggle labelHidden label={t('Conversation Timestamp')} checked={enableTimestamp} onCheckedUpdate={setEnableTimestamp} />}
                             >
                                 <p className="text-sm text-gray-700 dark:text-gray-300">
                                     {t('Conversation Timestamp Description')}
@@ -200,7 +199,7 @@ export const SettingDialog: FC<SettingDialogProps> = ({
                             <SettingsSection
                                 id="export-metadata"
                                 title={t('Export Metadata')}
-                                action={<Toggle label="" checked={enableMeta} onCheckedUpdate={setEnableMeta} />}
+                                action={<Toggle labelHidden label={t('Export Metadata')} checked={enableMeta} onCheckedUpdate={setEnableMeta} />}
                             >
                                 <p className="text-sm text-gray-700 dark:text-gray-300">
                                     {t('Export Metadata Description')}
@@ -276,7 +275,7 @@ export const SettingDialog: FC<SettingDialogProps> = ({
                         </div>
                     </div>
                     <Dialog.Close asChild>
-                        <button className="IconButton CloseButton" aria-label="Close">
+                        <button className="IconButton CloseButton" aria-label={t('Close')}>
                             <IconCross />
                         </button>
                     </Dialog.Close>

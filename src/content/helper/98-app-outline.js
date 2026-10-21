@@ -16,7 +16,7 @@ export const OutlineFeature = {
                 container,
                 settings: this.settings,
                 siteAdapter: this.adapter,
-                onNavigate: top => this.scrollManager.scrollTo({ top, behavior: 'smooth' }),
+                onNavigate: (top, onComplete) => this.scrollManager.scrollTo({ top, behavior: 'smooth', onComplete }),
                 onJumpBefore: () => {
                     if (this.anchorManager && this.scrollManager) {
                         this.anchorManager.setAnchor(this.scrollManager.scrollTop);

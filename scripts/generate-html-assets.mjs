@@ -21,7 +21,8 @@ function fontMimeType(fileName) {
 }
 
 function inlineKatexFonts(css) {
-    return css.replace(/url\(fonts\/([^)]+)\)/g, (_match, fileName) => {
+    // MV3 targets current Chrome; one WOFF2 face avoids shipping WOFF and TTF duplicates.
+    return css.replace(/,url\(fonts\/[^)]+\.(?:woff|ttf)\) format\("[^"]+"\)/g, '').replace(/url\(fonts\/([^)]+)\)/g, (_match, fileName) => {
         const bytes = readPackageAsset('katex', 'dist', 'fonts', fileName)
         return `url(data:${fontMimeType(fileName)};base64,${bytes.toString('base64')})`
     })

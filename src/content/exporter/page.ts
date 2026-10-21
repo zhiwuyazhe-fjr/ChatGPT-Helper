@@ -1,3 +1,4 @@
+import { getExportHost } from './host'
 import { getBase64FromImageUrl, getBase64FromImg } from './utils/dom'
 
 declare global {
@@ -120,19 +121,9 @@ export async function getUserAvatar(): Promise<string> {
         console.error(e)
     }
 
-    try {
-        const avatars = Array.from(document.querySelectorAll<HTMLImageElement>('img[alt]:not([aria-hidden])'))
-        // starts with data: means it's not (lazy)loaded yet
-        const avatar = avatars.find(avatar => !avatar.src.startsWith('data:'))
-        if (avatar) return getBase64FromImg(avatar)
-    }
-    catch (e) {
-        console.error(e)
-    }
-
     return defaultAvatar
 }
 
 export function checkIfConversationStarted() {
-    return !!document.querySelector('[data-testid^="conversation-turn-"]')
+    return Boolean(getExportHost()?.adapter.getChatMessages().length)
 }

@@ -1,229 +1,41 @@
-import { render } from 'preact'
-import sentinel from 'sentinel-js'
-import { fetchConversation, processConversation } from './api'
-import { getChatIdFromUrl } from './page'
-import { DirectMenu } from './ui/DirectMenu'
-import { onloadSafe } from './utils/utils'
+import { render } from 'preact';
+import { DirectMenu } from './ui/DirectMenu';
+import { setExportHost } from './host';
+import { syncLanguageFromHelper } from './i18n';
+import type { ExportHost } from './host';
+import './styles/missing-tailwind.css';
+import './styles/workspace.css';
 
-import { syncLanguageFromHelper } from './i18n'
-import './styles/missing-tailwind.css'
-
-declare global {
-    interface Window {
-        __MY_EXT__?: Record<string, any>
-        ChatGPTExporterMount?: (targetElement: Element) => Element | null
-        ChatGPTExporterSetLanguage?: (language?: string | null) => string
-    }
+let disposeCurrent: (() => void) | undefined;
+function mount(target: Element, host: ExportHost) {
+    disposeCurrent?.();
+    syncLanguageFromHelper(host.getContext().language);
+    const root = document.createElement('div');
+    root.className = 'gh-export-root';
+    root.setAttribute('data-gh-owned', 'export');
+    target.append(root);
+    const portal = document.createElement('div');
+    portal.className = 'gh-export-portal';
+    portal.setAttribute('data-gh-owned', 'export');
+    document.body.append(portal);
+    setExportHost(host, portal);
+    const controller = {
+        openImage: () => root.dispatchEvent(new Event('open-image')),
+        contextChanged: () => root.dispatchEvent(new Event('context-changed')),
+        setLanguage: (language: string) => syncLanguageFromHelper(language),
+        destroy: () => {
+            render(null, root);
+            root.remove();
+            portal.remove();
+            if (disposeCurrent === controller.destroy) { disposeCurrent = undefined; setExportHost(null); }
+        },
+    };
+    disposeCurrent = controller.destroy;
+    try { render(<DirectMenu container={root} host={host} />, root); }
+    catch (error) { controller.destroy(); throw error; }
+    return controller;
 }
-
-const EXPORTER_STYLE_ID = 'chatgpt-helper-exporter-compact-style'
-
-function ensureNamespace() {
-    window.__MY_EXT__ = window.__MY_EXT__ || {}
-    return window.__MY_EXT__
-}
-
-function ensureCompactStyle() {
-    if (document.getElementById(EXPORTER_STYLE_ID)) return
-    const style = document.createElement('style')
-    style.id = EXPORTER_STYLE_ID
-    style.textContent = `
-        .chatgpt-helper-export-grid {
-          padding: 12px 14px 18px !important;
-          gap: 7px !important;
-          grid-template-columns: minmax(0, 1fr) !important;
-          align-content: start !important;
-          grid-auto-rows: minmax(42px, auto) !important;
-        }
-        .chatgpt-helper-export-grid > .row-full,
-        .chatgpt-helper-export-grid > .row-half {
-          grid-column: auto !important;
-        }
-        .chatgpt-helper-export-grid > .row-full:not(.menu-item),
-        .chatgpt-helper-export-grid > .row-half:not(.menu-item) {
-          display: contents !important;
-          grid-column: auto !important;
-        }
-        .chatgpt-helper-export-grid .menu-item {
-          display: flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          justify-content: flex-start !important;
-          padding: 6px 12px !important;
-          min-height: 42px !important;
-          height: auto !important;
-          margin: 0 !important;
-          gap: 10px !important;
-          border-radius: 9px !important;
-          box-shadow: none !important;
-          transition: all 0.2s ease !important;
-          background: color-mix(in srgb, var(--gh-panel-card, #ffffff), transparent 18%) !important;
-          border: 1px solid color-mix(in srgb, var(--gh-panel-line, #d6ddd4), transparent 20%) !important;
-          color: var(--gh-text, #20251f) !important;
-          text-align: left !important;
-          overflow: hidden !important;
-          box-sizing: border-box !important;
-        }
-        .chatgpt-helper-export-grid .menu-item:hover {
-          transform: none !important;
-          background: color-mix(in srgb, var(--gh-panel-card-hover, #eef3ed), transparent 12%) !important;
-          box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 82%) !important;
-          border-color: color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 54%) !important;
-        }
-        .chatgpt-helper-export-grid .menu-item-icon {
-          width: 24px !important;
-          height: 24px !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          flex: 0 0 24px !important;
-          color: color-mix(in srgb, var(--gh-primary, #2f7f6e), var(--gh-text-secondary, #677268) 34%) !important;
-        }
-        .chatgpt-helper-export-grid .menu-item-icon svg,
-        .chatgpt-helper-export-grid .menu-item > svg {
-          width: 15px !important;
-          height: 15px !important;
-          color: currentColor !important;
-          flex-shrink: 0 !important;
-        }
-        .chatgpt-helper-export-grid .menu-item-label {
-          min-width: 0 !important;
-          flex: 1 1 auto !important;
-          overflow: hidden !important;
-          text-overflow: ellipsis !important;
-          white-space: nowrap !important;
-          color: var(--gh-text, #20251f) !important;
-          font-size: 12.8px !important;
-          font-weight: 600 !important;
-          line-height: 1.3 !important;
-        }
-        .chatgpt-helper-export-grid .menu-item [class*="icon"] {
-          font-size: 17px !important;
-          width: 17px !important;
-          height: 17px !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-        }
-        body[data-gh-mode="dark"] .chatgpt-helper-export-grid .menu-item {
-          background: color-mix(in srgb, var(--gh-panel-card, #20251f), transparent 5%) !important;
-          border-color: var(--gh-panel-line, #3c443b) !important;
-        }
-        :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid {
-          background: transparent !important;
-        }
-        :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid .menu-item {
-          background: var(--gh-panel-card-bg, var(--gh-panel-card, #ffffff)) !important;
-          border-color: var(--gh-panel-card-border, var(--gh-panel-line, #d6ddd4)) !important;
-          backdrop-filter: blur(var(--gh-panel-blur, 12px)) saturate(1.02) !important;
-          -webkit-backdrop-filter: blur(var(--gh-panel-blur, 12px)) saturate(1.02) !important;
-        }
-        :root[data-gh-bg-enabled="true"] .chatgpt-helper-export-grid .menu-item:hover {
-          background: color-mix(in srgb, var(--gh-panel-card-bg, var(--gh-panel-card, #ffffff)), transparent 8%) !important;
-          border-color: color-mix(in srgb, var(--gh-primary, #2f7f6e), transparent 28%) !important;
-        }
-        .chatgpt-helper-export-grid .menu-item[disabled] {
-          opacity: 0.5 !important;
-          cursor: not-allowed !important;
-          filter: none !important;
-        }
-    `
-    document.head.appendChild(style)
-}
-
-function defineExporterMount() {
-    const mount = (targetElement: Element) => {
-        if (!targetElement) return null
-        ensureCompactStyle()
-        syncLanguageFromHelper()
-
-        const container = document.createElement('div')
-        container.style.width = '100%'
-        container.style.height = '100%'
-        container.style.position = 'relative'
-        container.style.overflow = 'auto'
-        container.style.padding = '12px 14px 18px'
-        container.style.display = 'grid'
-        container.style.gridTemplateColumns = 'minmax(0, 1fr)'
-        container.style.gap = '7px'
-        container.style.alignContent = 'start'
-        container.style.overflowY = 'auto'
-        container.style.background = 'transparent'
-        container.className = 'chatgpt-helper-export-grid chatgpt-helper-export-host'
-        container.setAttribute('data-gh-exporter-host', 'true')
-        targetElement.appendChild(container)
-
-        try {
-            render(<DirectMenu container={container} />, container)
-        }
-        catch (error) {
-            console.error('[ChatGPT Helper Export] Failed to render DirectMenu:', error)
-            container.appendChild(document.createElement('div')).textContent = `导出功能加载失败: ${(error as Error).message}`
-        }
-        return container
-    }
-
-    window.ChatGPTExporterMount = mount
-    ensureNamespace().ChatGPTExporterMount = mount
-}
-
-function startTimestampObserver() {
-    onloadSafe(() => {
-        const styleEl = document.createElement('style')
-        styleEl.id = 'sentinel-css'
-        document.head.append(styleEl)
-
-        let chatId = ''
-        sentinel.on('[role="presentation"]', async () => {
-            const currentChatId = getChatIdFromUrl()
-            if (!currentChatId || currentChatId === chatId) return
-            chatId = currentChatId
-
-            try {
-                const rawConversation = await fetchConversation(chatId, false)
-                // 请求返回后用户可能已切换会话：把旧会话的时间戳插进新会话 DOM 是数据串页
-                if (getChatIdFromUrl() !== chatId) return
-                const { conversationNodes } = processConversation(rawConversation)
-
-                // 按消息 id 精确配对，避免隐藏/合并节点导致数组下标错位
-                const nodesByMessageId = new Map<string, number>()
-                conversationNodes.forEach((node, index) => {
-                    const id = node?.message?.id
-                    if (id) nodesByMessageId.set(id, index)
-                })
-
-                const threadContents = Array.from(document.querySelectorAll('main [data-testid^="conversation-turn-"] [data-message-id]'))
-                if (threadContents.length === 0) return
-
-                threadContents.forEach((thread) => {
-                    const messageId = thread.getAttribute('data-message-id') ?? ''
-                    const index = nodesByMessageId.get(messageId)
-                    if (index == null) return
-                    const createTime = conversationNodes[index]?.message?.create_time
-                    if (!createTime) return
-
-                    const date = new Date(createTime * 1000)
-                    const timestamp = document.createElement('time')
-                    timestamp.className = 'w-full text-gray-500 dark:text-gray-400 text-sm text-right'
-                    timestamp.dateTime = date.toISOString()
-                    timestamp.title = date.toLocaleString()
-
-                    const hour12 = document.createElement('span')
-                    hour12.setAttribute('data-time-format', '12')
-                    hour12.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-                    const hour24 = document.createElement('span')
-                    hour24.setAttribute('data-time-format', '24')
-                    hour24.textContent = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
-                    timestamp.append(hour12, hour24)
-                    thread.append(timestamp)
-                })
-            }
-            catch (error) {
-                console.error('[ChatGPT Helper Export] Failed to render timestamps:', error)
-            }
-        })
-    })
-}
-
-defineExporterMount()
-startTimestampObserver()
+const namespace = window.__MY_EXT__ = window.__MY_EXT__ || {};
+namespace.exporter = { mount };
+// Diagnostic compatibility only. All application calls use the typed host contract.
+namespace.ChatGPTExporterMount = mount;

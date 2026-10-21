@@ -97,6 +97,7 @@ class OutlineManager {
             }, 100);
         };
         target.addEventListener('scroll', this.syncScrollHandler, { passive: true });
+        this.handleSyncScroll();
     }
 
     stopSyncScroll() {
@@ -106,7 +107,9 @@ class OutlineManager {
         clearTimeout(this.syncScrollThrottleTimer);
         this.syncScrollThrottleTimer = null;
         this.currentHighlightedItem?.classList.remove('sync-highlight');
+        this.currentHighlightedItem?.removeAttribute('aria-current');
         this.currentHighlightedItem = null;
+        this.navigationTarget = null;
     }
 
     getCurrentItem() {
@@ -114,12 +117,20 @@ class OutlineManager {
         if (!scrollContainer || !this.state.tree?.length) return null;
         const isDocument = scrollContainer === document.scrollingElement;
         const viewportTop = (isDocument ? 0 : scrollContainer.getBoundingClientRect().top) + 60;
+        if (this.navigationTarget) {
+            const { id, settledTop } = this.navigationTarget;
+            if (settledTop == null || Math.abs(scrollContainer.scrollTop - settledTop) < 3) {
+                const pinned = this.findItem(id);
+                if (pinned) return pinned;
+            }
+            this.navigationTarget = null;
+        }
         let current = null;
         let next = null;
         const visit = (nodes) => nodes.forEach((node) => {
             if (node.element?.isConnected) {
                 const top = node.element.getBoundingClientRect().top;
-                if (top <= viewportTop) current = node;
+                if (top <= viewportTop + 2) current = node;
                 else if (!next) next = node;
             }
             visit(node.children);
@@ -128,12 +139,24 @@ class OutlineManager {
         return current || next;
     }
 
-    handleSyncScroll() {
-        const currentItem = this.getCurrentItem();
+    findItem(id) {
+        const visit = nodes => {
+            for (const node of nodes || []) {
+                if (node.id === id) return node;
+                const child = visit(node.children);
+                if (child) return child;
+            }
+            return null;
+        };
+        return visit(this.state.tree);
+    }
+
+    handleSyncScroll(currentItem = this.getCurrentItem()) {
         if (!currentItem) return;
 
         if (this.currentHighlightedItem) {
             this.currentHighlightedItem.classList.remove('sync-highlight');
+            this.currentHighlightedItem.removeAttribute('aria-current');
         }
 
         const outlineList = this.container.querySelector('#outline-list');
@@ -159,6 +182,7 @@ class OutlineManager {
         }
 
         outlineItem.classList.add('sync-highlight');
+        outlineItem.setAttribute('aria-current', 'location');
         this.currentHighlightedItem = outlineItem;
 
         const wrapper = this.container.querySelector('#outline-list-wrapper');
@@ -687,6 +711,7 @@ class OutlineManager {
             }
 
             this.renderItems(listContainer, this.state.tree, this.state.minLevel, displayLevel);
+            if (this.isActive) this.handleSyncScroll();
             const hasCollapsed = nodes => nodes.some(node => node.children.length && (node.collapsed || hasCollapsed(node.children)));
             const maxLevel = Math.max(1, ...Object.keys(this.state.levelCounts).map(Number));
             this.state.isAllExpanded = displayLevel >= maxLevel && !hasCollapsed(this.state.tree);
@@ -757,6 +782,7 @@ class OutlineManager {
                 tabIndex: 0,
                 'aria-label': item.text,
                 'data-index': item.index,
+                'data-outline-id': item.id,
                 'data-level': item.relativeLevel,
             });
 
@@ -929,7 +955,8 @@ class OutlineManager {
                     return;
                 }
 
-                let targetElement = item.element;
+                const latestItem = this.findItem(item.id) || item;
+                let targetElement = latestItem.element;
 
                 // 1. 检查元素是否有效
                 if (!targetElement || !targetElement.isConnected) {
@@ -945,8 +972,19 @@ class OutlineManager {
                     const container = this.siteAdapter?.getScrollContainer?.();
                     const viewportTop = container && container !== document.scrollingElement ? container.getBoundingClientRect().top : 0;
                     const top = targetElement.getBoundingClientRect().top - viewportTop + (container?.scrollTop ?? window.scrollY) - 60;
-                    if (this.config.onNavigate) this.config.onNavigate(Math.max(0, top));
-                    else (container || window).scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                    const target = { id: item.id, settledTop: null };
+                    this.navigationTarget = target;
+                    this.handleSyncScroll(latestItem);
+                    this.config.onNavigate?.(Math.max(0, top), ({ cancelled, top: settledTop }) => {
+                        if (this.navigationTarget !== target || this.destroyed) return;
+                        if (cancelled) {
+                            this.navigationTarget = null;
+                            if (this.settings.outline?.syncScroll) this.handleSyncScroll();
+                        } else {
+                            target.settledTop = settledTop;
+                            this.handleSyncScroll(this.findItem(target.id));
+                        }
+                    });
 
                     targetElement.classList.add('outline-highlight');
                     setTimeout(() => targetElement.classList.remove('outline-highlight'), 2000);

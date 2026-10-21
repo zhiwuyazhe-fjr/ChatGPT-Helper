@@ -1,4 +1,4 @@
-import JSZip from 'jszip'
+import { getExportHost } from '../host'
 import { fetchConversation, getCurrentChatId, processConversation } from '../api'
 import i18n from '../i18n'
 import { checkIfConversationStarted } from '../page'
@@ -62,17 +62,19 @@ export async function exportToOoba(fileNameFormat: string) {
     return true
 }
 
-export async function exportAllToOfficialJson(_fileNameFormat: string, apiConversations: ApiConversationWithId[], _metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number) {
+export async function exportAllToOfficialJson(_fileNameFormat: string, apiConversations: ApiConversationWithId[], _metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number, signal?: AbortSignal) {
     const partInfo: PartInfo | undefined = (partIndex != null && totalParts != null)
         ? { part: partIndex, total: totalParts }
         : undefined
     const content = conversationToJson(apiConversations)
+    signal?.throwIfAborted()
     downloadFile(buildJsonBatchFileName(projectName, partInfo), 'application/json', content)
 
     return true
 }
 
-export async function exportAllToJson(fileNameFormat: string, apiConversations: ApiConversationWithId[], _metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number) {
+export async function exportAllToJson(fileNameFormat: string, apiConversations: ApiConversationWithId[], _metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number, signal?: AbortSignal) {
+    const JSZip = await getExportHost().loadDependency('zip')
     const zip = new JSZip()
     const filenameMap = new Map<string, number>()
     const conversations = apiConversations.map(x => ({
@@ -108,6 +110,7 @@ export async function exportAllToJson(fileNameFormat: string, apiConversations: 
     const partInfo: PartInfo | undefined = (partIndex != null && totalParts != null)
         ? { part: partIndex, total: totalParts }
         : undefined
+    signal?.throwIfAborted()
     downloadFile(buildZipFileName('json', projectName, partInfo), 'application/zip', blob)
 
     return true

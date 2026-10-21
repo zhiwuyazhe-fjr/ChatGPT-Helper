@@ -1,4 +1,4 @@
-import JSZip from 'jszip'
+import { getExportHost } from '../host'
 import hljs from 'highlight.js/lib/common'
 import renderMathInElement from 'katex/contrib/auto-render'
 import { fetchConversation, getCurrentChatId, processConversation, shouldSkipMessageInExport } from '../api'
@@ -36,9 +36,10 @@ export async function exportToHtml(fileNameFormat: string, metaList: ExportMeta[
     return true
 }
 
-export async function exportAllToHtml(fileNameFormat: string, apiConversations: ApiConversationWithId[], metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number) {
+export async function exportAllToHtml(fileNameFormat: string, apiConversations: ApiConversationWithId[], metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number, signal?: AbortSignal) {
     const userAvatar = await getUserAvatar()
 
+    const JSZip = await getExportHost().loadDependency('zip')
     const zip = new JSZip()
     const filenameMap = new Map<string, number>()
     const enableThinking = ScriptStorage.get<boolean>(KEY_THINKING_ENABLED) ?? false
@@ -72,6 +73,7 @@ export async function exportAllToHtml(fileNameFormat: string, apiConversations: 
     const partInfo: PartInfo | undefined = (partIndex != null && totalParts != null)
         ? { part: partIndex, total: totalParts }
         : undefined
+    signal?.throwIfAborted()
     downloadFile(buildZipFileName('html', projectName, partInfo), 'application/zip', blob)
 
     return true

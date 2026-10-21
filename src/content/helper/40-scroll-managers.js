@@ -35,23 +35,28 @@ class ScrollManager {
         const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
         const behavior = reducedMotion ? 'instant' : (options.behavior || 'smooth');
         const lock = this.lockManager;
-        const release = () => {
+        let finished = false;
+        const release = (cancelled = false) => {
+            if (finished) return;
+            finished = true;
             clearTimeout(timer);
-            container.removeEventListener('scrollend', release);
+            container.removeEventListener('scrollend', settled);
             for (const type of ['wheel', 'touchstart', 'pointerdown', 'keydown']) window.removeEventListener(type, interrupt, true);
             if (lock) { lock.navigationActive = false; lock.markUserInteraction(); }
             this.cancelPending = null;
+            options.onComplete?.({ cancelled: cancelled === true, top: container.scrollTop });
         };
+        const settled = () => release(false);
         const interrupt = event => {
             if (event?.isTrusted === false) return;
             if (event?.type === 'keydown' && !['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key)) return;
             container.scrollTo({ top: container.scrollTop, behavior: 'instant' });
-            release();
+            release(true);
         };
-        const timer = setTimeout(release, 1200);
+        const timer = setTimeout(settled, 1200);
         this.cancelPending = () => interrupt();
         if (lock) { lock.navigationActive = true; lock.markUserInteraction(); }
-        container.addEventListener('scrollend', release, { once: true });
+        container.addEventListener('scrollend', settled, { once: true });
         for (const type of ['wheel','touchstart','pointerdown','keydown']) window.addEventListener(type, interrupt, { capture: true, passive: true });
         container.scrollTo({ top, behavior });
     }

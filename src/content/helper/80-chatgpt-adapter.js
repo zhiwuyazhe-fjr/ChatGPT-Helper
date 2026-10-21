@@ -329,13 +329,15 @@ class ChatGPTAdapter {
         if (!session?.accessToken) {
             throw new Error('Session response did not include an access token');
         }
+        this.accessTokenExpiresAt = Date.parse(session.expires) || Date.now() + 3_600_000;
         return session.accessToken;
     }
 
     async getAccessToken() {
-        const pageAccessToken = this.getPageAccessToken();
+        const pageAccessToken = this.pageAccessTokenRejected ? null : this.getPageAccessToken();
         if (pageAccessToken) return pageAccessToken;
 
+        if (this.accessTokenExpiresAt && this.accessTokenExpiresAt - 60_000 <= Date.now()) this.accessTokenPromise = null;
         if (!this.accessTokenPromise) {
             this.accessTokenPromise = this.fetchSessionAccessToken().catch((error) => {
                 this.accessTokenPromise = null;
@@ -349,7 +351,7 @@ class ChatGPTAdapter {
         return document.cookie.match(`(^|;)\\s*${key}\\s*=\\s*([^;]+)`)?.pop() || '';
     }
 
-    async fetchBackendJson(url, options = {}, includeAccount = true) {
+    async fetchBackendResponse(url, options = {}, includeAccount = true, retried = false) {
         let accessToken = null;
         try {
             accessToken = await this.getAccessToken();
@@ -375,9 +377,17 @@ class ChatGPTAdapter {
             ...options,
             headers
         });
-        if (!response.ok) {
-            throw new Error(`ChatGPT API request failed: ${response.status} ${response.statusText || ''}`.trim());
+        if (response.status === 401 && !retried) {
+            this.accessTokenPromise = null;
+            this.pageAccessTokenRejected = true;
+            return this.fetchBackendResponse(url, options, includeAccount, true);
         }
+        return response;
+    }
+
+    async fetchBackendJson(url, options = {}, includeAccount = true) {
+        const response = await this.fetchBackendResponse(url, options, includeAccount);
+        if (!response.ok) throw new Error(`ChatGPT API request failed: ${response.status} ${response.statusText || ''}`.trim());
         return response.json();
     }
 

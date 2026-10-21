@@ -48,7 +48,7 @@ class HelperCore {
             t: key => this.t(key),
             onInsert: prompt => this.usePrompt(prompt, { replaceComposer: true })
         });
-        this.messageSelectManager = new MessageSelectManager({ t: key => this.t(key), onToast: toast });
+        this.messageSelectManager = new MessageSelectManager({ adapter: this.adapter, t: key => this.t(key), onToast: toast, onImageExport: () => this.openImageExport() });
         this.scrollLockManager = new ScrollLockManager(this.adapter);
         this.scrollManager.lockManager = this.scrollLockManager;
         this.widthStyleManager = new WidthStyleManager(this.adapter, this.settings.pageWidth);
@@ -86,6 +86,7 @@ class HelperCore {
         this.destroyed = true;
         this.onboardingTour?.destroy({ restore: false });
         this.themeBackgroundRevision = (this.themeBackgroundRevision || 0) + 1;
+        this.disposeExporter?.();
         this.scope.dispose();
         this.pageScope?.dispose();
         this.themeScope?.dispose();

@@ -1,4 +1,4 @@
-import JSZip from 'jszip'
+import { getExportHost } from '../host'
 import { fetchConversation, getCurrentChatId, processConversation, shouldSkipMessageInExport } from '../api'
 import { KEY_THINKING_ENABLED, KEY_TIMESTAMP_24H, KEY_TIMESTAMP_ENABLED, KEY_TIMESTAMP_MARKDOWN, baseUrl } from '../constants'
 import i18n from '../i18n'
@@ -30,7 +30,8 @@ export async function exportToMarkdown(fileNameFormat: string, metaList: ExportM
     return true
 }
 
-export async function exportAllToMarkdown(fileNameFormat: string, apiConversations: ApiConversationWithId[], metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number) {
+export async function exportAllToMarkdown(fileNameFormat: string, apiConversations: ApiConversationWithId[], metaList?: ExportMeta[], projectName?: string, partIndex?: number, totalParts?: number, signal?: AbortSignal) {
+    const JSZip = await getExportHost().loadDependency('zip')
     const zip = new JSZip()
     const filenameMap = new Map<string, number>()
     const enableThinking = ScriptStorage.get<boolean>(KEY_THINKING_ENABLED) ?? false
@@ -64,6 +65,7 @@ export async function exportAllToMarkdown(fileNameFormat: string, apiConversatio
     const partInfo: PartInfo | undefined = (partIndex != null && totalParts != null)
         ? { part: partIndex, total: totalParts }
         : undefined
+    signal?.throwIfAborted()
     downloadFile(buildZipFileName('markdown', projectName, partInfo), 'application/zip', blob)
 
     return true

@@ -1,29 +1,8 @@
+import { getExportHost } from './host'
 import urlcat from 'urlcat'
 import { apiUrl, baseUrl } from './constants'
-import { getChatIdFromUrl, getConversationFromSharePage, getPageAccessToken, isSharePage } from './page'
+import { getChatIdFromUrl, getConversationFromSharePage, isSharePage } from './page'
 import { blobToDataURL } from './utils/dom'
-import { memorize } from './utils/memorize'
-
-interface ApiSession {
-    accessToken: string
-    authProvider: string
-    expires: string
-    user: {
-        email: string
-        groups: string[]
-        // token's issued_at timestamp
-        iat: number
-        id: string
-        // token's expiration timestamp
-        idp: string
-        image: string
-        intercom_hash: string
-        // whether the user has multi-factor authentication enabled
-        mfa: boolean
-        name: string
-        picture: string
-    }
-}
 
 type ModelSlug =
     | 'text-davinci-002-render-sha'
@@ -427,7 +406,6 @@ const enum ChatGPTCookie {
     Workspace = '_account',
 }
 
-const sessionApi = urlcat(baseUrl, '/api/auth/session')
 // urlcat 对 path 段是纯字符串替换、不做编码：id 必须先过白名单，
 // 否则会话数据（asset_pointer/gizmo/chatId）可注入 ../、? 等改写请求目标
 function safePathId(id: string | undefined | null): string | null {
@@ -439,7 +417,6 @@ const conversationsApi = (offset: number, limit: number) => urlcat(apiUrl, '/con
 const fileDownloadApi = (id: string) => urlcat(apiUrl, '/files/download/:id', { id, post_id: '', inline: false })
 const projectsApi = (cursor: number | null) => urlcat(apiUrl, '/gizmos/snorlax/sidebar', { conversations_per_gizmo: 0, cursor })
 const projectConversationsApi = (gizmo: string, cursor: string | number, limit: number) => urlcat(apiUrl, '/gizmos/:gizmo/conversations', { gizmo, cursor, limit })
-const accountsCheckApi = urlcat(apiUrl, '/accounts/check/v4-2023-04-27')
 
 export async function getCurrentChatId(): Promise<string> {
     if (isSharePage()) {
@@ -449,12 +426,7 @@ export async function getCurrentChatId(): Promise<string> {
     const chatId = getChatIdFromUrl()
     if (chatId) return chatId
 
-    const conversations = await fetchConversations()
-    if (conversations && conversations.items.length > 0) {
-        return conversations.items[0].id
-    }
-
-    throw new Error('No chat id found.')
+    throw new Error('当前对话尚未保存，请稍后重试；也可以选择消息导出图片。')
 }
 
 async function fetchImageFromPointer(uri: string) {
@@ -538,11 +510,12 @@ async function replaceImageAssets(conversation: ApiConversation): Promise<void> 
     ])
 }
 
-export async function fetchConversation(chatId: string, shouldReplaceAssets: boolean): Promise<ApiConversationWithId> {
+export async function fetchConversation(chatId: string, shouldReplaceAssets: boolean, signal?: AbortSignal): Promise<ApiConversationWithId> {
     if (chatId.startsWith('__share__')) {
         const id = chatId.replace('__share__', '')
         const shareConversation = getConversationFromSharePage() as ApiConversation
-        await replaceImageAssets(shareConversation)
+        if (!shareConversation) throw new Error('Shared conversation is unavailable')
+        if (shouldReplaceAssets) await replaceImageAssets(shareConversation)
 
         return {
             id,
@@ -556,7 +529,7 @@ export async function fetchConversation(chatId: string, shouldReplaceAssets: boo
         throw new Error(`Invalid chat id: ${chatId}`)
     }
     const url = conversationApi(safeChatId)
-    const conversation = await fetchApi<ApiConversation>(url)
+    const conversation = await fetchApi<ApiConversation>(url, { signal })
 
     if (shouldReplaceAssets) {
         await replaceImageAssets(conversation)
@@ -617,10 +590,10 @@ async function fetchProjectConversations(project: string, cursor: string | numbe
  */
 export async function fetchConversationsPage(
     project: string | null,
-    offset: number,
+    offset: number | string,
     limit: number,
 ): Promise<ApiConversations> {
-    return fetchConversations(offset, limit, project)
+    return project ? fetchProjectConversations(project, offset, limit) : fetchConversations(Number(offset), limit)
 }
 
 export async function fetchAllConversations(project: string | null = null, maxConversations = 1000, onBatch?: (batch: ApiConversationItem[]) => void, onHasMore?: (hasMore: boolean) => void): Promise<ApiConversationItem[]> {
@@ -776,18 +749,9 @@ function logRateLimitHeaders(response: Response) {
 }
 
 async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
-    const accessToken = await getAccessToken()
-    const accountId = await getTeamAccountId()
-
-    const response = await fetch(url, {
-        ...options,
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'X-Authorization': `Bearer ${accessToken}`,
-            ...(accountId ? { 'Chatgpt-Account-Id': accountId } : {}),
-            ...options?.headers,
-        },
-    })
+    const host = getExportHost()
+    if (!host) throw new Error('Export session has ended')
+    const response = await host.adapter.fetchBackendResponse(url, options)
 
     logRateLimitHeaders(response)
 
@@ -798,110 +762,6 @@ async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
         throw new HttpError(response.status, response.statusText)
     }
     return response.json()
-}
-
-/**
- * Lightweight probe: fetch exactly 1 conversation to check whether the API
- * is currently accepting requests. Returns a status object that the UI can
- * display before the user starts a large export.
- */
-export async function probeApi(): Promise<{
-    ok: boolean
-    retryAfterMs?: number
-    rateLimitHeaders: Record<string, string>
-}> {
-    const accessToken = await getAccessToken()
-    const accountId = await getTeamAccountId()
-    const url = conversationsApi(0, 1)
-
-    const response = await fetch(url, {
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'X-Authorization': `Bearer ${accessToken}`,
-            ...(accountId ? { 'Chatgpt-Account-Id': accountId } : {}),
-        },
-    })
-
-    const rateLimitHeaders: Record<string, string> = {}
-    for (const h of RATE_LIMIT_HEADERS) {
-        const val = response.headers.get(h)
-        if (val != null) rateLimitHeaders[h] = val
-    }
-
-    if (!response.ok) {
-        if (response.status === 429) {
-            const secs = response.headers.get('retry-after')
-            const ms = secs ? Number.parseInt(secs, 10) * 1000 : 60_000
-            return { ok: false, retryAfterMs: ms, rateLimitHeaders }
-        }
-        return { ok: false, rateLimitHeaders }
-    }
-
-    return { ok: true, rateLimitHeaders }
-}
-
-async function _fetchSession(): Promise<ApiSession> {
-    const response = await fetch(sessionApi)
-    if (!response.ok) {
-        throw new Error(response.statusText)
-    }
-    return response.json()
-}
-
-// 会话 token 有时效：过期后必须重新获取，而不是沿用缓存的旧 token 打 401
-let cachedSession: { session: ApiSession; fetchedAt: number } | null = null
-
-async function fetchSession(): Promise<ApiSession> {
-    if (cachedSession) {
-        const expiresAt = cachedSession.session.expires ? Date.parse(cachedSession.session.expires) : Number.NaN
-        const stillValid = Number.isFinite(expiresAt)
-            ? expiresAt - 60_000 > Date.now()
-            : Date.now() - cachedSession.fetchedAt < 3_600_000
-        if (stillValid) return cachedSession.session
-    }
-    const session = await _fetchSession()
-    cachedSession = { session, fetchedAt: Date.now() }
-    return session
-}
-
-async function getAccessToken(): Promise<string> {
-    const pageAccessToken = getPageAccessToken()
-    if (pageAccessToken) return pageAccessToken
-
-    const session = await fetchSession()
-    return session.accessToken
-}
-
-async function _fetchAccountsCheck(): Promise<ApiAccountsCheck> {
-    const accessToken = await getAccessToken()
-
-    const response = await fetch(accountsCheckApi, {
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'X-Authorization': `Bearer ${accessToken}`,
-        },
-    })
-    if (!response.ok) {
-        throw new Error(response.statusText)
-    }
-    return response.json()
-}
-
-const fetchAccountsCheck = memorize(_fetchAccountsCheck)
-
-const getCookie = (key: string) => document.cookie.match(`(^|;)\\s*${key}\\s*=\\s*([^;]+)`)?.pop() || ''
-
-export async function getTeamAccountId(): Promise<string | null> {
-    const accountsCheck = await fetchAccountsCheck()
-    const workspaceId = getCookie(ChatGPTCookie.Workspace)
-    if (workspaceId) {
-        const account = accountsCheck.accounts[workspaceId]
-        if (account) {
-            return account.account.account_id
-        }
-    }
-
-    return null
 }
 
 export interface ConversationResult {
@@ -972,6 +832,7 @@ export interface ProcessConversationOptions {
 }
 
 export function processConversation(conversation: ApiConversationWithId, options?: ProcessConversationOptions): ConversationResult {
+    conversation = { ...conversation, mapping: structuredClone(conversation.mapping) }
     const title = conversation.title || 'ChatGPT Conversation'
     const createTime = conversation.create_time
     const updateTime = conversation.update_time
@@ -1025,7 +886,10 @@ function extractConversationResult(conversationMapping: Record<string, Conversat
     const result: ConversationNode[] = []
     let currentNodeId: string | undefined = startNodeId
 
+    const visited = new Set<string>()
     while (currentNodeId) {
+        if (visited.has(currentNodeId)) throw new Error('Conversation contains a cyclic parent chain')
+        visited.add(currentNodeId)
         const node: ConversationNode = conversationMapping[currentNodeId]
         if (!node) {
             break // Node not found

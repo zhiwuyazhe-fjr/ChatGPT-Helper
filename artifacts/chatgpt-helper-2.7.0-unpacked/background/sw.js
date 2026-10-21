@@ -1,14 +1,13 @@
 // ChatGPT Helper background service worker.
 // - forwards the toggle-panel keyboard command to the content script
-// - injects the export engine scripts (jszip / html2canvas / exporter) on demand,
+// - injects the export engine scripts (jszip / exporter) on demand,
 //   so they are no longer parsed on every ChatGPT page load.
 // No network requests are made from this worker.
 
-const EXPORT_DEP_FILES = [
-    'libs/jszip.min.js',
-    'libs/html2canvas.min.js',
-    'content-scripts/dist/chatgpt-exporter.js',
-];
+const EXPORT_DEP_FILES = {
+    engine: ['content-scripts/dist/chatgpt-exporter.js'],
+    zip: ['libs/jszip.min.js'],
+};
 
 chrome.commands.onCommand.addListener(async (command) => {
     if (command !== 'toggle-helper-panel') return;
@@ -27,8 +26,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         try {
             if (sender.tab && sender.tab.id != null) {
                 await chrome.scripting.executeScript({
-                    target: { tabId: sender.tab.id },
-                    files: EXPORT_DEP_FILES,
+                    target: { tabId: sender.tab.id, ...(sender.documentId ? { documentIds: [sender.documentId] } : { frameIds: [sender.frameId || 0] }) },
+                    files: EXPORT_DEP_FILES[msg.dependency || 'engine'] || EXPORT_DEP_FILES.engine,
                 });
                 sendResponse({ ok: true });
             } else {

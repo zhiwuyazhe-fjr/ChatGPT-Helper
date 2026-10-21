@@ -652,6 +652,8 @@ export const LayoutFeature = {
             export: 'renderExport', settings: 'renderSettings'
         };
         if (!renderers[tabName]) return;
+        if (this.currentTab === 'export') this.disposeExporter?.();
+        if (tabName !== 'export') this._openImageOnMount = false;
         this.currentTab = tabName;
         this.panel.querySelectorAll('.chatgpt-helper-tab').forEach(tab => {
             const active = tab.dataset.tab === tabName;

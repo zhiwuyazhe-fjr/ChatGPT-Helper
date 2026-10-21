@@ -1,0 +1,66 @@
+/* Export surfaces share the Helper design tokens. Nothing here targets host UI. */
+.gh-export-root { padding:14px; color:var(--gh-text); font:inherit; }
+.gh-export-section + .gh-export-section { margin-top:24px; padding-top:18px; border-top:1px solid var(--gh-panel-line); }
+.gh-export-section h3 { margin:0 0 8px; font-size:13px; font-weight:650; }
+.gh-export-root .gh-export-hint, .gh-export-portal .gh-export-hint { font-size:12px; line-height:1.6; color:var(--gh-text-secondary); margin:8px 0 12px; }
+:is(.gh-export-root,.gh-export-portal) .menu-item { width:100%; display:flex; align-items:center; gap:10px; margin:6px 0; padding:10px 12px; min-height:42px; height:auto; border:1px solid var(--gh-panel-line); border-radius:8px; color:var(--gh-text); background:var(--gh-panel-card); text-align:left; cursor:pointer; font:inherit; font-size:13px; }
+:is(.gh-export-root,.gh-export-portal) .menu-item:hover { background:var(--gh-panel-card-hover); border-color:var(--gh-primary); }
+:is(.gh-export-root,.gh-export-portal) .menu-item-icon { display:flex; width:18px; height:18px; flex-shrink:0; color:var(--gh-primary); }
+:is(.gh-export-root,.gh-export-portal) .menu-item-icon svg { width:18px; height:18px; }
+:is(.gh-export-root,.gh-export-portal) .menu-item-label { min-width:0; overflow-wrap:anywhere; }
+:is(.gh-export-root,.gh-export-portal) button:disabled { opacity:.5; cursor:not-allowed; }
+:is(.gh-export-root,.gh-export-portal) :is(button,select,input):focus-visible { outline:2px solid var(--gh-primary); outline-offset:3px; }
+.gh-export-portal { font-family:inherit; color:var(--gh-text); }
+.gh-export-portal .DialogOverlay { z-index:2147483100; background:rgba(12,18,13,.48); }
+.gh-export-portal .DialogContent { z-index:2147483101; border:1px solid var(--gh-panel-line); border-radius:14px; padding:22px; color:var(--gh-text); background:var(--gh-panel-surface, var(--gh-bg, #fafbf9)); width:min(740px,calc(100vw - 32px)); max-width:none; max-height:calc(100dvh - 32px); overflow-y:auto; box-shadow:0 18px 64px #0003; font-size:13px; }
+.gh-export-portal :is(.DialogTitle,.settings-section-title,.Label,.SelectLabel) { color:var(--gh-text); }
+.gh-export-portal .DialogTitle { margin:0 0 14px; font-size:19px; font-weight:650; }
+.gh-export-dialog-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.gh-export-portal .gh-export-dialog-heading .DialogTitle { margin:0; }
+.gh-export-portal .gh-export-icon-button { font-size:24px; width:32px; height:32px; border-radius:6px; color:var(--gh-text-secondary); background:transparent; border:0; cursor:pointer; }
+.gh-export-portal .gh-export-icon-button:hover { background:var(--gh-panel-card-hover); }
+.gh-export-portal :is(.settings-section,.SelectItem,.SelectListHeader,.Input,.Select) { color:var(--gh-text); background:var(--gh-panel-card); border-color:var(--gh-panel-line); }
+.gh-export-portal .Button { min-height:34px; height:auto; padding:7px 14px; font-size:13px; border-radius:7px; background:var(--gh-panel-card); color:var(--gh-text); border:1px solid var(--gh-panel-line); box-shadow:none; }
+.gh-export-portal .Button.green { background:var(--gh-primary); color:var(--gh-on-primary,#fff); border-color:var(--gh-primary); }
+.gh-export-portal .Button.red { color:#c34141; }
+.gh-export-portal .gh-image-dialog { width:min(1080px,calc(100vw - 32px)); }
+.gh-export-portal #gh-image-description { margin:6px 0 18px; color:var(--gh-text-secondary); font-size:13px; }
+.gh-image-layout { display:grid; grid-template-columns:240px minmax(0,1fr); gap:22px; min-height:0; }
+.gh-image-selection { min-height:0; display:flex; flex-direction:column; }
+.gh-image-selection-tools { display:flex; align-items:center; gap:10px; padding-bottom:10px; font-size:12px; }
+.gh-image-selection-tools strong { margin-right:auto; }
+.gh-image-selection-tools button { border:0; color:var(--gh-primary); background:transparent; padding:4px 0; cursor:pointer; }
+.gh-image-message-list { overflow:auto; max-height:440px; border-top:1px solid var(--gh-panel-line); }
+.gh-image-message-option { display:flex; align-items:flex-start; gap:10px; border-bottom:1px solid var(--gh-panel-line); padding:12px 4px; cursor:pointer; font-size:12px; }
+.gh-image-message-option input { margin:4px 0 0; accent-color:var(--gh-primary); flex-shrink:0; }
+.gh-image-message-option > span { min-width:0; }
+.gh-image-message-option strong { display:block; margin-bottom:4px; font-size:12px; }
+.gh-image-message-option span span { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; color:var(--gh-text-secondary); line-height:1.65; overflow-wrap:anywhere; }
+.gh-image-preview-column { min-width:0; }
+.gh-image-options { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+.gh-image-options label { display:flex; flex-direction:column; gap:5px; font-size:11px; color:var(--gh-text-secondary); flex:1; min-width:76px; }
+.gh-image-options select { width:100%; min-height:32px; border-radius:6px; padding:4px; border:1px solid var(--gh-panel-line); color:var(--gh-text); background:var(--gh-panel-card); font-size:12px; }
+.gh-image-preview-scroll { min-height:200px; height:min(48vh,470px); overflow:auto; border:1px solid var(--gh-panel-line); background:var(--gh-panel-card); border-radius:8px; padding:12px; }
+.gh-image-preview-scroll iframe { display:block; border:0; background:transparent; }
+.gh-export-dialog-footer { display:flex; align-items:center; gap:10px; border-top:1px solid var(--gh-panel-line); padding-top:16px; margin-top:16px; }
+.gh-export-dialog-footer > span { margin-right:auto !important; }
+.gh-export-error { color:#c34141; font-size:12px; overflow-wrap:anywhere; }
+@media(max-width:700px) {
+    .gh-export-portal .DialogContent { padding:16px; }
+    .gh-image-layout { grid-template-columns:minmax(0,1fr); gap:14px; }
+    .gh-image-message-list { max-height:125px; }
+    .gh-image-preview-scroll { height:32vh; }
+    .gh-export-dialog-footer { flex-wrap:wrap; }
+    .gh-export-dialog-footer > span { flex-basis:100%; }
+}
+@media(prefers-reduced-motion:reduce) {
+    :is(.gh-export-root,.gh-export-portal) * { animation:none !important; transition:none !important; }
+}
+
+.gh-batch-tools { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:14px; }
+.gh-batch-tools label { display:flex; align-items:center; gap:8px; min-width:0; }
+.gh-export-portal .gh-batch-tools select, .gh-export-portal .gh-export-dialog-footer select { padding:7px; border:1px solid var(--gh-panel-line); border-radius:6px; background:var(--gh-panel-card); color:var(--gh-text); max-width:100%; }
+.gh-batch-list { overflow:auto; min-height:100px; max-height:40vh; margin-bottom:12px; }
+.gh-batch-row { display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--gh-panel-line); padding:10px 4px; cursor:pointer; }
+.gh-batch-row span { min-width:0; overflow-wrap:anywhere; }
+.gh-batch-row input { accent-color:var(--gh-primary); }

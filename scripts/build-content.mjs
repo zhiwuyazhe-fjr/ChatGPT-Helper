@@ -31,7 +31,7 @@ await build({
         emptyOutDir: true,
         outDir,
         target: 'es2020',
-        minify: false,
+        minify: true,
         sourcemap: false,
         lib: {
             entry: resolve(root, 'src/content/entries/chatgpt-exporter.tsx'),
@@ -40,11 +40,10 @@ await build({
             fileName: () => 'chatgpt-exporter.js',
         },
         rollupOptions: {
-            external: ['jszip', 'html2canvas'],
+            external: ['jszip'],
             output: {
                 globals: {
                     jszip: 'JSZip',
-                    html2canvas: 'html2canvas',
                 },
                 inlineDynamicImports: true,
             },
@@ -58,7 +57,7 @@ await build({
         emptyOutDir: false,
         outDir,
         target: 'es2020',
-        minify: false,
+        minify: true,
         sourcemap: false,
         lib: {
             entry: resolve(root, 'src/content/entries/chatgpt-helper.js'),

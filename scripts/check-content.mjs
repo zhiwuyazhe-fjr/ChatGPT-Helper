@@ -141,7 +141,7 @@ if (JSON.stringify(scripts) !== JSON.stringify(expectedScripts)) {
 // 导出引擎改为按需注入后，service worker 与注入清单必须存在且接线正确
 execFileSync(process.execPath, ['--check', path.join(root, 'background', 'sw.js')], { stdio: 'inherit' })
 const swSource = fs.readFileSync(path.join(root, 'background', 'sw.js'), 'utf8')
-for (const requiredSnippet of ["'libs/jszip.min.js'", "'libs/html2canvas.min.js'", "'content-scripts/dist/chatgpt-exporter.js'", 'toggle-helper-panel', 'ch-helper-inject-export-deps']) {
+for (const requiredSnippet of ["'libs/jszip.min.js'", "'content-scripts/dist/chatgpt-exporter.js'", 'toggle-helper-panel', 'ch-helper-inject-export-deps']) {
     if (!swSource.includes(requiredSnippet)) {
         throw new Error(`background/sw.js is missing lazy export engine wiring: ${requiredSnippet}`)
     }
@@ -265,7 +265,6 @@ const context = {
     Math,
     Date,
     JSZip: function JSZip() {},
-    html2canvas: async () => makeElement('canvas'),
     chrome: { runtime: { getURL: (p) => p, getManifest: () => ({ version: 'test' }) } },
     indexedDB: { open() { return {} } },
     Notification: { permission: 'default' },

@@ -98,7 +98,8 @@ export const ControlsFeature = {
                     'aria-label': this.t('setAnchor')
                 });
                 setBtn.appendChild(createSvgIconNode('pin', { size: 18, className: 'chatgpt-helper-quick-btn-icon' }));
-                const handleSetClick = (e) => {                        e.preventDefault();
+                const handleSetClick = (e) => {
+                        e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     this.setAnchorManually();
@@ -113,7 +114,8 @@ export const ControlsFeature = {
                     'aria-label': this.savedAnchorTop === null ? this.t('noAnchor') : this.t('returnAnchor')
                 });
                 backBtn.appendChild(createSvgIconNode('back', { size: 18, className: 'chatgpt-helper-quick-btn-icon' }));
-                const handleBackClick = (e) => {                        e.preventDefault();
+                const handleBackClick = (e) => {
+                        e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     if (this.savedAnchorTop !== null) {
@@ -132,7 +134,8 @@ export const ControlsFeature = {
                     'aria-label': this.t('clearAnchor')
                 });
                 clearBtn.appendChild(createSvgIconNode('close', { size: 18, className: 'chatgpt-helper-quick-btn-icon' }));
-                const handleClearClick = (e) => {                        e.preventDefault();
+                const handleClearClick = (e) => {
+                        e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     if (this.savedAnchorTop !== null) {
@@ -166,17 +169,23 @@ export const ControlsFeature = {
                 const btnId = btnConfig.id;
 
                 // 创建事件处理函数
-                const handleClick = function (e) {                        e.preventDefault();
+                const handleClick = function (e) {
+                        e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
 
                     // 执行对应的操作
                     try {
-                        if (btnId === 'scrollTop') {                                self.scrollToTop();
-                        } else if (btnId === 'scrollBottom') {                                self.scrollToBottom();
-                        } else if (btnId === 'panel') {                                self.toggleCollapse();
-                        } else if (btnId === 'anchor') {                                self.handleAnchorClick();
-                        } else if (btnId === 'theme') {                                self.toggleTheme(e);
+                        if (btnId === 'scrollTop') {
+                                self.scrollToTop();
+                        } else if (btnId === 'scrollBottom') {
+                                self.scrollToBottom();
+                        } else if (btnId === 'panel') {
+                                self.toggleCollapse();
+                        } else if (btnId === 'anchor') {
+                                self.handleAnchorClick();
+                        } else if (btnId === 'theme') {
+                                self.toggleTheme(e);
                             // 更新图标
                             setTimeout(() => {
                                 const isDark = document.body.dataset.ghMode === 'dark' ||
@@ -414,6 +423,8 @@ export const ControlsFeature = {
             this.updateLayout();
             this.queueThemeHostRefresh();
             if (!routeChanged && !pageChanged) return;
+            this.messageSelectManager.refreshContext();
+            this.exporterController?.contextChanged();
             this.scrollManager.cancel();
             if (routeChanged) {
                 this.anchorManager?.reset();
@@ -437,7 +448,7 @@ export const ControlsFeature = {
                 if (isHelperMutation(mutation)) return false;
                 // Token streaming belongs to OutlineManager, not host layout/theme refresh.
                 const target = mutation.target.nodeType === 1 ? mutation.target : mutation.target.parentElement;
-                return !target?.closest('[data-message-author-role]');
+                return !target?.closest('[data-message-author-role], [data-content-search-unit-key], [data-chatgpt-search-unit-key], [data-chatgpt-selection-message-id]');
             })) schedule();
         });
         scope.listen(window, 'popstate', schedule);

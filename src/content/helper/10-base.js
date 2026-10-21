@@ -363,6 +363,7 @@ const I18N = {
         // 多选消息导出
         selectMessageTitle: '选择此消息',
         selectedMessagesCount: '已选 {count} 条',
+        exportSelectedImage: '图片',
         exportSelectedMarkdown: 'Markdown',
         exportSelectedJson: 'JSON',
         exportSelectedTxt: 'TXT',
@@ -699,6 +700,7 @@ const I18N = {
         // Multi-select message export
         selectMessageTitle: 'Select this message',
         selectedMessagesCount: '{count} selected',
+        exportSelectedImage: 'Image',
         exportSelectedMarkdown: 'Markdown',
         exportSelectedJson: 'JSON',
         exportSelectedTxt: 'TXT',
@@ -817,7 +819,7 @@ const ISSUE_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper/issues/new';
 const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
 const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
 const EXTENSION_NAME = 'ChatGPT Helper';
-const EXTENSION_VERSION = '2.6.0';
+const EXTENSION_VERSION = '2.7.0';
 const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
 const EXTENSION_LICENSE = 'MIT';
 const THEME_HOST_ATTRS = [
