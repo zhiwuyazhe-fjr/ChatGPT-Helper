@@ -1,474 +1,211 @@
+import { COLLAPSED_BUTTON_DEFS, DEFAULT_COLLAPSED_BUTTONS_ORDER, DEFAULT_SETTINGS, PANEL_WIDTH_MAX, PANEL_WIDTH_MIN, SETTING_KEYS, createDefaultPrompts, getExtensionRuntime, normalizeThemeConfig } from './10-base.js';
 // Chrome Extension Content Script - ChatGPT Helper App Storage And Init
-(function () {
-    'use strict';
-
-    const root = window.__MY_EXT__ = window.__MY_EXT__ || {};
-    const H = root.helper = root.helper || {};
-    const {
-        SETTING_KEYS,
-        I18N,
-        detectLanguage,
-        t,
-        getCurrentLang,
-        setCurrentLang,
-        TAB_DEFINITIONS,
-        COLLAPSED_BUTTON_DEFS,
-        DEFAULT_COLLAPSED_BUTTONS_ORDER,
-        THEME_PRESETS,
-        THEME_PRESET_MAP,
-        THEME_PRESET_INLINE_VAR_KEYS,
-        THEME_BACKGROUND_DB_NAME,
-        THEME_BACKGROUND_DB_VERSION,
-        THEME_BACKGROUND_STORE,
-        THEME_BACKGROUND_MAX_SIZE,
-        THEME_BACKGROUND_ALLOWED_TYPES,
-        FEATURE_REQUEST_URL,
-        ISSUE_URL,
-        REPO_URL,
-        AUTHOR_GITHUB_URL,
-        THEME_HOST_ATTRS,
-        DEFAULT_THEME_CONFIG,
-        DEFAULT_SETTINGS,
-        DEFAULT_PROMPTS,
-        createDefaultPrompts,
-        createElement,
-        getExtensionRuntime,
-        getExtensionAssetUrl,
-        getExtensionManifestMeta,
-        openExternalLink,
-        copyTextToClipboard,
-        createHelperLogoNode,
-        SVG_ICON_DEFS,
-        createSvgIconNode,
-        setButtonIcon,
-        createCollapsedButtonIconNode,
-        clearElement,
-        clampNumber,
-        normalizeHexColor,
-        hexToRgb,
-        blendRgbColors,
-        rgbaFromColor,
-        buildLinearGradient,
-        createThemeAssetId,
-        getThemePresetByKey,
-        withProductivitySurfaceVars,
-        buildThemeSurfaceVars,
-        normalizeThemeConfig,
-        ThemeAssetRepository,
-        ConversationManager,
-        ScrollManager,
-        HistoryLoader,
-        AnchorManager,
-        ReadingProgressManager,
-        ScrollLockManager,
-        WidthStyleManager,
-        OutlineManager,
-        CopyManager,
-        TabRenameManager,
-        ChatGPTAdapter,
-        ChatGPTHelper
-    } = H;
 
 
-    if (!ChatGPTHelper) {
-        console.error('[ChatGPT Helper] ChatGPTHelper is not loaded; skipping App Storage And Init module');
-        return;
-    }
-    const MAIN_TAB_ORDER = ['prompts', 'outline', 'conversations', 'export'];
-    const FIXED_PAGE_WIDTH_CONFIG = { enabled: false, value: 1200, unit: 'px' };
-    const normalizeMainTabOrder = (value) => {
-        const ordered = Array.isArray(value)
-            ? value.filter(tabId => MAIN_TAB_ORDER.includes(tabId))
-            : [];
-        const unique = Array.from(new Set(ordered));
-        return unique.length > 0 ? unique : [...MAIN_TAB_ORDER];
-    };
-    const normalizeCollapsedButtonsOrder = (value) => {
-        const source = Array.isArray(value) ? value : [];
-        const orderedIds = Array.from(new Set(source
-            .map(item => item?.id)
-            .filter(id => COLLAPSED_BUTTON_DEFS[id])));
-        DEFAULT_COLLAPSED_BUTTONS_ORDER.forEach((item) => {
-            if (!orderedIds.includes(item.id)) orderedIds.push(item.id);
-        });
-        return orderedIds.map(id => ({ id, enabled: true }));
-    };
 
-    Object.assign(ChatGPTHelper.prototype, {
-        loadPrompts() {
-            const promptLibraryVersion = 3;
-            const removedDefaultPromptIds = new Set(['default_1', 'default_2']);
-            const saved = window.GM_getValue(SETTING_KEYS.PROMPTS, null);
-            if (!Array.isArray(saved)) {
-                window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, promptLibraryVersion);
-                return createDefaultPrompts();
-            }
-
-            const savedVersion = Number(window.GM_getValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, 1)) || 1;
-            if (savedVersion >= promptLibraryVersion) {
-                return saved;
-            }
-
-            const retainedPrompts = saved.filter(prompt => !removedDefaultPromptIds.has(prompt?.id));
-            const existingIds = new Set(retainedPrompts.map(prompt => prompt?.id).filter(Boolean));
-            const missingDefaults = createDefaultPrompts().filter(prompt => prompt.id && !existingIds.has(prompt.id));
-            const prompts = missingDefaults.length > 0 ? [...retainedPrompts, ...missingDefaults] : retainedPrompts;
-
-            window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, promptLibraryVersion);
-            if (missingDefaults.length > 0 || retainedPrompts.length !== saved.length) {
-                window.GM_setValue(SETTING_KEYS.PROMPTS, prompts);
-            }
-
-            return prompts;
-        },
-
-        savePrompts() {
-            window.GM_setValue(SETTING_KEYS.PROMPTS, this.prompts);
-        },
-
-        normalizeRuntimeSettings(source = {}) {
-            const saved = source && typeof source === 'object' ? source : {};
-            const settings = {
-                ...DEFAULT_SETTINGS,
-                // 与拖拽钳制共用常量（220-640）：不一致会导致拖宽后持久化值缩水、布局错位
-                panelWidth: Math.max(H.PANEL_WIDTH_MIN, Math.min(H.PANEL_WIDTH_MAX, parseInt(saved.panelWidth) || DEFAULT_SETTINGS.panelWidth)),
-                defaultPanelState: saved.defaultPanelState !== undefined
-                    ? Boolean(saved.defaultPanelState)
-                    : DEFAULT_SETTINGS.defaultPanelState,
-                preventAutoScroll: Boolean(saved.preventAutoScroll),
-                prompts: { enabled: true },
-                promptSortMode: ['manual', 'recent', 'frequent'].includes(saved.promptSortMode)
-                    ? saved.promptSortMode
-                    : 'manual',
-                promptQuickMenuEnabled: saved.promptQuickMenuEnabled !== false,
-                outline: {
-                    enabled: true,
-                    showUserQueries: saved.outline?.showUserQueries !== false,
-                    autoUpdate: true,
-                    syncScroll: saved.outline?.syncScroll !== false,
-                    updateInterval: 2,
-                    maxLevel: 6
-                },
-                conversations: { enabled: true },
-                pageWidth: { ...FIXED_PAGE_WIDTH_CONFIG },
-                tabOrder: normalizeMainTabOrder(saved.tabOrder),
-                collapsedButtonsOrder: normalizeCollapsedButtonsOrder(saved.collapsedButtonsOrder),
-                anchorEnabled: true,
-                themeEnabled: true,
-                manualAnchorEnabled: true,
-                readingHistory: {
-                    persistence: saved.readingHistory?.persistence !== false,
-                    autoRestore: Boolean(saved.readingHistory?.autoRestore),
-                    cleanupDays: 30
-                },
-                formulaCopy: {
-                    enabled: saved.formulaCopy?.enabled !== false
-                },
-                tableCopy: {
-                    enabled: saved.tableCopy?.enabled !== false
-                },
-                tabSettings: {
-                    enabled: saved.tabSettings?.enabled !== false,
-                    showStatus: saved.tabSettings?.showStatus !== false,
-                    notificationSound: Boolean(saved.tabSettings?.notificationSound),
-                    notificationVolume: Math.max(0.1, Math.min(1, Number(saved.tabSettings?.notificationVolume) || 0.5)),
-                    titleFormat: saved.tabSettings?.titleFormat || '{status}{title}',
-                    privacyMode: Boolean(saved.tabSettings?.privacyMode),
-                    privacyTitle: saved.tabSettings?.privacyTitle || 'ChatGPT'
-                }
-            };
-
-            settings.themeConfig = normalizeThemeConfig(saved.themeConfig, saved.themeMode);
-            settings.themeMode = null;
-            return settings;
-        },
-
-        serializeSettingsForStorage(settings = this.settings) {
-            const normalized = this.normalizeRuntimeSettings(settings || {});
-            return {
-                panelWidth: normalized.panelWidth,
-                defaultPanelState: normalized.defaultPanelState,
-                prompts: { enabled: true },
-                outline: {
-                    enabled: true,
-                    showUserQueries: normalized.outline.showUserQueries,
-                    syncScroll: normalized.outline.syncScroll
-                },
-                conversations: { enabled: true },
-                tabOrder: [...normalized.tabOrder],
-                collapsedButtonsOrder: normalized.collapsedButtonsOrder.map((item) => ({ ...item, enabled: true })),
-                themeMode: null,
-                themeConfig: normalized.themeConfig,
-                anchorEnabled: true,
-                themeEnabled: true,
-                manualAnchorEnabled: true,
-                preventAutoScroll: normalized.preventAutoScroll,
-                promptSortMode: normalized.promptSortMode,
-                promptQuickMenuEnabled: normalized.promptQuickMenuEnabled,
-                readingHistory: {
-                    persistence: normalized.readingHistory.persistence,
-                    autoRestore: normalized.readingHistory.autoRestore
-                },
-                formulaCopy: {
-                    enabled: normalized.formulaCopy.enabled
-                },
-                tableCopy: {
-                    enabled: normalized.tableCopy.enabled
-                },
-                tabSettings: {
-                    enabled: normalized.tabSettings.enabled,
-                    showStatus: normalized.tabSettings.showStatus,
-                    notificationSound: normalized.tabSettings.notificationSound,
-                    notificationVolume: normalized.tabSettings.notificationVolume,
-                    titleFormat: normalized.tabSettings.titleFormat,
-                    privacyMode: normalized.tabSettings.privacyMode,
-                    privacyTitle: normalized.tabSettings.privacyTitle
-                }
-            };
-        },
-
-        loadSettings() {
-            const saved = window.GM_getValue(SETTING_KEYS.SETTINGS, null);
-            return this.normalizeRuntimeSettings(saved);
-        },
-
-        saveSettings() {
-            const normalized = this.normalizeRuntimeSettings(this.settings);
-            Object.keys(this.settings).forEach((key) => delete this.settings[key]);
-            Object.assign(this.settings, normalized);
-            window.GM_setValue(SETTING_KEYS.SETTINGS, this.serializeSettingsForStorage(this.settings));
-        },
-
-        init() {
-            try {
-                console.log('[ChatGPT Helper] 开始初始化...');
-                try {
-                    this.createStyles();
-                } catch (e) {
-                    console.error('[ChatGPT Helper] createStyles 错误:', e);
-                }
-                
-                try {
-                    this.createLayout();
-                } catch (e) {
-                    console.error('[ChatGPT Helper] createLayout 错误:', e);
-                }
-
-                // 确保面板创建后再创建 UI
-                setTimeout(() => {
-                    try {
-                        if (this.panel) {
-                            try {
-                                this.initializeThemeSystem().catch((e) => {
-                                    console.error('[ChatGPT Helper] initializeThemeSystem 错误:', e);
-                                });
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] initializeThemeSystem 调用错误:', e);
-                            }
-
-                            try {
-                                this.createUI();
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] createUI 错误:', e);
-                            }
-                            
-                            try {
-                                this.createCollapsedButtons();
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] createCollapsedButtons 错误:', e);
-                            }
-                            
-                            try {
-                                this.bindEvents();
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] bindEvents 错误:', e);
-                            }
-
-                            // 启动主题监听
-                            try {
-                                this.monitorTheme();
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] monitorTheme 错误:', e);
-                            }
-
-                            // 阶段1：启动阅读历史记录
-                            try {
-                                if (this.settings.readingHistory?.persistence) {
-                                    this.readingProgressManager.startRecording();
-                                }
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] startRecording 错误:', e);
-                            }
-
-                            // 阶段1：尝试恢复阅读位置
-                            try {
-                                if (this.settings.readingHistory?.autoRestore) {
-                                    setTimeout(() => {
-                                        try {
-                                            this.readingProgressManager.restoreProgress().then((success) => {
-                                                if (success && this.readingProgressManager.restoredTop !== null) {
-                                                    this.anchorManager.setAnchor(this.readingProgressManager.restoredTop);
-                                                }
-                                            }).catch((e) => {
-                                                console.error('[ChatGPT Helper] restoreProgress 错误:', e);
-                                            });
-                                        } catch (e) {
-                                            console.error('[ChatGPT Helper] restoreProgress 设置错误:', e);
-                                        }
-                                    }, 1000);
-                                }
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] 恢复阅读位置错误:', e);
-                            }
-
-                            // 阶段1：清理过期历史
-                            try {
-                                this.readingProgressManager.cleanup();
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] cleanup 错误:', e);
-                            }
-
-                            // 初始化宽度样式管理器
-                            try {
-                                if (!this.widthStyleManager) {
-                                    this.widthStyleManager = new WidthStyleManager(this.adapter, this.settings.pageWidth);
-                                    this.widthStyleManager.apply();
-                                }
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] WidthStyleManager 错误:', e);
-                            }
-
-                            // 阶段3：初始化复制功能
-                            try {
-                                if (this.settings.formulaCopy?.enabled !== false || this.settings.tableCopy?.enabled !== false) {
-                                    this.copyManager.init();
-                                }
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] copyManager.init 错误:', e);
-                            }
-
-                            // 阶段4：启动标签页管理器
-                            try {
-                                if (this.settings.tabSettings?.enabled !== false) {
-                                    this.tabRenameManager.start();
-                                }
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] tabRenameManager.start 错误:', e);
-                            }
-
-                            // 启动输入框 / 快速唤起菜单
-                            try {
-                                if (this.promptQuickMenu && this.settings.promptQuickMenuEnabled !== false) {
-                                    this.promptQuickMenu.start();
-                                }
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] promptQuickMenu.start 错误:', e);
-                            }
-
-                            // 启动多选消息导出（悬浮工具条）
-                            try {
-                                if (this.messageSelectManager) {
-                                    this.messageSelectManager.start();
-                                }
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] messageSelectManager.start 错误:', e);
-                            }
-
-                            // 监听 service worker 下发的面板切换指令（全局快捷键）
-                            try {
-                                const runtime = (typeof chrome !== 'undefined' && chrome.runtime) ||
-                                    (typeof browser !== 'undefined' && browser.runtime);
-                                if (runtime && runtime.onMessage && typeof runtime.onMessage.addListener === 'function' &&
-                                    !window.__chHelperPanelListenerAdded) {
-                                    window.__chHelperPanelListenerAdded = true;
-                                    runtime.onMessage.addListener((msg) => {
-                                        if (msg && msg.type === 'ch-helper-toggle-panel' && this.panel) {
-                                            try {
-                                                this.toggleCollapse();
-                                            } catch (e) {
-                                                console.error('[ChatGPT Helper] 快捷键切换面板失败:', e);
-                                            }
-                                        }
-                                    });
-                                }
-                            } catch (e) {
-                                console.warn('[ChatGPT Helper] 注册面板切换监听失败:', e);
-                            }
-
-                            // 首次使用引导
-                            try {
-                                this.maybeShowOnboarding();
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] maybeShowOnboarding 错误:', e);
-                            }
-
-                            // 初始化滚动锁定管理器
-                            try {
-                                if (!this.scrollLockManager) {
-                                    this.scrollLockManager = new ScrollLockManager(this.adapter);
-                                    // 根据设置决定是否启用防止自动滚动
-                                    // 显式设置状态，确保状态同步
-                                    this.scrollLockManager.setEnabled(this.settings.preventAutoScroll || false);
-                                } else {
-                                    // 如果已经存在，也要同步状态
-                                    this.scrollLockManager.setEnabled(this.settings.preventAutoScroll || false);
-                                }
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] ScrollLockManager 错误:', e);
-                            }
-
-                            // 监听大纲自动刷新事件
-                            try {
-                                window.addEventListener('chatgpt-helper-outline-auto-refresh', () => {
-                                    try {
-                                        if (this.currentTab === 'outline') {
-                                            this.refreshOutline();
-                                        }
-                                    } catch (e) {
-                                        console.error('[ChatGPT Helper] refreshOutline 错误:', e);
-                                    }
-                                });
-                            } catch (e) {
-                                console.error('[ChatGPT Helper] 添加大纲刷新监听器错误:', e);
-                            }
-
-                            console.log('[ChatGPT Helper] 初始化完成');
-                        } else {
-                            console.error('[ChatGPT Helper] 面板未创建，重试...');
-                            setTimeout(() => {
-                                try {
-                                    this.createLayout();
-                                    if (this.panel) {
-                                        try {
-                                            this.initializeThemeSystem().catch((e3) => {
-                                                console.error('[ChatGPT Helper] 重试 initializeThemeSystem 错误:', e3);
-                                            });
-                                        } catch (e3) {
-                                            console.error('[ChatGPT Helper] 重试 initializeThemeSystem 调用错误:', e3);
-                                        }
-
-                                        try {
-                                            this.createUI();
-                                            this.createCollapsedButtons();
-                                            this.bindEvents();
-                                        } catch (e) {
-                                            console.error('[ChatGPT Helper] 重试创建 UI 错误:', e);
-                                        }
-                                    }
-                                } catch (e) {
-                                    console.error('[ChatGPT Helper] 重试 createLayout 错误:', e);
-                                }
-                            }, 500);
-                        }
-                    } catch (e) {
-                        console.error('[ChatGPT Helper] init setTimeout 错误:', e);
-                        console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
-                    }
-                }, 100);
-            } catch (e) {
-                console.error('[ChatGPT Helper] 初始化错误:', e);
-                console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
-            }
-        }
+const MAIN_TAB_ORDER = ['prompts', 'outline', 'conversations', 'export'];
+const FIXED_PAGE_WIDTH_CONFIG = { enabled: false, value: 1200, unit: 'px' };
+const normalizeMainTabOrder = (value) => {
+    const ordered = Array.isArray(value)
+        ? value.filter(tabId => MAIN_TAB_ORDER.includes(tabId))
+        : [];
+    const unique = Array.from(new Set(ordered));
+    return unique.length > 0 ? unique : [...MAIN_TAB_ORDER];
+};
+const normalizeCollapsedButtonsOrder = (value) => {
+    const source = Array.isArray(value) ? value : [];
+    const orderedIds = Array.from(new Set(source
+        .map(item => item?.id)
+        .filter(id => COLLAPSED_BUTTON_DEFS[id])));
+    DEFAULT_COLLAPSED_BUTTONS_ORDER.forEach((item) => {
+        if (!orderedIds.includes(item.id)) orderedIds.push(item.id);
     });
-})();
+    return orderedIds.map(id => ({ id, enabled: true }));
+};
+
+export const StorageFeature = {
+    loadPrompts() {
+        const promptLibraryVersion = 3;
+        const removedDefaultPromptIds = new Set(['default_1', 'default_2']);
+        const saved = window.GM_getValue(SETTING_KEYS.PROMPTS, null);
+        if (!Array.isArray(saved)) {
+            window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, promptLibraryVersion);
+            return createDefaultPrompts();
+        }
+
+        const savedVersion = Number(window.GM_getValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, 1)) || 1;
+        if (savedVersion >= promptLibraryVersion) {
+            return saved;
+        }
+
+        const retainedPrompts = saved.filter(prompt => !removedDefaultPromptIds.has(prompt?.id));
+        const existingIds = new Set(retainedPrompts.map(prompt => prompt?.id).filter(Boolean));
+        const missingDefaults = createDefaultPrompts().filter(prompt => prompt.id && !existingIds.has(prompt.id));
+        const prompts = missingDefaults.length > 0 ? [...retainedPrompts, ...missingDefaults] : retainedPrompts;
+
+        window.GM_setValue(SETTING_KEYS.PROMPT_LIBRARY_VERSION, promptLibraryVersion);
+        if (missingDefaults.length > 0 || retainedPrompts.length !== saved.length) {
+            window.GM_setValue(SETTING_KEYS.PROMPTS, prompts);
+        }
+
+        return prompts;
+    },
+
+    savePrompts() {
+        window.GM_setValue(SETTING_KEYS.PROMPTS, this.prompts);
+    },
+
+    normalizeRuntimeSettings(source = {}) {
+        const saved = source && typeof source === 'object' ? source : {};
+        const settings = {
+            ...DEFAULT_SETTINGS,
+            // 与拖拽钳制共用常量（220-640）：不一致会导致拖宽后持久化值缩水、布局错位
+            panelWidth: Math.max(PANEL_WIDTH_MIN, Math.min(PANEL_WIDTH_MAX, parseInt(saved.panelWidth) || DEFAULT_SETTINGS.panelWidth)),
+            defaultPanelState: saved.defaultPanelState !== undefined
+                ? Boolean(saved.defaultPanelState)
+                : DEFAULT_SETTINGS.defaultPanelState,
+            preventAutoScroll: Boolean(saved.preventAutoScroll),
+            prompts: { enabled: true },
+            promptSortMode: ['manual', 'recent', 'frequent'].includes(saved.promptSortMode)
+                ? saved.promptSortMode
+                : 'manual',
+            promptQuickMenuEnabled: saved.promptQuickMenuEnabled !== false,
+            outline: {
+                enabled: true,
+                showUserQueries: saved.outline?.showUserQueries !== false,
+                autoUpdate: true,
+                syncScroll: saved.outline?.syncScroll !== false,
+                updateInterval: 2,
+                maxLevel: 6
+            },
+            conversations: { enabled: true },
+            pageWidth: { ...FIXED_PAGE_WIDTH_CONFIG },
+            tabOrder: normalizeMainTabOrder(saved.tabOrder),
+            collapsedButtonsOrder: normalizeCollapsedButtonsOrder(saved.collapsedButtonsOrder),
+            anchorEnabled: true,
+            themeEnabled: true,
+            manualAnchorEnabled: true,
+            readingHistory: {
+                persistence: saved.readingHistory?.persistence !== false,
+                autoRestore: Boolean(saved.readingHistory?.autoRestore),
+                cleanupDays: 30
+            },
+            formulaCopy: {
+                enabled: saved.formulaCopy?.enabled !== false
+            },
+            tableCopy: {
+                enabled: saved.tableCopy?.enabled !== false
+            },
+            tabSettings: {
+                enabled: saved.tabSettings?.enabled !== false,
+                showStatus: saved.tabSettings?.showStatus !== false,
+                notificationSound: Boolean(saved.tabSettings?.notificationSound),
+                notificationVolume: Math.max(0.1, Math.min(1, Number(saved.tabSettings?.notificationVolume) || 0.5)),
+                titleFormat: saved.tabSettings?.titleFormat || '{status}{title}',
+                privacyMode: Boolean(saved.tabSettings?.privacyMode),
+                privacyTitle: saved.tabSettings?.privacyTitle || 'ChatGPT'
+            }
+        };
+
+        settings.themeConfig = normalizeThemeConfig(saved.themeConfig, saved.themeMode);
+        settings.themeMode = null;
+        return settings;
+    },
+
+    serializeSettingsForStorage(settings = this.settings) {
+        const normalized = this.normalizeRuntimeSettings(settings || {});
+        return {
+            panelWidth: normalized.panelWidth,
+            defaultPanelState: normalized.defaultPanelState,
+            prompts: { enabled: true },
+            outline: {
+                enabled: true,
+                showUserQueries: normalized.outline.showUserQueries,
+                syncScroll: normalized.outline.syncScroll
+            },
+            conversations: { enabled: true },
+            tabOrder: [...normalized.tabOrder],
+            collapsedButtonsOrder: normalized.collapsedButtonsOrder.map((item) => ({ ...item, enabled: true })),
+            themeMode: null,
+            themeConfig: normalized.themeConfig,
+            anchorEnabled: true,
+            themeEnabled: true,
+            manualAnchorEnabled: true,
+            preventAutoScroll: normalized.preventAutoScroll,
+            promptSortMode: normalized.promptSortMode,
+            promptQuickMenuEnabled: normalized.promptQuickMenuEnabled,
+            readingHistory: {
+                persistence: normalized.readingHistory.persistence,
+                autoRestore: normalized.readingHistory.autoRestore
+            },
+            formulaCopy: {
+                enabled: normalized.formulaCopy.enabled
+            },
+            tableCopy: {
+                enabled: normalized.tableCopy.enabled
+            },
+            tabSettings: {
+                enabled: normalized.tabSettings.enabled,
+                showStatus: normalized.tabSettings.showStatus,
+                notificationSound: normalized.tabSettings.notificationSound,
+                notificationVolume: normalized.tabSettings.notificationVolume,
+                titleFormat: normalized.tabSettings.titleFormat,
+                privacyMode: normalized.tabSettings.privacyMode,
+                privacyTitle: normalized.tabSettings.privacyTitle
+            }
+        };
+    },
+
+    loadSettings() {
+        const saved = window.GM_getValue(SETTING_KEYS.SETTINGS, null);
+        return this.normalizeRuntimeSettings(saved);
+    },
+
+    saveSettings() {
+        const normalized = this.normalizeRuntimeSettings(this.settings);
+        Object.keys(this.settings).forEach((key) => delete this.settings[key]);
+        Object.assign(this.settings, normalized);
+        window.GM_setValue(SETTING_KEYS.SETTINGS, this.serializeSettingsForStorage(this.settings));
+    },
+
+    async init() {
+        this.createStyles();
+        this.createLayout();
+        if (!this.panel) throw new Error('Helper panel could not be mounted');
+        this.createUI();
+        this.createCollapsedButtons();
+        this.bindEvents();
+        await this.runFeature('theme', () => this.initializeThemeSystem());
+        if (this.destroyed) return;
+        this.monitorTheme();
+        this.runFeature('reading history', () => {
+            this.readingProgressManager.startRecording();
+            this.readingProgressManager.cleanup();
+            if (this.settings.readingHistory?.autoRestore) {
+                this.scope.schedule('restore-reading', () => {
+                    this.runFeature('restore reading', async () => {
+                        const restored = await this.readingProgressManager.restoreProgress();
+                        if (restored) this.anchorManager.setAnchor(this.readingProgressManager.restoredTop);
+                    });
+                }, 500);
+            }
+        });
+        this.runFeature('page width', () => this.widthStyleManager.apply());
+        this.runFeature('copy', () => this.copyManager.init());
+        if (this.settings.tabSettings?.enabled !== false) this.runFeature('tab status', () => this.tabRenameManager.start());
+        if (this.settings.promptQuickMenuEnabled !== false) this.promptQuickMenu.start();
+        this.runFeature('message selection', () => this.messageSelectManager.start());
+        this.scrollLockManager.setEnabled(Boolean(this.settings.preventAutoScroll));
+        const runtime = getExtensionRuntime();
+        if (runtime?.onMessage?.addListener) {
+            this.panelMessageHandler = message => {
+                if (message?.type === 'ch-helper-toggle-panel') this.toggleCollapse();
+            };
+            runtime.onMessage.addListener(this.panelMessageHandler);
+        }
+        this.scope.listen(window, 'chatgpt-helper-outline-auto-refresh', () => {
+            if (this.currentTab === 'outline') this.refreshOutline();
+        });
+        this.runFeature('onboarding', () => this.maybeShowOnboarding());
+    }
+};

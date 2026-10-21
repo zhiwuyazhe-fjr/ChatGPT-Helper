@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN" class="dark" style="color-scheme: dark">
+<head>
+  <meta charset="utf-8">
+  <title>ChatGPT regression fixture</title>
+  <style>
+    :root { --text-primary:#171717; --text-secondary:#616161; --bg-primary:#fff; --bg-secondary:#f5f5f5; color-scheme:light; }
+    :root.dark { --text-primary:#ececec; --text-secondary:#b4b4b4; --bg-primary:#212121; --bg-secondary:#171717; color-scheme:dark; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--text-primary); background:var(--bg-primary); font:16px/1.65 Arial,sans-serif; }
+    #fixture-shell { display:flex; height:100vh; background:var(--bg-primary); }
+    #fixture-sidebar { flex:0 0 180px; padding:24px 16px; background:var(--bg-secondary); }
+    #fixture-sidebar a { color:var(--text-primary); display:block; margin:20px 0; }
+    main { position:relative; flex:1; min-width:0; background:var(--bg-primary); display:flex; flex-direction:column; }
+    header { padding:18px 30px; }
+    #fixture-scroll { flex:1; min-height:0; overflow-y:auto; }
+    #fixture-messages { max-width:760px; margin:auto; padding:32px; }
+    article { margin-bottom:40px; }
+    .markdown { color:var(--text-primary); }
+    .markdown h2 { color:var(--text-primary); font-size:24px; }
+    .markdown p { color:var(--text-primary); }
+    .prose-invert { --tw-prose-body:#ececec; --tw-prose-headings:#fff; color:var(--tw-prose-body); }
+    .prose-invert p { color:var(--tw-prose-body); }
+    [data-message-author-role="user"] { margin-left:120px; padding:18px; border-radius:22px; background:var(--bg-secondary); }
+    #fixture-composer { margin:16px 30px; padding:16px; background:var(--bg-secondary); border-radius:24px; }
+    #prompt-textarea { min-height:60px; outline:none; }
+  </style>
+  <script>
+    // The fixture deliberately starts with native dark tokens. Switching to light
+    // must update inherited prose colors as well as the extension panel.
+    const seed = {
+      chatgpt_onboarding_done:true,
+      chatgpt_language:'zh-CN',
+      chatgpt_settings:{ themeConfig:{appearanceMode:'dark',presetKey:'original'}, readingHistory:{persistence:false,autoRestore:false} }
+    };
+    const load = () => JSON.parse(localStorage.getItem('fixture-storage') || JSON.stringify(seed));
+    const listeners = new Set();
+    const runtimeListeners = new Set();
+    window.__fixtureDispatchRuntime = message => runtimeListeners.forEach(listener => listener(message));
+    const finish = (value, callback) => { if (callback) queueMicrotask(() => callback(value)); return Promise.resolve(value); };
+    window.chrome = {
+      runtime:{ id:'fixture', lastError:undefined, getURL:path => '/' + path, getManifest:() => ({name:'ChatGPT Helper',version:'test'}), onMessage:{addListener:listener => runtimeListeners.add(listener),removeListener:listener => runtimeListeners.delete(listener)}, sendMessage:() => Promise.resolve({}) },
+      storage:{
+        onChanged:{addListener:listener => listeners.add(listener),removeListener:listener => listeners.delete(listener)},
+        local:{
+          get(keys, callback) { const all=load(); const selected=keys == null ? all : Object.fromEntries((Array.isArray(keys) ? keys : typeof keys === 'object' ? Object.keys(keys) : [keys]).map(key => [key,all[key]])); return finish(selected,callback); },
+          set(values, callback) { const before=load(); localStorage.setItem('fixture-storage',JSON.stringify({...before,...values})); const changes=Object.fromEntries(Object.entries(values).map(([key,newValue]) => [key,{oldValue:before[key],newValue}])); queueMicrotask(() => listeners.forEach(fn => fn(changes,'local'))); return finish(undefined,callback); },
+          remove(keys, callback) { const all=load(); for (const key of Array.isArray(keys) ? keys : [keys]) delete all[key]; localStorage.setItem('fixture-storage',JSON.stringify(all)); return finish(undefined,callback); }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="dark">
+  <div id="fixture-shell">
+    <aside id="fixture-sidebar" data-testid="sidebar"><nav aria-label="Chat history"><b>ChatGPT</b><a href="/c/fixture">当前会话</a><a href="/c/other">另一个会话</a></nav></aside>
+    <main><header>架构重构与功能回归</header><div id="fixture-scroll"><div id="fixture-messages"></div></div><form id="fixture-composer"><div id="prompt-textarea" role="textbox" contenteditable="true" aria-label="消息"></div></form></main>
+  </div>
+  <script src="/content-scripts/gm-api-adapter.js"></script>
+  <script src="/content-scripts/dist/chatgpt-helper.js"></script>
+</body>
+</html>

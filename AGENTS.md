@@ -19,6 +19,14 @@
 - `icons/logo.svg` 是品牌 Logo（用户提供），不要重绘或替换，UI 中优先加载它
 - 产物目录 `artifacts/` 与源码一起提交
 
+## 核心架构
+
+- Helper 使用显式 ESM 导入；`src/content/helper/app.js` 统一组合功能对象，禁止恢复依赖脚本顺序的全局解构与分散原型补丁
+- `15-runtime.js` 管理事件/观察器/延迟任务生命周期；正文消息及滚动容器识别集中在 `80-chatgpt-adapter.js`
+- 所有阅读导航通过 `ScrollManager`，不要修改原生滚动 API 或重复派发强制滚动
+- 助手 CSS 在 `src/content/helper/styles/helper.css`，宿主主题 CSS 在 `21-theme-runtime.js`；主题状态和资产读取分别归属 `92-app-theme.js` 与 `20-theme-assets.js`
+- 架构说明与回归运行方法见 `docs/architecture.md`；核心行为改动需执行 `npm run test:browser`（使用已安装 Playwright）
+
 ## 验证方式
 
 - 构建检查：`npm run check`

@@ -1,12 +1,13 @@
 {
   "name": "chatgpt-helper-extension",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node scripts/build-content.mjs",
     "check": "node scripts/check-content.mjs && tsc --noEmit",
     "typecheck": "tsc --noEmit",
+    "test:browser": "node scripts/test-browser.mjs",
     "package": "npm run build && npm run check && node scripts/package-extension.mjs"
   },
   "dependencies": {

@@ -150,6 +150,7 @@
         window.__MY_EXT__.storageUnavailable = true;
         window.__MY_EXT__.storageCacheInitialized = true; // 允许 UI 以只读模式启动
         window.__MY_EXT__.storageCache = window.__MY_EXT__.storageCache || {};
+        notifyStorageReady();
         console.error('[GM API Adapter] 存储不可用：本页以只读模式运行，拒绝一切写操作以保护既有数据');
     }
 

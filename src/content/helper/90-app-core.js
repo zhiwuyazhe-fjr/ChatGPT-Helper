@@ -1,281 +1,115 @@
+import { detectLanguage, getExtensionRuntime, setCurrentLang, t } from './10-base.js';
+import { ThemeAssetRepository } from './20-theme-assets.js';
+import { AnchorManager, HistoryLoader, ReadingProgressManager, ScrollLockManager, ScrollManager, WidthStyleManager } from './40-scroll-managers.js';
+import { PromptQuickMenu } from './55-prompt-quick-menu.js';
+import { CopyManager } from './60-copy-manager.js';
+import { MessageSelectManager } from './65-message-select-manager.js';
+import { TabRenameManager } from './70-tab-rename-manager.js';
+import { ChatGPTAdapter } from './80-chatgpt-adapter.js';
+const root = window.__MY_EXT__ = window.__MY_EXT__ || {};
+import { RuntimeScope } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper App Core
-(function () {
-    'use strict';
 
-    const root = window.__MY_EXT__ = window.__MY_EXT__ || {};
-    const H = root.helper = root.helper || {};
-    const {
-        SETTING_KEYS,
-        I18N,
-        detectLanguage,
-        t,
-        getCurrentLang,
-        setCurrentLang,
-        TAB_DEFINITIONS,
-        COLLAPSED_BUTTON_DEFS,
-        DEFAULT_COLLAPSED_BUTTONS_ORDER,
-        THEME_PRESETS,
-        THEME_PRESET_MAP,
-        THEME_PRESET_INLINE_VAR_KEYS,
-        THEME_BACKGROUND_DB_NAME,
-        THEME_BACKGROUND_DB_VERSION,
-        THEME_BACKGROUND_STORE,
-        THEME_BACKGROUND_MAX_SIZE,
-        THEME_BACKGROUND_ALLOWED_TYPES,
-        FEATURE_REQUEST_URL,
-        ISSUE_URL,
-        REPO_URL,
-        AUTHOR_GITHUB_URL,
-        THEME_HOST_ATTRS,
-        DEFAULT_THEME_CONFIG,
-        DEFAULT_SETTINGS,
-        DEFAULT_PROMPTS,
-        createDefaultPrompts,
-        createElement,
-        getExtensionRuntime,
-        getExtensionAssetUrl,
-        getExtensionManifestMeta,
-        openExternalLink,
-        copyTextToClipboard,
-        createHelperLogoNode,
-        SVG_ICON_DEFS,
-        createSvgIconNode,
-        setButtonIcon,
-        createCollapsedButtonIconNode,
-        clearElement,
-        clampNumber,
-        normalizeHexColor,
-        hexToRgb,
-        blendRgbColors,
-        rgbaFromColor,
-        buildLinearGradient,
-        createThemeAssetId,
-        getThemePresetByKey,
-        withProductivitySurfaceVars,
-        buildThemeSurfaceVars,
-        normalizeThemeConfig,
-        ThemeAssetRepository,
-        ConversationManager,
-        ScrollManager,
-        HistoryLoader,
-        AnchorManager,
-        ReadingProgressManager,
-        ScrollLockManager,
-        WidthStyleManager,
-        OutlineManager,
-        CopyManager,
-        TabRenameManager,
-        PromptQuickMenu,
-        MessageSelectManager,
-        ChatGPTAdapter
-    } = H;
 
-    // ==================== ChatGPT helper core ====================
-    class ChatGPTHelper {
-        constructor() {
-            try {
-                try {
-                    this.adapter = new ChatGPTAdapter();
-                } catch (e) {
-                    console.error('[ChatGPT Helper] ChatGPTAdapter 创建错误:', e);
-                    throw e; // 如果 adapter 创建失败，无法继续
-                }
-                
-                // 模块加载时 currentLang 已被固化为 navigator 推断值（彼时存储缓存未就绪）。
-                // 构造器此刻缓存已就绪：重设语言，让保存的语言偏好对 t() 生效，
-                // 并保证 loadPrompts 生成的默认提示词使用正确语言。
-                try {
-                    setCurrentLang(detectLanguage());
-                } catch (e) {
-                    console.error('[ChatGPT Helper] 语言初始化错误:', e);
-                }
+// ==================== ChatGPT helper core ====================
+class HelperCore {
+    constructor() {
+        this.scope = new RuntimeScope();
+        this.adapter = new ChatGPTAdapter();
+        setCurrentLang(detectLanguage());
+        this.lang = detectLanguage();
+        this.t = t;
+        this.settings = this.loadSettings();
+        this.prompts = this.loadPrompts();
+        this.isCollapsed = !this.settings.defaultPanelState;
+        this.currentTab = this.settings.tabOrder[0] || 'prompts';
+        this.selectedCategory = t('allCategory');
+        this.searchQuery = '';
+        this.selectedPrompt = null;
+        this.savedAnchorTop = null;
+        this.hasAnchor = false;
+        this.panel = null;
+        this.outlineManager = null;
 
-                try {
-                    this.prompts = this.loadPrompts();
-                } catch (e) {
-                    console.error('[ChatGPT Helper] loadPrompts 错误:', e);
-                    this.prompts = createDefaultPrompts(); // 使用默认值
-                }
-                
-                try {
-                    this.settings = this.loadSettings();
-                } catch (e) {
-                    console.error('[ChatGPT Helper] loadSettings 错误:', e);
-                    // 不能直接引用共享的 DEFAULT_SETTINGS：getThemeConfig 等会就地修改配置对象，
-                    // 共享引用会把"默认值"本身污染，殃及后续实例
-                    try {
-                        this.settings = this.normalizeRuntimeSettings({});
-                    } catch (e2) {
-                        this.settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
-                    }
-                }
-                
-                this.isCollapsed = !this.settings.defaultPanelState;
-                this.currentTab = this.settings.tabOrder && this.settings.tabOrder.length > 0
-                    ? this.settings.tabOrder[0]
-                    : 'prompts';
-                this.selectedCategory = t('allCategory');
-                this.searchQuery = '';
-                this.selectedPrompt = null;
-                this.savedAnchorTop = null; // 手动锚点位置
-                this.hasAnchor = false; // 是否有阅读锚点
-                this.panel = null;
-                this.lang = detectLanguage();
-                this.t = t; // 翻译函数
-
-                // 阶段1：初始化管理器
-                try {
-                    this.scrollManager = new ScrollManager(this.adapter);
-                } catch (e) {
-                    console.error('[ChatGPT Helper] ScrollManager 创建错误:', e);
-                    throw e; // 关键组件，失败则无法继续
-                }
-                
-                try {
-                    this.historyLoader = new HistoryLoader(this.scrollManager, (msg) => this.showToast(msg), this.t);
-                } catch (e) {
-                    console.error('[ChatGPT Helper] HistoryLoader 创建错误:', e);
-                    this.historyLoader = null; // 非关键组件，允许为 null
-                }
-                
-                try {
-                    this.anchorManager = new AnchorManager(this.scrollManager, (msg) => this.showToast(msg));
-                } catch (e) {
-                    console.error('[ChatGPT Helper] AnchorManager 创建错误:', e);
-                    this.anchorManager = null; // 非关键组件，允许为 null
-                }
-                
-                try {
-                    this.readingProgressManager = new ReadingProgressManager(
-                        this.settings,
-                        this.scrollManager,
-                        this.adapter,
-                        (msg) => this.showToast(msg)
-                    );
-                } catch (e) {
-                    console.error('[ChatGPT Helper] ReadingProgressManager 创建错误:', e);
-                    this.readingProgressManager = null; // 非关键组件，允许为 null
-                }
-
-                // 绑定锚点UI更新回调
-                try {
-                    if (this.anchorManager) {
-                        this.anchorManager.bindUI((hasAnchor) => {
-                            this.hasAnchor = hasAnchor;
-                            if (this.updateAnchorButton) {
-                                this.updateAnchorButton();
-                            }
-                        });
-                    }
-                } catch (e) {
-                    console.error('[ChatGPT Helper] 绑定锚点UI回调错误:', e);
-                }
-
-                // 阶段2：初始化大纲管理器
-                this.outlineManager = null; // 延迟初始化，在renderOutline时创建
-
-                // 阶段3：初始化复制管理器
-                try {
-                    this.copyManager = new CopyManager(this.settings, (msg) => this.showToast(msg), this.t);
-                } catch (e) {
-                    console.error('[ChatGPT Helper] CopyManager 创建错误:', e);
-                    this.copyManager = null; // 非关键组件，允许为 null
-                }
-
-                // 阶段4：初始化标签页管理器
-                try {
-                    this.tabRenameManager = new TabRenameManager(this.adapter, this.settings, (msg) => this.showToast(msg));
-                } catch (e) {
-                    console.error('[ChatGPT Helper] TabRenameManager 创建错误:', e);
-                    this.tabRenameManager = null; // 非关键组件，允许为 null
-                }
-
-                // 初始化输入框 / 快速唤起菜单
-                try {
-                    this.promptQuickMenu = new PromptQuickMenu({
-                        getPrompts: () => this.prompts || [],
-                        isEnabled: () => this.settings.promptQuickMenuEnabled !== false,
-                        t: (key) => this.t(key),
-                        onInsert: (prompt) => this.usePrompt(prompt, { replaceComposer: true })
-                    });
-                } catch (e) {
-                    console.error('[ChatGPT Helper] PromptQuickMenu 创建错误:', e);
-                    this.promptQuickMenu = null;
-                }
-
-                // 初始化多选消息导出管理器
-                try {
-                    this.messageSelectManager = new MessageSelectManager({
-                        t: (key) => this.t(key),
-                        onToast: (msg) => this.showToast(msg)
-                    });
-                } catch (e) {
-                    console.error('[ChatGPT Helper] MessageSelectManager 创建错误:', e);
-                    this.messageSelectManager = null;
-                }
-
-                // 初始化主题监听器
-                this.themeObserver = null;
-                this.systemThemeMediaQuery = null;
-                this.systemThemeListener = null;
-                this.currentEffectiveTheme = 'light';
-                this.themeAssetRepository = new ThemeAssetRepository();
-                this.themeBackgroundObjectUrl = null;
-                this.themeBackgroundObjectAssetId = null;
-                this.themeModal = null;
-                this.themeModalRefs = null;
-                this.themeModalEscHandler = null;
-                this.themeModalBackdropHandler = null;
-                this.themeRuntimeStyleReady = false;
-                this.themeHostRefreshQueued = false;
-                this.beforeUnloadHandler = () => {
-                    if (this.themeSettingSaveTimer) {
-                        clearTimeout(this.themeSettingSaveTimer);
-                        this.themeSettingSaveTimer = null;
-                        try {
-                            this.saveSettings();
-                        } catch (e) {
-                            // ignore
-                        }
-                    }
-                    this.stopThemeHostWatchdog();
-                    this.revokeThemeBackgroundObjectUrl();
-                    this.stopSystemThemeListener();
-                    this.closeThemeSettingsModal();
-                };
-                window.addEventListener('beforeunload', this.beforeUnloadHandler);
-
-                try {
-                    this.init();
-                } catch (e) {
-                    console.error('[ChatGPT Helper] init 调用错误:', e);
-                    console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
-                }
-
-                // 只读诊断出口：站点改版导致主题失效时，用户在控制台执行
-                // __MY_EXT__.getThemeDiagnostics() 即可取到现场数据。不暴露实例
-                // 本身，页面脚本无法借此调用任何写操作。
-                try {
-                    root.getThemeDiagnostics = () => (
-                        typeof this.collectThemeDiagnostics === 'function'
-                            ? this.collectThemeDiagnostics()
-                            : null
-                    );
-                } catch (e) {
-                    // ignore
-                }
-            } catch (e) {
-                console.error('[ChatGPT Helper] 构造函数严重错误:', e);
-                console.error('[ChatGPT Helper] 错误堆栈:', e.stack);
-                // 即使出错，也尝试设置基本属性，避免后续代码报错
-                this.panel = null;
-                this.adapter = null;
-                throw e; // 重新抛出，让调用者知道初始化失败
+        const toast = message => this.showToast(message);
+        this.scrollManager = new ScrollManager(this.adapter);
+        this.historyLoader = new HistoryLoader(this.scrollManager, toast, t);
+        this.anchorManager = new AnchorManager(this.scrollManager, toast);
+        this.anchorManager.bindUI(hasAnchor => {
+            this.hasAnchor = hasAnchor;
+            this.updateAnchorButton();
+        });
+        this.readingProgressManager = new ReadingProgressManager(this.settings, this.scrollManager, this.adapter, toast);
+        this.copyManager = new CopyManager(this.settings, toast, t);
+        this.tabRenameManager = new TabRenameManager(this.adapter, this.settings, toast);
+        this.promptQuickMenu = new PromptQuickMenu({
+            getPrompts: () => this.prompts,
+            isEnabled: () => this.settings.promptQuickMenuEnabled !== false,
+            t: key => this.t(key),
+            onInsert: prompt => this.usePrompt(prompt, { replaceComposer: true })
+        });
+        this.messageSelectManager = new MessageSelectManager({ t: key => this.t(key), onToast: toast });
+        this.scrollLockManager = new ScrollLockManager(this.adapter);
+        this.scrollManager.lockManager = this.scrollLockManager;
+        this.widthStyleManager = new WidthStyleManager(this.adapter, this.settings.pageWidth);
+        this.currentEffectiveTheme = 'light';
+        this.themeAssetRepository = new ThemeAssetRepository();
+        this.themeBackgroundObjectUrl = null;
+        this.themeBackgroundObjectAssetId = null;
+        this.themeRuntimeStyleReady = false;
+        this.themeHostRefreshQueued = false;
+        root.getThemeDiagnostics = () => this.collectThemeDiagnostics();
+        this.scope.listen(window, 'pagehide', event => {
+            if (this.themeSettingSaveTimer) {
+                clearTimeout(this.themeSettingSaveTimer);
+                this.themeSettingSaveTimer = null;
+                this.saveSettings();
             }
+            if (!event.persisted) this.destroy();
+        });
+        this.ready = this.init();
+        this.ready.catch(error => console.error('[ChatGPT Helper] 初始化失败:', error));
+    }
+
+    // Optional features fail independently; required layout errors remain visible.
+    runFeature(name, start) {
+        try {
+            return Promise.resolve(start()).catch(error => console.error('[ChatGPT Helper] ' + name, error));
+        } catch (error) {
+            console.error('[ChatGPT Helper] ' + name, error);
+            return Promise.resolve();
         }
     }
 
-    Object.assign(H, {
-        ChatGPTHelper
-    });
-})();
+    destroy() {
+        if (this.destroyed) return;
+        this.destroyed = true;
+        this.themeBackgroundRevision = (this.themeBackgroundRevision || 0) + 1;
+        this.scope.dispose();
+        this.pageScope?.dispose();
+        this.themeScope?.dispose();
+        for (const key of ['tabSpacingObserver', 'panelSpacingObserver', 'headerSpacingObserver', 'scrollNavObserver', 'promptsResponsiveObserver']) {
+            this[key]?.disconnect();
+        }
+        this.themeObserver?.disconnect();
+        this.stopThemeHostWatchdog();
+        this.stopSystemThemeListener();
+        this.closeThemeSettingsModal();
+        this.closeAboutModal?.();
+        this.revokeThemeBackgroundObjectUrl();
+        this.scrollManager.cancel();
+        this.historyLoader.abort();
+        this.readingProgressManager.stopRecording();
+        this.readingProgressManager.cancelRestore?.();
+        this.scrollLockManager.setEnabled(false);
+        this.outlineManager?.destroy();
+        this.copyManager.destroy();
+        this.tabRenameManager.stop();
+        this.promptQuickMenu.destroy();
+        this.messageSelectManager.stop();
+        this.conversationManager?.stopAutoSync();
+        if (this.panelMessageHandler) getExtensionRuntime()?.onMessage?.removeListener(this.panelMessageHandler);
+    }
+}
+
+export { HelperCore };

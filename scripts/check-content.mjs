@@ -51,6 +51,7 @@ const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'u
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
 const packageLock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf8'))
 const versionSources = {
+    'helper EXTENSION_VERSION': fs.readFileSync(path.join(root, 'src/content/helper/10-base.js'), 'utf8').match(/const EXTENSION_VERSION = '([^']+)'/)?.[1],
     'manifest.json': manifest.version,
     'package.json': packageJson.version,
     'package-lock.json': packageLock.version,
@@ -121,7 +122,7 @@ for (const requiredSnippet of ['createCollapsibleSettingsSection', 'aria-expande
         throw new Error(`helper settings panel is missing collapsible section support: ${requiredSnippet}`)
     }
 }
-const helperStylesSource = fs.readFileSync(path.join(root, 'src/content/helper/93-app-styles.js'), 'utf8')
+const helperStylesSource = fs.readFileSync(path.join(root, 'src/content/helper/styles/helper.css'), 'utf8')
 for (const requiredSnippet of ['chatgpt-helper-settings-compact-title-btn', 'chatgpt-helper-settings-compact-section.collapsed']) {
     if (!helperStylesSource.includes(requiredSnippet)) {
         throw new Error(`helper settings styles are missing collapsible section support: ${requiredSnippet}`)
@@ -377,5 +378,46 @@ async function runConversationSyncRegression() {
 }
 
 await runConversationSyncRegression()
+
+// Lifecycle races are hard to reproduce with ordinary sequential UI clicks.
+const { ChatGPTHelper, ScrollLockManager } = window.__MY_EXT__.helper
+let finishRead
+let signalRead
+const readStarted = new Promise(resolve => { signalRead = resolve })
+let writesAfterDispose = 0
+const subject = Object.assign(Object.create(ChatGPTHelper.prototype), {
+    settings: { themeConfig: { appearanceMode: 'light', presetKey: 'default', backgroundImageEnabled: true, backgroundAssetId: 'pending' } },
+    themeAssetRepository: { getAsset() {
+        signalRead()
+        return new Promise(resolve => { finishRead = resolve })
+    } },
+    refreshThemeHostTargets() {},
+    applyThemePresetVariables() {},
+    async applyAppearanceMode() {},
+    updateThemeVisualState() { writesAfterDispose++ },
+    queueThemeHostRefresh() { writesAfterDispose++ },
+    startThemeHostWatchdog() { writesAfterDispose++ },
+})
+const initialization = subject.initializeThemeSystem()
+await readStarted
+subject.destroyed = true
+subject.themeBackgroundRevision++
+finishRead({ blob: new Blob(['wallpaper']) })
+await initialization
+if (writesAfterDispose !== 0 || subject.themeBackgroundObjectUrl) {
+    throw new Error('Late wallpaper reads must not recreate resources after disposal')
+}
+
+let corrections = 0
+const scrollContainer = { isConnected: true, scrollTop: 100, scrollTo() { corrections++ } }
+const lock = new ScrollLockManager({ getScrollContainer: () => scrollContainer, isGenerating: () => true })
+lock.enabled = true
+lock.navigationActive = true
+lock.applyScrollCorrection(0)
+lock.navigationActive = false
+lock.scheduleScrollCorrection(0)
+lock.markUserInteraction()
+await new Promise(resolve => setTimeout(resolve, 20))
+if (corrections !== 0) throw new Error('Scroll correction must yield to user navigation')
 
 console.log('content script checks passed')
