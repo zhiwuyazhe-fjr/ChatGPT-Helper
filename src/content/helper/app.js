@@ -9,6 +9,7 @@ import { SettingsFeature } from './97-app-conversations-settings.js';
 import { OutlineFeature } from './98-app-outline.js';
 import { ControlsFeature } from './99-app-controls-events.js';
 import { BackupFeature } from './100-app-onboarding-backup.js';
+import { OnboardingFeature } from './101-app-onboarding.js';
 
 // A single composition boundary. Feature modules export behavior without mutating globals.
 export class ChatGPTHelper extends HelperCore {}
@@ -22,5 +23,6 @@ Object.assign(ChatGPTHelper.prototype,
     SettingsFeature,
     OutlineFeature,
     ControlsFeature,
-    BackupFeature
+    BackupFeature,
+    OnboardingFeature
 );

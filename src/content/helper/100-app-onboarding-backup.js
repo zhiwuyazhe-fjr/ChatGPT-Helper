@@ -1,7 +1,7 @@
-import { EXTENSION_VERSION, PANEL_WIDTH_MAX, PANEL_WIDTH_MIN, SETTING_KEYS, createElement, createHelperLogoNode, createSvgIconNode } from './10-base.js';
+import { EXTENSION_VERSION, PANEL_WIDTH_MAX, PANEL_WIDTH_MIN, SETTING_KEYS, createElement } from './10-base.js';
 import { ThemeAssetRepository } from './20-theme-assets.js';
-// Chrome Extension Content Script - ChatGPT Helper Onboarding & Backup
-// 首次使用引导 + 数据备份/恢复（提示词、设置、主题壁纸、会话整理数据）
+// Chrome Extension Content Script - ChatGPT Helper Backup
+// 数据备份/恢复（提示词、设置、主题壁纸、会话整理数据）
 
 
 const BACKUP_APP_MARKER = 'chatgpt-helper';
@@ -41,89 +41,6 @@ function formatBackupTimestamp() {
 
 
 export const BackupFeature = {
-    // ==================== 新手引导 ====================
-
-    maybeShowOnboarding(options = {}) {
-        try {
-            const done = window.GM_getValue(SETTING_KEYS.ONBOARDING_DONE, null);
-            if (!options.force && done) return;
-            this.showOnboardingOverlay();
-        } catch (e) {
-            console.error('[ChatGPT Helper] 显示新手引导失败:', e);
-        }
-    },
-
-    showOnboardingOverlay() {
-        const existing = document.getElementById('chatgpt-helper-onboarding-overlay');
-        if (existing) existing.remove();
-
-        const overlay = createElement('div', {
-            // id 前缀用于被主题壁纸的"body 直属容器透明化"规则排除
-            id: 'chatgpt-helper-onboarding-overlay',
-            className: 'gh-onboarding-overlay',
-            role: 'dialog',
-            'aria-modal': 'true',
-            'aria-label': this.t('onboardingTitle')
-        });
-        const card = createElement('div', { className: 'gh-onboarding-card' });
-
-        const header = createElement('div', { className: 'gh-onboarding-header' });
-        header.appendChild(createHelperLogoNode({
-            size: 30,
-            className: 'gh-onboarding-logo',
-            title: 'ChatGPT Helper'
-        }));
-        const headerText = createElement('div', { className: 'gh-onboarding-header-text' });
-        headerText.appendChild(createElement('div', { className: 'gh-onboarding-title' }, this.t('onboardingTitle')));
-        headerText.appendChild(createElement('div', { className: 'gh-onboarding-subtitle' }, this.t('onboardingSubtitle')));
-        header.appendChild(headerText);
-        card.appendChild(header);
-
-        const steps = createElement('div', { className: 'gh-onboarding-steps' });
-        const stepDefs = [
-            { icon: 'edit', titleKey: 'onboardingStep1Title', descKey: 'onboardingStep1Desc' },
-            { icon: 'message', titleKey: 'onboardingStep2Title', descKey: 'onboardingStep2Desc' },
-            { icon: 'list', titleKey: 'onboardingStep3Title', descKey: 'onboardingStep3Desc' }
-        ];
-        stepDefs.forEach((def, index) => {
-            const step = createElement('div', { className: 'gh-onboarding-step' });
-            const badge = createElement('div', { className: 'gh-onboarding-step-badge' });
-            badge.appendChild(createSvgIconNode(def.icon, { size: 15 }));
-            step.appendChild(badge);
-            const text = createElement('div', { className: 'gh-onboarding-step-text' });
-            text.appendChild(createElement('div', { className: 'gh-onboarding-step-title' }, `${index + 1}. ${this.t(def.titleKey)}`));
-            text.appendChild(createElement('div', { className: 'gh-onboarding-step-desc' }, this.t(def.descKey)));
-            step.appendChild(text);
-            steps.appendChild(step);
-        });
-        card.appendChild(steps);
-
-        const startBtn = createElement('button', {
-            className: 'gh-onboarding-start-btn',
-            type: 'button'
-        }, this.t('onboardingStart'));
-        startBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            try {
-                window.GM_setValue(SETTING_KEYS.ONBOARDING_DONE, true);
-            } catch (err) {
-                console.error('[ChatGPT Helper] 保存引导完成标记失败:', err);
-            }
-            overlay.remove();
-        });
-        card.appendChild(startBtn);
-
-        overlay.appendChild(card);
-        document.body.appendChild(overlay);
-        overlay.addEventListener('click', (e) => {
-            // 点击遮罩不关闭，避免误触后无法再次看到引导（可在设置中重看）
-            if (e.target === overlay) {
-                overlay.classList.add('gh-onboarding-pulse');
-                setTimeout(() => overlay.classList.remove('gh-onboarding-pulse'), 300);
-            }
-        });
-    },
-
     // ==================== 数据备份与恢复 ====================
 
     async collectBackupData() {

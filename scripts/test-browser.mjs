@@ -149,6 +149,43 @@ const assertActiveCache = async (label,{empty=false}={}) => {
     assert.equal(await page.locator('#outline-list .outline-item-text').filter({hasText:`缓存会话 ${label==='A'?'B':'A'} 章节`}).count(),0);
   }
 };
+// Onboarding needs first-run storage and reloads. Each scenario owns a separate
+// browser context so the main regression state and user data remain untouched.
+const withTourPage = async (name,overrides,run,options={}) => {
+  const tourContext=await browser.newContext({viewport:options.viewport || {width:1440,height:1000},locale:options.locale || 'zh-CN',colorScheme:options.colorScheme || 'dark',reducedMotion:'reduce'});
+  const tourPage=await tourContext.newPage();
+  tourPage.setDefaultTimeout(8000);
+  tourPage.on('pageerror',error=>errors.push(`${name}: ${error.message}`));
+  tourPage.on('console',message=>{if(message.type()==='error' && !message.text().includes('404 (Not Found)')) errors.push(`${name}: ${message.text()}`);});
+  const seed={chatgpt_onboarding_done:null,chatgpt_language:'zh-CN',chatgpt_settings:{defaultPanelState:true,panelWidth:360,themeConfig:{appearanceMode:'dark',presetKey:'original'},readingHistory:{persistence:false,autoRestore:false}},...overrides};
+  await tourPage.addInitScript(seed=>{
+    if (!sessionStorage.getItem('fixture-tour-seeded')) {
+      localStorage.setItem('fixture-storage',JSON.stringify(seed));
+      sessionStorage.setItem('fixture-tour-seeded','true');
+    }
+  },seed);
+  try {
+    await tourPage.goto(origin+'/c/tour?fixture=modern');
+    await tourPage.locator('#chatgpt-helper-right').waitFor({state:'attached'});
+    await run(tourPage);
+  } catch(error) {
+    await tourPage.screenshot({path:join(output,`tour-${name}-failure.png`)}).catch(()=>{});
+    throw error;
+  } finally { await tourContext.close(); }
+};
+const tourRoot = tourPage => tourPage.locator('#chatgpt-helper-onboarding-overlay');
+const tourAction = (tourPage,action) => tourPage.locator(`[data-tour-action="${action}"]`);
+const waitTourStep = (tourPage,step) => tourPage.waitForFunction(step=>document.querySelector('#chatgpt-helper-onboarding-overlay')?.getAttribute('data-tour-step')===step,step);
+const tourStorage = tourPage => tourPage.evaluate(()=>JSON.parse(localStorage.getItem('fixture-storage')));
+const replayTour = async tourPage => {
+  if (!await tourPage.locator('#settings-content').isVisible()) await tourPage.locator('#chatgpt-helper-settings-btn').click();
+  const general=tourPage.locator('[data-settings-section="general"] .chatgpt-helper-settings-compact-title-btn');
+  if(await general.getAttribute('aria-expanded')==='false') await general.click();
+  const trigger=tourPage.getByRole('button',{name:/^(重看新手引导|Replay Onboarding)$/});
+  await trigger.click();
+  await waitTourStep(tourPage,'welcome');
+  return trigger;
+};
 const assertContrast = async (selector='#fixture-prose') => {
   const colors = await page.locator(selector).evaluate(element => {
     let bg = element;
@@ -728,6 +765,173 @@ try {
     const after=await page.evaluate(()=>window.__fixtureHostRefreshes);
     assert.ok(after-before<=1,`Idle cache generated ${after-before} host refreshes in 700ms`);
     await page.evaluate(() => { window.__fixtureRestoreHostRefresh();window.__fixtureRestoreCreateURL(); });
+  });
+  await test('onboarding auto-starts for first run while legacy true suppresses it and replay stays singular', async () => {
+    await withTourPage('first-run',{},async tourPage=>{
+      await waitTourStep(tourPage,'welcome');
+      assert.equal(await tourRoot(tourPage).locator('.gh-tour-card').getAttribute('role'),'dialog');
+      assert.notEqual(await tourRoot(tourPage).locator('.gh-tour-card').getAttribute('aria-modal'),'true');
+      assert.equal(await tourRoot(tourPage).count(),1);
+      await tourPage.screenshot({path:join(output,'onboarding-welcome.png')});
+      await tourAction(tourPage,'skip').click();
+    });
+    await withTourPage('legacy-replay',{chatgpt_onboarding_done:true},async tourPage=>{
+      await tourPage.locator('#chatgpt-helper-settings-btn').waitFor({state:'visible'});
+      await tourPage.waitForTimeout(200);
+      assert.equal(await tourRoot(tourPage).count(),0);
+      const trigger=await replayTour(tourPage);
+      await trigger.evaluate(element=>element.click());
+      assert.equal(await tourRoot(tourPage).count(),1);
+      await tourAction(tourPage,'skip').click();
+    });
+  });
+  await test('onboarding navigation covers every step and completion persists without changing settings', async () => {
+    await withTourPage('completion',{},async tourPage=>{
+      await waitTourStep(tourPage,'welcome');
+      const settings=(await tourStorage(tourPage)).chatgpt_settings;
+      await tourAction(tourPage,'start').click();
+      for (const step of ['prompts','outline','organize','panel','appearance']) {
+        await waitTourStep(tourPage,step);
+        if(step==='outline') {
+          const card=await tourPage.locator('.gh-tour-card').boundingBox();
+          const panel=await tourPage.locator('#chatgpt-helper-right').boundingBox();
+          assert.ok(card.x>=0 && card.x+card.width<=panel.x,'Desktop guide overlaps its highlighted panel');
+          await tourPage.screenshot({path:join(output,'onboarding-desktop-outline.png')});
+        }
+        if(step!=='appearance') await tourAction(tourPage,'next').click();
+      }
+      await tourAction(tourPage,'prev').click();await waitTourStep(tourPage,'panel');
+      await tourPage.locator('[data-tour-go="outline"]').click();await waitTourStep(tourPage,'outline');
+      await tourPage.locator('[data-tour-go="appearance"]').click();await waitTourStep(tourPage,'appearance');
+      await tourAction(tourPage,'finish').click();
+      await tourRoot(tourPage).waitFor({state:'detached'});
+      const saved=await tourStorage(tourPage);
+      assert.equal(saved.chatgpt_onboarding_done.status,'completed');
+      assert.deepEqual(saved.chatgpt_settings,settings);
+      assert.equal(await tourPage.locator('#prompts-tab').getAttribute('aria-selected'),'true');
+    });
+  });
+  await test('onboarding skip and Escape restore the original pane and return focus to replay', async () => {
+    await withTourPage('skip-focus',{chatgpt_onboarding_done:true},async tourPage=>{
+      const trigger=await replayTour(tourPage);
+      const originalTrigger=await trigger.elementHandle();
+      await tourAction(tourPage,'start').click();await waitTourStep(tourPage,'prompts');
+      await tourAction(tourPage,'next').click();await waitTourStep(tourPage,'outline');
+      await tourPage.keyboard.press('Escape');
+      await tourRoot(tourPage).waitFor({state:'detached'});
+      assert.equal((await tourStorage(tourPage)).chatgpt_onboarding_done.status,'skipped');
+      assert.equal(await tourPage.locator('#settings-content').isVisible(),true);
+      if(await originalTrigger.evaluate(element=>element.isConnected)) assert.equal(await originalTrigger.evaluate(element=>document.activeElement===element),true);
+      await trigger.click();await waitTourStep(tourPage,'welcome');
+      await tourAction(tourPage,'skip').click();
+      assert.equal(await tourPage.locator('#settings-content').isVisible(),true);
+    });
+  });
+  await test('onboarding progress resumes after reload and completed records suppress future auto-start', async () => {
+    await withTourPage('resume',{},async tourPage=>{
+      await waitTourStep(tourPage,'welcome');await tourAction(tourPage,'start').click();
+      await tourAction(tourPage,'next').click();await waitTourStep(tourPage,'outline');
+      await tourPage.reload();await waitTourStep(tourPage,'outline');
+      await tourPage.locator('[data-tour-go="appearance"]').click();await waitTourStep(tourPage,'appearance');
+      await tourAction(tourPage,'finish').click();await tourRoot(tourPage).waitFor({state:'detached'});
+      assert.equal((await tourStorage(tourPage)).chatgpt_onboarding_done.status,'completed');
+      await tourPage.reload();await tourPage.locator('#prompts-tab').waitFor({state:'visible'});
+      await tourPage.waitForTimeout(200);
+      assert.equal(await tourRoot(tourPage).count(),0);
+    });
+  });
+  await test('onboarding panel demonstration restores original width and collapsed preference on skip', async () => {
+    await withTourPage('panel-demo',{chatgpt_settings:{defaultPanelState:false,panelWidth:360,themeConfig:{appearanceMode:'dark',presetKey:'original'},readingHistory:{persistence:false,autoRestore:false}}},async tourPage=>{
+      await waitTourStep(tourPage,'welcome');
+      const before=(await tourStorage(tourPage)).chatgpt_settings;
+      assert.equal(await tourPage.locator('#chatgpt-helper-right').evaluate(el=>el.classList.contains('collapsed')),true);
+      await tourAction(tourPage,'start').click();
+      await tourPage.locator('[data-tour-go="panel"]').click();await waitTourStep(tourPage,'panel');
+      assert.equal(await tourPage.locator('#chatgpt-helper-right').evaluate(el=>el.classList.contains('collapsed')),false);
+      await tourAction(tourPage,'panel').click();
+      assert.equal(await tourPage.locator('#chatgpt-helper-right').evaluate(el=>el.classList.contains('collapsed')),true);
+      await tourAction(tourPage,'panel').click();
+      await tourPage.waitForFunction(()=>Math.abs(document.querySelector('#chatgpt-helper-right').getBoundingClientRect().width-360)<1);
+      assert.equal(await tourPage.locator('#chatgpt-helper-right').evaluate(el=>el.classList.contains('collapsed')),false);
+      await tourAction(tourPage,'skip').click();
+      await tourRoot(tourPage).waitFor({state:'detached'});
+      assert.equal(await tourPage.locator('#chatgpt-helper-right').evaluate(el=>el.classList.contains('collapsed')),true);
+      assert.deepEqual((await tourStorage(tourPage)).chatgpt_settings,before);
+      assert.equal(await tourPage.locator('#quick-btn-panel').evaluate(el=>document.activeElement===el),true);
+    });
+  });
+  await test('onboarding real actions focus composer and open organization/theme without modifying a draft', async () => {
+    await withTourPage('real-actions',{chatgpt_onboarding_done:true},async tourPage=>{
+      const composer=tourPage.locator('[data-composer-markdown]');
+      const draft='保留这段尚未发送的草稿。\nKeep this existing draft unchanged.';
+      await composer.fill(draft);
+      const draftDOM=await composer.innerHTML();
+      const settings=(await tourStorage(tourPage)).chatgpt_settings;
+      await replayTour(tourPage);await tourAction(tourPage,'start').click();
+      await tourAction(tourPage,'composer').click();
+      assert.equal(await composer.evaluate(el=>document.activeElement===el),true);
+      await tourPage.locator('[data-tour-go="organize"]').click();
+      await tourAction(tourPage,'conversations').click();
+      assert.equal(await tourPage.locator('#conversations-tab').getAttribute('aria-selected'),'true');
+      await tourAction(tourPage,'export').click();
+      assert.equal(await tourPage.locator('#export-tab').getAttribute('aria-selected'),'true');
+      await tourPage.locator('[data-tour-go="appearance"]').click();
+      await tourAction(tourPage,'theme').click();
+      await tourRoot(tourPage).waitFor({state:'detached'});
+      await tourPage.locator('#chatgpt-helper-theme-modal').waitFor({state:'visible'});
+      assert.equal((await tourStorage(tourPage)).chatgpt_onboarding_done.status,'completed');
+      assert.equal(await composer.innerHTML(),draftDOM);
+      assert.deepEqual((await tourStorage(tourPage)).chatgpt_settings,settings);
+      await tourPage.locator('.chatgpt-helper-theme-modal-close').click();
+    });
+  });
+  await test('onboarding stays within a narrow viewport in Chinese/light and English/dark modes', async () => {
+    for(const [language,mode] of [['zh-CN','light'],['en','dark']]) {
+      await withTourPage(`narrow-${language}`,{chatgpt_language:language,chatgpt_settings:{defaultPanelState:true,panelWidth:360,themeConfig:{appearanceMode:mode,presetKey:'original'},readingHistory:{persistence:false,autoRestore:false}}},async tourPage=>{
+        await waitTourStep(tourPage,'welcome');
+        const assertBounds=async()=>{
+          const box=await tourPage.locator('.gh-tour-card').boundingBox();
+          assert.ok(box.x>=0 && box.y>=0 && box.x+box.width<=391 && box.y+box.height<=845,`Tour card exceeds viewport: ${JSON.stringify(box)}`);
+        };
+        await assertBounds();await tourAction(tourPage,'start').click();
+        assert.equal((await tourAction(tourPage,'next').innerText()).trim(),language==='en'?'Next':'下一步');
+        for(const step of ['prompts','outline','organize','panel','appearance']) {
+          await waitTourStep(tourPage,step);await assertBounds();
+          if(step!=='appearance') await tourAction(tourPage,'next').click();
+        }
+        assert.equal(await tourPage.locator('html').getAttribute('data-gh-mode'),mode);
+        await tourPage.screenshot({path:join(output,`onboarding-narrow-${language}-${mode}.png`)});
+        await tourAction(tourPage,'finish').click();
+      },{viewport:{width:390,height:844},locale:language==='en'?'en-US':'zh-CN',colorScheme:mode});
+    }
+  });
+  await test('onboarding survives missing targets, empty outline, route changes and rebuilt panel UI', async () => {
+    await withTourPage('fallback',{},async tourPage=>{
+      await waitTourStep(tourPage,'welcome');await tourAction(tourPage,'start').click();
+      await tourPage.locator('#prompts-content').evaluate(el=>el.remove());
+      await tourPage.locator('.gh-tour-missing').waitFor({state:'visible'});
+      await tourPage.evaluate(()=>{
+        document.querySelector('.modern-thread-shell').replaceChildren();
+        history.pushState({},'', '/c/tour-next?fixture=modern');
+      });
+      await tourPage.locator('[data-tour-go="outline"]').click();await waitTourStep(tourPage,'outline');
+      assert.equal(await tourPage.locator('#outline-list .outline-item').count(),0);
+      await tourPage.locator('#chatgpt-helper-settings-btn').click();
+      const general=tourPage.locator('[data-settings-section="general"] .chatgpt-helper-settings-compact-title-btn');
+      if(await general.getAttribute('aria-expanded')==='false') await general.click();
+      await tourPage.getByRole('button',{name:'界面语言',exact:true}).click();
+      await tourPage.locator('#settings-content .chatgpt-helper-custom-select-option[data-value="en"]').click();
+      assert.equal(await tourRoot(tourPage).count(),1);
+      await tourPage.locator('[data-tour-go="panel"]').click();await waitTourStep(tourPage,'panel');
+      await tourPage.locator('.gh-tour-spotlight').waitFor({state:'visible'});
+      await tourPage.setViewportSize({width:390,height:844});
+      await tourPage.waitForFunction(()=>{
+        const rect=document.querySelector('.gh-tour-card').getBoundingClientRect();
+        return rect.left>=0 && rect.right<=innerWidth && rect.bottom<=innerHeight;
+      });
+      await tourAction(tourPage,'next').click();await waitTourStep(tourPage,'appearance');
+      await tourAction(tourPage,'finish').click();await tourRoot(tourPage).waitFor({state:'detached'});
+    });
   });
   await test('no browser runtime or extension initialization errors', async () => assert.deepEqual(errors,[]));
 } finally {

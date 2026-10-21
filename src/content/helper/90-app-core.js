@@ -84,6 +84,7 @@ class HelperCore {
     destroy() {
         if (this.destroyed) return;
         this.destroyed = true;
+        this.onboardingTour?.destroy({ restore: false });
         this.themeBackgroundRevision = (this.themeBackgroundRevision || 0) + 1;
         this.scope.dispose();
         this.pageScope?.dispose();

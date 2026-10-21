@@ -303,15 +303,38 @@
       backupIncludeHint: "\u5305\u542B {prompts} \u6761\u63D0\u793A\u8BCD\u3001{conversations} \u4E2A\u4F1A\u8BDD\u3001{assets} \u5F20\u58C1\u7EB8",
       backupReadingHint: "\u6B63\u5728\u8BFB\u53D6\u5907\u4EFD\u6570\u636E\u2026",
       // 新手引导
-      onboardingTitle: "\u6B22\u8FCE\u4F7F\u7528 ChatGPT Helper",
-      onboardingSubtitle: "\u8BA9\u957F\u5BF9\u8BDD\u66F4\u6E05\u6670\uFF0C\u8BA9\u5185\u5BB9\u6C89\u6DC0\u4E0B\u6765\u3002\u4E09\u6B65\u4E0A\u624B\uFF1A",
-      onboardingStep1Title: "\u63D0\u793A\u8BCD\u4E00\u952E\u63D2\u5165",
-      onboardingStep1Desc: "\u5185\u7F6E\u5E38\u7528\u6A21\u677F\uFF0C\u70B9\u51FB\u5373\u63D2\u5165\uFF1B\u5728\u8F93\u5165\u6846\u8F93\u5165 // \u53EF\u5FEB\u901F\u5524\u8D77\uFF08\u5355\u4E2A / \u662F ChatGPT \u81EA\u5DF1\u7684\u547D\u4EE4\uFF09",
-      onboardingStep2Title: "\u540C\u6B65\u5386\u53F2\u4F1A\u8BDD",
-      onboardingStep2Desc: "\u5728\u201C\u4F1A\u8BDD\u201D\u9875\u70B9\u51FB\u540C\u6B65\uFF0C\u5373\u53EF\u641C\u7D22\u3001\u7F6E\u9876\u4E0E\u5206\u7EC4\u7BA1\u7406",
-      onboardingStep3Title: "\u957F\u5BF9\u8BDD\u5927\u7EB2\u5BFC\u822A",
-      onboardingStep3Desc: "\u201C\u5927\u7EB2\u201D\u81EA\u52A8\u63D0\u53D6\u6807\u9898\u7ED3\u6784\uFF0C\u70B9\u51FB\u5373\u53EF\u8DF3\u8F6C\uFF0C\u9605\u8BFB\u4F4D\u7F6E\u53EF\u8FD4\u56DE",
-      onboardingStart: "\u5F00\u59CB\u4F7F\u7528",
+      onboardingTitle: "\u719F\u6089\u4F60\u7684\u4FA7\u680F",
+      onboardingSubtitle: "\u8DDF\u7740\u754C\u9762\u8D70\u4E00\u904D\uFF0C\u627E\u5230\u5E38\u7528\u7684\u51E0\u4E2A\u5165\u53E3\u3002\u968F\u65F6\u53EF\u4EE5\u8DF3\u8FC7\u3002",
+      onboardingDuration: "\u5FEB\u901F\u4E0A\u624B \xB7 \u7EA6 1 \u5206\u949F",
+      onboardingGuide: "\u5FEB\u901F\u4E0A\u624B",
+      onboardingStart: "\u5F00\u59CB\u4E86\u89E3",
+      onboardingSkip: "\u8DF3\u8FC7",
+      onboardingPrevious: "\u4E0A\u4E00\u6B65",
+      onboardingNext: "\u4E0B\u4E00\u6B65",
+      onboardingFinish: "\u5F00\u59CB\u4F7F\u7528",
+      tour_prompts_label: "\u63D0\u793A\u8BCD",
+      tour_prompts_title: "\u5E38\u7528\u63D0\u793A\u8BCD\uFF0C\u5C31\u5728\u624B\u8FB9",
+      tour_prompts_body: "\u70B9\u4E00\u6761\u63D0\u793A\u8BCD\u63D2\u5165\u8F93\u5165\u6846\u3002\u8F93\u5165 //\uFF0C\u4E5F\u80FD\u968F\u65F6\u6253\u5F00\u83DC\u5355\u3002",
+      tour_outline_label: "\u5927\u7EB2",
+      tour_outline_title: "\u957F\u5BF9\u8BDD\uFF0C\u76F4\u63A5\u8DF3\u5230\u91CD\u70B9",
+      tour_outline_body: "\u70B9\u51FB\u6761\u76EE\u8DF3\u5230\u5BF9\u5E94\u5185\u5BB9\uFF0C\u518D\u7528\u201C\u8FD4\u56DE\u201D\u56DE\u5230\u539F\u6765\u7684\u9605\u8BFB\u4F4D\u7F6E\u3002",
+      tour_outline_empty: "\u6709\u4E86\u5BF9\u8BDD\u5185\u5BB9\uFF0C\u8FD9\u91CC\u5C31\u4F1A\u751F\u6210\u5927\u7EB2\u3002\u6253\u5F00\u4E00\u6761\u5386\u53F2\u5BF9\u8BDD\u8BD5\u8BD5\u3002",
+      tour_organize_label: "\u6574\u7406\u4E0E\u5BFC\u51FA",
+      tour_organize_title: "\u627E\u5230\u65E7\u5BF9\u8BDD\uFF0C\u4FDD\u5B58\u597D\u5185\u5BB9",
+      tour_organize_body: "\u5728\u4F1A\u8BDD\u9875\u641C\u7D22\u3001\u7F6E\u9876\u548C\u5206\u7EC4\uFF1B\u5728\u5BFC\u51FA\u9875\u4FDD\u5B58\u5F53\u524D\u5BF9\u8BDD\u3002",
+      tour_panel_label: "\u4FA7\u680F",
+      tour_panel_title: "\u9700\u8981\u65F6\u5C55\u5F00\uFF0C\u4E13\u6CE8\u65F6\u6536\u8D77",
+      tour_panel_body: "\u62D6\u52A8\u5DE6\u8FB9\u7F18\u8C03\u6574\u5BBD\u5EA6\uFF0C\u7EE7\u7EED\u5411\u53F3\u62D6\u53EF\u6536\u8D77\u3002\u4E5F\u53EF\u4EE5\u7528\u5FEB\u6377\u952E\u5207\u6362\u3002",
+      tour_appearance_label: "\u5916\u89C2",
+      tour_appearance_title: "\u4E3B\u9898\u4E0E\u58C1\u7EB8",
+      tour_appearance_body: "\u5207\u6362\u660E\u6697\u3001\u9009\u4E00\u5F20\u58C1\u7EB8\uFF0C\u518D\u8C03\u6574\u6BDB\u73BB\u7483\u5F3A\u5EA6\u3002\u4EE5\u540E\u53EF\u4EE5\u5728\u8BBE\u7F6E\u91CC\u91CD\u65B0\u67E5\u770B\u5F15\u5BFC\u3002",
+      tour_focus_composer: "\u5B9A\u4F4D\u8F93\u5165\u6846",
+      tour_open_conversations: "\u67E5\u770B\u4F1A\u8BDD",
+      tour_open_export: "\u6253\u5F00\u5BFC\u51FA",
+      tour_collapse_panel: "\u8BD5\u8BD5\u6536\u8D77",
+      tour_expand_panel: "\u5C55\u5F00\u4FA7\u680F",
+      tour_open_theme: "\u6253\u5F00\u4E3B\u9898\u8BBE\u7F6E",
+      tour_target_missing: "\u5F53\u524D\u533A\u57DF\u672A\u5C55\u5F00\u6216\u5DF2\u9690\u85CF\u3002\u53EF\u4EE5\u7EE7\u7EED\u4E0B\u4E00\u6B65\u3002",
       replayOnboarding: "\u91CD\u770B\u65B0\u624B\u5F15\u5BFC",
       // 提示词排序 / 变量 / 快速菜单
       promptSortLabel: "\u6392\u5E8F",
@@ -615,15 +638,38 @@
       backupIncludeHint: "{prompts} prompts, {conversations} conversations, {assets} wallpapers",
       backupReadingHint: "Reading backup data\u2026",
       // Onboarding
-      onboardingTitle: "Welcome to ChatGPT Helper",
-      onboardingSubtitle: "Clearer long conversations, knowledge that stays. Three steps to start:",
-      onboardingStep1Title: "One-click prompts",
-      onboardingStep1Desc: "Built-in templates insert instantly; type // in the input box for a quick picker (single / is ChatGPT own command)",
-      onboardingStep2Title: "Sync conversations",
-      onboardingStep2Desc: "Open the Conversations tab and sync to search, pin and organize chats",
-      onboardingStep3Title: "Outline for long chats",
-      onboardingStep3Desc: "The Outline tab builds a navigable structure and remembers your reading spot",
-      onboardingStart: "Get Started",
+      onboardingTitle: "Meet your sidebar",
+      onboardingSubtitle: "Find the tools you will use most, right where they live. You can skip at any time.",
+      onboardingDuration: "Quick tour \xB7 About a minute",
+      onboardingGuide: "Quick tour",
+      onboardingStart: "Take the tour",
+      onboardingSkip: "Skip",
+      onboardingPrevious: "Back",
+      onboardingNext: "Next",
+      onboardingFinish: "Get started",
+      tour_prompts_label: "Prompts",
+      tour_prompts_title: "Keep useful prompts close",
+      tour_prompts_body: "Choose a prompt to insert it into the composer. Type // to open the quick menu.",
+      tour_outline_label: "Outline",
+      tour_outline_title: "Jump to the part you need",
+      tour_outline_body: "Select an entry to jump to its content. Use Return to get back to your reading position.",
+      tour_outline_empty: "The outline appears when a conversation has content. Try opening a previous chat.",
+      tour_organize_label: "Organize & export",
+      tour_organize_title: "Find old chats. Keep the useful parts.",
+      tour_organize_body: "Search, pin and group chats in Conversations. Save the current chat from Export.",
+      tour_panel_label: "Sidebar",
+      tour_panel_title: "More room when you need it",
+      tour_panel_body: "Drag the left edge to resize. Keep dragging right to collapse, or use the shortcut.",
+      tour_appearance_label: "Appearance",
+      tour_appearance_title: "Themes and wallpaper",
+      tour_appearance_body: "Choose light or dark, add a wallpaper and adjust the glass effect. Replay this tour from Settings.",
+      tour_focus_composer: "Focus composer",
+      tour_open_conversations: "View conversations",
+      tour_open_export: "Open export",
+      tour_collapse_panel: "Try collapsing",
+      tour_expand_panel: "Expand sidebar",
+      tour_open_theme: "Open theme settings",
+      tour_target_missing: "This area is collapsed or hidden. You can continue to the next step.",
       replayOnboarding: "Replay Onboarding",
       // Prompt sorting / variables / quick menu
       promptSortLabel: "Sort",
@@ -6371,6 +6417,7 @@
     destroy() {
       if (this.destroyed) return;
       this.destroyed = true;
+      this.onboardingTour?.destroy({ restore: false });
       this.themeBackgroundRevision = (this.themeBackgroundRevision || 0) + 1;
       this.scope.dispose();
       this.pageScope?.dispose();
@@ -8096,7 +8143,7 @@
       if (!this.destroyed && trigger?.isConnected) trigger.focus({ preventScroll: true });
     }
   };
-  const css = `/* CSS Variables */
+  const css$1 = `/* CSS Variables */
 :root {
     --gh-font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --gh-bg: #f9f9f9;
@@ -14596,151 +14643,6 @@ body[data-gh-mode="dark"] .gh-msg-select-toolbar-close:hover,
     color: #ececf1;
 }
 
-/* ==================== \u65B0\u624B\u5F15\u5BFC\u6D6E\u5C42\uFF08\u9875\u9762\u7EA7\uFF09 ==================== */
-.gh-onboarding-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 2147483001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: linear-gradient(rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.42)) !important;
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-.gh-onboarding-card {
-    width: 400px;
-    max-width: 100%;
-    padding: 22px 22px 18px;
-    border-radius: 16px;
-    background: linear-gradient(#ffffff, #ffffff) !important;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.34);
-}
-
-body[data-gh-mode="dark"] .gh-onboarding-card,
-:root[data-gh-mode="dark"] .gh-onboarding-card {
-    background: linear-gradient(#202124, #202124) !important;
-    border-color: rgba(255, 255, 255, 0.10);
-    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.62);
-}
-
-.gh-onboarding-overlay.gh-onboarding-pulse .gh-onboarding-card {
-    animation: gh-onboarding-pulse-anim 0.3s ease;
-}
-
-@keyframes gh-onboarding-pulse-anim {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.015); }
-}
-
-.gh-onboarding-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.gh-onboarding-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #0f172a;
-}
-
-body[data-gh-mode="dark"] .gh-onboarding-title,
-:root[data-gh-mode="dark"] .gh-onboarding-title {
-    color: #ececf1;
-}
-
-.gh-onboarding-subtitle {
-    margin-top: 2px;
-    font-size: 12.5px;
-    color: #64748b;
-}
-
-body[data-gh-mode="dark"] .gh-onboarding-subtitle,
-:root[data-gh-mode="dark"] .gh-onboarding-subtitle {
-    color: #9aa0a6;
-}
-
-.gh-onboarding-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 18px;
-}
-
-.gh-onboarding-step {
-    display: flex;
-    gap: 11px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: rgba(15, 23, 42, 0.04);
-}
-
-body[data-gh-mode="dark"] .gh-onboarding-step,
-:root[data-gh-mode="dark"] .gh-onboarding-step {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.gh-onboarding-step-badge {
-    flex: 0 0 auto;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9px;
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
-    color: #ffffff;
-}
-
-.gh-onboarding-step-text {
-    min-width: 0;
-}
-
-.gh-onboarding-step-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: #1e293b;
-}
-
-body[data-gh-mode="dark"] .gh-onboarding-step-title,
-:root[data-gh-mode="dark"] .gh-onboarding-step-title {
-    color: #e3e3e8;
-}
-
-.gh-onboarding-step-desc {
-    margin-top: 2px;
-    font-size: 12px;
-    line-height: 1.5;
-    color: #64748b;
-}
-
-body[data-gh-mode="dark"] .gh-onboarding-step-desc,
-:root[data-gh-mode="dark"] .gh-onboarding-step-desc {
-    color: #9aa0a6;
-}
-
-.gh-onboarding-start-btn {
-    width: 100%;
-    padding: 9px 0;
-    border: 0;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: #ffffff;
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.gh-onboarding-start-btn:hover {
-    filter: brightness(1.06);
-}
-
 /* ==================== \u5BFC\u51FA\u5F15\u64CE\u6309\u9700\u52A0\u8F7D\u72B6\u6001 ==================== */
 .chatgpt-helper-export-engine-loading {
     display: flex;
@@ -14786,7 +14688,7 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
         style.id = "chatgpt-helper-styles";
         document.head.appendChild(style);
       }
-      if (style.textContent !== css) style.textContent = css;
+      if (style.textContent !== css$1) style.textContent = css$1;
     }
   };
   const LayoutFeature = {
@@ -16876,7 +16778,7 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
     }
   };
   const ControlsFeature = {
-    toggleCollapse() {
+    toggleCollapse(options = {}) {
       this.isCollapsed = !this.isCollapsed;
       this.panel.classList.toggle("collapsed", this.isCollapsed);
       this.updateCollapseButtonState();
@@ -16899,8 +16801,10 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
       if (this.updateLayout) {
         this.updateLayout();
       }
-      this.settings.defaultPanelState = !this.isCollapsed;
-      this.saveSettings();
+      if (options.persist !== false) {
+        this.settings.defaultPanelState = !this.isCollapsed;
+        this.saveSettings();
+      }
     },
     createCollapsedButtons() {
       const existing = document.getElementById("chatgpt-helper-quick-buttons");
@@ -17282,80 +17186,6 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
     return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
   }
   const BackupFeature = {
-    // ==================== 新手引导 ====================
-    maybeShowOnboarding(options = {}) {
-      try {
-        const done = window.GM_getValue(SETTING_KEYS.ONBOARDING_DONE, null);
-        if (!options.force && done) return;
-        this.showOnboardingOverlay();
-      } catch (e) {
-        console.error("[ChatGPT Helper] \u663E\u793A\u65B0\u624B\u5F15\u5BFC\u5931\u8D25:", e);
-      }
-    },
-    showOnboardingOverlay() {
-      const existing = document.getElementById("chatgpt-helper-onboarding-overlay");
-      if (existing) existing.remove();
-      const overlay = createElement("div", {
-        // id 前缀用于被主题壁纸的"body 直属容器透明化"规则排除
-        id: "chatgpt-helper-onboarding-overlay",
-        className: "gh-onboarding-overlay",
-        role: "dialog",
-        "aria-modal": "true",
-        "aria-label": this.t("onboardingTitle")
-      });
-      const card = createElement("div", { className: "gh-onboarding-card" });
-      const header = createElement("div", { className: "gh-onboarding-header" });
-      header.appendChild(createHelperLogoNode({
-        size: 30,
-        className: "gh-onboarding-logo",
-        title: "ChatGPT Helper"
-      }));
-      const headerText = createElement("div", { className: "gh-onboarding-header-text" });
-      headerText.appendChild(createElement("div", { className: "gh-onboarding-title" }, this.t("onboardingTitle")));
-      headerText.appendChild(createElement("div", { className: "gh-onboarding-subtitle" }, this.t("onboardingSubtitle")));
-      header.appendChild(headerText);
-      card.appendChild(header);
-      const steps = createElement("div", { className: "gh-onboarding-steps" });
-      const stepDefs = [
-        { icon: "edit", titleKey: "onboardingStep1Title", descKey: "onboardingStep1Desc" },
-        { icon: "message", titleKey: "onboardingStep2Title", descKey: "onboardingStep2Desc" },
-        { icon: "list", titleKey: "onboardingStep3Title", descKey: "onboardingStep3Desc" }
-      ];
-      stepDefs.forEach((def, index) => {
-        const step = createElement("div", { className: "gh-onboarding-step" });
-        const badge = createElement("div", { className: "gh-onboarding-step-badge" });
-        badge.appendChild(createSvgIconNode(def.icon, { size: 15 }));
-        step.appendChild(badge);
-        const text = createElement("div", { className: "gh-onboarding-step-text" });
-        text.appendChild(createElement("div", { className: "gh-onboarding-step-title" }, `${index + 1}. ${this.t(def.titleKey)}`));
-        text.appendChild(createElement("div", { className: "gh-onboarding-step-desc" }, this.t(def.descKey)));
-        step.appendChild(text);
-        steps.appendChild(step);
-      });
-      card.appendChild(steps);
-      const startBtn = createElement("button", {
-        className: "gh-onboarding-start-btn",
-        type: "button"
-      }, this.t("onboardingStart"));
-      startBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        try {
-          window.GM_setValue(SETTING_KEYS.ONBOARDING_DONE, true);
-        } catch (err) {
-          console.error("[ChatGPT Helper] \u4FDD\u5B58\u5F15\u5BFC\u5B8C\u6210\u6807\u8BB0\u5931\u8D25:", err);
-        }
-        overlay.remove();
-      });
-      card.appendChild(startBtn);
-      overlay.appendChild(card);
-      document.body.appendChild(overlay);
-      overlay.addEventListener("click", (e) => {
-        if (e.target === overlay) {
-          overlay.classList.add("gh-onboarding-pulse");
-          setTimeout(() => overlay.classList.remove("gh-onboarding-pulse"), 300);
-        }
-      });
-    },
     // ==================== 数据备份与恢复 ====================
     async collectBackupData() {
       const data = {};
@@ -17555,6 +17385,355 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
       }, 2500);
     }
   };
+  const css = `.gh-tour {
+    --tour-surface: #fbfcfa;
+    --tour-ink: #202722;
+    --tour-muted: #647067;
+    --tour-line: rgba(32, 39, 34, .14);
+    --tour-soft: #eef1ec;
+    position: fixed;
+    inset: 0;
+    z-index: 2147483001;
+    pointer-events: none;
+    font-family: var(--gh-font-family, system-ui, sans-serif);
+    color: var(--tour-ink);
+}
+:root[data-gh-mode="dark"] .gh-tour {
+    --tour-surface: #222722;
+    --tour-ink: #eef2eb;
+    --tour-muted: #aeb8ab;
+    --tour-line: rgba(238, 242, 235, .17);
+    --tour-soft: #30372f;
+}
+.gh-tour *, .gh-tour *::before, .gh-tour *::after { box-sizing: border-box; }
+.gh-tour [hidden] { display: none !important; }
+.gh-tour-shade { display: none; position: fixed; inset: 0; background: rgba(16, 22, 18, .38); }
+.gh-tour-welcome .gh-tour-shade { display: block; }
+.gh-tour-spotlight {
+    position: fixed;
+    border: 2px solid color-mix(in srgb, var(--gh-primary, #64748b), #c9d7c7 40%);
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(16, 22, 18, .34), 0 0 0 4px rgba(230, 241, 228, .18);
+    pointer-events: none;
+}
+.gh-tour-card {
+    position: fixed;
+    width: min(360px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 22px;
+    border: 1px solid var(--tour-line);
+    border-radius: 16px;
+    background: var(--tour-surface);
+    box-shadow: 0 18px 60px rgba(12, 20, 14, .22);
+    pointer-events: auto;
+    line-height: 1.5;
+    text-align: left;
+    animation: gh-tour-enter .18s ease-out;
+}
+.gh-tour-welcome .gh-tour-card { width: min(440px, calc(100vw - 24px)); padding: 26px; }
+.gh-tour-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.gh-tour-brand { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 13px; font-weight: 650; }
+.gh-tour-brand img { flex: none; }
+.gh-tour button { font: inherit; cursor: pointer; }
+.gh-tour-skip, .gh-tour-back { border: 0; background: transparent; color: var(--tour-muted); padding: 7px 4px; font-size: 13px !important; }
+.gh-tour-skip:hover, .gh-tour-back:hover { color: var(--tour-ink); }
+.gh-tour-eyebrow { margin: 26px 0 7px; color: var(--tour-muted); font-size: 12px; letter-spacing: .025em; }
+.gh-tour h2 { margin: 0; color: var(--tour-ink); font-size: 24px; font-weight: 680; line-height: 1.3; letter-spacing: -.025em; }
+.gh-tour-welcome h2 { font-size: 29px; }
+.gh-tour h2:focus { outline: none; }
+.gh-tour-body { margin: 12px 0 0; color: var(--tour-muted); font-size: 14px; line-height: 1.7; }
+.gh-tour-summary { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; font-size: 13px; }
+.gh-tour-summary span + span::before { content: '\xB7'; margin-right: 8px; color: var(--tour-muted); }
+.gh-tour-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; }
+.gh-tour-actions kbd { background: var(--tour-soft); border: 1px solid var(--tour-line); border-radius: 6px; padding: 6px 8px; font: 12px/1.5 ui-monospace, monospace; }
+.gh-tour-button { border: 1px solid var(--tour-line); border-radius: 7px; background: transparent; color: var(--tour-ink); padding: 8px 11px; font-size: 13px !important; }
+.gh-tour-button:hover { background: var(--tour-soft); }
+.gh-tour-button:disabled { opacity: .45; cursor: default; }
+.gh-tour-missing { margin: 12px 0 0; font-size: 12px; color: var(--tour-muted); }
+.gh-tour-progress { display: flex; gap: 6px; margin-top: 22px; padding-top: 17px; border-top: 1px solid var(--tour-line); }
+.gh-tour-progress button { flex: 1; border: 0; border-radius: 6px; background: var(--tour-soft); color: var(--tour-muted); height: 28px; font-size: 12px; }
+.gh-tour-progress button.active { background: var(--tour-ink); color: var(--tour-surface); }
+.gh-tour-progress button.visited { color: var(--tour-ink); }
+.gh-tour-progress button:hover { box-shadow: inset 0 0 0 1px var(--tour-line); }
+.gh-tour-footer { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+.gh-tour-primary { margin-left: auto; min-width: 96px; padding: 9px 17px; border: 1px solid transparent; border-radius: 8px; background: var(--tour-ink); color: var(--tour-surface); font-size: 14px !important; font-weight: 600 !important; }
+.gh-tour-primary:hover { filter: brightness(1.1); }
+.gh-tour button:focus-visible { outline: 2px solid var(--gh-primary, #64748b); outline-offset: 3px; }
+@keyframes gh-tour-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 760px) {
+    .gh-tour-card { width: calc(100vw - 24px); max-height: min(430px, calc(100dvh - 24px)); padding: 18px; }
+    .gh-tour-eyebrow { margin-top: 18px; }
+    .gh-tour h2 { font-size: 22px; }
+    .gh-tour-progress { margin-top: 16px; padding-top: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .gh-tour-card { animation: none; } }
+`;
+  const STEPS = ["prompts", "outline", "organize", "panel", "appearance"];
+  const PREFIX = "chatgpt-helper-onboarding";
+  class OnboardingTour {
+    constructor(app, start = "welcome") {
+      this.app = app;
+      this.scope = new RuntimeScope();
+      this.step = STEPS.includes(start) ? start : "welcome";
+      this.initial = {
+        tab: app.currentTab,
+        collapsed: app.isCollapsed,
+        focus: document.activeElement,
+        focusText: document.activeElement?.textContent?.trim()
+      };
+      this.closed = false;
+      this.installStyles();
+      document.getElementById(`${PREFIX}-overlay`)?.remove();
+      this.root = createElement("div", { id: `${PREFIX}-overlay`, className: "gh-tour" });
+      this.shade = createElement("div", { className: "gh-tour-shade", "aria-hidden": "true" });
+      this.spotlight = createElement("div", { className: "gh-tour-spotlight", "aria-hidden": "true" });
+      this.card = createElement("section", {
+        className: "gh-tour-card",
+        role: "dialog",
+        "aria-labelledby": `${PREFIX}-title`,
+        "aria-describedby": `${PREFIX}-body`
+      });
+      this.root.append(this.shade, this.spotlight, this.card);
+      document.body.appendChild(this.root);
+      const position = () => this.scope.schedule("position", () => this.position(), 32);
+      this.scope.listen(window, "resize", position, { passive: true });
+      this.scope.listen(document, "scroll", position, { capture: true, passive: true });
+      this.scope.listen(document, "keydown", (event) => this.onKeyDown(event), true);
+      if (app.panel) this.scope.observe(app.panel, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] }, position);
+      this.resizeObserver = new ResizeObserver(position);
+      this.resizeObserver.observe(this.card);
+      if (app.panel) this.resizeObserver.observe(app.panel);
+      this.show(this.step);
+    }
+    t(key) {
+      return this.app.t(key);
+    }
+    installStyles() {
+      if (document.getElementById(`${PREFIX}-styles`)) return;
+      const style = createElement("style", { id: `${PREFIX}-styles` });
+      style.textContent = css;
+      document.head.appendChild(style);
+    }
+    button(label, action, handler, className = "gh-tour-button") {
+      const button = createElement("button", { type: "button", className, "data-tour-action": action }, label);
+      button.addEventListener("click", handler);
+      return button;
+    }
+    ensurePanelOpen() {
+      if (this.app.isCollapsed) this.app.toggleCollapse({ persist: false });
+    }
+    openTab(tab) {
+      if (!this.app.panel?.querySelector(`#${tab}-tab`)) return false;
+      this.ensurePanelOpen();
+      if (this.app.currentTab !== tab) this.app.switchTab(tab);
+      return true;
+    }
+    show(step) {
+      if (this.closed) return;
+      this.step = step;
+      if (step !== "welcome") this.ensurePanelOpen();
+      if (step === "prompts" || step === "outline") this.openTab(step);
+      this.root.dataset.tourStep = step;
+      this.root.classList.toggle("gh-tour-welcome", step === "welcome");
+      this.render();
+      this.position();
+      this.card.querySelector("h2").focus({ preventScroll: true });
+      this.store("in-progress");
+    }
+    render() {
+      this.card.replaceChildren();
+      const header = createElement("div", { className: "gh-tour-header" });
+      const brand = createElement("div", { className: "gh-tour-brand" });
+      brand.append(createHelperLogoNode({ size: 21, title: "ChatGPT Helper" }), createElement("span", {}, "ChatGPT Helper"));
+      header.append(brand, this.button(this.t("onboardingSkip"), "skip", () => this.finish("skipped"), "gh-tour-skip"));
+      this.card.appendChild(header);
+      const index = STEPS.indexOf(this.step);
+      const eyebrow = this.step === "welcome" ? this.t("onboardingDuration") : `${this.t("onboardingGuide")} \xB7 ${index + 1} / ${STEPS.length}`;
+      this.card.appendChild(createElement("p", { className: "gh-tour-eyebrow" }, eyebrow));
+      const titleKey = this.step === "welcome" ? "onboardingTitle" : `tour_${this.step}_title`;
+      this.card.appendChild(createElement("h2", { id: `${PREFIX}-title`, tabindex: -1 }, this.t(titleKey)));
+      let body = this.t(this.step === "welcome" ? "onboardingSubtitle" : `tour_${this.step}_body`);
+      if (this.step === "outline" && !this.app.adapter.getChatMessages().length) body = this.t("tour_outline_empty");
+      this.card.appendChild(createElement("p", { className: "gh-tour-body", id: `${PREFIX}-body` }, body));
+      if (this.step === "welcome") {
+        const summary = createElement("div", { className: "gh-tour-summary" });
+        for (const key of ["tour_prompts_label", "tour_outline_label", "tour_appearance_label"]) summary.appendChild(createElement("span", {}, this.t(key)));
+        this.card.appendChild(summary);
+      }
+      const actions = createElement("div", { className: "gh-tour-actions" });
+      if (this.step === "prompts") {
+        actions.appendChild(createElement("kbd", {}, "//"));
+        const focus = this.button(this.t("tour_focus_composer"), "composer", () => {
+          this.app.adapter.findTextarea();
+          this.app.adapter.textarea?.focus({ preventScroll: true });
+        });
+        this.app.adapter.findTextarea();
+        focus.disabled = !this.app.adapter.textarea;
+        actions.appendChild(focus);
+      } else if (this.step === "organize") {
+        for (const tab of ["conversations", "export"]) {
+          const button = this.button(this.t(`tour_open_${tab}`), tab, () => {
+            this.openTab(tab);
+            this.position();
+          });
+          button.disabled = !this.app.panel?.querySelector(`#${tab}-tab`);
+          actions.appendChild(button);
+        }
+      } else if (this.step === "panel") {
+        actions.appendChild(createElement("kbd", {}, "Alt+Shift+H"));
+        actions.appendChild(this.button(this.t(this.app.isCollapsed ? "tour_expand_panel" : "tour_collapse_panel"), "panel", () => {
+          this.app.toggleCollapse({ persist: false });
+          this.render();
+          this.position();
+          this.card.querySelector('[data-tour-action="panel"]').focus({ preventScroll: true });
+        }));
+      } else if (this.step === "appearance") {
+        actions.appendChild(this.button(this.t("tour_open_theme"), "theme", () => {
+          this.finish("completed");
+          this.app.openThemeSettingsModal(this.app.panel?.querySelector("#chatgpt-helper-settings-btn"));
+        }));
+      }
+      if (actions.childNodes.length) this.card.appendChild(actions);
+      this.missing = createElement("p", { className: "gh-tour-missing", hidden: true }, this.t("tour_target_missing"));
+      this.card.appendChild(this.missing);
+      const nav = createElement("nav", { className: "gh-tour-progress", "aria-label": this.t("onboardingGuide") });
+      STEPS.forEach((step, i) => {
+        const button = createElement("button", {
+          type: "button",
+          "data-tour-go": step,
+          "aria-label": `${i + 1}. ${this.t(`tour_${step}_label`)}`,
+          title: this.t(`tour_${step}_label`),
+          className: i === index ? "active" : i < index ? "visited" : ""
+        }, `${i + 1}`);
+        if (i === index) button.setAttribute("aria-current", "step");
+        button.addEventListener("click", () => this.show(step));
+        nav.appendChild(button);
+      });
+      this.card.appendChild(nav);
+      const footer = createElement("div", { className: "gh-tour-footer" });
+      const previous = this.button(this.t("onboardingPrevious"), "prev", () => this.move(-1), "gh-tour-back");
+      previous.hidden = this.step === "welcome";
+      footer.appendChild(previous);
+      if (this.step === "welcome") footer.appendChild(this.button(this.t("onboardingStart"), "start", () => this.show(STEPS[0]), "gh-tour-primary"));
+      else if (index === STEPS.length - 1) footer.appendChild(this.button(this.t("onboardingFinish"), "finish", () => this.finish("completed"), "gh-tour-primary"));
+      else footer.appendChild(this.button(this.t("onboardingNext"), "next", () => this.move(1), "gh-tour-primary"));
+      this.card.appendChild(footer);
+    }
+    move(direction) {
+      const index = STEPS.indexOf(this.step) + direction;
+      if (index < 0) this.show("welcome");
+      else if (index < STEPS.length) this.show(STEPS[index]);
+    }
+    target() {
+      const panel = this.app.panel;
+      if (!panel) return null;
+      if (this.step === "prompts" || this.step === "outline") return panel.querySelector(`#${this.step}-content.active`);
+      if (this.step === "organize") return panel.querySelector("#chatgpt-helper-tabs");
+      if (this.step === "panel") return this.app.isCollapsed ? document.getElementById("quick-btn-panel") : panel.querySelector("#chatgpt-helper-resize-handle");
+      if (this.step === "appearance") return panel.querySelector("#chatgpt-helper-settings-btn");
+      return null;
+    }
+    position() {
+      if (this.closed) return;
+      const width = window.innerWidth, height = window.innerHeight;
+      const target = this.target();
+      const rect = target?.getBoundingClientRect();
+      const available = rect && rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.left < width;
+      this.missing.hidden = this.step === "welcome" || Boolean(available);
+      this.root.classList.toggle("gh-tour-no-target", !available);
+      this.spotlight.hidden = !available;
+      if (available) {
+        const left2 = Math.max(2, rect.left - 5), top2 = Math.max(2, rect.top - 5);
+        Object.assign(this.spotlight.style, {
+          left: `${left2}px`,
+          top: `${top2}px`,
+          width: `${Math.max(0, Math.min(width - 2, rect.right + 5) - left2)}px`,
+          height: `${Math.max(0, Math.min(height - 2, rect.bottom + 5) - top2)}px`
+        });
+      }
+      const card = this.card.getBoundingClientRect();
+      let left = (width - card.width) / 2, top = (height - card.height) / 2;
+      if (this.step !== "welcome" && width <= 760) top = height - card.height - 12;
+      else if (available) {
+        if (rect.left >= card.width + 28) left = rect.left - card.width - 18;
+        else if (width - rect.right >= card.width + 28) left = rect.right + 18;
+        top = rect.top + Math.min(rect.height, height) / 2 - card.height / 2;
+      }
+      this.card.style.left = `${Math.max(12, Math.min(width - card.width - 12, left))}px`;
+      this.card.style.top = `${Math.max(12, Math.min(height - card.height - 12, top))}px`;
+    }
+    onKeyDown(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.finish("skipped");
+      } else if (this.card.contains(event.target) && !event.altKey && !event.ctrlKey && !event.metaKey) {
+        if (event.key === "ArrowRight" && this.step !== STEPS.at(-1)) {
+          event.preventDefault();
+          this.move(1);
+        }
+        if (event.key === "ArrowLeft" && this.step !== "welcome") {
+          event.preventDefault();
+          this.move(-1);
+        }
+      }
+    }
+    store(status) {
+      try {
+        window.GM_setValue(SETTING_KEYS.ONBOARDING_DONE, {
+          schemaVersion: 1,
+          status,
+          step: this.step,
+          updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+        });
+      } catch (error) {
+        console.warn("[ChatGPT Helper] \u4FDD\u5B58\u5F15\u5BFC\u8FDB\u5EA6\u5931\u8D25:", error);
+      }
+    }
+    finish(status) {
+      if (this.closed) return;
+      this.store(status);
+      this.destroy({ restore: status !== "completed" });
+      if (status === "completed" && !this.app.destroyed) {
+        this.ensurePanelOpen();
+        this.openTab(this.app.panel?.querySelector("#prompts-tab") ? "prompts" : this.app.getTabOrder()[0]);
+        this.app.panel?.querySelector(".chatgpt-helper-tab.active")?.focus({ preventScroll: true });
+      }
+    }
+    destroy({ restore = true } = {}) {
+      if (this.closed) return;
+      this.closed = true;
+      this.scope.dispose();
+      this.resizeObserver.disconnect();
+      this.root.remove();
+      if (this.app.onboardingTour === this) this.app.onboardingTour = null;
+      if (!restore || this.app.destroyed) return;
+      const tab = this.app.panel?.querySelector(`#${this.initial.tab}-content`) ? this.initial.tab : this.app.getTabOrder()[0];
+      if (this.app.currentTab !== tab) this.app.switchTab(tab);
+      if (this.app.isCollapsed !== this.initial.collapsed) this.app.toggleCollapse({ persist: false });
+      const original = this.initial.focus;
+      const equivalent = Array.from(this.app.panel?.querySelectorAll("button") || []).find((button) => button.textContent.trim() === this.initial.focusText);
+      const focus = original?.isConnected ? original : equivalent || this.app.panel?.querySelector("#chatgpt-helper-settings-btn");
+      if (this.initial.collapsed) document.getElementById("quick-btn-panel")?.focus({ preventScroll: true });
+      else focus?.focus({ preventScroll: true });
+    }
+  }
+  const OnboardingFeature = {
+    maybeShowOnboarding({ force = false } = {}) {
+      const saved = window.GM_getValue(SETTING_KEYS.ONBOARDING_DONE, null);
+      if (!force && saved && saved.status !== "in-progress") return;
+      if (this.onboardingTour && !this.onboardingTour.closed) {
+        this.onboardingTour.card.querySelector("h2")?.focus({ preventScroll: true });
+        return;
+      }
+      this.onboardingTour = new OnboardingTour(this, force ? "welcome" : saved?.step);
+    },
+    showOnboardingOverlay() {
+      this.maybeShowOnboarding({ force: true });
+    }
+  };
   class ChatGPTHelper extends HelperCore {
   }
   Object.assign(
@@ -17568,7 +17747,8 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
     SettingsFeature,
     OutlineFeature,
     ControlsFeature,
-    BackupFeature
+    BackupFeature,
+    OnboardingFeature
   );
   const helper = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,

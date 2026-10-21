@@ -5,7 +5,7 @@ import { RuntimeScope, isHelperMutation } from './15-runtime.js';
 
 
 export const ControlsFeature = {
-    toggleCollapse() {
+    toggleCollapse(options = {}) {
         this.isCollapsed = !this.isCollapsed;
         this.panel.classList.toggle('collapsed', this.isCollapsed);
         this.updateCollapseButtonState();
@@ -37,8 +37,10 @@ export const ControlsFeature = {
         }
 
         // 更新设置
-        this.settings.defaultPanelState = !this.isCollapsed;
-        this.saveSettings();
+        if (options.persist !== false) {
+            this.settings.defaultPanelState = !this.isCollapsed;
+            this.saveSettings();
+        }
     },
 
     createCollapsedButtons() {
