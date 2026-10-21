@@ -24,6 +24,19 @@
     [data-message-author-role="user"] { margin-left:120px; padding:18px; border-radius:22px; background:var(--bg-secondary); }
     #fixture-composer { margin:16px 30px; padding:16px; background:var(--bg-secondary); border-radius:24px; }
     #prompt-textarea { min-height:60px; outline:none; }
+    .thread-scroll-container { flex:1; min-height:0; overflow-y:auto; }
+    .modern-thread-shell { position:relative; isolation:isolate; min-height:100%; padding:32px; }
+    .modern-thread-shell::before, .modern-thread-shell::after { content:""; position:absolute; inset:0; background:var(--bg-primary); z-index:-1; pointer-events:none; }
+    [data-turn-key] { max-width:760px; margin:0 auto 32px; }
+    [data-content-search-unit-key] { margin-bottom:32px; }
+    [data-user-message-bubble] { margin-left:120px; padding:18px; border-radius:22px; background:var(--bg-secondary); }
+    [data-dil-message-id] { color:var(--dil-text); }
+    [data-theme="dark"] { --dil-text:#ececec; --dil-surface:#212121; }
+    [data-theme="light"] { --dil-text:#171717; --dil-surface:#fff; }
+    [data-oai-writing-block-surface] { padding:16px; border:1px solid #808080; background:var(--dil-surface); color:var(--dil-text); }
+    [data-composer-body] { margin:16px 30px; padding:16px; background:var(--bg-secondary); border-radius:24px; }
+    [data-composer-markdown] { min-height:60px; outline:none; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   </style>
   <script>
     // The fixture deliberately starts with native dark tokens. Switching to light
@@ -56,6 +69,37 @@
     <aside id="fixture-sidebar" data-testid="sidebar"><nav aria-label="Chat history"><b>ChatGPT</b><a href="/c/fixture">当前会话</a><a href="/c/other">另一个会话</a></nav></aside>
     <main><header>架构重构与功能回归</header><div id="fixture-scroll"><div id="fixture-messages"></div></div><form id="fixture-composer"><div id="prompt-textarea" role="textbox" contenteditable="true" aria-label="消息"></div></form></main>
   </div>
+  <!-- Observed 2026-10 ChatGPT shape: no legacy role, message-id or turn testid. -->
+  <template id="fixture-modern-thread">
+    <header>新版 ChatGPT 消息结构</header>
+    <div class="thread-scroll-container"><div class="modern-thread-shell">
+      <div data-turn-key="modern-turn-0">
+        <div data-content-search-unit-key="fallback-turn-0:0:user"><div data-user-message-bubble="true"><div class="whitespace-pre-wrap">请解释新版结构与主题</div></div></div>
+        <div data-content-search-unit-key="fallback-turn-0:2:assistant">
+          <h4 class="sr-only" data-conversation-role="assistant">助手身份标签不属于大纲</h4>
+          <div data-chatgpt-selection-message-id="modern-answer-0"><div data-markdown-text-style="assistant-message"><div data-theme="dark"><div data-dil-message-id="dil-answer-0">
+            <h2>新版结构说明</h2><p data-d-component="text" id="modern-prose">这段正文的文字颜色由嵌套主题作用域提供。</p>
+            <h3 class="sr-only">辅助朗读标题不属于大纲</h3>
+            <div data-fixture-long-content></div>
+            <h3 id="modern-second-heading">新版滚动与大纲</h3>
+            <p data-d-component="text">消息可以在流式输出后替换，导航仍应指向当前节点。</p>
+            <div data-oai-writing-block-surface><div contenteditable="true" aria-label="开始写作">写作卡片原始内容，不能被提示词覆盖。</div></div>
+          </div></div></div></div>
+        </div>
+      </div>
+      <div data-turn-key="modern-turn-1"><div data-content-search-unit-key="fallback-turn-1:2:assistant">
+        <h4 class="sr-only" data-conversation-role="assistant">第二条助手身份标签</h4>
+        <div data-chatgpt-selection-message-id="modern-answer-1"><div data-markdown-text-style="assistant-message"><div data-theme="dark"><div data-dil-message-id="dil-answer-1"><p data-d-component="text">没有标题时使用正文摘要作为大纲入口。</p></div></div></div></div>
+      </div></div>
+    </div></div>
+    <div data-composer-body><div data-composer-markdown contenteditable="true" role="textbox" aria-label="消息"></div></div>
+  </template>
+  <script>
+    if (new URLSearchParams(location.search).get('fixture') === 'modern') {
+      document.querySelector('main').replaceChildren(document.querySelector('#fixture-modern-thread').content.cloneNode(true));
+      document.querySelector('[data-fixture-long-content]').innerHTML='<p data-d-component="text">较长的消息用于检验新版线程中的滚动导航、主题继承和壁纸遮挡。</p>'.repeat(25);
+    }
+  </script>
   <script src="/content-scripts/gm-api-adapter.js"></script>
   <script src="/content-scripts/dist/chatgpt-helper.js"></script>
 </body>

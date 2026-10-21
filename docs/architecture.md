@@ -49,3 +49,15 @@ npm run test:browser
 不指定 Chrome 时，需安装 Playwright 对应的 Chromium。可设置 `BROWSER_TEST_OUTPUT` 保留截图与 JSON 报告；测试代码在 `scripts/test-browser.mjs`，页面在 `scripts/fixtures/chatgpt.html`。
 
 浏览器检查覆盖：空大纲后产生回复、流式文本、相同标题替换 DOM、折叠保留、明暗正文对比、系统主题、壁纸上传/刷新恢复/并发删除、快速开关弹窗、SPA 容器替换、锚点、无 `/c/` 路径的新会话、提示词搜索与插入、备份内容、设置保存、快捷键消息入口和窄屏键盘导航。真实网站 DOM 后续改版仍需在适配层跟进；本地仿真不等于对所有线上页面的验收。
+
+## 新版 ChatGPT 现场适配（版本仍为 2.6.0）
+
+2026-10-21 在已登录的实际会话中复现了旧测试未覆盖的三个问题，并据此补充适配：
+
+- 新页面没有 `data-message-author-role`、`conversation-turn-*` 或 `article`。使用 `data-content-search-unit-key` / `data-chatgpt-search-unit-key` 区分用户和助手，以 `data-chatgpt-selection-message-id` 和 `data-turn-key` 保持消息身份。正文在 `data-markdown-text-style="assistant-message"` 中；屏幕阅读器专用的 `h4.sr-only` 不纳入大纲。
+- DIL 正文渲染器拥有独立的 `data-theme` 调色板。仅切换 html 会留下浅色背景上的深色模式文字。现在同步包含 `data-dil-message-id` / `data-oai-writing-block-surface` 的原生主题作用域，并处理延迟插入与原生重新渲染。
+- 会话祖先用 `::before` 绘制不透明背景，元素自身的 computed background 却透明。壁纸开启时清除已识别结构路径的伪元素背景，关闭时恢复原样；不清除正文卡片内部结构。
+
+真实输入区使用 `data-composer-markdown`，可能没有 ID，页面内另有可编辑写作卡片。输入框识别优先使用该语义标记并排除写作卡片，避免提示词插入错误区域。
+
+现场已核验三个提问和三个回复摘要、大纲搜索与跳转、亮暗切换、原有壁纸开关与刷新恢复。刷新过程中曾出现原生“无法加载此回复”：关闭 Helper 后刷新仍能复现，重新进入原会话及独立标签页后回复完整恢复；没有把该失败状态算作大纲验收通过。回归套件新增五个 modern 场景，总计 21 项；fixture 仅保存合成内容和结构，不包含用户会话或壁纸。

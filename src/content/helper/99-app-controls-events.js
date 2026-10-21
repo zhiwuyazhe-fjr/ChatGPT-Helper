@@ -371,6 +371,7 @@ export const ControlsFeature = {
             const mode = this.detectEffectiveThemeFromDom();
             if (mode === this.currentEffectiveTheme) return;
             this.syncHelperThemeMode(mode);
+            this.syncNativeThemeScopes(mode);
             this.settings.themeMode = mode;
             this.updateThemeVisualState();
         };

@@ -121,6 +121,7 @@ export const ThemeFeature = {
         document.body.removeAttribute('data-mode');
         if (html.style.colorScheme !== mode) html.style.colorScheme = mode;
         if (html.getAttribute('data-theme') !== mode) html.setAttribute('data-theme', mode);
+        if (html.hasAttribute('data-appearance-theme')) html.setAttribute('data-appearance-theme', mode);
         if (html.hasAttribute('data-mode')) html.setAttribute('data-mode', mode);
         try {
             const preference = this.getThemeConfig().appearanceMode === 'system' ? 'system' : mode;
@@ -129,6 +130,21 @@ export const ThemeFeature = {
             // Storage can be unavailable; the current page still switches immediately.
         }
         this.syncHelperThemeMode(mode);
+        this.syncNativeThemeScopes(mode);
+    },
+
+    syncNativeThemeScopes(mode = this.currentEffectiveTheme) {
+        // The current ChatGPT renderer owns its own palette below html. Updating
+        // html alone leaves DIL text and writing blocks in the previous mode.
+        const scopes = new Set();
+        document.querySelectorAll('main [data-dil-message-id], main [data-oai-writing-block-surface]').forEach(content => {
+            const scope = content.closest('[data-theme]');
+            if (scope && scope !== document.documentElement && scope !== document.body) scopes.add(scope);
+        });
+        for (const scope of scopes) {
+            if (scope.getAttribute('data-gh-native-theme') !== 'true') scope.setAttribute('data-gh-native-theme', 'true');
+            if (scope.getAttribute('data-theme') !== mode) scope.setAttribute('data-theme', mode);
+        }
     },
 
     async applyEffectiveTheme(theme, options = {}) {
@@ -205,6 +221,7 @@ export const ThemeFeature = {
     },
 
     refreshThemeHostTargets() {
+        this.syncNativeThemeScopes();
         const targets = new Map();
         const mark = (element, attr) => {
             if (!(element instanceof HTMLElement)) return;
@@ -222,7 +239,8 @@ export const ThemeFeature = {
         clearPath(main);
         // Clear only message ancestors. Rich cards, code blocks, menus and message
         // bubbles retain their own backgrounds, even as the site adds new wrappers.
-        main?.querySelectorAll('[data-message-author-role], [data-testid^="conversation-turn-"]').forEach(message => {
+        const messages = this.adapter?.getChatMessages?.() || [];
+        messages.forEach(message => {
             clearPath(message.parentElement, main);
         });
         const sidebar = this.findSidebarShellByGeometry();
@@ -235,8 +253,9 @@ export const ThemeFeature = {
         }
         this.themeHostLastFoundShell = Boolean(sidebar);
 
-        const input = document.querySelector('#prompt-textarea, textarea[placeholder*="Message"], textarea[placeholder*="消息"], [contenteditable="true"][role="textbox"]');
-        const composer = input?.closest('form, [data-testid="composer"]');
+        this.adapter?.findTextarea?.();
+        const input = this.adapter?.textarea || document.querySelector('[data-composer-markdown], #prompt-textarea');
+        const composer = input?.closest('[data-composer-body], form, [data-testid="composer"]');
         const surface = input?.closest('[data-composer-surface], [class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]')
             || composer?.querySelector('[class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]')
             || composer;
@@ -290,13 +309,19 @@ export const ThemeFeature = {
             // Streaming text does not change host ancestry. Only structural changes
             // outside the extension can require another role reconciliation.
             if (!records.some(record => {
+                if (record.type === 'attributes') {
+                    return record.target.matches('[data-gh-native-theme="true"]') &&
+                        record.target.getAttribute('data-theme') !== this.currentEffectiveTheme;
+                }
+                if ([...record.addedNodes].some(node => node.nodeType === 1 &&
+                    (node.matches('[data-theme], [data-dil-message-id]') || node.querySelector('[data-dil-message-id]')))) return true;
                 if (record.target.closest?.('[id^="chatgpt-helper"], [data-message-author-role], [data-markdown-text-style]')) return false;
                 return [...record.addedNodes, ...record.removedNodes].some(node =>
                     node.nodeType === 1 && !node.matches?.('[id^="chatgpt-helper"], .gh-theme-glass-layer'));
             })) return;
             this.queueThemeHostRefresh();
         });
-        this.themeHostWatchdog.observe(document.body, { childList: true, subtree: true });
+        this.themeHostWatchdog.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-theme'] });
     },
 
     stopThemeHostWatchdog() {

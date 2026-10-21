@@ -64,18 +64,16 @@ export const OutlineFeature = {
 
         this.adapter.getChatMessages().forEach((message, messageIndex) => {
             const role = this.adapter.getMessageRole(message);
-            const messageKey = message.getAttribute('data-message-id') ||
-                message.closest('[data-testid^="conversation-turn-"]')?.getAttribute('data-testid') ||
-                `message-${messageIndex}`;
+            const messageKey = this.adapter.getMessageIdentity(message, messageIndex);
             const messageId = `${window.location.pathname}:${messageKey}`;
             if (role === 'user') {
-                if (this.settings.outline?.showUserQueries) addItem(message, 0, messageId, 0, true);
+                if (this.settings.outline?.showUserQueries) addItem(this.adapter.getMessageContent(message), 0, messageId, 0, true);
                 return;
             }
             if (role !== 'assistant') return;
             const content = this.adapter.getMessageContent(message);
             const headings = Array.from(content.querySelectorAll('h1, h2, h3, h4, h5, h6, [role="heading"]'))
-                .filter((heading) => !heading.closest('pre, [hidden], [aria-hidden="true"]') && cleanText(heading));
+                .filter((heading) => !heading.closest('pre, [hidden], [aria-hidden="true"], .sr-only') && cleanText(heading));
             headings.forEach((heading, index) => {
                 const level = Number(heading.tagName.match(/^H([1-6])$/i)?.[1] || heading.getAttribute('aria-level')) || 2;
                 addItem(heading, Math.max(1, Math.min(6, level)), messageId, index);

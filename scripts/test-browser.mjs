@@ -78,8 +78,8 @@ const appearance = async mode => {
   await page.waitForFunction(expected => document.documentElement.getAttribute('data-gh-mode') === expected || document.documentElement.getAttribute('data-theme') === expected, mode);
 };
 const getStorage = () => page.evaluate(() => JSON.parse(localStorage.getItem('fixture-storage')));
-const assertContrast = async () => {
-  const colors = await page.locator('#fixture-prose').evaluate(element => {
+const assertContrast = async (selector='#fixture-prose') => {
+  const colors = await page.locator(selector).evaluate(element => {
     let bg = element;
     while (bg && ['rgba(0, 0, 0, 0)','transparent'].includes(getComputedStyle(bg).backgroundColor)) bg = bg.parentElement;
     return {foreground:getComputedStyle(element).color, background:getComputedStyle(bg || document.documentElement).backgroundColor};
@@ -297,6 +297,77 @@ try {
     await page.waitForFunction(() => document.querySelector('#prompts-tab').getAttribute('aria-selected')==='true' && document.activeElement?.id==='prompts-tab');
     await page.screenshot({path:join(output,'narrow.png')});
     await page.setViewportSize({width:1440,height:1000});
+  });
+  // Keep legacy checks above: a modern fixture must supplement, not replace,
+  // coverage of the structure the extension previously supported.
+  await page.evaluate(() => localStorage.removeItem('fixture-storage'));
+  await page.goto(origin + '/c/modern?fixture=modern');
+  await page.locator('#outline-tab').waitFor({state:'visible'});
+  await test('modern search units produce one outline entry per visible heading without legacy attributes', async () => {
+    assert.equal(await page.locator('main [data-message-author-role], main [data-testid^="conversation-turn-"], main [data-turn], main .markdown').count(),0);
+    await page.locator('#outline-tab').click();
+    await page.locator('.outline-item-text').filter({hasText:'新版结构说明'}).waitFor();
+    assert.deepEqual(await page.locator('#outline-list .outline-item-text').allTextContents(),[
+      '请解释新版结构与主题','新版结构说明','新版滚动与大纲','没有标题时使用正文摘要作为大纲入口。'
+    ]);
+    await page.screenshot({path:join(output,'modern-outline.png')});
+  });
+  await test('modern nested DIL theme scopes switch with readable light and dark text', async () => {
+    await openTheme();
+    for (const mode of ['light','dark','light']) {
+      await appearance(mode);
+      await page.waitForFunction(mode => Array.from(document.querySelectorAll('[data-dil-message-id]')).every(element => element.closest('[data-theme]')?.getAttribute('data-theme')===mode),mode);
+      await assertContrast('#modern-prose');
+      assert.equal(await page.locator('#modern-prose').evaluate(el => getComputedStyle(el).color),mode === 'light' ? 'rgb(23, 23, 23)' : 'rgb(236, 236, 236)');
+    }
+    await closeTheme();
+    // Streaming may attach a fresh dark scope after the user selected light.
+    await page.evaluate(() => {
+      document.querySelector('[data-turn-key="modern-turn-1"]').insertAdjacentHTML('beforeend','<div data-theme="dark"><div data-dil-message-id="late-dil"><p id="modern-late-prose" data-d-component="text">新插入的内容也应保持当前亮色主题。</p></div></div>');
+    });
+    await page.waitForFunction(() => document.querySelector('#modern-late-prose').closest('[data-theme]').getAttribute('data-theme')==='light');
+    await assertContrast('#modern-late-prose');
+    await page.screenshot({path:join(output,'modern-light.png')});
+  });
+  await test('modern thread pseudo-elements become transparent when wallpaper is enabled', async () => {
+    assert.equal(await page.locator('.modern-thread-shell').evaluate(el => getComputedStyle(el,'::before').backgroundColor),'rgb(255, 255, 255)');
+    await openTheme();
+    await uploadWallpaper(await makeWallpaper('#157b96'),'modern-wallpaper.png');
+    await page.waitForFunction(() => document.documentElement.getAttribute('data-gh-bg-enabled')==='true');
+    await closeTheme();
+    await page.waitForFunction(() => ['::before','::after'].every(pseudo => getComputedStyle(document.querySelector('.modern-thread-shell'),pseudo).backgroundColor==='rgba(0, 0, 0, 0)'));
+    const coveringBackgrounds=await page.locator('.modern-thread-shell').evaluate(element => {
+      const opaque=[];
+      for (let node=element;node && node!==document.body;node=node.parentElement) {
+        if (!['transparent','rgba(0, 0, 0, 0)'].includes(getComputedStyle(node).backgroundColor)) opaque.push(node.tagName+'.'+node.className);
+      }
+      return opaque;
+    });
+    assert.deepEqual(coveringBackgrounds,[]);
+    assert.ok(await page.locator('#chatgpt-helper-theme-bg-layer').evaluate(el => getComputedStyle(el).backgroundImage.includes('blob:')));
+    await page.screenshot({path:join(output,'modern-wallpaper.png')});
+  });
+  await test('modern same-title replacement still navigates to the live heading', async () => {
+    await page.locator('#outline-tab').click();
+    await page.evaluate(() => {
+      const old=document.querySelector('#modern-second-heading');old.replaceWith(old.cloneNode(true));
+      document.querySelector('.thread-scroll-container').scrollTop=0;
+    });
+    await page.locator('.outline-item-text').filter({hasText:'新版滚动与大纲'}).click();
+    await page.waitForFunction(() => document.querySelector('.thread-scroll-container').scrollTop > 300 && document.querySelector('#modern-second-heading').getBoundingClientRect().bottom<=document.querySelector('.thread-scroll-container').getBoundingClientRect().bottom);
+  });
+  await test('modern composer without an id receives prompts while writing cards remain unchanged', async () => {
+    assert.equal(await page.locator('#prompt-textarea').count(),0);
+    const writing=page.locator('[data-oai-writing-block-surface] [contenteditable]');
+    const original=await writing.innerText();
+    await page.locator('#prompts-tab').click();
+    await page.locator('#prompts-content .chatgpt-helper-search-input').fill('资料精读');
+    const content=await page.locator('.chatgpt-helper-prompt-item .chatgpt-helper-prompt-content').textContent();
+    await page.locator('.chatgpt-helper-prompt-title').click();
+    assert.deepEqual((await page.locator('[data-composer-markdown]').innerText()).split('\n').filter(Boolean),content.split('\n').filter(Boolean));
+    assert.equal(await writing.innerText(),original);
+    assert.equal(await page.locator('[data-composer-body]').getAttribute('data-gh-theme-host-composer'),'true');
+    assert.equal(await page.locator('[data-oai-writing-block-surface]').getAttribute('data-gh-theme-host-composer'),null);
   });
   await test('no browser runtime or extension initialization errors', async () => assert.deepEqual(errors,[]));
 } finally {

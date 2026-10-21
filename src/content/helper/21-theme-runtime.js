@@ -77,6 +77,13 @@ const THEME_RUNTIME_CSS = `
         background: transparent !important;
         box-shadow: none !important;
     }
+    /* The current thread shell paints an opaque surface in ::before. Its own
+       computed background is transparent, so clearing only the element misses it. */
+    :root[data-gh-bg-enabled="true"] [data-gh-theme-host-clear="true"]::before,
+    :root[data-gh-bg-enabled="true"] [data-gh-theme-host-clear="true"]::after {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
     :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] {
         --sidebar-mask-bg: transparent;
         --sidebar-surface-primary: transparent;

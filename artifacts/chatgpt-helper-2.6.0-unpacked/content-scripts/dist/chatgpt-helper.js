@@ -5784,6 +5784,7 @@
     }
     findTextarea() {
       const selectors = [
+        '[data-composer-markdown][contenteditable="true"]',
         "#prompt-textarea",
         'textarea[placeholder*="Message"]',
         'textarea[placeholder*="\u6D88\u606F"]',
@@ -5793,7 +5794,7 @@
         "textarea"
       ];
       for (const selector of selectors) {
-        const el = document.querySelector(selector);
+        const el = Array.from(document.querySelectorAll(selector)).find((element) => !element.closest('[data-oai-writing-block-surface], [id^="chatgpt-helper"]'));
         if (el && el.offsetParent !== null) {
           this.textarea = el;
           return;
@@ -5807,10 +5808,19 @@
       return document.querySelector("main") || document.querySelector('[role="main"]');
     }
     getMessageRole(message) {
-      return message?.getAttribute("data-message-author-role") || message?.getAttribute("data-turn") || message?.querySelector("[data-message-author-role]")?.getAttribute("data-message-author-role") || (message?.querySelector(".markdown, .prose") ? "assistant" : null);
+      const searchUnit = message?.getAttribute("data-content-search-unit-key") || message?.getAttribute("data-chatgpt-search-unit-key");
+      const unitRole = searchUnit?.split(":").pop();
+      if (unitRole === "user" || unitRole === "assistant") return unitRole;
+      return message?.getAttribute("data-message-author-role") || message?.getAttribute("data-turn") || message?.querySelector("[data-message-author-role]")?.getAttribute("data-message-author-role") || (message?.matches("[data-chatgpt-selection-message-id]") || message?.querySelector('[data-conversation-role="assistant"], [data-markdown-text-style="assistant-message"], .markdown, .prose') ? "assistant" : null);
     }
     getMessageContent(message) {
-      return message?.querySelector(".markdown, .prose, [data-message-content]") || message;
+      if (this.getMessageRole(message) === "user") {
+        return message?.querySelector("[data-user-message-bubble] .whitespace-pre-wrap, [data-user-message-bubble]") || message;
+      }
+      return message?.querySelector('[data-markdown-text-style="assistant-message"], .markdown, .prose, [data-message-content]') || message;
+    }
+    getMessageIdentity(message, index) {
+      return message.getAttribute("data-message-id") || message.getAttribute("data-chatgpt-selection-message-id") || message.querySelector("[data-chatgpt-selection-message-id]")?.getAttribute("data-chatgpt-selection-message-id") || `${message.closest("[data-turn-key]")?.getAttribute("data-turn-key") || ""}:${message.getAttribute("data-content-search-unit-key") || message.getAttribute("data-chatgpt-search-unit-key") || message.closest('[data-testid^="conversation-turn-"]')?.getAttribute("data-testid") || `message-${index}`}`;
     }
     isScrollableOverflowValue(value) {
       return value === "auto" || value === "scroll" || value === "overlay";
@@ -5911,12 +5921,20 @@
     getChatMessages() {
       const container = this.getChatContainer();
       if (!container) return [];
-      const selector = '[data-message-author-role], [data-testid^="conversation-turn-"], article[data-turn]';
+      const legacy = "[data-message-author-role]";
+      const units = "[data-content-search-unit-key], [data-chatgpt-search-unit-key]";
+      const selector = `${legacy}, ${units}, [data-chatgpt-selection-message-id], [data-testid^="conversation-turn-"], article[data-turn]`;
       return Array.from(container.querySelectorAll(selector)).filter((message) => {
         if (message.closest("#chatgpt-helper-right, [data-gh-owned]")) return false;
         if (message.closest('[hidden], [aria-hidden="true"]')) return false;
         if (message.hasAttribute("data-message-author-role")) {
           return !message.parentElement?.closest("[data-message-author-role]");
+        }
+        if (message.matches(units)) {
+          return !message.querySelector(legacy) && !message.parentElement?.closest(units) && Boolean(this.getMessageRole(message));
+        }
+        if (message.matches("[data-chatgpt-selection-message-id]")) {
+          return !message.parentElement?.closest(`${units}, ${legacy}, [data-chatgpt-selection-message-id]`);
         }
         return !message.querySelector("[data-message-author-role]") && !message.parentElement?.closest('[data-testid^="conversation-turn-"], article[data-turn]') && Boolean(this.getMessageRole(message));
       });
@@ -6601,6 +6619,13 @@
         background: transparent !important;
         box-shadow: none !important;
     }
+    /* The current thread shell paints an opaque surface in ::before. Its own
+       computed background is transparent, so clearing only the element misses it. */
+    :root[data-gh-bg-enabled="true"] [data-gh-theme-host-clear="true"]::before,
+    :root[data-gh-bg-enabled="true"] [data-gh-theme-host-clear="true"]::after {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
     :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] {
         --sidebar-mask-bg: transparent;
         --sidebar-surface-primary: transparent;
@@ -6767,6 +6792,7 @@
       document.body.removeAttribute("data-mode");
       if (html.style.colorScheme !== mode) html.style.colorScheme = mode;
       if (html.getAttribute("data-theme") !== mode) html.setAttribute("data-theme", mode);
+      if (html.hasAttribute("data-appearance-theme")) html.setAttribute("data-appearance-theme", mode);
       if (html.hasAttribute("data-mode")) html.setAttribute("data-mode", mode);
       try {
         const preference = this.getThemeConfig().appearanceMode === "system" ? "system" : mode;
@@ -6774,6 +6800,18 @@
       } catch (error) {
       }
       this.syncHelperThemeMode(mode);
+      this.syncNativeThemeScopes(mode);
+    },
+    syncNativeThemeScopes(mode = this.currentEffectiveTheme) {
+      const scopes = /* @__PURE__ */ new Set();
+      document.querySelectorAll("main [data-dil-message-id], main [data-oai-writing-block-surface]").forEach((content) => {
+        const scope = content.closest("[data-theme]");
+        if (scope && scope !== document.documentElement && scope !== document.body) scopes.add(scope);
+      });
+      for (const scope of scopes) {
+        if (scope.getAttribute("data-gh-native-theme") !== "true") scope.setAttribute("data-gh-native-theme", "true");
+        if (scope.getAttribute("data-theme") !== mode) scope.setAttribute("data-theme", mode);
+      }
     },
     async applyEffectiveTheme(theme, options = {}) {
       const mode = theme === "dark" ? "dark" : "light";
@@ -6840,6 +6878,7 @@
       }
     },
     refreshThemeHostTargets() {
+      this.syncNativeThemeScopes();
       const targets = /* @__PURE__ */ new Map();
       const mark = (element, attr) => {
         if (!(element instanceof HTMLElement)) return;
@@ -6855,7 +6894,8 @@
       mark(main, "data-gh-theme-host-main");
       mark(main, "data-gh-theme-host-chat-list");
       clearPath(main);
-      main?.querySelectorAll('[data-message-author-role], [data-testid^="conversation-turn-"]').forEach((message) => {
+      const messages = this.adapter?.getChatMessages?.() || [];
+      messages.forEach((message) => {
         clearPath(message.parentElement, main);
       });
       const sidebar = this.findSidebarShellByGeometry();
@@ -6867,8 +6907,9 @@
         if (!child.matches('.gh-theme-glass-layer, [role="dialog"], [role="menu"]')) mark(child, "data-gh-theme-host-clear");
       }
       this.themeHostLastFoundShell = Boolean(sidebar);
-      const input = document.querySelector('#prompt-textarea, textarea[placeholder*="Message"], textarea[placeholder*="\u6D88\u606F"], [contenteditable="true"][role="textbox"]');
-      const composer = input?.closest('form, [data-testid="composer"]');
+      this.adapter?.findTextarea?.();
+      const input = this.adapter?.textarea || document.querySelector("[data-composer-markdown], #prompt-textarea");
+      const composer = input?.closest('[data-composer-body], form, [data-testid="composer"]');
       const surface = input?.closest('[data-composer-surface], [class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]') || composer?.querySelector('[class*="bg-token"][class*="rounded"], [class*="bg-token"][class*="superellipse"]') || composer;
       mark(composer, "data-gh-theme-host-composer");
       mark(surface, "data-gh-theme-host-composer-surface");
@@ -6912,12 +6953,16 @@
       if (this.themeHostWatchdog) return;
       this.themeHostWatchdog = new MutationObserver((records) => {
         if (!records.some((record) => {
+          if (record.type === "attributes") {
+            return record.target.matches('[data-gh-native-theme="true"]') && record.target.getAttribute("data-theme") !== this.currentEffectiveTheme;
+          }
+          if ([...record.addedNodes].some((node) => node.nodeType === 1 && (node.matches("[data-theme], [data-dil-message-id]") || node.querySelector("[data-dil-message-id]")))) return true;
           if (record.target.closest?.('[id^="chatgpt-helper"], [data-message-author-role], [data-markdown-text-style]')) return false;
           return [...record.addedNodes, ...record.removedNodes].some((node) => node.nodeType === 1 && !node.matches?.('[id^="chatgpt-helper"], .gh-theme-glass-layer'));
         })) return;
         this.queueThemeHostRefresh();
       });
-      this.themeHostWatchdog.observe(document.body, { childList: true, subtree: true });
+      this.themeHostWatchdog.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-theme"] });
     },
     stopThemeHostWatchdog() {
       this.themeHostWatchdog?.disconnect();
@@ -16710,15 +16755,15 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
       };
       this.adapter.getChatMessages().forEach((message, messageIndex) => {
         const role = this.adapter.getMessageRole(message);
-        const messageKey = message.getAttribute("data-message-id") || message.closest('[data-testid^="conversation-turn-"]')?.getAttribute("data-testid") || `message-${messageIndex}`;
+        const messageKey = this.adapter.getMessageIdentity(message, messageIndex);
         const messageId = `${window.location.pathname}:${messageKey}`;
         if (role === "user") {
-          if (this.settings.outline?.showUserQueries) addItem(message, 0, messageId, 0, true);
+          if (this.settings.outline?.showUserQueries) addItem(this.adapter.getMessageContent(message), 0, messageId, 0, true);
           return;
         }
         if (role !== "assistant") return;
         const content = this.adapter.getMessageContent(message);
-        const headings = Array.from(content.querySelectorAll('h1, h2, h3, h4, h5, h6, [role="heading"]')).filter((heading) => !heading.closest('pre, [hidden], [aria-hidden="true"]') && cleanText(heading));
+        const headings = Array.from(content.querySelectorAll('h1, h2, h3, h4, h5, h6, [role="heading"]')).filter((heading) => !heading.closest('pre, [hidden], [aria-hidden="true"], .sr-only') && cleanText(heading));
         headings.forEach((heading, index) => {
           const level = Number(heading.tagName.match(/^H([1-6])$/i)?.[1] || heading.getAttribute("aria-level")) || 2;
           addItem(heading, Math.max(1, Math.min(6, level)), messageId, index);
@@ -17038,6 +17083,7 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
         const mode = this.detectEffectiveThemeFromDom();
         if (mode === this.currentEffectiveTheme) return;
         this.syncHelperThemeMode(mode);
+        this.syncNativeThemeScopes(mode);
         this.settings.themeMode = mode;
         this.updateThemeVisualState();
       };

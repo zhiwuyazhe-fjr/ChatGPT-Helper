@@ -15,6 +15,7 @@ class ChatGPTAdapter {
     findTextarea() {
         // ChatGPT 的输入框选择器（按优先级）
         const selectors = [
+            '[data-composer-markdown][contenteditable="true"]',
             '#prompt-textarea',
             'textarea[placeholder*="Message"]',
             'textarea[placeholder*="消息"]',
@@ -24,7 +25,8 @@ class ChatGPTAdapter {
             'textarea',
         ];
         for (const selector of selectors) {
-            const el = document.querySelector(selector);
+            const el = Array.from(document.querySelectorAll(selector)).find(element =>
+                !element.closest('[data-oai-writing-block-surface], [id^="chatgpt-helper"]'));
             if (el && el.offsetParent !== null) { // 确保元素可见
                 this.textarea = el;
                 return;
@@ -49,14 +51,30 @@ class ChatGPTAdapter {
     }
 
     getMessageRole(message) {
+        const searchUnit = message?.getAttribute('data-content-search-unit-key') ||
+            message?.getAttribute('data-chatgpt-search-unit-key');
+        const unitRole = searchUnit?.split(':').pop();
+        if (unitRole === 'user' || unitRole === 'assistant') return unitRole;
         return message?.getAttribute('data-message-author-role') ||
             message?.getAttribute('data-turn') ||
             message?.querySelector('[data-message-author-role]')?.getAttribute('data-message-author-role') ||
-            (message?.querySelector('.markdown, .prose') ? 'assistant' : null);
+            (message?.matches('[data-chatgpt-selection-message-id]') ||
+                message?.querySelector('[data-conversation-role="assistant"], [data-markdown-text-style="assistant-message"], .markdown, .prose') ? 'assistant' : null);
     }
 
     getMessageContent(message) {
-        return message?.querySelector('.markdown, .prose, [data-message-content]') || message;
+        if (this.getMessageRole(message) === 'user') {
+            return message?.querySelector('[data-user-message-bubble] .whitespace-pre-wrap, [data-user-message-bubble]') || message;
+        }
+        return message?.querySelector('[data-markdown-text-style="assistant-message"], .markdown, .prose, [data-message-content]') || message;
+    }
+
+    getMessageIdentity(message, index) {
+        return message.getAttribute('data-message-id') ||
+            message.getAttribute('data-chatgpt-selection-message-id') ||
+            message.querySelector('[data-chatgpt-selection-message-id]')?.getAttribute('data-chatgpt-selection-message-id') ||
+            `${message.closest('[data-turn-key]')?.getAttribute('data-turn-key') || ''}:${message.getAttribute('data-content-search-unit-key') || message.getAttribute('data-chatgpt-search-unit-key') ||
+                message.closest('[data-testid^="conversation-turn-"]')?.getAttribute('data-testid') || `message-${index}`}`;
     }
 
     isScrollableOverflowValue(value) {
@@ -186,13 +204,21 @@ class ChatGPTAdapter {
         // Message discovery must not depend on whether the conversation is long enough to scroll.
         const container = this.getChatContainer();
         if (!container) return [];
-        const selector = '[data-message-author-role], [data-testid^="conversation-turn-"], article[data-turn]';
+        const legacy = '[data-message-author-role]';
+        const units = '[data-content-search-unit-key], [data-chatgpt-search-unit-key]';
+        const selector = `${legacy}, ${units}, [data-chatgpt-selection-message-id], [data-testid^="conversation-turn-"], article[data-turn]`;
         return Array.from(container.querySelectorAll(selector)).filter((message) => {
             if (message.closest('#chatgpt-helper-right, [data-gh-owned]')) return false;
             if (message.closest('[hidden], [aria-hidden="true"]')) return false;
             // Prefer the semantic message inside a turn, and avoid nested duplicates.
             if (message.hasAttribute('data-message-author-role')) {
                 return !message.parentElement?.closest('[data-message-author-role]');
+            }
+            if (message.matches(units)) {
+                return !message.querySelector(legacy) && !message.parentElement?.closest(units) && Boolean(this.getMessageRole(message));
+            }
+            if (message.matches('[data-chatgpt-selection-message-id]')) {
+                return !message.parentElement?.closest(`${units}, ${legacy}, [data-chatgpt-selection-message-id]`);
             }
             return !message.querySelector('[data-message-author-role]') &&
                 !message.parentElement?.closest('[data-testid^="conversation-turn-"], article[data-turn]') &&
