@@ -73,6 +73,40 @@ const makeWallpaper = async (color='#275b73') => page.evaluate(color => {
   return canvas.toDataURL('image/png').split(',')[1];
 },color);
 const uploadWallpaper = async (png,name='regression-wallpaper.png') => page.locator('.theme-wallpaper-block input[type=file]').setInputFiles({name,mimeType:'image/png',buffer:Buffer.from(png,'base64')});
+const themeRange = name => page.getByRole('slider',{name,exact:true});
+const themeCheckbox = name => page.getByRole('checkbox',{name,exact:true});
+const setThemeRange = async (name,value) => {
+  const range=themeRange(name);
+  assert.equal(await range.isDisabled(),false,`${name} should be enabled`);
+  await range.evaluate((element,value) => {
+    element.value=String(value);
+    element.dispatchEvent(new Event('input',{bubbles:true}));
+    element.dispatchEvent(new Event('change',{bubbles:true}));
+  },value);
+};
+const glassStyles = () => page.evaluate(async () => {
+  // Sample the settled state, not an intermediate frame of the panel's
+  // box-shadow transition. Force style resolution before collecting animations.
+  const surfaces=Array.from(document.querySelectorAll('#chatgpt-helper-right, #chatgpt-helper-glass-sidebar, .chatgpt-helper-theme-preview-nav'));
+  surfaces.forEach(element => getComputedStyle(element).boxShadow);
+  await Promise.all(surfaces.flatMap(element => element.getAnimations()).filter(animation => animation.effect?.getTiming().iterations!==Infinity).map(animation => animation.finished.catch(() => {})));
+  const read = selector => {
+    const element=document.querySelector(selector);
+    if (!element) throw new Error(`Missing glass surface ${selector}`);
+    const style=getComputedStyle(element);
+    const enhancement=style.boxShadow.split(/,(?![^()]*\))/).find(part => part.includes('9999px'))?.trim() || 'none';
+    return {blur:style.backdropFilter,background:style.backgroundColor,shadow:style.boxShadow,enhancement};
+  };
+  return {
+    user:read('[data-user-message-bubble="true"]'),
+    assistant:read('[data-markdown-text-style="assistant-message"]'),
+    left:read('#chatgpt-helper-glass-sidebar'),
+    right:read('#chatgpt-helper-right'),
+    previewUser:read('.chatgpt-helper-theme-preview-msg.user'),
+    previewAssistant:read('.chatgpt-helper-theme-preview-msg.assistant'),
+    previewPanel:read('.chatgpt-helper-theme-preview-nav')
+  };
+});
 const appearance = async mode => {
   await page.locator('.theme-appearance-block').getByRole('button',{name:mode === 'light' ? '浅色' : mode === 'dark' ? '深色' : '跟随系统',exact:true}).click();
   await page.waitForFunction(expected => document.documentElement.getAttribute('data-gh-mode') === expected || document.documentElement.getAttribute('data-theme') === expected, mode);
@@ -415,6 +449,161 @@ try {
     }
     await closeTheme();
     await page.screenshot({path:join(output,'modern-clear-wallpaper-rounded-composer.png')});
+  });
+  await test('original theme message and panel intensities change real surfaces and preview at 0/50/100', async () => {
+    await openTheme();
+    await page.locator('[data-preset-key="original"]').click();
+    await themeCheckbox('消息毛玻璃效果').check();
+    await themeCheckbox('侧栏文字增强').uncheck();
+    for (const mode of ['light','dark']) {
+      await appearance(mode);
+      const messageBackgrounds=[],panelBackgrounds=[];
+      for (const intensity of [0,50,100]) {
+        await setThemeRange('消息毛玻璃强度',intensity);
+        await setThemeRange('侧栏/右栏毛玻璃强度',intensity);
+        const styles=await glassStyles();
+        for (const key of ['user','assistant','previewUser','previewAssistant']) {
+          assert.equal(styles[key].blur,`blur(${intensity*.32}px)`,`${mode} ${key} blur at ${intensity}`);
+        }
+        for (const key of ['left','right','previewPanel']) {
+          assert.equal(styles[key].blur,`blur(${intensity*.4}px)`,`${mode} ${key} blur at ${intensity}`);
+        }
+        assert.equal(styles.left.background,styles.right.background,`${mode}: left/right panel surfaces differ`);
+        assert.equal(styles.previewPanel.background,styles.left.background,`${mode}: preview panel differs`);
+        assert.equal(styles.previewUser.background,styles.user.background,`${mode}: user preview differs`);
+        assert.equal(styles.previewAssistant.background,styles.assistant.background,`${mode}: assistant preview differs`);
+        messageBackgrounds.push(styles.assistant.background);
+        panelBackgrounds.push(styles.right.background);
+      }
+      assert.equal(new Set(messageBackgrounds).size,3,`${mode}: message intensity did not change opacity`);
+      assert.equal(new Set(panelBackgrounds).size,3,`${mode}: panel intensity did not change opacity`);
+    }
+    const nestedBlur=await page.locator('#chatgpt-helper-right').evaluate(panel => Array.from(panel.querySelectorAll('*')).filter(element => {
+      const filter=getComputedStyle(element).backdropFilter;
+      return filter!=='none' && filter!=='blur(0px)';
+    }).map(element => element.id || element.className));
+    assert.deepEqual(nestedBlur,[],'Right panel descendants apply additional backdrop blur');
+    await page.screenshot({path:join(output,'glass-intensity-preview.png')});
+    await closeTheme();
+  });
+  await test('text enhancement changes both panel masks at 0/50/100 in light and dark modes', async () => {
+    await openTheme();
+    await themeCheckbox('侧栏文字增强').check();
+    for (const mode of ['light','dark']) {
+      await appearance(mode);
+      const shadows=[];
+      for (const intensity of [0,50,100]) {
+        await setThemeRange('增强强度',intensity);
+        const immediate=await page.evaluate(() => ['#chatgpt-helper-glass-sidebar','#chatgpt-helper-right'].map(selector =>
+          getComputedStyle(document.querySelector(selector)).boxShadow.split(/,(?![^()]*\))/).find(part => part.includes('9999px'))?.trim() || 'none'));
+        assert.equal(immediate[0],immediate[1],`${mode}: panel enhancement lags behind the slider`);
+        const styles=await glassStyles();
+        assert.equal(styles.left.enhancement,styles.right.enhancement,`${mode}: left/right enhancement differs`);
+        assert.equal(styles.previewPanel.enhancement,styles.left.enhancement,`${mode}: preview enhancement differs`);
+        shadows.push(styles.right.enhancement);
+      }
+      assert.equal(new Set(shadows).size,3,`${mode}: enhancement slider has no visible effect`);
+      await themeCheckbox('侧栏文字增强').uncheck();
+      const off=await glassStyles();
+      assert.notEqual(off.right.enhancement,shadows[2],`${mode}: enhancement toggle did not remove mask`);
+      assert.equal(await themeRange('增强强度').isDisabled(),true);
+      await themeCheckbox('侧栏文字增强').check();
+      assert.equal((await glassStyles()).right.enhancement,shadows[2],`${mode}: enabling enhancement did not restore strength`);
+    }
+    await closeTheme();
+  });
+  await test('wallpaper and effect switches disable dependent controls without losing strengths', async () => {
+    await openTheme();
+    await setThemeRange('消息毛玻璃强度',50);
+    await setThemeRange('侧栏/右栏毛玻璃强度',50);
+    await setThemeRange('增强强度',50);
+    await themeCheckbox('消息毛玻璃效果').uncheck();
+    assert.equal(await themeRange('消息毛玻璃强度').isDisabled(),true);
+    assert.equal(await themeRange('消息毛玻璃强度').inputValue(),'50');
+    assert.equal((await glassStyles()).assistant.blur,'none');
+    await themeCheckbox('消息毛玻璃效果').check();
+    assert.equal((await glassStyles()).assistant.blur,'blur(16px)');
+    await themeCheckbox('启用壁纸').uncheck();
+    await page.waitForFunction(() => document.documentElement.getAttribute('data-gh-bg-enabled')==='false');
+    for (const name of ['消息毛玻璃强度','侧栏/右栏毛玻璃强度','增强强度']) assert.equal(await themeRange(name).isDisabled(),true,`${name} should be disabled without wallpaper`);
+    for (const name of ['消息毛玻璃效果','侧栏文字增强']) assert.equal(await themeCheckbox(name).isDisabled(),true,`${name} should be disabled without wallpaper`);
+    await themeCheckbox('启用壁纸').check();
+    await page.waitForFunction(() => document.documentElement.getAttribute('data-gh-bg-enabled')==='true');
+    for (const name of ['消息毛玻璃强度','侧栏/右栏毛玻璃强度','增强强度']) {
+      assert.equal(await themeRange(name).isDisabled(),false);
+      assert.equal(await themeRange(name).inputValue(),'50');
+    }
+    await closeTheme();
+  });
+  await test('compact quick-menu and shortcut settings retain controls without description rows', async () => {
+    await openSettings();
+    for (const label of ['输入框 / 快速唤起','面板快捷键']) {
+      const row=page.locator('.chatgpt-helper-settings-compact-row').filter({has:page.locator('.chatgpt-helper-settings-compact-label-text',{hasText:label})});
+      assert.equal(await row.count(),1);
+      assert.equal(await row.locator('.chatgpt-helper-settings-compact-desc').count(),0);
+      assert.equal(await row.locator('button').count(),1);
+      assert.equal(await row.locator('button').isVisible(),true);
+    }
+  });
+  await test('dragging below collapse threshold preserves the previous width for reopening', async () => {
+    const panel=page.locator('#chatgpt-helper-right');
+    const resize=async width => {
+      const bounds=await panel.boundingBox(),handle=await page.locator('#chatgpt-helper-resize-handle').boundingBox();
+      const startX=handle.x+handle.width/2,y=handle.y+60;
+      await page.mouse.move(startX,y);await page.mouse.down();
+      await page.mouse.move(startX+bounds.width-width,y,{steps:3});await page.mouse.up();
+      await page.waitForFunction(width => Math.abs(document.querySelector('#chatgpt-helper-right').getBoundingClientRect().width-width)<1,width);
+    };
+    await resize(360);
+    const handle=await page.locator('#chatgpt-helper-resize-handle').boundingBox();
+    const startX=handle.x+handle.width/2,y=handle.y+60;
+    await page.mouse.move(startX,y);await page.mouse.down();
+    await page.mouse.move(startX+360-163,y,{steps:3});
+    await page.waitForFunction(() => document.querySelector('#chatgpt-helper-right').classList.contains('collapsed'));
+    await page.mouse.up();
+    assert.equal((await getStorage()).chatgpt_settings.panelWidth,360);
+    assert.equal(await page.locator('body').evaluate(el => el.classList.contains('gh-resizing')),false);
+    await page.locator('#quick-btn-panel').click();
+    await page.waitForFunction(() => !document.querySelector('#chatgpt-helper-right').classList.contains('collapsed') && Math.abs(document.querySelector('#chatgpt-helper-right').getBoundingClientRect().width-360)<1);
+  });
+  await test('resize flushes the final mouseup coordinate and releases drag state on blur', async () => {
+    await page.evaluate(() => {
+      const handle=document.querySelector('#chatgpt-helper-resize-handle'),rect=handle.getBoundingClientRect();
+      const x=rect.x+rect.width/2,y=rect.y+60;
+      handle.dispatchEvent(new MouseEvent('mousedown',{clientX:x,clientY:y,button:0,buttons:1,bubbles:true}));
+      document.dispatchEvent(new MouseEvent('mousemove',{clientX:x-10,clientY:y,buttons:1,bubbles:true}));
+      document.dispatchEvent(new MouseEvent('mouseup',{clientX:x-47,clientY:y,button:0,buttons:0,bubbles:true}));
+    });
+    await page.waitForFunction(() => Math.abs(document.querySelector('#chatgpt-helper-right').getBoundingClientRect().width-407)<1);
+    assert.equal((await getStorage()).chatgpt_settings.panelWidth,407);
+    const handle=await page.locator('#chatgpt-helper-resize-handle').boundingBox();
+    const x=handle.x+handle.width/2,y=handle.y+60;
+    await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+17,y);
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    await page.mouse.up();
+    await page.waitForFunction(() => Math.abs(document.querySelector('#chatgpt-helper-right').getBoundingClientRect().width-390)<1);
+    assert.equal((await getStorage()).chatgpt_settings.panelWidth,390);
+    assert.deepEqual(await page.evaluate(() => ({body:document.body.classList.contains('gh-resizing'),panel:document.querySelector('#chatgpt-helper-right').classList.contains('gh-resizing'),select:document.body.style.userSelect})),{body:false,panel:false,select:''});
+  });
+  await test('effect strengths and switches restore after reload with dependent states intact', async () => {
+    await openTheme();
+    await setThemeRange('消息毛玻璃强度',50);await setThemeRange('侧栏/右栏毛玻璃强度',50);await setThemeRange('增强强度',50);
+    await themeCheckbox('消息毛玻璃效果').uncheck();await themeCheckbox('侧栏文字增强').uncheck();
+    await page.waitForFunction(() => {
+      const config=JSON.parse(localStorage.getItem('fixture-storage')).chatgpt_settings.themeConfig;
+      return config.messageGlassIntensity===50 && config.panelGlassIntensity===50 && config.sidebarTextEnhanceIntensity===50 && !config.messageGlassEnabled && !config.sidebarTextEnhanceEnabled;
+    });
+    await page.reload();await page.locator('#outline-tab').waitFor({state:'visible'});
+    await page.waitForFunction(() => document.documentElement.getAttribute('data-gh-bg-enabled')==='true');
+    await openTheme();
+    for (const name of ['消息毛玻璃强度','侧栏/右栏毛玻璃强度','增强强度']) assert.equal(await themeRange(name).inputValue(),'50');
+    assert.equal(await themeCheckbox('消息毛玻璃效果').isChecked(),false);assert.equal(await themeCheckbox('侧栏文字增强').isChecked(),false);
+    assert.equal(await themeRange('消息毛玻璃强度').isDisabled(),true);assert.equal(await themeRange('增强强度').isDisabled(),true);
+    assert.equal(await themeRange('侧栏/右栏毛玻璃强度').isDisabled(),false);
+    await themeCheckbox('消息毛玻璃效果').check();await themeCheckbox('侧栏文字增强').check();
+    const styles=await glassStyles();assert.equal(styles.assistant.blur,'blur(16px)');assert.equal(styles.right.blur,'blur(20px)');
+    assert.equal(styles.left.enhancement,styles.right.enhancement);assert.equal(styles.previewPanel.enhancement,styles.right.enhancement);
+    await closeTheme();
   });
   await test('no browser runtime or extension initialization errors', async () => assert.deepEqual(errors,[]));
 } finally {

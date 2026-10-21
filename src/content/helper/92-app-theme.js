@@ -654,8 +654,9 @@ export const ThemeFeature = {
         root.setAttribute('data-gh-sidebar-enhance', cfg.sidebarTextEnhanceEnabled ? 'true' : 'false');
         root.style.setProperty('--gh-bg-image', this.sanitizeCssUrl(this.themeBackgroundObjectUrl));
         root.style.setProperty('--gh-bg-blur', `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`);
-        root.style.setProperty('--gh-sidebar-enhance-alpha', (clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100).toFixed(2));
-        root.style.setProperty('--gh-sidebar-enhance-alpha-dark', (clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100 * 0.4).toFixed(2));
+        const enhancementAlpha = (clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100 * 0.65).toFixed(3);
+        root.style.setProperty('--gh-sidebar-enhance-alpha', enhancementAlpha);
+        root.style.setProperty('--gh-sidebar-enhance-alpha-dark', enhancementAlpha);
         this.syncThemeSurfaceVariables(canRenderBackground);
 
         const layer = this.ensureThemeBackgroundLayer();
@@ -755,16 +756,20 @@ export const ThemeFeature = {
         });
 
         refs.wallpaperEnable.checked = cfg.backgroundImageEnabled && Boolean(cfg.backgroundAssetId);
+        refs.blurRange.disabled = !canRenderBackground;
+        refs.messageGlass.disabled = !canRenderBackground;
+        refs.panelGlassIntensityRange.disabled = !canRenderBackground;
+        refs.sidebarEnhance.disabled = !canRenderBackground;
         refs.blurRange.value = `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}`;
         refs.blurValue.textContent = `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`;
         refs.messageGlass.checked = Boolean(cfg.messageGlassEnabled);
-        refs.messageGlassIntensityRange.disabled = !cfg.messageGlassEnabled;
+        refs.messageGlassIntensityRange.disabled = !canRenderBackground || !cfg.messageGlassEnabled;
         refs.messageGlassIntensityRange.value = `${Math.round(clampNumber(cfg.messageGlassIntensity, 0, 100))}`;
         refs.messageGlassIntensityValue.textContent = `${Math.round(clampNumber(cfg.messageGlassIntensity, 0, 100))}%`;
         refs.panelGlassIntensityRange.value = `${Math.round(clampNumber(cfg.panelGlassIntensity, 0, 100))}`;
         refs.panelGlassIntensityValue.textContent = `${Math.round(clampNumber(cfg.panelGlassIntensity, 0, 100))}%`;
         refs.sidebarEnhance.checked = Boolean(cfg.sidebarTextEnhanceEnabled);
-        refs.sidebarEnhanceRange.disabled = !cfg.sidebarTextEnhanceEnabled;
+        refs.sidebarEnhanceRange.disabled = !canRenderBackground || !cfg.sidebarTextEnhanceEnabled;
         refs.sidebarEnhanceRange.value = `${Math.round(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100))}`;
         refs.sidebarEnhanceValue.textContent = `${Math.round(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100))}%`;
 
@@ -826,8 +831,8 @@ export const ThemeFeature = {
         refs.preview.style.setProperty('--gh-preview-blur', `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`);
         refs.previewNav.style.background = previewNavBg;
         refs.previewNav.style.border = `1px solid ${previewBorder}`;
-        refs.previewNav.style.boxShadow = cfg.sidebarTextEnhanceEnabled && !isDark && canRenderBackground
-            ? `inset 0 0 0 9999px rgba(255,255,255,${(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100).toFixed(2)}), inset 0 0 0 1px ${previewBorder}`
+        refs.previewNav.style.boxShadow = cfg.sidebarTextEnhanceEnabled && canRenderBackground
+            ? `inset 0 0 0 9999px rgba(${isDark ? '15,15,16' : '255,255,255'},${(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100 * 0.65).toFixed(3)}), inset 0 0 0 1px ${previewBorder}`
             : `inset 0 0 0 1px ${previewBorder}`;
         refs.previewNav.style.backdropFilter = canRenderBackground && previewVars
             ? `blur(${previewVars['--gh-panel-blur']})`
@@ -1300,6 +1305,16 @@ export const ThemeFeature = {
         sidebarEnhanceControls.appendChild(sidebarEnhanceValue);
         sidebarEnhanceIntensityRow.appendChild(sidebarEnhanceControls);
         wallpaperBlock.appendChild(sidebarEnhanceIntensityRow);
+
+        for (const [control, labelKey] of [
+            [wallpaperEnable, 'themeEnableWallpaper'],
+            [blurRange, 'themeBlur'],
+            [messageGlass, 'themeMessageGlass'],
+            [messageGlassIntensityRange, 'themeMessageGlassIntensity'],
+            [panelGlassIntensityRange, 'themePanelGlassIntensity'],
+            [sidebarEnhance, 'themeSidebarEnhance'],
+            [sidebarEnhanceRange, 'themeSidebarEnhanceIntensity']
+        ]) control.setAttribute('aria-label', this.t(labelKey));
 
         main.appendChild(appearanceBlock);
         main.appendChild(colorsBlock);

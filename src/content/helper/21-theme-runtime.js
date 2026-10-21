@@ -102,11 +102,11 @@ const THEME_RUNTIME_CSS = `
         backdrop-filter: blur(var(--gh-composer-blur, 16px));
         box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
     }
-    :root[data-gh-sidebar-enhance="true"][data-gh-mode="light"] .gh-glass-sidebar {
-        box-shadow: inset 0 0 0 9999px rgba(255,255,255,var(--gh-sidebar-enhance-alpha, .2));
+    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] :is(.gh-glass-sidebar, #chatgpt-helper-right) {
+        box-shadow: inset 0 0 0 9999px rgba(255,255,255,var(--gh-sidebar-enhance-alpha, .2)) !important;
     }
-    :root[data-gh-sidebar-enhance="true"][data-gh-mode="dark"] .gh-glass-sidebar {
-        box-shadow: inset 0 0 0 9999px rgba(15,15,16,var(--gh-sidebar-enhance-alpha-dark, .08));
+    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] :is(.gh-glass-sidebar, #chatgpt-helper-right) {
+        box-shadow: inset 0 0 0 9999px rgba(15,15,16,var(--gh-sidebar-enhance-alpha-dark, .08)) !important;
     }
     :root[data-gh-bg-enabled="false"] .gh-theme-glass-layer { display: none; }
     :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] :is(a, button):hover {
@@ -115,6 +115,18 @@ const THEME_RUNTIME_CSS = `
     :root[data-gh-bg-enabled="true"] #chatgpt-helper-right {
         background: var(--gh-right-overlay) !important;
         backdrop-filter: blur(var(--gh-panel-blur));
+        transition: transform .2s ease, width .2s ease;
+    }
+    /* A single glass plane per sidebar. Repeated child filters made small changes
+       invisible, and gave the right panel a much denser surface than the left. */
+    :root[data-gh-bg-enabled="true"] #chatgpt-helper-right * {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [data-oai-writing-block-surface] {
+        --wb-surface-primary: transparent;
+        --oai-wb-surface-primary: transparent;
+        background: transparent !important;
     }
     :root[data-gh-bg-enabled="true"] #chatgpt-helper-content { background: transparent !important; }
     :root[data-gh-bg-enabled="true"] :is(#chatgpt-helper-tabs, .chatgpt-helper-search-bar, .chatgpt-helper-categories, .outline-fixed-toolbar) {

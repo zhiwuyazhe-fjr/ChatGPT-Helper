@@ -1340,6 +1340,7 @@
     const preset = presetInput && typeof presetInput === "object" ? presetInput : getThemePresetByKey(DEFAULT_THEME_CONFIG.presetKey);
     const isDark = Boolean(options.isDark);
     const hasWallpaper = Boolean(options.canRenderBackground);
+    const glass = hasWallpaper ? buildWallpaperGlassVars(preset, options) : {};
     const primary = preset.primary || "#64748b";
     const secondary = preset.secondary || "#94a3b8";
     const accent = preset.accent || primary;
@@ -1390,7 +1391,41 @@
       "--gh-folder-bg-default": `color-mix(in srgb, ${primary}, transparent ${isDark ? 78 : 86}%)`,
       "--gh-folder-bg-expanded": `color-mix(in srgb, ${primary}, transparent ${isDark ? 68 : 78}%)`,
       "--gh-border-active": primary,
-      "--gh-checkbox-bg": accent
+      "--gh-checkbox-bg": accent,
+      ...glass
+    };
+  }
+  function buildWallpaperGlassVars(preset, options) {
+    const panel = clampNumber(options.panelIntensity, 0, 100) / 100;
+    const message = clampNumber(options.messageIntensity, 0, 100) / 100;
+    const tint = preset.isOriginal ? 0 : 0.045;
+    const light = blendRgbColors("#ffffff", preset.primary, tint);
+    const dark = blendRgbColors("#202123", preset.primary, tint);
+    const base = options.isDark ? dark : light;
+    const panelAlpha = 0.12 + panel * 0.62;
+    const panelFill = rgbaFromColor(base, panelAlpha);
+    const cardFill = rgbaFromColor(base, 0.06 + panel * 0.14);
+    const controlFill = rgbaFromColor(base, 0.12 + panel * 0.18);
+    return {
+      "--gh-right-overlay": panelFill,
+      "--gh-page-sidebar-bg-light": rgbaFromColor(light, panelAlpha),
+      "--gh-page-sidebar-bg-dark": rgbaFromColor(dark, panelAlpha),
+      "--gh-panel-surface": "transparent",
+      "--gh-header-quiet-bg": "transparent",
+      "--gh-panel-subtle": rgbaFromColor(base, 0.04 + panel * 0.06),
+      "--gh-panel-card-bg": cardFill,
+      "--gh-panel-card": cardFill,
+      "--gh-panel-card-hover": controlFill,
+      "--gh-control-bg": controlFill,
+      "--gh-input-bg": controlFill,
+      "--gh-control-bg-hover": rgbaFromColor(base, 0.18 + panel * 0.18),
+      "--gh-panel-card-shadow": "none",
+      "--gh-panel-elevated-shadow": "none",
+      "--gh-sidebar-button-bg": controlFill,
+      "--gh-msg-user-bg": rgbaFromColor(base, 0.1 + message * 0.48),
+      "--gh-msg-assistant-bg": rgbaFromColor(base, 0.06 + message * 0.5),
+      "--gh-page-composer-bg-light": rgbaFromColor(light, 0.55 + panel * 0.3),
+      "--gh-page-composer-bg-dark": rgbaFromColor(dark, 0.55 + panel * 0.3)
     };
   }
   function buildThemeSurfaceVars(presetInput, options = {}) {
@@ -1400,10 +1435,10 @@
     const hasWallpaper = Boolean(options.canRenderBackground);
     const panelUnit = clampNumber(options.panelIntensity, 0, 100) / 100;
     const messageUnit = clampNumber(options.messageIntensity, 0, 100) / 100;
-    const composerUnit = Math.min(1, Math.max(panelUnit * 0.55, messageUnit * 0.85));
-    const panelBlur = hasWallpaper ? `${8 + Math.round(panelUnit * 10)}px` : `${2 + Math.round(panelUnit * 4)}px`;
-    const messageBlur = hasWallpaper ? `${10 + Math.round(messageUnit * 12)}px` : `${4 + Math.round(messageUnit * 6)}px`;
-    const composerBlur = hasWallpaper ? `${9 + Math.round(composerUnit * 11)}px` : `${3 + Math.round(composerUnit * 5)}px`;
+    const composerUnit = panelUnit;
+    const panelBlur = `${hasWallpaper ? Math.round(panelUnit * 40) : 0}px`;
+    const messageBlur = `${hasWallpaper ? Math.round(messageUnit * 32) : 0}px`;
+    const composerBlur = `${hasWallpaper ? Math.round(composerUnit * 24) : 0}px`;
     if (isOriginal) {
       if (isDark) {
         return withProductivitySurfaceVars({
@@ -6644,11 +6679,11 @@
         backdrop-filter: blur(var(--gh-composer-blur, 16px));
         box-shadow: inset 0 0 0 1px var(--gh-msg-border), var(--gh-composer-shadow);
     }
-    :root[data-gh-sidebar-enhance="true"][data-gh-mode="light"] .gh-glass-sidebar {
-        box-shadow: inset 0 0 0 9999px rgba(255,255,255,var(--gh-sidebar-enhance-alpha, .2));
+    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="light"] :is(.gh-glass-sidebar, #chatgpt-helper-right) {
+        box-shadow: inset 0 0 0 9999px rgba(255,255,255,var(--gh-sidebar-enhance-alpha, .2)) !important;
     }
-    :root[data-gh-sidebar-enhance="true"][data-gh-mode="dark"] .gh-glass-sidebar {
-        box-shadow: inset 0 0 0 9999px rgba(15,15,16,var(--gh-sidebar-enhance-alpha-dark, .08));
+    :root[data-gh-bg-enabled="true"][data-gh-sidebar-enhance="true"][data-gh-mode="dark"] :is(.gh-glass-sidebar, #chatgpt-helper-right) {
+        box-shadow: inset 0 0 0 9999px rgba(15,15,16,var(--gh-sidebar-enhance-alpha-dark, .08)) !important;
     }
     :root[data-gh-bg-enabled="false"] .gh-theme-glass-layer { display: none; }
     :root[data-gh-bg-enabled="true"] [data-gh-theme-host-sidebar-shell="true"] :is(a, button):hover {
@@ -6657,6 +6692,18 @@
     :root[data-gh-bg-enabled="true"] #chatgpt-helper-right {
         background: var(--gh-right-overlay) !important;
         backdrop-filter: blur(var(--gh-panel-blur));
+        transition: transform .2s ease, width .2s ease;
+    }
+    /* A single glass plane per sidebar. Repeated child filters made small changes
+       invisible, and gave the right panel a much denser surface than the left. */
+    :root[data-gh-bg-enabled="true"] #chatgpt-helper-right * {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    :root[data-gh-bg-enabled="true"][data-gh-msg-glass="true"] [data-oai-writing-block-surface] {
+        --wb-surface-primary: transparent;
+        --oai-wb-surface-primary: transparent;
+        background: transparent !important;
     }
     :root[data-gh-bg-enabled="true"] #chatgpt-helper-content { background: transparent !important; }
     :root[data-gh-bg-enabled="true"] :is(#chatgpt-helper-tabs, .chatgpt-helper-search-bar, .chatgpt-helper-categories, .outline-fixed-toolbar) {
@@ -7246,8 +7293,9 @@
       root2.setAttribute("data-gh-sidebar-enhance", cfg.sidebarTextEnhanceEnabled ? "true" : "false");
       root2.style.setProperty("--gh-bg-image", this.sanitizeCssUrl(this.themeBackgroundObjectUrl));
       root2.style.setProperty("--gh-bg-blur", `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`);
-      root2.style.setProperty("--gh-sidebar-enhance-alpha", (clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100).toFixed(2));
-      root2.style.setProperty("--gh-sidebar-enhance-alpha-dark", (clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100 * 0.4).toFixed(2));
+      const enhancementAlpha = (clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100 * 0.65).toFixed(3);
+      root2.style.setProperty("--gh-sidebar-enhance-alpha", enhancementAlpha);
+      root2.style.setProperty("--gh-sidebar-enhance-alpha-dark", enhancementAlpha);
       this.syncThemeSurfaceVariables(canRenderBackground);
       const layer = this.ensureThemeBackgroundLayer();
       layer.style.display = canRenderBackground ? "block" : "none";
@@ -7335,16 +7383,20 @@
         btn.classList.toggle("active", isActive);
       });
       refs.wallpaperEnable.checked = cfg.backgroundImageEnabled && Boolean(cfg.backgroundAssetId);
+      refs.blurRange.disabled = !canRenderBackground;
+      refs.messageGlass.disabled = !canRenderBackground;
+      refs.panelGlassIntensityRange.disabled = !canRenderBackground;
+      refs.sidebarEnhance.disabled = !canRenderBackground;
       refs.blurRange.value = `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}`;
       refs.blurValue.textContent = `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`;
       refs.messageGlass.checked = Boolean(cfg.messageGlassEnabled);
-      refs.messageGlassIntensityRange.disabled = !cfg.messageGlassEnabled;
+      refs.messageGlassIntensityRange.disabled = !canRenderBackground || !cfg.messageGlassEnabled;
       refs.messageGlassIntensityRange.value = `${Math.round(clampNumber(cfg.messageGlassIntensity, 0, 100))}`;
       refs.messageGlassIntensityValue.textContent = `${Math.round(clampNumber(cfg.messageGlassIntensity, 0, 100))}%`;
       refs.panelGlassIntensityRange.value = `${Math.round(clampNumber(cfg.panelGlassIntensity, 0, 100))}`;
       refs.panelGlassIntensityValue.textContent = `${Math.round(clampNumber(cfg.panelGlassIntensity, 0, 100))}%`;
       refs.sidebarEnhance.checked = Boolean(cfg.sidebarTextEnhanceEnabled);
-      refs.sidebarEnhanceRange.disabled = !cfg.sidebarTextEnhanceEnabled;
+      refs.sidebarEnhanceRange.disabled = !canRenderBackground || !cfg.sidebarTextEnhanceEnabled;
       refs.sidebarEnhanceRange.value = `${Math.round(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100))}`;
       refs.sidebarEnhanceValue.textContent = `${Math.round(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100))}%`;
       refs.removeFileBtn.disabled = !cfg.backgroundAssetId;
@@ -7382,7 +7434,7 @@
       refs.preview.style.setProperty("--gh-preview-blur", `${Math.round(clampNumber(cfg.backgroundBlurPx, 0, 20))}px`);
       refs.previewNav.style.background = previewNavBg;
       refs.previewNav.style.border = `1px solid ${previewBorder}`;
-      refs.previewNav.style.boxShadow = cfg.sidebarTextEnhanceEnabled && !isDark && canRenderBackground ? `inset 0 0 0 9999px rgba(255,255,255,${(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100).toFixed(2)}), inset 0 0 0 1px ${previewBorder}` : `inset 0 0 0 1px ${previewBorder}`;
+      refs.previewNav.style.boxShadow = cfg.sidebarTextEnhanceEnabled && canRenderBackground ? `inset 0 0 0 9999px rgba(${isDark ? "15,15,16" : "255,255,255"},${(clampNumber(cfg.sidebarTextEnhanceIntensity, 0, 100) / 100 * 0.65).toFixed(3)}), inset 0 0 0 1px ${previewBorder}` : `inset 0 0 0 1px ${previewBorder}`;
       refs.previewNav.style.backdropFilter = canRenderBackground && previewVars ? `blur(${previewVars["--gh-panel-blur"]})` : "none";
       refs.previewChat.style.background = previewChatBg;
       refs.previewChat.style.border = "1px solid transparent";
@@ -7799,6 +7851,15 @@
       sidebarEnhanceControls.appendChild(sidebarEnhanceValue);
       sidebarEnhanceIntensityRow.appendChild(sidebarEnhanceControls);
       wallpaperBlock.appendChild(sidebarEnhanceIntensityRow);
+      for (const [control, labelKey] of [
+        [wallpaperEnable, "themeEnableWallpaper"],
+        [blurRange, "themeBlur"],
+        [messageGlass, "themeMessageGlass"],
+        [messageGlassIntensityRange, "themeMessageGlassIntensity"],
+        [panelGlassIntensityRange, "themePanelGlassIntensity"],
+        [sidebarEnhance, "themeSidebarEnhance"],
+        [sidebarEnhanceRange, "themeSidebarEnhanceIntensity"]
+      ]) control.setAttribute("aria-label", this.t(labelKey));
       main.appendChild(appearanceBlock);
       main.appendChild(colorsBlock);
       main.appendChild(wallpaperBlock);
@@ -13589,9 +13650,7 @@ body[data-gh-mode="dark"] .chatgpt-helper-theme-modal-dialog {
     height: 33px !important;
     margin: auto 5px 8px;
     border-radius: 10px !important;
-    background: var(--gh-input-bg) !important;
-    border: 1px solid var(--gh-input-border) !important;
-    box-shadow: 0 0 0 3px color-mix(in srgb, #020617, transparent 88%) !important;
+    /* Appearance is supplied by the same tokens as the actual composer. */
 }
 
 @media (max-width: 920px) {
@@ -14758,69 +14817,103 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
     },
     initResizeHandle() {
       if (!this.panel) return;
-      let handle = this.panel.querySelector("#chatgpt-helper-resize-handle");
+      this.resizeHandleCleanup?.();
+      const panel = this.panel;
+      let handle = panel.querySelector("#chatgpt-helper-resize-handle");
       if (!handle) {
         handle = document.createElement("div");
         handle.id = "chatgpt-helper-resize-handle";
-        this.panel.appendChild(handle);
+        panel.appendChild(handle);
       }
+      const collapseThreshold = PANEL_WIDTH_MIN - 56;
+      const clampWidth = (width) => Math.max(PANEL_WIDTH_MIN, Math.min(PANEL_WIDTH_MAX, width));
+      let dragging = false;
       let startX = 0;
       let startWidth = 0;
-      let rafId = null;
+      let restoreWidth = 0;
       let latestClientX = 0;
+      let rafId = null;
+      let previousUserSelect = "";
       let lastLayoutUpdateTs = 0;
-      const layoutUpdateIntervalMs = 50;
-      const onMouseMove = (e) => {
-        if (!this.panel) return;
-        latestClientX = e.clientX;
-        if (rafId) return;
+      const rawWidth = () => startWidth + startX - latestClientX;
+      const applyWidth = (width) => {
+        this.settings.panelWidth = width;
+        panel.style.width = `${width}px`;
+      };
+      const finishDrag = (commit = true, collapse = false) => {
+        if (!dragging) return;
+        dragging = false;
+        if (rafId !== null) cancelAnimationFrame(rafId);
+        rafId = null;
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+        window.removeEventListener("blur", onBlur);
+        document.body.style.userSelect = previousUserSelect;
+        document.body.classList.remove("gh-resizing");
+        panel.classList.remove("gh-resizing");
+        if (!commit) return;
+        applyWidth(collapse ? restoreWidth : clampWidth(rawWidth()));
+        if (collapse && !this.isCollapsed) {
+          this.toggleCollapse();
+        } else {
+          this.updateLayout?.();
+          this.saveSettings();
+        }
+      };
+      const onMouseMove = (event) => {
+        if (!dragging) return;
+        if (event.buttons === 0) {
+          finishDrag();
+          return;
+        }
+        latestClientX = event.clientX;
+        if (rawWidth() < collapseThreshold) {
+          finishDrag(true, true);
+          return;
+        }
+        if (rafId !== null) return;
         rafId = requestAnimationFrame(() => {
           rafId = null;
-          const delta = startX - latestClientX;
-          let newWidth = startWidth + delta;
-          const minWidth = PANEL_WIDTH_MIN;
-          const maxWidth = PANEL_WIDTH_MAX;
-          if (newWidth < minWidth) newWidth = minWidth;
-          if (newWidth > maxWidth) newWidth = maxWidth;
-          this.settings.panelWidth = newWidth;
-          this.panel.style.width = `${newWidth}px`;
-          if (this.updateLayout) {
-            const now = typeof performance !== "undefined" && performance.now ? performance.now() : Date.now();
-            if (now - lastLayoutUpdateTs >= layoutUpdateIntervalMs) {
-              lastLayoutUpdateTs = now;
-              this.updateLayout();
-            }
+          if (!dragging) return;
+          applyWidth(clampWidth(rawWidth()));
+          const now = performance.now();
+          if (now - lastLayoutUpdateTs >= 50) {
+            lastLayoutUpdateTs = now;
+            this.updateLayout?.();
           }
         });
       };
-      const onMouseUp = () => {
-        if (rafId) {
-          cancelAnimationFrame(rafId);
-          rafId = null;
-        }
-        document.removeEventListener("mousemove", onMouseMove);
-        document.removeEventListener("mouseup", onMouseUp);
-        window.removeEventListener("blur", onMouseUp);
-        document.body.style.userSelect = "";
-        document.body.classList.remove("gh-resizing");
-        if (this.panel) this.panel.classList.remove("gh-resizing");
-        if (this.updateLayout) this.updateLayout();
-        this.saveSettings();
+      const onMouseUp = (event) => {
+        if (event.button !== 0 || !dragging) return;
+        latestClientX = event.clientX;
+        finishDrag(true, rawWidth() < collapseThreshold);
       };
-      handle.addEventListener("mousedown", (e) => {
-        if (e.button !== 0) return;
-        e.preventDefault();
-        startX = e.clientX;
-        latestClientX = e.clientX;
-        startWidth = this.panel ? this.panel.getBoundingClientRect().width : this.settings.panelWidth;
+      const onBlur = () => finishDrag();
+      const onMouseDown = (event) => {
+        if (event.button !== 0 || this.isCollapsed || this.destroyed || dragging) return;
+        event.preventDefault();
+        startX = latestClientX = event.clientX;
+        startWidth = panel.getBoundingClientRect().width || this.settings.panelWidth;
+        restoreWidth = clampWidth(this.settings.panelWidth || startWidth);
+        previousUserSelect = document.body.style.userSelect;
+        dragging = true;
         document.body.style.userSelect = "none";
         document.body.classList.add("gh-resizing");
-        this.panel.classList.add("gh-resizing");
-        lastLayoutUpdateTs = 0;
+        panel.classList.add("gh-resizing");
+        lastLayoutUpdateTs = -Infinity;
         document.addEventListener("mousemove", onMouseMove);
         document.addEventListener("mouseup", onMouseUp);
-        window.addEventListener("blur", onMouseUp);
-      });
+        window.addEventListener("blur", onBlur);
+      };
+      handle.addEventListener("mousedown", onMouseDown);
+      this.resizeHandleCleanup = () => {
+        finishDrag(false);
+        handle.removeEventListener("mousedown", onMouseDown);
+      };
+      if (!this.resizeHandleScopeBound && this.scope) {
+        this.resizeHandleScopeBound = true;
+        this.scope.cleanups.push(() => this.resizeHandleCleanup?.());
+      }
     },
     initTabResponsiveSpacing(tabsContainer) {
       if (!tabsContainer) return;
@@ -16434,7 +16527,6 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
           },
           {
             label: this.t("promptQuickMenuEnabledLabel") || "Slash Quick Menu",
-            desc: this.t("promptQuickMenuEnabledDesc"),
             type: "toggle",
             value: this.settings.promptQuickMenuEnabled !== false,
             onChange: (val) => {
@@ -16452,7 +16544,6 @@ body[data-gh-mode="dark"] .gh-onboarding-step-desc,
           },
           {
             label: this.t("shortcutHintLabel") || "Panel Shortcut",
-            desc: this.t("shortcutHintDesc"),
             type: "button",
             buttonText: "Alt+Shift+H",
             onClick: () => {

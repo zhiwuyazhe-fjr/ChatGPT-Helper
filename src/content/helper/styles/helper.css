@@ -5569,9 +5569,7 @@ body[data-gh-mode="dark"] .chatgpt-helper-theme-modal-dialog {
     height: 33px !important;
     margin: auto 5px 8px;
     border-radius: 10px !important;
-    background: var(--gh-input-bg) !important;
-    border: 1px solid var(--gh-input-border) !important;
-    box-shadow: 0 0 0 3px color-mix(in srgb, #020617, transparent 88%) !important;
+    /* Appearance is supplied by the same tokens as the actual composer. */
 }
 
 @media (max-width: 920px) {

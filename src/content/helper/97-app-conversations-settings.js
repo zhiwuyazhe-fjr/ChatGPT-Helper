@@ -517,7 +517,6 @@ export const SettingsFeature = {
                 },
                 {
                     label: this.t('promptQuickMenuEnabledLabel') || 'Slash Quick Menu',
-                    desc: this.t('promptQuickMenuEnabledDesc'),
                     type: 'toggle',
                     value: this.settings.promptQuickMenuEnabled !== false,
                     onChange: (val) => {
@@ -535,7 +534,6 @@ export const SettingsFeature = {
                 },
                 {
                     label: this.t('shortcutHintLabel') || 'Panel Shortcut',
-                    desc: this.t('shortcutHintDesc'),
                     type: 'button',
                     buttonText: 'Alt+Shift+H',
                     onClick: () => {

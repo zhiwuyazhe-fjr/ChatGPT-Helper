@@ -1387,6 +1387,7 @@ function withProductivitySurfaceVars(vars, presetInput, options = {}) {
         : getThemePresetByKey(DEFAULT_THEME_CONFIG.presetKey);
     const isDark = Boolean(options.isDark);
     const hasWallpaper = Boolean(options.canRenderBackground);
+    const glass = hasWallpaper ? buildWallpaperGlassVars(preset, options) : {};
     const primary = preset.primary || '#64748b';
     const secondary = preset.secondary || '#94a3b8';
     const accent = preset.accent || primary;
@@ -1472,7 +1473,44 @@ function withProductivitySurfaceVars(vars, presetInput, options = {}) {
         '--gh-folder-bg-default': `color-mix(in srgb, ${primary}, transparent ${isDark ? 78 : 86}%)`,
         '--gh-folder-bg-expanded': `color-mix(in srgb, ${primary}, transparent ${isDark ? 68 : 78}%)`,
         '--gh-border-active': primary,
-        '--gh-checkbox-bg': accent
+        '--gh-checkbox-bg': accent,
+        ...glass
+    };
+}
+
+// One intensity model for original and coloured themes, shared by both sidebars
+// and the live preview. Zero means clear glass; higher values add blur and tint.
+function buildWallpaperGlassVars(preset, options) {
+    const panel = clampNumber(options.panelIntensity, 0, 100) / 100;
+    const message = clampNumber(options.messageIntensity, 0, 100) / 100;
+    const tint = preset.isOriginal ? 0 : 0.045;
+    const light = blendRgbColors('#ffffff', preset.primary, tint);
+    const dark = blendRgbColors('#202123', preset.primary, tint);
+    const base = options.isDark ? dark : light;
+    const panelAlpha = 0.12 + panel * 0.62;
+    const panelFill = rgbaFromColor(base, panelAlpha);
+    const cardFill = rgbaFromColor(base, 0.06 + panel * 0.14);
+    const controlFill = rgbaFromColor(base, 0.12 + panel * 0.18);
+    return {
+        '--gh-right-overlay': panelFill,
+        '--gh-page-sidebar-bg-light': rgbaFromColor(light, panelAlpha),
+        '--gh-page-sidebar-bg-dark': rgbaFromColor(dark, panelAlpha),
+        '--gh-panel-surface': 'transparent',
+        '--gh-header-quiet-bg': 'transparent',
+        '--gh-panel-subtle': rgbaFromColor(base, 0.04 + panel * 0.06),
+        '--gh-panel-card-bg': cardFill,
+        '--gh-panel-card': cardFill,
+        '--gh-panel-card-hover': controlFill,
+        '--gh-control-bg': controlFill,
+        '--gh-input-bg': controlFill,
+        '--gh-control-bg-hover': rgbaFromColor(base, 0.18 + panel * 0.18),
+        '--gh-panel-card-shadow': 'none',
+        '--gh-panel-elevated-shadow': 'none',
+        '--gh-sidebar-button-bg': controlFill,
+        '--gh-msg-user-bg': rgbaFromColor(base, 0.10 + message * 0.48),
+        '--gh-msg-assistant-bg': rgbaFromColor(base, 0.06 + message * 0.50),
+        '--gh-page-composer-bg-light': rgbaFromColor(light, 0.55 + panel * 0.30),
+        '--gh-page-composer-bg-dark': rgbaFromColor(dark, 0.55 + panel * 0.30)
     };
 }
 
@@ -1485,16 +1523,10 @@ function buildThemeSurfaceVars(presetInput, options = {}) {
     const hasWallpaper = Boolean(options.canRenderBackground);
     const panelUnit = clampNumber(options.panelIntensity, 0, 100) / 100;
     const messageUnit = clampNumber(options.messageIntensity, 0, 100) / 100;
-    const composerUnit = Math.min(1, Math.max(panelUnit * 0.55, messageUnit * 0.85));
-    const panelBlur = hasWallpaper
-        ? `${8 + Math.round(panelUnit * 10)}px`
-        : `${2 + Math.round(panelUnit * 4)}px`;
-    const messageBlur = hasWallpaper
-        ? `${10 + Math.round(messageUnit * 12)}px`
-        : `${4 + Math.round(messageUnit * 6)}px`;
-    const composerBlur = hasWallpaper
-        ? `${9 + Math.round(composerUnit * 11)}px`
-        : `${3 + Math.round(composerUnit * 5)}px`;
+    const composerUnit = panelUnit;
+    const panelBlur = `${hasWallpaper ? Math.round(panelUnit * 40) : 0}px`;
+    const messageBlur = `${hasWallpaper ? Math.round(messageUnit * 32) : 0}px`;
+    const composerBlur = `${hasWallpaper ? Math.round(composerUnit * 24) : 0}px`;
 
     if (isOriginal) {
         if (isDark) {

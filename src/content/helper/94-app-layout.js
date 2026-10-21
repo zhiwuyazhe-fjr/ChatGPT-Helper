@@ -60,87 +60,111 @@ export const LayoutFeature = {
 
     initResizeHandle() {
         if (!this.panel) return;
-
-        // 如果拖拽手柄已经存在，则不重复创建（避免被 createUI 清空后无法重新挂载）
-        let handle = this.panel.querySelector('#chatgpt-helper-resize-handle');
+        // UI rebuilds replace the handle; always release its previous drag session first.
+        this.resizeHandleCleanup?.();
+        const panel = this.panel;
+        let handle = panel.querySelector('#chatgpt-helper-resize-handle');
         if (!handle) {
             handle = document.createElement('div');
             handle.id = 'chatgpt-helper-resize-handle';
-            this.panel.appendChild(handle);
+            panel.appendChild(handle);
         }
 
+        const collapseThreshold = PANEL_WIDTH_MIN - 56;
+        const clampWidth = width => Math.max(PANEL_WIDTH_MIN, Math.min(PANEL_WIDTH_MAX, width));
+        let dragging = false;
         let startX = 0;
         let startWidth = 0;
-        let rafId = null;
+        let restoreWidth = 0;
         let latestClientX = 0;
+        let rafId = null;
+        let previousUserSelect = '';
         let lastLayoutUpdateTs = 0;
-        const layoutUpdateIntervalMs = 50; // 降低拖拽期间的整页 reflow 频率（20fps）
+        const rawWidth = () => startWidth + startX - latestClientX;
+        const applyWidth = width => {
+            this.settings.panelWidth = width;
+            panel.style.width = `${width}px`;
+        };
 
-        const onMouseMove = (e) => {
-            if (!this.panel) return;
+        const finishDrag = (commit = true, collapse = false) => {
+            if (!dragging) return;
+            dragging = false;
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            rafId = null;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            window.removeEventListener('blur', onBlur);
+            document.body.style.userSelect = previousUserSelect;
+            document.body.classList.remove('gh-resizing');
+            panel.classList.remove('gh-resizing');
+            if (!commit) return;
 
-            // 记录最新坐标；每帧最多更新一次，避免 cancel/schedule 震荡
-            latestClientX = e.clientX;
+            // Collapsing must not persist the narrow preview as the next expanded width.
+            applyWidth(collapse ? restoreWidth : clampWidth(rawWidth()));
+            if (collapse && !this.isCollapsed) {
+                this.toggleCollapse(); // Owns the layout update and single settings save.
+            } else {
+                this.updateLayout?.();
+                this.saveSettings();
+            }
+        };
 
-            if (rafId) return;
+        const onMouseMove = event => {
+            if (!dragging) return;
+            if (event.buttons === 0) {
+                // Recover when mouseup occurred outside the page without a window blur.
+                finishDrag();
+                return;
+            }
+            latestClientX = event.clientX;
+            if (rawWidth() < collapseThreshold) {
+                finishDrag(true, true);
+                return;
+            }
+            if (rafId !== null) return;
             rafId = requestAnimationFrame(() => {
                 rafId = null;
-                const delta = startX - latestClientX;
-                let newWidth = startWidth + delta;
-                // 与 normalizeRuntimeSettings 共用同一套钳制常量：
-                // 两边不一致时（曾为 220-640 vs 200-600）拖到 >600 松手，持久化归一化
-                // 会把内存值改成 600 而面板 style 仍是 640，主区 margin 与面板错位
-                const minWidth = PANEL_WIDTH_MIN;
-                const maxWidth = PANEL_WIDTH_MAX;
-                if (newWidth < minWidth) newWidth = minWidth;
-                if (newWidth > maxWidth) newWidth = maxWidth;
-
-                this.settings.panelWidth = newWidth;
-                this.panel.style.width = `${newWidth}px`;
-
-                // 拖拽期间同步“主内容区让位”是最重的操作（会触发 reflow），因此降频执行
-                if (this.updateLayout) {
-                    const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-                    if (now - lastLayoutUpdateTs >= layoutUpdateIntervalMs) {
-                        lastLayoutUpdateTs = now;
-                        this.updateLayout();
-                    }
+                if (!dragging) return;
+                applyWidth(clampWidth(rawWidth()));
+                const now = performance.now();
+                if (now - lastLayoutUpdateTs >= 50) {
+                    lastLayoutUpdateTs = now;
+                    this.updateLayout?.();
                 }
             });
         };
-
-        const onMouseUp = () => {
-            if (rafId) {
-                cancelAnimationFrame(rafId);
-                rafId = null;
-            }
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
-            // 在浏览器窗口外/开发者工具上松开鼠标时 document 收不到 mouseup：
-            // 不兜底会进入幽灵拖拽（之后任意移动鼠标面板宽度都跟着变）
-            window.removeEventListener('blur', onMouseUp);
-            document.body.style.userSelect = '';
-            document.body.classList.remove('gh-resizing');
-            if (this.panel) this.panel.classList.remove('gh-resizing');
-            // 松手后做一次最终布局同步，确保主内容区与最终宽度一致
-            if (this.updateLayout) this.updateLayout();
-            this.saveSettings();
+        const onMouseUp = event => {
+            if (event.button !== 0 || !dragging) return;
+            latestClientX = event.clientX;
+            // Flush the final position even if mouseup precedes the scheduled frame.
+            finishDrag(true, rawWidth() < collapseThreshold);
         };
-
-        handle.addEventListener('mousedown', (e) => {
-            if (e.button !== 0) return;
-            e.preventDefault();
-            startX = e.clientX;
-            latestClientX = e.clientX;
-            startWidth = this.panel ? this.panel.getBoundingClientRect().width : this.settings.panelWidth;
+        const onBlur = () => finishDrag();
+        const onMouseDown = event => {
+            if (event.button !== 0 || this.isCollapsed || this.destroyed || dragging) return;
+            event.preventDefault();
+            startX = latestClientX = event.clientX;
+            startWidth = panel.getBoundingClientRect().width || this.settings.panelWidth;
+            restoreWidth = clampWidth(this.settings.panelWidth || startWidth);
+            previousUserSelect = document.body.style.userSelect;
+            dragging = true;
             document.body.style.userSelect = 'none';
             document.body.classList.add('gh-resizing');
-            this.panel.classList.add('gh-resizing');
-            lastLayoutUpdateTs = 0; // 确保第一帧就能更新一次布局
+            panel.classList.add('gh-resizing');
+            lastLayoutUpdateTs = -Infinity;
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
-            window.addEventListener('blur', onMouseUp);
-        });
+            window.addEventListener('blur', onBlur);
+        };
+        handle.addEventListener('mousedown', onMouseDown);
+        this.resizeHandleCleanup = () => {
+            finishDrag(false);
+            handle.removeEventListener('mousedown', onMouseDown);
+        };
+        if (!this.resizeHandleScopeBound && this.scope) {
+            this.resizeHandleScopeBound = true;
+            this.scope.cleanups.push(() => this.resizeHandleCleanup?.());
+        }
     },
 
     initTabResponsiveSpacing(tabsContainer) {
