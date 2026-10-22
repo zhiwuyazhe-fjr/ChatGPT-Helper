@@ -349,9 +349,15 @@ function BatchContent({
       </div>
       <div className="gh-batch-list" aria-busy={loading}>
         {visible.map((item) => (
-          <label key={item.id} className="gh-batch-row">
+          <label
+            key={item.id}
+            className="gh-batch-row"
+            data-selected={selected.has(item.id) ? "true" : "false"}
+            data-disabled={busy ? "true" : "false"}
+          >
             <input
               type="checkbox"
+              aria-label={item.title || "ChatGPT"}
               checked={selected.has(item.id)}
               disabled={busy}
               onChange={(event) =>
@@ -363,7 +369,13 @@ function BatchContent({
                 })
               }
             />
-            <span>{item.title || "ChatGPT"}</span>
+            <span className="gh-batch-selection-mark" aria-hidden="true">
+              {selected.has(item.id) ? "✓" : ""}
+            </span>
+            <span className="gh-batch-title">{item.title || "ChatGPT"}</span>
+            <span className="gh-batch-selection-state" aria-hidden="true">
+              {t(selected.has(item.id) ? "Selected" : "Not selected")}
+            </span>
           </label>
         ))}
         {!visible.length && (

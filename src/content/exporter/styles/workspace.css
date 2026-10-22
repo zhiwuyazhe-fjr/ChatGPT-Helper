@@ -61,9 +61,17 @@
 .gh-batch-tools label { display:flex; align-items:center; gap:8px; min-width:0; }
 .gh-export-portal .gh-batch-tools select, .gh-export-portal .gh-export-dialog-footer select { padding:7px; border:1px solid var(--gh-panel-line); border-radius:6px; background:var(--gh-panel-card); color:var(--gh-text); max-width:100%; }
 .gh-batch-list { overflow:auto; min-height:100px; max-height:40vh; margin-bottom:12px; }
-.gh-batch-row { display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--gh-panel-line); padding:10px 4px; cursor:pointer; }
+.gh-batch-row { position:relative; display:flex; align-items:center; gap:10px; min-height:44px; margin:4px 0; border:1px solid var(--gh-panel-line); border-radius:8px; padding:10px 12px; background:var(--gh-panel-card); cursor:pointer; }
 .gh-batch-row span { min-width:0; overflow-wrap:anywhere; }
-.gh-batch-row input { accent-color:var(--gh-primary); }
+.gh-batch-row input { position:absolute; inset-inline-start:12px; top:50%; transform:translateY(-50%); width:20px; height:20px; margin:0; opacity:0; z-index:1; cursor:inherit; }
+.gh-batch-row:focus-within { outline:2px solid var(--gh-primary); outline-offset:2px; }
+.gh-batch-row[data-selected="true"] { background:color-mix(in srgb,var(--gh-primary) 15%,var(--gh-panel-card)); border-color:var(--gh-primary); }
+.gh-batch-selection-mark { display:flex; align-items:center; justify-content:center; flex:0 0 20px; width:20px; height:20px; border:1.5px solid var(--gh-text-secondary); border-radius:5px; color:var(--gh-on-primary,#fff); font-size:14px; font-weight:700; }
+.gh-batch-row[data-selected="true"] .gh-batch-selection-mark { background:var(--gh-primary); border-color:var(--gh-primary); }
+.gh-batch-title { flex:1; }
+.gh-batch-selection-state { flex-shrink:0; color:var(--gh-text-secondary); font-size:12px; white-space:nowrap; }
+.gh-batch-row[data-selected="true"] .gh-batch-selection-state { color:var(--gh-text); font-weight:600; }
+.gh-batch-row[data-disabled="true"] { cursor:not-allowed; opacity:.6; }
 
 .gh-image-message-option { position:relative; border-radius:8px; padding:12px 10px; margin:4px 0; border:1px solid var(--gh-panel-line); transition:background-color .12s,border-color .12s; }
 .gh-image-message-option[data-selected="true"] { background:color-mix(in srgb,var(--gh-primary) 15%,var(--gh-panel-card)); border-color:var(--gh-primary); }
