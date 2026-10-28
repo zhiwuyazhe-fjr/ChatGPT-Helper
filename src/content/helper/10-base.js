@@ -823,7 +823,7 @@ const ISSUE_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper/issues/new';
 const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
 const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
 const EXTENSION_NAME = 'ChatGPT Helper';
-const EXTENSION_VERSION = '2.7.5';
+const EXTENSION_VERSION = '2.7.6';
 const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
 const EXTENSION_LICENSE = 'MIT';
 const THEME_HOST_ATTRS = [
@@ -1322,12 +1322,20 @@ const SVG_ICON_DEFS = {
     check: [
         ['path', { d: 'm20 6-11 11-5-5' }]
     ],
+    checkSquare: [
+        ['rect', { x: '3', y: '3', width: '18', height: '18', rx: '3' }],
+        ['path', { d: 'm8 12 2.5 2.5L16 9' }]
+    ],
     tag: [
         ['path', { d: 'M12.6 2H4a2 2 0 0 0-2 2v8.6a2 2 0 0 0 .59 1.41l7.4 7.4a2 2 0 0 0 2.82 0l8.6-8.6a2 2 0 0 0 0-2.82l-7.4-7.4A2 2 0 0 0 12.6 2Z' }],
         ['path', { d: 'M7 7h.01' }]
     ],
     folder: [
         ['path', { d: 'M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z' }]
+    ],
+    folderPlus: [
+        ['path', { d: 'M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z' }],
+        ['path', { d: 'M12 10v6m-3-3h6' }]
     ],
     trash: [
         ['path', { d: 'M3 6h18' }],

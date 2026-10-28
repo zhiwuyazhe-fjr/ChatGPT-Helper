@@ -189,24 +189,30 @@ class ConversationManager {
         // 同步按钮
         const syncBtn = createElement('button', {
             className: 'chatgpt-helper-conversations-toolbar-btn sync',
-            title: this.t('syncConversations') || '同步会话'
-        }, '🔄');
+            type: 'button', title: this.t('syncConversations') || '同步会话',
+            'aria-label': this.t('syncConversations') || '同步会话'
+        });
+        syncBtn.appendChild(createSvgIconNode('refresh', { size: 18, strokeWidth: '1.7' }));
         syncBtn.addEventListener('click', () => this.syncConversations({ showAlreadySyncing: true }));
         toolbar.appendChild(syncBtn);
 
         // 新建文件夹按钮
         const addFolderBtn = createElement('button', {
             className: 'chatgpt-helper-conversations-toolbar-btn add-folder',
-            title: this.t('newFolder') || '新建文件夹'
-        }, '📁');
+            type: 'button', title: this.t('newFolder') || '新建文件夹',
+            'aria-label': this.t('newFolder') || '新建文件夹'
+        });
+        addFolderBtn.appendChild(createSvgIconNode('folderPlus', { size: 18, strokeWidth: '1.7' }));
         addFolderBtn.addEventListener('click', () => this.showCreateFolderDialog());
         toolbar.appendChild(addFolderBtn);
 
         // 批量操作按钮
         const batchBtn = createElement('button', {
             className: 'chatgpt-helper-conversations-toolbar-btn batch-mode' + (this.batchMode ? ' active' : ''),
-            title: this.t('batchMode') || '批量操作'
-        }, this.batchMode ? '✓' : '☑');
+            type: 'button', title: this.t('batchMode') || '批量操作',
+            'aria-label': this.t('batchMode') || '批量操作', 'aria-pressed': String(this.batchMode)
+        });
+        batchBtn.appendChild(createSvgIconNode('checkSquare', { size: 18, strokeWidth: '1.7' }));
         batchBtn.addEventListener('click', () => {
             this.batchMode = !this.batchMode;
             if (!this.batchMode) {
