@@ -1322,6 +1322,43 @@ body[data-gh-mode="dark"] .chatgpt-helper-quick-buttons {
     visibility: hidden !important;
 }
 
+.chatgpt-helper-quick-bubble {
+    display: none;
+}
+
+.chatgpt-helper-quick-buttons.minimized,
+body[data-gh-mode="dark"] .chatgpt-helper-quick-buttons.minimized {
+    right: auto !important;
+    transform: none;
+    width: 54px;
+    height: 54px;
+    box-sizing: border-box;
+    padding: 0 !important;
+    border-radius: 50% !important;
+}
+
+.chatgpt-helper-quick-buttons.minimized > :not(.chatgpt-helper-quick-bubble) {
+    display: none !important;
+}
+
+.chatgpt-helper-quick-buttons.minimized .chatgpt-helper-quick-bubble {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.chatgpt-helper-quick-bubble.dragging { cursor: grabbing; }
+.chatgpt-helper-quick-bubble:focus-visible { outline: 2px solid var(--gh-primary); outline-offset: 2px; }
+
 .chatgpt-helper-quick-btn {
     width: 44px !important;
     height: 44px !important;

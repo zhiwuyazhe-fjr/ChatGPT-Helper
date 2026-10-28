@@ -1,4 +1,4 @@
-import { COLLAPSED_BUTTON_DEFS, DEFAULT_COLLAPSED_BUTTONS_ORDER, createCollapsedButtonIconNode, createElement, createSvgIconNode, setButtonIcon } from './10-base.js';
+import { COLLAPSED_BUTTON_DEFS, DEFAULT_COLLAPSED_BUTTONS_ORDER, createCollapsedButtonIconNode, createElement, createHelperLogoNode, createSvgIconNode, setButtonIcon } from './10-base.js';
 import { RuntimeScope, isHelperMutation } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper App Controls And Events
 
@@ -44,6 +44,7 @@ export const ControlsFeature = {
     },
 
     createCollapsedButtons() {
+        this.quickButtonsCleanup?.();
         // 移除已存在的按钮组
         const existing = document.getElementById('chatgpt-helper-quick-buttons');
         if (existing) existing.remove();
@@ -229,7 +230,85 @@ export const ControlsFeature = {
             }
         });
 
+        const minimize = createElement('button', {
+            id: 'quick-btn-minimize', className: 'chatgpt-helper-quick-btn', type: 'button',
+            title: this.t('minimizeQuickButtons'), 'aria-label': this.t('minimizeQuickButtons')
+        });
+        minimize.appendChild(createSvgIconNode('minus', { size: 18, className: 'chatgpt-helper-quick-btn-icon' }));
+        btnGroup.appendChild(minimize);
+
+        const bubble = createElement('button', {
+            id: 'quick-btn-bubble', className: 'chatgpt-helper-quick-bubble', type: 'button',
+            title: this.t('expandQuickButtons'), 'aria-label': this.t('expandQuickButtons')
+        });
+        bubble.appendChild(createHelperLogoNode({ size: 28 }));
+        btnGroup.appendChild(bubble);
         document.body.appendChild(btnGroup);
+
+        const positionBubble = () => {
+            if (!this.quickButtonsMinimized) return;
+            const rect = btnGroup.getBoundingClientRect();
+            const width = rect.width || 54, height = rect.height || 54;
+            const point = this.quickBubblePosition || { x: window.innerWidth - width - 8, y: (window.innerHeight - height) / 2 };
+            this.quickBubblePosition = {
+                x: Math.max(0, Math.min(point.x, window.innerWidth - width)),
+                y: Math.max(0, Math.min(point.y, window.innerHeight - height))
+            };
+            btnGroup.style.left = `${this.quickBubblePosition.x}px`;
+            btnGroup.style.top = `${this.quickBubblePosition.y}px`;
+        };
+        const setMinimized = minimized => {
+            this.quickButtonsMinimized = minimized;
+            btnGroup.classList.toggle('minimized', minimized);
+            if (minimized) positionBubble();
+            else {
+                btnGroup.style.removeProperty('left');
+                btnGroup.style.removeProperty('top');
+            }
+        };
+        minimize.addEventListener('click', () => {
+            setMinimized(true);
+            bubble.focus();
+        });
+        let drag = null;
+        let suppressClick = false;
+        bubble.addEventListener('pointerdown', event => {
+            if (event.button !== 0) return;
+            const rect = btnGroup.getBoundingClientRect();
+            drag = { id: event.pointerId, x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, moved: false };
+            suppressClick = false;
+            bubble.setPointerCapture(event.pointerId);
+        });
+        bubble.addEventListener('pointermove', event => {
+            if (!drag || event.pointerId !== drag.id) return;
+            const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
+            if (!drag.moved && Math.hypot(dx, dy) < 5) return;
+            drag.moved = true;
+            bubble.classList.add('dragging');
+            this.quickBubblePosition = { x: drag.left + dx, y: drag.top + dy };
+            positionBubble();
+        });
+        const finishDrag = event => {
+            if (!drag || event.pointerId !== drag.id) return;
+            suppressClick = drag.moved;
+            drag = null;
+            bubble.classList.remove('dragging');
+        };
+        bubble.addEventListener('pointerup', finishDrag);
+        bubble.addEventListener('pointercancel', finishDrag);
+        bubble.addEventListener('lostpointercapture', finishDrag);
+        bubble.addEventListener('click', () => {
+            if (suppressClick) { suppressClick = false; return; }
+            setMinimized(false);
+            minimize.focus();
+        });
+        window.addEventListener('resize', positionBubble);
+        this.quickButtonsCleanup = () => window.removeEventListener('resize', positionBubble);
+        if (!this.quickButtonsScopeBound && this.scope) {
+            this.quickButtonsScopeBound = true;
+            this.scope.cleanups.push(() => this.quickButtonsCleanup?.());
+        }
+        setMinimized(Boolean(this.quickButtonsMinimized));
         this.quickButtons = quickButtons;
     },
 

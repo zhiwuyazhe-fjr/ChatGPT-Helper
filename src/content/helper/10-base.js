@@ -71,6 +71,8 @@ const I18N = {
         defaultPromptDecisionCategory: '决策',
         allCategory: '全部',
         refresh: '刷新',
+        minimizeQuickButtons: '收起快捷按钮',
+        expandQuickButtons: '展开快捷按钮',
         expand: '展开侧栏',
         collapse: '收起侧栏',
         edit: '编辑',
@@ -408,6 +410,8 @@ const I18N = {
         defaultPromptDecisionCategory: 'Decision',
         allCategory: 'All',
         refresh: 'Refresh',
+        minimizeQuickButtons: 'Minimize shortcuts',
+        expandQuickButtons: 'Expand shortcuts',
         expand: 'Expand sidebar',
         collapse: 'Collapse sidebar',
         edit: 'Edit',
@@ -819,7 +823,7 @@ const ISSUE_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper/issues/new';
 const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
 const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
 const EXTENSION_NAME = 'ChatGPT Helper';
-const EXTENSION_VERSION = '2.7.2';
+const EXTENSION_VERSION = '2.7.3';
 const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
 const EXTENSION_LICENSE = 'MIT';
 const THEME_HOST_ATTRS = [
@@ -1268,6 +1272,9 @@ const SVG_ICON_DEFS = {
     ],
     plus: [
         ['path', { d: 'M12 5v14' }],
+        ['path', { d: 'M5 12h14' }]
+    ],
+    minus: [
         ['path', { d: 'M5 12h14' }]
     ],
     search: [
