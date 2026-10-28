@@ -2683,18 +2683,21 @@ body[data-gh-mode="dark"] .chatgpt-helper-about-btn {
     width: 100%;
     max-width: none;
     margin: 0 auto;
-    padding: 16px 0 6px;
+    padding: 16px 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 296px;
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
     gap: 14px;
 }
 
 .chatgpt-helper-about-main-stack,
 .chatgpt-helper-about-side-stack {
-    display: grid;
-    align-content: start;
-    gap: 14px;
+    display: contents;
 }
+
+.chatgpt-helper-about-section.about-motivation { grid-column: 1; grid-row: 1; }
+.chatgpt-helper-about-section.about-features { grid-column: 1; grid-row: 2; }
+.chatgpt-helper-about-section.about-privacy { grid-column: 2; grid-row: 1; }
+.chatgpt-helper-about-section.about-author { grid-column: 2; grid-row: 2; }
 
 .chatgpt-helper-about-section {
     position: relative;
@@ -2909,10 +2912,10 @@ body[data-gh-mode="dark"] .chatgpt-helper-about-btn {
 
 .chatgpt-helper-about-author-block {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    text-align: center;
-    gap: 9px;
+    text-align: left;
+    gap: 14px;
 }
 
 .chatgpt-helper-about-avatar {
@@ -2934,7 +2937,7 @@ body[data-gh-mode="dark"] .chatgpt-helper-about-btn {
 
 .chatgpt-helper-about-author-bio {
     margin-bottom: 0;
-    line-height: 1.7;
+    line-height: 1.55;
 }
 
 .chatgpt-helper-about-author-block .chatgpt-helper-about-actions {
@@ -3011,9 +3014,12 @@ body[data-gh-mode="dark"] .chatgpt-helper-about-section.featured::before {
         gap: 12px;
     }
 
-    .chatgpt-helper-about-main-stack,
-    .chatgpt-helper-about-side-stack {
-        gap: 12px;
+    .chatgpt-helper-about-section.about-motivation,
+    .chatgpt-helper-about-section.about-features,
+    .chatgpt-helper-about-section.about-privacy,
+    .chatgpt-helper-about-section.about-author {
+        grid-column: auto;
+        grid-row: auto;
     }
 
     .chatgpt-helper-about-title-wrap {
@@ -3047,6 +3053,10 @@ body[data-gh-mode="dark"] .chatgpt-helper-about-section.featured::before {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 7px;
+    }
+
+    .chatgpt-helper-about-footer-actions .chatgpt-helper-about-link-btn:first-child {
+        grid-column: auto;
     }
 }
 

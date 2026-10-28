@@ -935,7 +935,7 @@ export const ThemeFeature = {
 
         const createSection = (title, options = {}) => {
             const section = createElement('section', {
-                className: `chatgpt-helper-about-section${options.compact ? ' compact' : ''}${options.featured ? ' featured' : ''}`
+                className: `chatgpt-helper-about-section${options.compact ? ' compact' : ''}${options.featured ? ' featured' : ''}${options.name ? ` ${options.name}` : ''}`
             });
             const sectionHeader = createElement('div', { className: 'chatgpt-helper-about-section-head' });
             if (options.icon) {
@@ -977,17 +977,15 @@ export const ThemeFeature = {
 
         const storyBody = createElement('div', { className: 'chatgpt-helper-about-story' });
         storyBody.appendChild(createElement('p', {
-            className: 'chatgpt-helper-about-section-lead'
-        }, this.t('aboutIntro') || 'ChatGPT Helper adds a focused side panel for ChatGPT workflows.'));
-        storyBody.appendChild(createElement('p', {
             className: 'chatgpt-helper-about-section-text'
-        }, this.t('aboutMotivationContent') || 'This is more than just an extension.'));
+        }, this.t('aboutMotivationContent') || 'Built to keep everyday ChatGPT tools together and attention on the conversation.'));
 
         const motivationSection = createSection(
             this.t('aboutMotivationTitle') || 'Motivation',
             {
                 bodyNode: storyBody,
                 icon: 'info',
+                name: 'about-motivation',
                 featured: true
             }
         );
@@ -1011,6 +1009,7 @@ export const ThemeFeature = {
             {
                 bodyNode: featureList,
                 icon: 'list',
+                name: 'about-features',
                 compact: true
             }
         );
@@ -1020,6 +1019,7 @@ export const ThemeFeature = {
             {
                 text: this.t('aboutPrivacy') || 'All settings and data processing stay in your browser.',
                 icon: 'shield',
+                name: 'about-privacy',
                 compact: true
             }
         );
@@ -1044,6 +1044,7 @@ export const ThemeFeature = {
                 bodyNode: authorBody,
                 actions: authorActions,
                 compact: true,
+                name: 'about-author',
                 icon: 'user'
             }
         );

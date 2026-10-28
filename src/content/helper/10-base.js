@@ -217,7 +217,7 @@ const I18N = {
         aboutDialogTitle: '关于 ChatGPT Helper',
         aboutTagline: '贴近 ChatGPT 的轻量效率面板',
         aboutMotivationTitle: '开发动机',
-        aboutMotivationContent: '作为长期使用 ChatGPT 的 TJU 计算机学生，我把常用的提示词、导航、整理和导出需求做成一个轻量工具。它来自真实使用中的反复打磨，目标是减少切换和整理成本，让注意力留在对话本身。',
+        aboutMotivationContent: '源于日常使用中的实际需求，把提示词、导航和整理工具放在一处，减少切换，让注意力回到对话。',
         aboutFeedbackTitle: '反馈',
         aboutFeatureRequest: '功能建议',
         aboutBugSupport: '提交反馈',
@@ -555,7 +555,7 @@ const I18N = {
         aboutDialogTitle: 'About ChatGPT Helper',
         aboutTagline: 'A focused productivity layer designed for heavy ChatGPT users',
         aboutMotivationTitle: 'Motivation',
-        aboutMotivationContent: 'I built ChatGPT Helper as a TJU computer science student and long-time ChatGPT user. It gathers the prompt, navigation, organization, export, and reading-position tools I kept needing in daily work, with the goal of reducing switching costs and keeping attention on the conversation.',
+        aboutMotivationContent: 'Built for everyday use, ChatGPT Helper brings prompts, navigation, and organization together so you can spend less time switching and more time on the conversation.',
         aboutFeedbackTitle: 'Feedback',
         aboutFeatureRequest: 'Feature Request',
         aboutBugSupport: 'Submit Feedback',
@@ -823,7 +823,7 @@ const ISSUE_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper/issues/new';
 const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
 const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
 const EXTENSION_NAME = 'ChatGPT Helper';
-const EXTENSION_VERSION = '2.7.6';
+const EXTENSION_VERSION = '2.7.7';
 const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
 const EXTENSION_LICENSE = 'MIT';
 const THEME_HOST_ATTRS = [
