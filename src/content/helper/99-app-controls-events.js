@@ -241,17 +241,19 @@ export const ControlsFeature = {
             id: 'quick-btn-bubble', className: 'chatgpt-helper-quick-bubble', type: 'button',
             title: this.t('expandQuickButtons'), 'aria-label': this.t('expandQuickButtons')
         });
-        bubble.appendChild(createHelperLogoNode({ size: 28 }));
+        bubble.appendChild(createHelperLogoNode({ size: 30 }));
         btnGroup.appendChild(bubble);
         document.body.appendChild(btnGroup);
 
-        const positionBubble = () => {
+        const positionBubble = (dock = false) => {
             if (!this.quickButtonsMinimized) return;
             const rect = btnGroup.getBoundingClientRect();
             const width = rect.width || 54, height = rect.height || 54;
             const point = this.quickBubblePosition || { x: window.innerWidth - width - 8, y: (window.innerHeight - height) / 2 };
+            const edgeInset = Math.min(8, Math.max(0, (window.innerWidth - width) / 2));
             this.quickBubblePosition = {
-                x: Math.max(0, Math.min(point.x, window.innerWidth - width)),
+                x: dock ? (this.quickBubbleEdge === 'left' ? edgeInset : Math.max(edgeInset, window.innerWidth - width - edgeInset))
+                    : Math.max(0, Math.min(point.x, window.innerWidth - width)),
                 y: Math.max(0, Math.min(point.y, window.innerHeight - height))
             };
             btnGroup.style.left = `${this.quickBubblePosition.x}px`;
@@ -260,7 +262,7 @@ export const ControlsFeature = {
         const setMinimized = minimized => {
             this.quickButtonsMinimized = minimized;
             btnGroup.classList.toggle('minimized', minimized);
-            if (minimized) positionBubble();
+            if (minimized) positionBubble(true);
             else {
                 btnGroup.style.removeProperty('left');
                 btnGroup.style.removeProperty('top');
@@ -277,6 +279,7 @@ export const ControlsFeature = {
             const rect = btnGroup.getBoundingClientRect();
             drag = { id: event.pointerId, x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, moved: false };
             suppressClick = false;
+            btnGroup.classList.add('bubble-dragging');
             bubble.setPointerCapture(event.pointerId);
         });
         bubble.addEventListener('pointermove', event => {
@@ -291,8 +294,14 @@ export const ControlsFeature = {
         const finishDrag = event => {
             if (!drag || event.pointerId !== drag.id) return;
             suppressClick = drag.moved;
+            if (drag.moved) {
+                const rect = btnGroup.getBoundingClientRect();
+                this.quickBubbleEdge = rect.left + rect.width / 2 < window.innerWidth / 2 ? 'left' : 'right';
+            }
             drag = null;
             bubble.classList.remove('dragging');
+            btnGroup.classList.remove('bubble-dragging');
+            if (suppressClick) positionBubble(true);
         };
         bubble.addEventListener('pointerup', finishDrag);
         bubble.addEventListener('pointercancel', finishDrag);
@@ -302,8 +311,9 @@ export const ControlsFeature = {
             setMinimized(false);
             minimize.focus();
         });
-        window.addEventListener('resize', positionBubble);
-        this.quickButtonsCleanup = () => window.removeEventListener('resize', positionBubble);
+        const onResize = () => positionBubble(!drag);
+        window.addEventListener('resize', onResize);
+        this.quickButtonsCleanup = () => window.removeEventListener('resize', onResize);
         if (!this.quickButtonsScopeBound && this.scope) {
             this.quickButtonsScopeBound = true;
             this.scope.cleanups.push(() => this.quickButtonsCleanup?.());

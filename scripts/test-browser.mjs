@@ -694,7 +694,7 @@ try {
     await page.locator('#quick-btn-panel').click();
     await page.waitForFunction(() => !document.querySelector('#chatgpt-helper-right').classList.contains('collapsed') && Math.abs(document.querySelector('#chatgpt-helper-right').getBoundingClientRect().width-360)<1);
   });
-  await test('shortcut bar minimizes to a draggable logo and expands without moving the panel', async () => {
+  await test('shortcut logo docks to either edge, stays docked on resize and expands without moving the panel', async () => {
     await page.evaluate(() => {
       const handle=document.querySelector('#chatgpt-helper-resize-handle'),rect=handle.getBoundingClientRect();
       handle.dispatchEvent(new MouseEvent('mousedown',{clientX:rect.x,clientY:rect.y+60,button:0,buttons:1,bubbles:true}));
@@ -709,16 +709,27 @@ try {
     await page.mouse.move(before.x+before.width/2,before.y+before.height/2);
     await page.mouse.down();await page.mouse.move(220,180,{steps:5});await page.mouse.up();
     const after=await bubble.boundingBox();
-    assert.ok(after.x < before.x-100 && after.y < before.y-100);
+    assert.ok(Math.abs((await bar.boundingBox()).x-8)<1 && after.y < before.y-100, 'Drag should dock to the left edge');
     assert.equal(await bubble.isVisible(),true,'Dragging must not expand the bar');
     await page.setViewportSize({width:390,height:500});
     const clamped=await bubble.boundingBox();
     assert.ok(clamped.x>=0 && clamped.y>=0 && clamped.x+clamped.width<=390 && clamped.y+clamped.height<=500);
+    assert.ok(Math.abs((await bar.boundingBox()).x-8)<1, 'Resize should retain the docked edge');
+    await page.mouse.move(clamped.x+clamped.width/2,clamped.y+clamped.height/2);
+    await page.mouse.down();await page.mouse.move(300,260,{steps:5});await page.mouse.up();
+    const right=await bar.boundingBox();
+    assert.ok(Math.abs(390-right.x-right.width-8)<1, 'Drag should dock to the right edge');
+    await page.setViewportSize({width:1440,height:1000});
+    await page.waitForFunction(() => {
+      const rect=document.querySelector('#chatgpt-helper-quick-buttons').getBoundingClientRect();
+      return Math.abs(innerWidth-rect.right-8)<1;
+    });
+    const resized=await bar.boundingBox();
+    assert.ok(Math.abs(1440-resized.x-resized.width-8)<1, 'Right dock should follow the viewport edge');
     await bubble.click();
     assert.equal(await page.locator('#quick-btn-panel').isVisible(),true);
     assert.equal(await bar.evaluate(el=>el.classList.contains('minimized')),false);
     assert.equal(await page.locator('#chatgpt-helper-right').evaluate(el=>el.classList.contains('collapsed')),true);
-    await page.setViewportSize({width:1440,height:1000});
     await page.locator('#quick-btn-panel').click();
   });
   await test('resize flushes the final mouseup coordinate and releases drag state on blur', async () => {

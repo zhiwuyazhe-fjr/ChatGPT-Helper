@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-  const BUILD_ID = "26eeed845e5dc160";
+  const BUILD_ID = "8c8fd33ff06a9938";
   const EXPORT_DEP_FILES = {
     engine: ["content-scripts/dist/chatgpt-exporter.js"],
     zip: ["libs/jszip.min.js"]
