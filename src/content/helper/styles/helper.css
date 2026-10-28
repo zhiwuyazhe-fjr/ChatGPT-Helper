@@ -1693,6 +1693,7 @@ body[data-gh-mode="dark"] .chatgpt-helper-folder-item.expanded {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    color: var(--gh-text-secondary, #6b7280);
 }
 
 .chatgpt-helper-folder-name {

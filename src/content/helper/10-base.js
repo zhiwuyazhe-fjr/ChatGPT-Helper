@@ -823,7 +823,7 @@ const ISSUE_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper/issues/new';
 const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
 const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
 const EXTENSION_NAME = 'ChatGPT Helper';
-const EXTENSION_VERSION = '2.7.4';
+const EXTENSION_VERSION = '2.7.5';
 const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
 const EXTENSION_LICENSE = 'MIT';
 const THEME_HOST_ATTRS = [
@@ -1180,6 +1180,10 @@ function createHelperLogoNode(options = {}) {
 }
 
 const SVG_ICON_DEFS = {
+    inbox: [
+        ['path', { d: 'M4 13 6.5 5h11L20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z' }],
+        ['path', { d: 'M4 13h5l1.5 2h3L15 13h5' }]
+    ],
     edit: [
         ['path', { d: 'M12 20h9' }],
         ['path', { d: 'M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z' }]

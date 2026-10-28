@@ -38,7 +38,7 @@ class ConversationManager {
             return data;
         }
         return {
-            folders: [{ id: 'inbox', name: '📥 收件箱', icon: '📥', isDefault: true }],
+            folders: [{ id: 'inbox', name: '收件箱', icon: '', isDefault: true }],
             tags: [], conversations: {}, lastUsedFolderId: 'inbox',
         };
     }
@@ -98,7 +98,7 @@ class ConversationManager {
             this.data.folders = [];
         }
         if (!this.data.folders.some(folder => folder && folder.id === 'inbox')) {
-            this.data.folders.unshift({ id: 'inbox', name: '📥 收件箱', icon: '📥', isDefault: true });
+            this.data.folders.unshift({ id: 'inbox', name: '收件箱', icon: '', isDefault: true });
         }
     }
 
@@ -109,6 +109,7 @@ class ConversationManager {
     }
 
     getFolderOptionLabel(folder) {
+        if (folder?.id === 'inbox') return this.getFolderDisplayName(folder);
         const icon = folder?.icon || '';
         return `${icon} ${this.getFolderDisplayName(folder)}`.trim();
     }
@@ -396,8 +397,13 @@ class ConversationManager {
         });
 
         const icon = createElement('span', {
-            className: 'chatgpt-helper-folder-icon'
-        }, folder.icon || '📁');
+            className: 'chatgpt-helper-folder-icon', 'aria-hidden': 'true'
+        });
+        if (folder.id === 'inbox') {
+            icon.appendChild(createSvgIconNode('inbox', { size: 19, strokeWidth: '1.7' }));
+        } else {
+            icon.textContent = folder.icon || '📁';
+        }
         info.appendChild(icon);
 
         const name = createElement('span', {
