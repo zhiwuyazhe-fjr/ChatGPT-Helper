@@ -10,13 +10,13 @@
     <a href="https://chromewebstore.google.com/detail/chatgpt-helper/cepillehamimekfahfbgigbpfcaphpca">
       <img src="https://img.shields.io/badge/Chrome_Web_Store-立即安装-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Chrome Web Store">
     </a>
-    <a href="artifacts/chatgpt-helper-2.6.0-chrome.zip">
+    <a href="artifacts/chatgpt-helper-2.7.7-chrome.zip">
       <img src="https://img.shields.io/badge/本地安装包-下载_ZIP-111827?style=for-the-badge&logo=googlechrome&logoColor=white" alt="下载本地安装包">
     </a>
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Version-2.6.0-10A37F?style=flat-square" alt="Version 2.6.0">
+    <img src="https://img.shields.io/badge/Version-2.7.7-10A37F?style=flat-square" alt="Version 2.7.7">
     <img src="https://img.shields.io/badge/Manifest-V3-34A853?style=flat-square" alt="Manifest V3">
     <img src="https://img.shields.io/badge/Data-Local--first-7C3AED?style=flat-square" alt="Local-first">
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-F59E0B?style=flat-square" alt="MIT License"></a>
@@ -70,7 +70,7 @@ ChatGPT Helper 将经常分散在不同位置的操作收拢到一个安静、�
     <td valign="top">
       <sub>04 / EXPORT</sub><br>
       <strong>导出与备份</strong><br><br>
-      支持 Markdown、HTML、JSON、批量 ZIP，以及时间戳、元数据和文件名规则。
+      支持复制文字、导出 Markdown、HTML、JSON，批量导出 ZIP；还可将选中的已加载消息导出为 PNG 或 JPEG 图片。
     </td>
   </tr>
   <tr>
@@ -82,7 +82,7 @@ ChatGPT Helper 将经常分散在不同位置的操作收拢到一个安静、�
     <td valign="top">
       <sub>06 / FOCUS</sub><br>
       <strong>阅读效率增强</strong><br><br>
-      提供滚动锁定、阅读历史、公式与表格复制、标签页状态和完成提示音。
+      提供滚动锁定、阅读历史、公式双击复制、表格复制、标签页状态和完成提示音。
     </td>
   </tr>
 </table>
@@ -117,7 +117,7 @@ ChatGPT Helper 将经常分散在不同位置的操作收拢到一个安静、�
 
 ### 本地安装包 · 解压即用
 
-下载 **[chatgpt-helper-2.6.0-chrome.zip](artifacts/chatgpt-helper-2.6.0-chrome.zip)**，然后：
+下载 **[chatgpt-helper-2.7.7-chrome.zip](artifacts/chatgpt-helper-2.7.7-chrome.zip)**，然后：
 
 1. 解压 ZIP；
 2. 打开 `chrome://extensions/`；
@@ -135,9 +135,10 @@ ChatGPT Helper 将经常分散在不同位置的操作收拢到一个安静、�
 | 使用常用提示词 | 打开 **提示词**，点击模板即可插入输入框 |
 | 浏览长对话 | 打开 **大纲**，点击标题快速跳转 |
 | 整理历史记录 | 打开 **会话**，同步后进行搜索、置顶或分组 |
-| 保存聊天内容 | 打开 **导出**，选择格式或批量导出 |
+| 保存聊天内容 | 打开 **导出**，选择格式、批量导出或将选中消息保存为图片 |
+| 备份个人配置 | 在设置中的 **备份与恢复** 导出 JSON；导入会覆盖当前同项数据 |
 | 更换界面风格 | 点击顶部主题按钮，选择配色或上传背景图 |
-| 暂时收起面板 | 点击顶部收起按钮，需要时再展开 |
+| 暂时收起面板 | 点击顶部收起按钮，或使用默认快捷键 `Alt+Shift+H` 切换 |
 
 ## 运行结构
 
@@ -150,7 +151,7 @@ flowchart LR
     B <--> F[(浏览器本地存储)]
 ```
 
-简而言之：扩展运行在 ChatGPT 页面中，负责组织界面与工作流；设置和索引数据保存在浏览器本地。
+扩展运行在 ChatGPT 页面中；提示词、设置和会话整理数据保存在浏览器本地。同步会话或导出服务器上的对话时，会使用当前登录状态访问 ChatGPT 接口。
 
 <a id="development"></a>
 ## 二次开发
@@ -194,11 +195,11 @@ npm run package
 
 ```text
 artifacts/
-├── chatgpt-helper-2.6.0-unpacked/   # 可直接在 Chrome 中加载
-└── chatgpt-helper-2.6.0-chrome.zip  # 提供给用户下载和解压
+├── chatgpt-helper-2.7.7-unpacked/   # 可直接在 Chrome 中加载
+└── chatgpt-helper-2.7.7-chrome.zip  # 提供给用户下载和解压
 ```
 
-它可以安全删除；再次执行 `npm run package` 会完整重建。仓库中原有的 2.4.1、2.4.2 商店包已经清理，避免历史文件混淆。
+`npm run package` 会清理并重建整个 `artifacts/` 目录。该目录中的发布产物随源码提交，请勿将需要保留的其他文件放入其中。
 
 <details>
 <summary><strong>查看源码目录</strong></summary>
@@ -206,13 +207,14 @@ artifacts/
 ```text
 ChatGPT-Helper/
 ├── manifest.json          # 扩展入口与权限配置
-├── src/content/           # 功能源码
+├── src/background/        # 后台脚本源码
+├── src/content/           # Helper、导出器与共享服务源码
 ├── content-scripts/dist/  # 构建后的浏览器脚本
 ├── scripts/               # 构建、检查与打包工具
 ├── icons/                 # 扩展图标
 ├── libs/                  # 浏览器端依赖
-├── docs/                  # README 图片素材
-└── artifacts/             # 可发布、可删除、可重建的安装产物
+├── docs/                  # 架构说明与 README 图片素材
+└── artifacts/             # 随源码提交的安装产物
 ```
 
 </details>
@@ -225,6 +227,10 @@ ChatGPT-Helper/
 | `npm run check` | 运行回归检查和类型检查 |
 | `npm run package` | 构建、检查并生成安装包 |
 | `npm run typecheck` | 仅运行 TypeScript 类型检查 |
+| `npm run test:browser` | 运行核心功能和导出的浏览器回归 |
+| `npm run test:adversarial` | 运行服务及扩展加载测试 |
+
+浏览器测试需要 Playwright 和可用的 Chromium；安装与运行细节见 [架构与验证说明](docs/architecture.md)。核心行为改动应运行 `npm run test:browser`。
 
 <a id="privacy"></a>
 ## 隐私与权限
@@ -234,6 +240,7 @@ ChatGPT-Helper/
 - 会话同步与批量导出使用当前登录状态访问 ChatGPT 官方接口；
 - `storage` 用于保存本地数据；
 - `notifications` 用于可选的完成提醒；
+- `scripting` 用于在 ChatGPT 页面按需加载导出功能；
 - 站点权限仅覆盖 `chatgpt.com` 与 `chat.openai.com`。
 
 ## 兼容性
@@ -242,7 +249,7 @@ ChatGPT-Helper/
 | --- | --- |
 | Google Chrome | ✅ 推荐 |
 | Microsoft Edge | ✅ 支持 Chromium 扩展 |
-| `chatgpt.com` | ✅ 支持 |
+| `chatgpt.com`、`chat.openai.com` | ✅ 支持 |
 
 ## 反馈与贡献
 
