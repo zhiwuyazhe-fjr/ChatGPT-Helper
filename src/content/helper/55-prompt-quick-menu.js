@@ -24,6 +24,13 @@ const MAX_VISIBLE_ITEMS = 9;
 // 唯一的触发判定逻辑：文本是否是 "// + 合法关键词"
 // 返回 { query } 表示应当显示菜单；返回 null 表示不显示。
 // 纯函数：同样的输入永远得到同样的结论。
+// 渲染前强制归一化为纯文本字符串：无论 prompt 来自 chrome.storage 还是备份导入，
+// 始终以字符串形式交给 createElement（内部用 textContent 写入），
+// 避免未来渲染路径变更时，非字符串/对象字段被意外当作 HTML 处理而引入存储型 XSS。
+function toSafeText(value) {
+    return typeof value === 'string' ? value : String(value || '');
+}
+
 function parseTrigger(rawText) {
     const text = String(rawText || '').replace(/^\s+/, '');
     if (!text.startsWith(TRIGGER_PREFIX)) return null;
@@ -269,10 +276,10 @@ class PromptQuickMenu {
             item.appendChild(iconWrap);
 
             const main = createElement('div', { className: 'gh-quick-menu-item-main' });
-            main.appendChild(createElement('span', { className: 'gh-quick-menu-item-title' }, prompt.title || ''));
+            main.appendChild(createElement('span', { className: 'gh-quick-menu-item-title' }, toSafeText(prompt.title)));
             const meta = createElement('span', { className: 'gh-quick-menu-item-meta' });
             if (prompt.category) {
-                meta.appendChild(createElement('span', { className: 'gh-quick-menu-item-category' }, prompt.category));
+                meta.appendChild(createElement('span', { className: 'gh-quick-menu-item-category' }, toSafeText(prompt.category)));
             }
             if (vars.length > 0) {
                 meta.appendChild(createElement('span', { className: 'gh-quick-menu-item-vars' },
