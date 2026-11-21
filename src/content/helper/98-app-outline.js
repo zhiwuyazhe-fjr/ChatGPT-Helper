@@ -1,29 +1,44 @@
 import { t } from './10-base.js';
 import { OutlineManager } from './50-outline-manager.js';
+import { OutlineIndex } from './51-outline-index.js';
+import { conversationIdFromPath } from '../shared/conversation-context.js';
 // Chrome Extension Content Script - ChatGPT Helper App Outline
 
 
 
 export const OutlineFeature = {
-    refreshOutline() {
+    refreshOutline(reload = false) {
         const panel = this.panel?.querySelector('#outline-content');
-        if (panel && this.currentTab === 'outline') this.renderOutline(panel);
+        if (panel && this.currentTab === 'outline') this.renderOutline(panel, reload);
     },
 
-    renderOutline(container) {
+    renderOutline(container, reload = false) {
         if (!this.outlineManager) {
             this.outlineManager = new OutlineManager({
                 container,
                 settings: this.settings,
                 siteAdapter: this.adapter,
-                onNavigate: (top, onComplete) => this.scrollManager.scrollTo({ top, behavior: 'smooth', onComplete }),
+                onNavigate: (item, onComplete) => {
+                    const index = this.outlineIndex;
+                    const bounds = {};
+                    this.scrollManager.scrollTo({ resolveTarget: scroll => index.resolve(item, scroll, bounds), onComplete: result => {
+                        if (result.timedOut) this.showToast(t('outlineTargetUnavailable'));
+                        onComplete(result);
+                    } });
+                },
+                cancelNavigation: () => this.scrollManager.cancel(),
                 onJumpBefore: () => {
                     if (this.anchorManager && this.scrollManager) {
                         this.anchorManager.setAnchor(this.scrollManager.scrollTop);
                     }
                 },
-                onAutoUpdate: () => this.refreshOutline(),
-                resolveItem: (item) => this.extractOutline().find((candidate) => candidate.id === item.id)?.element,
+                onAutoUpdate: () => {
+                    // The host lifecycle resets navigation/anchors before binding a new
+                    // workspace. A virtual-window mutation must not publish it early.
+                    if (this.outlineIndex?.path === location.pathname && this.outlineIndex.main === this.adapter.getChatContainer()) {
+                        this.refreshOutline();
+                    }
+                },
                 onSettingsChange: (newSettings) => {
                     this.settings.outline ||= {};
                     Object.assign(this.settings.outline, newSettings);
@@ -39,52 +54,27 @@ export const OutlineFeature = {
             manager.createUI();
         }
         // Keep the toolbar and observer alive even before the first answer arrives.
-        manager.update(this.extractOutline());
+        const main = this.adapter.getChatContainer();
+        if (this.outlineIndex?.main !== main || this.outlineIndex?.path !== location.pathname) {
+            this.outlineIndex?.controller.abort();
+            this.outlineIndex = new OutlineIndex(this.adapter, main, location.pathname);
+        }
+        const index = this.outlineIndex;
+        const id = conversationIdFromPath(index.path);
+        if (main && id && !index.loading && (!index.requested || reload || (!manager.isActive && !index.data))) {
+            index.requested = true;
+            index.loading = true;
+            this.backend.json(`/conversation/${encodeURIComponent(id)}`, { signal: index.controller.signal })
+                .then(data => {
+                    if (index.controller.signal.aborted || index.path !== location.pathname || main !== this.adapter.getChatContainer()) return;
+                    if ((data?.conversation_id || data?.id || id) !== id) return;
+                    index.setConversation(data);
+                    this.refreshOutline();
+                })
+                .catch(() => { /* Temporary chats and offline sessions use observed messages. */ })
+                .finally(() => { index.loading = false; });
+        }
+        manager.update(index.update(this.settings.outline?.showUserQueries));
         manager.setActive(this.currentTab === 'outline');
-    },
-
-    extractOutline() {
-        const outline = [];
-        const cleanText = (element) => (element?.innerText || element?.textContent || '').trim().replace(/\s+/g, ' ');
-        const addItem = (element, level, messageId, position, isUserQuery = false) => {
-            const text = cleanText(element);
-            if (!text) return;
-            const limit = isUserQuery ? 100 : position === 'summary' ? 80 : Infinity;
-            outline.push({
-                id: `${messageId}:${isUserQuery ? 'query' : position}`,
-                messageId,
-                level,
-                text: text.length > limit ? `${text.slice(0, limit)}…` : text,
-                isTruncated: text.length > limit,
-                element,
-                isUserQuery,
-                index: outline.length
-            });
-        };
-
-        this.adapter.getChatMessages().forEach((message, messageIndex) => {
-            const role = this.adapter.getMessageRole(message);
-            const messageKey = this.adapter.getMessageIdentity(message, messageIndex);
-            const messageId = `${window.location.pathname}:${messageKey}`;
-            if (role === 'user') {
-                if (this.settings.outline?.showUserQueries) addItem(this.adapter.getMessageContent(message), 0, messageId, 0, true);
-                return;
-            }
-            if (role !== 'assistant') return;
-            const content = this.adapter.getMessageContent(message);
-            const headings = Array.from(content.querySelectorAll('h1, h2, h3, h4, h5, h6, [role="heading"]'))
-                .filter((heading) => !heading.closest('pre, [hidden], [aria-hidden="true"], .sr-only') && cleanText(heading));
-            headings.forEach((heading, index) => {
-                const level = Number(heading.tagName.match(/^H([1-6])$/i)?.[1] || heading.getAttribute('aria-level')) || 2;
-                addItem(heading, Math.max(1, Math.min(6, level)), messageId, index);
-            });
-            if (!headings.length) {
-                const firstBlock = content.querySelector('p, li') || content;
-                addItem(firstBlock, 1, messageId, 'summary');
-            }
-        });
-        // querySelectorAll already provides document order; geometry sorting causes layout work
-        // and misorders virtualized/temporarily hidden messages.
-        return outline;
     }
 };

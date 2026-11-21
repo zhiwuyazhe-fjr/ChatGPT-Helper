@@ -517,7 +517,7 @@ export const LayoutFeature = {
             if (this.currentTab === 'prompts') {
                 this.refreshPromptList();
             } else if (this.currentTab === 'outline') {
-                this.refreshOutline();
+                this.refreshOutline(true);
             }
         });
 

@@ -13,6 +13,7 @@ import { resolve, extname, sep, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { FORMULA_SOURCES, createFormulaFixture, assertFormulaRenders } from './fixtures/formulas.mjs';
+import { testVirtualOutline } from './fixtures/virtual-outline.mjs';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const output = process.env.BROWSER_TEST_OUTPUT || await mkdtemp(join(tmpdir(), 'chatgpt-helper-browser-'));
@@ -252,6 +253,10 @@ const assertContrast = async (selector='#fixture-prose') => {
 };
 
 try {
+  await test('full branch outline includes unseen turns and lands on a remounted heading after reflow',
+    () => testVirtualOutline(browser, origin, true));
+  await test('DOM-only outline retains image prompts and visited windows in conversation order',
+    () => testVirtualOutline(browser, origin, false));
   await page.goto(origin + '/c/fixture');
   await page.locator('#outline-tab').waitFor({state:'visible'});
   await test('empty outline observes the first dynamically inserted answer', async () => {
@@ -708,6 +713,7 @@ try {
     const before=await bubble.boundingBox();
     await page.mouse.move(before.x+before.width/2,before.y+before.height/2);
     await page.mouse.down();await page.mouse.move(220,180,{steps:5});await page.mouse.up();
+    await page.waitForFunction(() => Math.abs(document.querySelector('#chatgpt-helper-quick-buttons').getBoundingClientRect().left-8)<1);
     const after=await bubble.boundingBox();
     assert.ok(Math.abs((await bar.boundingBox()).x-8)<1 && after.y < before.y-100, 'Drag should dock to the left edge');
     assert.equal(await bubble.isVisible(),true,'Dragging must not expand the bar');
@@ -717,6 +723,7 @@ try {
     assert.ok(Math.abs((await bar.boundingBox()).x-8)<1, 'Resize should retain the docked edge');
     await page.mouse.move(clamped.x+clamped.width/2,clamped.y+clamped.height/2);
     await page.mouse.down();await page.mouse.move(300,260,{steps:5});await page.mouse.up();
+    await page.waitForFunction(() => Math.abs(innerWidth-document.querySelector('#chatgpt-helper-quick-buttons').getBoundingClientRect().right-8)<1);
     const right=await bar.boundingBox();
     assert.ok(Math.abs(390-right.x-right.width-8)<1, 'Drag should dock to the right edge');
     await page.setViewportSize({width:1440,height:1000});
@@ -733,6 +740,10 @@ try {
     await page.locator('#quick-btn-panel').click();
   });
   await test('resize flushes the final mouseup coordinate and releases drag state on blur', async () => {
+    await page.waitForFunction(() => {
+      const panel=document.querySelector('#chatgpt-helper-right');
+      return !panel.classList.contains('collapsed') && panel.getBoundingClientRect().width===360;
+    });
     await page.evaluate(() => {
       const handle=document.querySelector('#chatgpt-helper-resize-handle'),rect=handle.getBoundingClientRect();
       const x=rect.x+rect.width/2,y=rect.y+60;

@@ -9,6 +9,8 @@ class ChatGPTAdapter {
         this.client = client;
         this.textarea = null;
         this.lastResponseContainer = null;
+        this.anonymousMessages = new WeakMap();
+        this.nextAnonymousId = 0;
         this.findTextarea();
     }
 
@@ -66,8 +68,9 @@ class ChatGPTAdapter {
         const unitRole = searchUnit?.split(':').pop();
         if (unitRole === 'user' || unitRole === 'assistant') return unitRole;
         return message?.getAttribute('data-message-author-role') ||
-            message?.getAttribute('data-turn') ||
+            message?.closest('[data-turn="user"], [data-turn="assistant"]')?.getAttribute('data-turn') ||
             message?.querySelector('[data-message-author-role]')?.getAttribute('data-message-author-role') ||
+            (message?.matches('[data-user-message-bubble]') || message?.querySelector('[data-user-message-bubble], [data-conversation-role="user"]') ? 'user' : null) ||
             (message?.matches('[data-chatgpt-selection-message-id]') ||
                 message?.querySelector('[data-conversation-role="assistant"], [data-markdown-text-style="assistant-message"], .markdown, .prose') ? 'assistant' : null);
     }
@@ -79,12 +82,57 @@ class ChatGPTAdapter {
         return message?.querySelector('[data-markdown-text-style="assistant-message"], .markdown, .prose, [data-message-content]') || message;
     }
 
-    getMessageIdentity(message, index) {
+    getMessageIdentity(message) {
         return message.getAttribute('data-message-id') ||
             message.getAttribute('data-chatgpt-selection-message-id') ||
+            message.querySelector('[data-message-id]')?.getAttribute('data-message-id') ||
             message.querySelector('[data-chatgpt-selection-message-id]')?.getAttribute('data-chatgpt-selection-message-id') ||
-            `${message.closest('[data-turn-key]')?.getAttribute('data-turn-key') || ''}:${message.getAttribute('data-content-search-unit-key') || message.getAttribute('data-chatgpt-search-unit-key') ||
-                message.closest('[data-testid^="conversation-turn-"]')?.getAttribute('data-testid') || `message-${index}`}`;
+            this.getMessageSlot(message) || this.getAnonymousMessageId(message);
+    }
+
+    getMessageSlot(message) {
+        const turn = message.closest('[data-turn-key]')?.getAttribute('data-turn-key');
+        const unit = message.getAttribute('data-content-search-unit-key') || message.getAttribute('data-chatgpt-search-unit-key');
+        const legacy = message.closest('[data-testid^="conversation-turn-"]')?.getAttribute('data-testid');
+        return turn || unit || legacy ? `${turn || ''}:${unit || legacy || this.getMessageRole(message)}` : null;
+    }
+
+    getAnonymousMessageId(message) {
+        if (!this.anonymousMessages.has(message)) this.anonymousMessages.set(message, `anonymous-${++this.nextAnonymousId}`);
+        return this.anonymousMessages.get(message);
+    }
+
+    getMessageTurnNumber(message) {
+        const testId = message.closest('[data-testid^="conversation-turn-"]')?.dataset.testid;
+        const searchKey = message.getAttribute('data-content-search-unit-key') || message.getAttribute('data-chatgpt-search-unit-key');
+        const match = testId?.match(/^conversation-turn-(\d+)$/) ||
+            searchKey?.match(/^(?:fallback-)?turn-(\d+):/) ||
+            message.closest('[data-turn-key]')?.dataset.turnKey.match(/^(?:fallback-)?turn-(\d+)$/);
+        return match ? Number(match[1]) : null;
+    }
+
+    getUserOutlineContent(message) {
+        const content = this.getMessageContent(message);
+        const turn = message.closest('[data-turn="user"], [data-testid^="conversation-turn-"]');
+        const assistant = '[data-message-author-role="assistant"], [data-turn="assistant"], [data-content-search-unit-key$=":assistant"], [data-chatgpt-search-unit-key$=":assistant"]';
+        const root = turn && !turn.querySelector(assistant) ? turn : message;
+        const images = Array.from(root.querySelectorAll('img, [role="img"]')).filter(image =>
+            !image.closest('[hidden], [aria-hidden="true"], .sr-only, [data-gh-owned], [data-testid*="avatar" i]') &&
+            !image.parentElement?.closest('[role="img"]'));
+        const text = this.getMessageBodyText(content);
+        return { element: text ? content : images[0], text, imageCount: images.length };
+    }
+
+    getMessageBodyText(content) {
+        const omit = 'button, [role="button"], [hidden], [aria-hidden="true"], .sr-only, [data-gh-owned], .gh-msg-select-check, img, [role="img"]';
+        let text = content.innerText || content.textContent;
+        if (content.querySelector(omit)) {
+            const body = content.cloneNode(true);
+            body.querySelectorAll(omit).forEach(node => node.remove());
+            body.querySelectorAll('br, p, div').forEach(node => node.append(' '));
+            text = body.textContent;
+        }
+        return text.trim();
     }
 
     isScrollableOverflowValue(value) {
@@ -193,10 +241,12 @@ class ChatGPTAdapter {
 
         const main = this.getChatContainer();
         const message = this.getChatMessages()[0];
+        let emptyScrollRoot = null;
         // Walk out from a message first: a scrollable code block is not the conversation.
         for (let element = message?.parentElement || main; element; element = element.parentElement) {
             if (element.clientHeight > 0 && this.hasScrollableOverflow(window.getComputedStyle(element))) {
-                return this.cacheResponseContainer(element);
+                if (element.scrollHeight > element.clientHeight) return this.cacheResponseContainer(element);
+                emptyScrollRoot ||= element;
             }
         }
         if (main) {
@@ -204,11 +254,13 @@ class ChatGPTAdapter {
             for (const element of candidates) {
                 if ((!message || element.contains(message)) && element.clientHeight > 0 &&
                     this.hasScrollableOverflow(window.getComputedStyle(element))) {
-                    return this.cacheResponseContainer(element);
+                    if (element.scrollHeight > element.clientHeight) return this.cacheResponseContainer(element);
+                    emptyScrollRoot ||= element;
                 }
             }
         }
-        return document.scrollingElement || document.documentElement;
+        const page = document.scrollingElement || document.documentElement;
+        return page.scrollHeight > page.clientHeight ? page : emptyScrollRoot || page;
     }
 
     getChatMessages() {
@@ -217,11 +269,15 @@ class ChatGPTAdapter {
         if (!container) return [];
         const legacy = '[data-message-author-role]';
         const units = '[data-content-search-unit-key], [data-chatgpt-search-unit-key]';
-        const selector = `${legacy}, ${units}, [data-chatgpt-selection-message-id], [data-testid^="conversation-turn-"], article[data-turn]`;
+        const turns = '[data-testid^="conversation-turn-"], [data-turn="user"], [data-turn="assistant"]';
+        const selector = `${legacy}, ${units}, [data-chatgpt-selection-message-id], ${turns}, [data-user-message-bubble]`;
         return Array.from(container.querySelectorAll(selector)).filter((message) => {
             if (message.closest('#chatgpt-helper-right, [data-gh-owned]')) return false;
             if (message.closest('[hidden], [aria-hidden="true"]')) return false;
             // Prefer the semantic message inside a turn, and avoid nested duplicates.
+            if (message.matches('[data-user-message-bubble]') && !message.matches(`${legacy}, ${units}, [data-chatgpt-selection-message-id], ${turns}`)) {
+                return !message.parentElement?.closest(selector) && !message.querySelector(legacy);
+            }
             if (message.hasAttribute('data-message-author-role')) {
                 return !message.parentElement?.closest('[data-message-author-role]');
             }
@@ -229,10 +285,10 @@ class ChatGPTAdapter {
                 return !message.querySelector(legacy) && !message.parentElement?.closest(units) && Boolean(this.getMessageRole(message));
             }
             if (message.matches('[data-chatgpt-selection-message-id]')) {
-                return !message.parentElement?.closest(`${units}, ${legacy}, [data-chatgpt-selection-message-id]`);
+                return !message.querySelector(legacy) && !message.parentElement?.closest(`${units}, ${legacy}, [data-chatgpt-selection-message-id]`);
             }
-            return !message.querySelector('[data-message-author-role]') &&
-                !message.parentElement?.closest('[data-testid^="conversation-turn-"], article[data-turn]') &&
+            return !message.querySelector(`${legacy}, ${units}, [data-chatgpt-selection-message-id], ${turns}`) &&
+                !message.parentElement?.closest(`${legacy}, ${units}, [data-chatgpt-selection-message-id]`) &&
                 Boolean(this.getMessageRole(message));
         });
     }

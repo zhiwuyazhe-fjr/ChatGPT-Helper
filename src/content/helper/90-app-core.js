@@ -107,6 +107,7 @@ class HelperCore {
         this.readingProgressManager.cancelRestore?.();
         this.scrollLockManager.setEnabled(false);
         this.outlineManager?.destroy();
+        this.outlineIndex?.controller.abort();
         this.copyManager.destroy();
         this.tabRenameManager.stop();
         this.promptQuickMenu.destroy();

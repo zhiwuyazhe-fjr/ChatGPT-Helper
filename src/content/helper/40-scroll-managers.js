@@ -4,6 +4,17 @@ import { createElement } from './10-base.js';
 
 // ==================== 阶段1：核心滚动和锚点系统 ====================
 
+export function readingLine(container, main) {
+    const isPage = container === document.scrollingElement;
+    const top = isPage ? 0 : container.getBoundingClientRect().top + container.clientTop;
+    const padding = parseFloat(getComputedStyle(container).scrollPaddingTop) || 0;
+    const header = main?.querySelector('#page-header, [data-testid="conversation-header"], header');
+    const rect = header?.getBoundingClientRect();
+    const overlap = rect && rect.top <= top + 1 && rect.bottom > top &&
+        ['sticky', 'fixed'].includes(getComputedStyle(header).position) ? rect.bottom - top + 8 : 0;
+    return top + Math.max(padding || 12, overlap);
+}
+
 /**
  * 滚动管理器
  * 提供统一的滚动接口，适配不同站点的滚动容器
@@ -30,21 +41,22 @@ class ScrollManager {
         this.cancel();
         const container = this.container;
         if (!container) return;
-        const top = Math.max(0, Math.min(Number(typeof options === 'number' ? options : options.top) || 0,
-            Math.max(0, container.scrollHeight - container.clientHeight)));
+        const clamp = value => Math.max(0, Math.min(value, Math.max(0, container.scrollHeight - container.clientHeight)));
         const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
         const behavior = reducedMotion ? 'instant' : (options.behavior || 'smooth');
         const lock = this.lockManager;
         let finished = false;
-        const release = (cancelled = false) => {
+        let timer, sampleTimer;
+        const release = (cancelled = false, element = null, timedOut = false) => {
             if (finished) return;
             finished = true;
             clearTimeout(timer);
-            container.removeEventListener('scrollend', settled);
+            clearTimeout(sampleTimer);
+            scrollTarget.removeEventListener('scrollend', settled);
             for (const type of ['wheel', 'touchstart', 'pointerdown', 'keydown']) window.removeEventListener(type, interrupt, true);
             if (lock) { lock.navigationActive = false; lock.markUserInteraction(); }
             this.cancelPending = null;
-            options.onComplete?.({ cancelled: cancelled === true, top: container.scrollTop });
+            options.onComplete?.({ cancelled, top: container.scrollTop, element, timedOut });
         };
         const settled = () => release(false);
         const interrupt = event => {
@@ -53,12 +65,45 @@ class ScrollManager {
             container.scrollTo({ top: container.scrollTop, behavior: 'instant' });
             release(true);
         };
-        const timer = setTimeout(settled, 1200);
+        const scrollTarget = container === document.scrollingElement ? document : container;
         this.cancelPending = () => interrupt();
         if (lock) { lock.navigationActive = true; lock.markUserInteraction(); }
-        container.addEventListener('scrollend', settled, { once: true });
         for (const type of ['wheel','touchstart','pointerdown','keydown']) window.addEventListener(type, interrupt, { capture: true, passive: true });
-        container.scrollTo({ top, behavior });
+        if (!options.resolveTarget) {
+            timer = setTimeout(settled, 1200);
+            scrollTarget.addEventListener('scrollend', settled, { once: true });
+            container.scrollTo({ top: clamp(Number(typeof options === 'number' ? options : options.top) || 0), behavior });
+            return;
+        }
+
+        let lastGoal = null;
+        let stableSince = 0;
+        let lastElement = null;
+        let lastTop = null;
+        const sample = () => {
+            if (container !== this.container) return release(true);
+            const target = options.resolveTarget(container);
+            if (!target) return release(true);
+            const { element, estimate } = target;
+            const line = readingLine(container, this.adapter.getChatContainer());
+            const goal = clamp(element ? container.scrollTop + element.getBoundingClientRect().top - line : estimate);
+            if (element && Math.abs(container.scrollTop - goal) <= 2) {
+                if (!stableSince || element !== lastElement) stableSince = performance.now();
+                if (performance.now() - stableSince >= 240) return release(false, element);
+            } else {
+                stableSince = 0;
+                const stalled = element && lastTop !== null && Math.abs(lastTop - container.scrollTop) < 1;
+                if (lastGoal == null || Math.abs(lastGoal - goal) > 1 || element !== lastElement || stalled) {
+                    container.scrollTo({ top: goal, behavior: element && lastGoal == null ? behavior : 'instant' });
+                    lastGoal = goal;
+                }
+            }
+            lastElement = element;
+            lastTop = container.scrollTop;
+            sampleTimer = setTimeout(sample, 80);
+        };
+        timer = setTimeout(() => release(true, null, true), 6000);
+        sample();
     }
 
     isAtBottom(threshold = 100) {

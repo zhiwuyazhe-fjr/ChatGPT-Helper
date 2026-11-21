@@ -1,4 +1,5 @@
 import { clearElement, createElement, createSvgIconNode, setButtonIcon } from './10-base.js';
+import { readingLine } from './40-scroll-managers.js';
 // Chrome Extension Content Script - ChatGPT Helper Outline Manager
 
 
@@ -54,6 +55,10 @@ class OutlineManager {
     }
 
     setActive(active) {
+        if (!active && this.navigationTarget) {
+            if (this.navigationTarget.settledTop == null) this.config.cancelNavigation?.();
+            this.navigationTarget = null;
+        }
         this.isActive = active;
         this.destroyed = false;
         this.updateAutoUpdateState();
@@ -109,14 +114,12 @@ class OutlineManager {
         this.currentHighlightedItem?.classList.remove('sync-highlight');
         this.currentHighlightedItem?.removeAttribute('aria-current');
         this.currentHighlightedItem = null;
-        this.navigationTarget = null;
     }
 
     getCurrentItem() {
         const scrollContainer = this.siteAdapter?.getScrollContainer?.();
         if (!scrollContainer || !this.state.tree?.length) return null;
-        const isDocument = scrollContainer === document.scrollingElement;
-        const viewportTop = (isDocument ? 0 : scrollContainer.getBoundingClientRect().top) + 60;
+        const viewportTop = readingLine(scrollContainer, this.siteAdapter.getChatContainer());
         if (this.navigationTarget) {
             const { id, settledTop } = this.navigationTarget;
             if (settledTop == null || Math.abs(scrollContainer.scrollTop - settledTop) < 3) {
@@ -199,6 +202,7 @@ class OutlineManager {
     startObserver() {
         if (this.observer) return;
         const chatSelector = 'main, [role="main"], [data-message-author-role], [data-testid^="conversation-turn-"]';
+        const messages = '[data-turn-key], [data-message-id], [data-message-author-role], [data-content-search-unit-key], [data-chatgpt-search-unit-key], [data-chatgpt-selection-message-id], [data-user-message-bubble]';
         const isHelperNode = (element) => element?.closest?.('#chatgpt-helper-right, [data-gh-owned]');
         this.observer = new MutationObserver((records) => {
             const relevant = records.some((record) => {
@@ -210,9 +214,16 @@ class OutlineManager {
                     node.nodeType === 1 && !isHelperNode(node) &&
                     (node.matches(chatSelector) || node.querySelector(chatSelector)));
             });
-            if (relevant) this.triggerAutoUpdate();
+            if (relevant) {
+                const windowChanged = records.some(record => record.type === 'attributes' ||
+                    (record.type === 'childList' && [...record.addedNodes, ...record.removedNodes].some(node =>
+                        node.nodeType === 1 && (node.matches(messages) || node.querySelector(messages)))));
+                this.triggerAutoUpdate(windowChanged);
+            }
         });
-        this.observer.observe(document.body, { childList: true, characterData: true, subtree: true });
+        this.observer.observe(document.body, { childList: true, characterData: true, subtree: true,
+            attributes: true, attributeFilter: ['data-message-id', 'data-chatgpt-selection-message-id',
+                'data-turn-key', 'data-content-search-unit-key', 'data-chatgpt-search-unit-key', 'data-message-author-role'] });
     }
 
     stopObserver() {
@@ -236,19 +247,25 @@ class OutlineManager {
         this.stopSyncScroll();
     }
 
-    triggerAutoUpdate() {
+    triggerAutoUpdate(windowChanged = false) {
         if (!this.isActive || this.destroyed) return;
         const interval = Math.max(250, Math.min(10000, (this.settings.outline?.updateInterval ?? 1) * 1000));
 
-        // 如果已经存在定时器，不重复设置，避免高频 DOM 变更导致频繁刷新
+        // Capture new virtual windows promptly; streaming text keeps the configured cadence.
+        if (windowChanged && !this.windowUpdateQueued) {
+            clearTimeout(this.updateDebounceTimer);
+            this.updateDebounceTimer = null;
+            this.windowUpdateQueued = true;
+        }
         if (!this.updateDebounceTimer) {
             this.updateDebounceTimer = setTimeout(() => {
                 this.executeAutoUpdate();
-            }, interval);
+            }, windowChanged ? 0 : interval);
         }
     }
 
     executeAutoUpdate() {
+        this.windowUpdateQueued = false;
         if (this.updateDebounceTimer) {
             clearTimeout(this.updateDebounceTimer);
             this.updateDebounceTimer = null;
@@ -551,6 +568,7 @@ class OutlineManager {
             messageLevels.set(item.messageId, Math.min(messageLevels.get(item.messageId) ?? 6, item.level));
         });
         let previousMessageId;
+        let questionNumber = 0;
 
         outline.forEach((item, index) => {
             // 用户提问节点固定 relativeLevel = 0
@@ -564,6 +582,7 @@ class OutlineManager {
             }
             const node = {
                 ...item,
+                questionNumber: item.isUserQuery ? ++questionNumber : null,
                 relativeLevel,
                 index,
                 children: [],
@@ -661,26 +680,6 @@ class OutlineManager {
                 item.collapsed = false;
             }
         });
-    }
-
-    // 获取用户问题节点在所有用户问题中的序号（从1开始）
-    getUserQueryIndex(targetIndex) {
-        if (!this.state.tree) return 0;
-        let count = 0;
-        const countInTree = (items) => {
-            for (const item of items) {
-                if (item.isUserQuery) {
-                    count++;
-                    if (item.index === targetIndex) return count;
-                }
-                if (item.children && item.children.length > 0) {
-                    const result = countInTree(item.children);
-                    if (result > 0) return result;
-                }
-            }
-            return 0;
-        };
-        return countInTree(this.state.tree);
     }
 
     // 内部刷新（用于交互更新）
@@ -830,11 +829,10 @@ class OutlineManager {
 
             // 用户提问节点添加序号徽章
             if (item.isUserQuery) {
-                const queryNumber = this.getUserQueryIndex(item.index);
                 const badge = createElement('span', { className: 'user-query-badge' });
                 const icon = createElement('span', { className: 'user-query-badge-icon' });
                 icon.appendChild(createSvgIconNode('message', { size: 12 }));
-                const number = createElement('span', { className: 'user-query-badge-number' }, `${queryNumber}`);
+                const number = createElement('span', { className: 'user-query-badge-number' }, `${item.questionNumber}`);
                 badge.appendChild(icon);
                 badge.appendChild(number);
                 itemEl.appendChild(badge);
@@ -956,41 +954,22 @@ class OutlineManager {
                 }
 
                 const latestItem = this.findItem(item.id) || item;
-                let targetElement = latestItem.element;
-
-                // 1. 检查元素是否有效
-                if (!targetElement || !targetElement.isConnected) {
-                    targetElement = this.config.resolveItem?.(item);
-                }
-
-                if (targetElement && targetElement.isConnected) {
-                    // 跳转前回调（用于保存当前位置为锚点）
-                    if (this.onJumpBefore) {
-                        this.onJumpBefore();
+                this.onJumpBefore?.();
+                const target = { id: item.id, settledTop: null };
+                this.navigationTarget = target;
+                this.handleSyncScroll(latestItem);
+                this.config.onNavigate(latestItem, ({ cancelled, top, element }) => {
+                    if (this.navigationTarget !== target || this.destroyed) return;
+                    if (cancelled) {
+                        this.navigationTarget = null;
+                        if (this.settings.outline?.syncScroll) this.handleSyncScroll();
+                        return;
                     }
-
-                    const container = this.siteAdapter?.getScrollContainer?.();
-                    const viewportTop = container && container !== document.scrollingElement ? container.getBoundingClientRect().top : 0;
-                    const top = targetElement.getBoundingClientRect().top - viewportTop + (container?.scrollTop ?? window.scrollY) - 60;
-                    const target = { id: item.id, settledTop: null };
-                    this.navigationTarget = target;
-                    this.handleSyncScroll(latestItem);
-                    this.config.onNavigate?.(Math.max(0, top), ({ cancelled, top: settledTop }) => {
-                        if (this.navigationTarget !== target || this.destroyed) return;
-                        if (cancelled) {
-                            this.navigationTarget = null;
-                            if (this.settings.outline?.syncScroll) this.handleSyncScroll();
-                        } else {
-                            target.settledTop = settledTop;
-                            this.handleSyncScroll(this.findItem(target.id));
-                        }
-                    });
-
-                    targetElement.classList.add('outline-highlight');
-                    setTimeout(() => targetElement.classList.remove('outline-highlight'), 2000);
-                } else {
-                    console.warn('ChatGPT Helper: Outline item element lost and not found:', item.text);
-                }
+                    target.settledTop = top;
+                    this.handleSyncScroll(this.findItem(target.id));
+                    element.classList.add('outline-highlight');
+                    setTimeout(() => element.classList.remove('outline-highlight'), 2000);
+                });
             });
 
             if (!shouldShow) {

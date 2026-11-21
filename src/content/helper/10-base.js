@@ -276,6 +276,8 @@ const I18N = {
         enableTableCopyLabel: '启用表格复制',
         // 大纲相关文案
         outlineEmpty: '暂无大纲',
+        outlineImages: '图片（{n} 张）',
+        outlineTargetUnavailable: '此条消息尚未载入，暂时无法定位',
         outlineSearchResult: '条结果',
         outlineExpandAll: '展开全部',
         outlineCollapseAll: '折叠全部',
@@ -615,6 +617,8 @@ const I18N = {
         languageChanged: 'Language changed',
         // Outline related
         outlineEmpty: 'No outline',
+        outlineImages: 'Images ({n})',
+        outlineTargetUnavailable: 'This message has not loaded yet.',
         outlineSearchResult: 'results',
         outlineExpandAll: 'Expand All',
         outlineCollapseAll: 'Collapse All',
@@ -823,7 +827,7 @@ const ISSUE_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper/issues/new';
 const REPO_URL = 'https://github.com/zhiwuyazhe-fjr/ChatGPT-Helper';
 const AUTHOR_GITHUB_URL = 'https://github.com/zhiwuyazhe-fjr';
 const EXTENSION_NAME = 'ChatGPT Helper';
-const EXTENSION_VERSION = '2.7.7';
+const EXTENSION_VERSION = '2.7.8';
 const EXTENSION_AUTHOR = 'zhiwuyazhe_fjr';
 const EXTENSION_LICENSE = 'MIT';
 const THEME_HOST_ATTRS = [

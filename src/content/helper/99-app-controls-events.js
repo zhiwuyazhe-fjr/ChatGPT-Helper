@@ -512,6 +512,10 @@ export const ControlsFeature = {
             this.updateLayout();
             this.queueThemeHostRefresh();
             if (!routeChanged && !pageChanged) return;
+            if (this.outlineIndex && (this.outlineIndex.path !== lastPath || this.outlineIndex.main !== currentMain)) {
+                this.outlineIndex.controller.abort();
+                this.outlineIndex = null;
+            }
             this.messageSelectManager.refreshContext();
             this.exporterController?.contextChanged();
             this.scrollManager.cancel();
