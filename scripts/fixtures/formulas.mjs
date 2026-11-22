@@ -41,6 +41,19 @@ export function createFormulaFixture() {
   </div></div></div></div></div></div>`;
 }
 
+export function createFormulaTableFixture() {
+  const height = render('h-1');
+  const nodeRange = render(String.raw`2^{h-1}\le n\le 2^h-1`);
+  return `<div><table>
+    <thead><tr><th style="text-align:left">比较</th><th style="text-align:left">满二叉树</th><th style="text-align:left">完全二叉树</th></tr></thead>
+    <tbody>
+      <tr><td>前 ${height} 层</td><td>全满</td><td>全满</td></tr>
+      <tr><td>结点数</td><td>${render('2^h-1')}</td><td><span data-d-component="math">${nodeRange}</span></td></tr>
+      <tr><td>${height} 与 ${height}</td><td>${sourcedWrapper('table-absolute','data-latex','|x|',['\\[','\\]'],true)}</td><td>原文 | ${withoutSource(render('x'))}<br>下一行</td></tr>
+    </tbody>
+  </table></div>`;
+}
+
 export function assertFormulaRenders(source,displayMode) {
   return render(source,displayMode);
 }

@@ -12,7 +12,7 @@ import { readFile, mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import { resolve, extname, sep, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { pathToFileURL, fileURLToPath } from 'node:url';
-import { FORMULA_SOURCES, createFormulaFixture, assertFormulaRenders } from './fixtures/formulas.mjs';
+import { FORMULA_SOURCES, createFormulaFixture, createFormulaTableFixture, assertFormulaRenders } from './fixtures/formulas.mjs';
 import { testVirtualOutline } from './fixtures/virtual-outline.mjs';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -192,7 +192,7 @@ const replayTour = async tourPage => {
   await waitTourStep(tourPage,'welcome');
   return trigger;
 };
-const withFormulaPage = async (name,run,{enabled=true}={}) => withTourPage(`formula-${name}`,{
+const withFormulaPage = async (name,run,{enabled=true,html=createFormulaFixture()}={}) => withTourPage(`formula-${name}`,{
   chatgpt_onboarding_done:true,
   chatgpt_settings:{defaultPanelState:true,panelWidth:360,themeConfig:{appearanceMode:'dark',presetKey:'original'},readingHistory:{persistence:false,autoRestore:false},formulaCopy:{enabled}}
 },async formulaPage=>{
@@ -212,7 +212,7 @@ const withFormulaPage = async (name,run,{enabled=true}={}) => withTourPage(`form
       },
       async readText() { return window.__fixtureClipboard.text; }
     }});
-  },createFormulaFixture());
+  },html);
   await formulaPage.evaluate(()=>document.fonts.ready);
   await run(formulaPage);
 });
@@ -1035,6 +1035,19 @@ try {
       await tourAction(tourPage,'next').click();await waitTourStep(tourPage,'appearance');
       await tourAction(tourPage,'finish').click();await tourRoot(tourPage).waitFor({state:'detached'});
     });
+  });
+  await test('copying a Markdown table preserves each formula once in its original cell',async()=>{
+    await withFormulaPage('table',async formulaPage=>{
+      await formulaPage.locator('.modern-thread-shell .chatgpt-helper-table-copy-btn').click();
+      const expected = [
+        '| 比较 | 满二叉树 | 完全二叉树 |',
+        '| --- | --- | --- |',
+        '| 前 $h-1$ 层 | 全满 | 全满 |',
+        String.raw`| 结点数 | $2^h-1$ | $2^{h-1}\le n\le 2^h-1$ |`,
+        String.raw`| $h-1$ 与 $h-1$ | $\|x\|$ | 原文 \| x 下一行 |`,
+      ].join('\n');
+      assert.equal(await formulaPage.evaluate(()=>navigator.clipboard.readText()),expected);
+    },{enabled:false,html:createFormulaTableFixture()});
   });
   for(const [id,key] of [['formula-catalan','catalan'],['formula-fourth','fourth']]) {
     await test(`double-clicking ${key} glyph, fraction bar, numerator and denominator copies the complete KaTeX source`,async()=>{

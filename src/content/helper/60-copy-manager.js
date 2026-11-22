@@ -5,6 +5,50 @@ import { FORMULA_SELECTOR, readFormulaSource, formatFormula } from './58-formula
 
 // ==================== 阶段3：复制管理器 ====================
 
+function getTableCellMarkdown(cell) {
+    const parts = [];
+    let prose = '';
+
+    function visit(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            prose += node.nodeValue;
+            return;
+        }
+        if (node.nodeType !== Node.ELEMENT_NODE) return;
+        const { display, visibility } = getComputedStyle(node);
+        if (display === 'none' || visibility === 'hidden') return;
+        if (node.localName === 'br') {
+            prose += ' ';
+            return;
+        }
+
+        if (node.matches(FORMULA_SELECTOR)) {
+            const formula = readFormulaSource(node);
+            if (formula?.root === node && formula.latex) {
+                // Markdown table cells occupy one line, including display formulas.
+                parts.push(prose.replace(/\s+/g, ' '), `$${formula.latex.replace(/[\r\n]+/g, ' ')}$`);
+                prose = '';
+                return;
+            }
+            const visual = formula?.root === node && node.querySelector('.katex-html');
+            if (visual) {
+                prose += visual.innerText;
+                return;
+            }
+        }
+
+        const block = !display.startsWith('inline') && display !== 'contents';
+        if (block) prose += ' ';
+        if (node.querySelector(FORMULA_SELECTOR)) node.childNodes.forEach(visit);
+        else prose += node.innerText ?? node.textContent;
+        if (block) prose += ' ';
+    }
+
+    visit(cell);
+    parts.push(prose.replace(/\s+/g, ' '));
+    return parts.join('').trim().replace(/\|/g, '\\|');
+}
+
 /**
  * 复制管理器
  * 负责公式双击复制、表格 Markdown 复制等功能
@@ -237,34 +281,11 @@ class CopyManager {
         const lines = [];
         let headerProcessed = false;
 
-        const getCellContent = (cell) => {
-            let text = cell.innerText || cell.textContent || '';
-
-            // 处理公式：尝试提取 LaTeX
-            const mathElements = cell.querySelectorAll('[class*="katex"], [class*="math"]');
-            mathElements.forEach(mathEl => {
-                const latex = mathEl.getAttribute('data-latex') ||
-                    mathEl.getAttribute('data-math') ||
-                    mathEl.getAttribute('aria-label') ||
-                    mathEl.textContent;
-                if (latex) {
-                    // 替换公式文本为 LaTeX
-                    text = text.replace(mathEl.textContent, `$${latex}$`);
-                }
-            });
-
-            // 清理文本：转义管道符和换行
-            return text.trim()
-                .replace(/\|/g, '\\|')
-                .replace(/\n/g, ' ')
-                .replace(/\s+/g, ' ') || '';
-        };
-
         rows.forEach((row, rowIndex) => {
             const cells = row.querySelectorAll('th, td');
             if (cells.length === 0) return;
 
-            const cellTexts = Array.from(cells).map(getCellContent);
+            const cellTexts = Array.from(cells, getTableCellMarkdown);
             lines.push('| ' + cellTexts.join(' | ') + ' |');
 
             // 处理表头分隔符
