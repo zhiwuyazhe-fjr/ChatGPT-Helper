@@ -4,7 +4,7 @@
 
 每次完成代码修改后，必须依次执行以下步骤，不要遗漏：
 
-1. **构建与检查**：`npm run package`（等同 `build + check + 打包`，产物输出到 `artifacts/`）
+1. **构建与检查** 默认依次运行 `npm run build` 和 `npm run check`，只有在用户明确要求升级版本或打包时才执行对应操作（打包使用 `npm run package`）。
 2. **提交**：`git add -A && git commit`，提交信息用简短中文概括本次改动
 3. **推送**：`git push origin main`
 
