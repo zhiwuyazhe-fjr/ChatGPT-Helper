@@ -1,5 +1,4 @@
 import { ConversationRepository } from "./repository";
-import { validateExportHost } from "./host";
 import { processConversation } from "./model/conversation";
 import { conversationToMarkdown } from "./exporter/markdown";
 import { conversationToHtml } from "./exporter/html";
@@ -63,7 +62,6 @@ export class ExportSession {
     readonly host: ExportHost,
     readonly portal: HTMLElement,
   ) {
-    validateExportHost(host);
     this.repository = new ConversationRepository((path, options) =>
       host.request(path, options),
     );

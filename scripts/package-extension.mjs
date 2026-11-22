@@ -47,6 +47,7 @@ const requiredFiles = [
     'icons/icon128.png',
     'icons/logo.svg',
     'libs/jszip.min.js',
+    'libs/chatgpt-export-engine.js',
 ]
 
 for (const file of requiredFiles) {

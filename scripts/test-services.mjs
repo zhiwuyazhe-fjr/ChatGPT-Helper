@@ -142,6 +142,38 @@ await test("workspace cookie parsing tolerates spaces and sends the resolved acc
   await client.json("/conversations");
   assert.equal(header, "account-one");
 });
+await test("personal and team selections use their own session and only the selected account", async () => {
+  let workspace = "personal";
+  let sessionRequests = 0;
+  let accountChecks = 0;
+  const client = new ChatGPTClient({
+    origin,
+    cookie: () => "_account=" + workspace,
+    fetcher: async (url, options) => {
+      if (url.endsWith("/session")) return response({ accessToken: "token-" + ++sessionRequests });
+      if (url.includes("/accounts/check/")) {
+        accountChecks++;
+        return response({ accounts: {
+          first: { account: { account_id: "other-id" } },
+          second: { account: { account_id: "selected-id" } },
+        } });
+      }
+      return response(options.headers);
+    },
+  });
+  const personal = await client.json("/conversations");
+  assert.equal(personal["Chatgpt-Account-Id"], undefined);
+  assert.equal(accountChecks, 0);
+  workspace = "selected-id";
+  const team = await client.json("/conversations");
+  assert.equal(team["Chatgpt-Account-Id"], workspace);
+  assert.notEqual(team.Authorization, personal.Authorization);
+  workspace = "personal";
+  const back = await client.json("/conversations");
+  assert.equal(back["Chatgpt-Account-Id"], undefined);
+  assert.notEqual(back.Authorization, team.Authorization);
+  assert.equal(accountChecks, 1);
+});
 await test("workspace lookup failure does not silently export the personal account", async () => {
   let dataCalls = 0;
   const client = new ChatGPTClient({
@@ -159,6 +191,26 @@ await test("workspace lookup failure does not silently export the personal accou
     (error) => error.status === 409,
   );
   assert.equal(dataCalls, 0);
+});
+await test("a new login discards pending response data and starts a new session in the same workspace", async () => {
+  let epoch = 1;
+  let finishBody;
+  let sessions = 0;
+  const client = new ChatGPTClient({
+    origin,
+    cookie: () => "_account=personal; oai-client-session-epoch=" + epoch,
+    fetcher: async (url, options) => {
+      if (url.endsWith("/session")) return response({ accessToken: "login-" + ++sessions });
+      if (epoch === 1) return { ...response({}), json: () => new Promise(resolve => { finishBody = resolve; }) };
+      return response(options.headers.Authorization);
+    },
+  });
+  const pending = client.json("/conversations");
+  while (!finishBody) await new Promise(resolve => setTimeout(resolve, 1));
+  epoch++;
+  finishBody({ items: [] });
+  await assert.rejects(pending, error => error.status === 409);
+  assert.equal(await client.json("/conversations"), "Bearer login-2");
 });
 await test("backend traversal is rejected before credentials are requested", async () => {
   let calls = 0;

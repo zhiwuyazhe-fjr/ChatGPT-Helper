@@ -120,6 +120,7 @@ async function run(name, modify, check) {
         },
       });
     });
+    await context.addCookies([{ name: "_account", value: "personal", url: "https://chatgpt.com" }]);
     const page = await context.newPage();
     page.setDefaultTimeout(10000);
     const errors = [];
@@ -174,6 +175,11 @@ async function run(name, modify, check) {
 }
 try {
   await run("matching-build", null, async (page) => {
+    await page.locator("#conversations-tab").click();
+    const inbox = page.locator('.chatgpt-helper-folder-item[data-folder-id="inbox"]');
+    await inbox.locator(".chatgpt-helper-folder-count").filter({ hasText: "(1)" }).waitFor();
+    await inbox.click();
+    await page.getByText(model.title, { exact: true }).waitFor();
     await page.locator("#export-tab").click();
     await page.getByRole("button", { name: "Markdown", exact: true }).waitFor();
     const download = page.waitForEvent("download");
@@ -201,18 +207,39 @@ try {
       assert.equal(await page.locator(".gh-export-portal").count(), 1);
     }
   });
+  await run("unavailable history shows a sync failure and recovers on retry", null, async page => {
+    await page.locator("#fixture-sidebar a").evaluateAll(links => links.forEach(link => link.remove()));
+    const listRoute = "**/backend-api/conversations?*";
+    await page.route(listRoute, route => route.fulfill({ status: 503, json: {} }));
+    await page.locator("#conversations-tab").click();
+    await page.locator('.chatgpt-helper-folder-item[data-folder-id="inbox"]').click();
+    await page.locator(".chatgpt-helper-conversations-empty").filter({ hasText: "会话同步失败" }).waitFor();
+    await page.unroute(listRoute);
+    await page.getByRole("button", { name: "同步会话", exact: true }).click();
+    await page.getByText(model.title, { exact: true }).waitFor();
+  });
   await run(
-    "worker-build-mismatch",
+    "current helper downloads with the previous release worker",
     async (extension) => {
-      const path = join(extension, "background/sw.js");
-      const source = await readFile(path, "utf8");
-      await writeFile(
-        path,
-        source.replace(
-          /const BUILD_ID = "[a-f0-9]+"/,
-          'const BUILD_ID = "outdated-build"',
-        ),
-      );
+      await writeFile(join(extension, "background/sw.js"),
+        execFileSync("git", ["show", "1348004:background/sw.js"], { cwd: root }));
+    },
+    verifyMarkdownDownload,
+  );
+  await run(
+    "previous helper and worker can load the current export engine",
+    async (extension) => {
+      for (const file of ["content-scripts/dist/chatgpt-helper.js", "background/sw.js", "manifest.json"]) {
+        await writeFile(join(extension, file), execFileSync("git", ["show", "1348004:" + file], { cwd: root }));
+      }
+    },
+    verifyMarkdownDownload,
+  );
+  await run(
+    "incompatible export protocol gives a page reload action",
+    async (extension) => {
+      await writeFile(join(extension, "libs/chatgpt-export-engine.js"),
+        'export const protocol = -1; export function mount() { throw new Error("Unexpected mount"); }');
     },
     async (page) => {
       await page.locator("#export-tab").click();
@@ -220,6 +247,7 @@ try {
         .locator(".chatgpt-helper-export-engine-error")
         .filter({ hasText: "版本" })
         .waitFor();
+      await page.getByRole("button", { name: "刷新页面", exact: true }).waitFor();
       assert.equal(
         await page
           .getByRole("button", { name: "Markdown", exact: true })
@@ -277,3 +305,10 @@ try {
   await rm(temporary, { recursive: true, force: true });
 }
 if (results.some((result) => !result.passed)) process.exitCode = 1;
+
+async function verifyMarkdownDownload(page) {
+  await page.locator("#export-tab").click();
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Markdown", exact: true }).click();
+  assert.match(await readFile(await (await download).path(), "utf8"), /验证内容脚本与后台通信/);
+}

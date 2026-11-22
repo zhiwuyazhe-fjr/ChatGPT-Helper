@@ -34,7 +34,8 @@ function findUnicodeNoncharacter(content) {
     return null
 }
 
-const contentScriptFiles = walk(path.join(root, 'content-scripts'))
+const exportEngine = path.join(root, 'libs/chatgpt-export-engine.js')
+const contentScriptFiles = [...walk(path.join(root, 'content-scripts')), exportEngine]
 for (const file of contentScriptFiles) {
     execFileSync(process.execPath, ['--check', file], { stdio: 'inherit' })
 }
@@ -83,7 +84,7 @@ const remoteHostedCodeRules = [
 
 const remoteHostedCodeScanFiles = [
     path.join(root, 'src/content/exporter/template.html'),
-    ...walk(path.join(root, 'content-scripts')),
+    ...contentScriptFiles,
 ]
 const remoteHostedCodeViolations = []
 for (const file of remoteHostedCodeScanFiles) {
@@ -275,16 +276,9 @@ const context = {
 context.globalThis = context
 
 vm.createContext(context)
-for (const file of [
-    'content-scripts/dist/chatgpt-exporter.js',
-    'content-scripts/dist/chatgpt-helper.js',
-]) {
-    vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context, { filename: file })
-}
+const helperFile = 'content-scripts/dist/chatgpt-helper.js'
+vm.runInContext(fs.readFileSync(path.join(root, helperFile), 'utf8'), context, { filename: helperFile })
 
-if (typeof window.__MY_EXT__.ChatGPTExporterMount !== 'function') {
-    throw new Error('ChatGPTExporterMount was not registered')
-}
 if (!window.__MY_EXT__.helper?.ChatGPTHelper) {
     throw new Error('ChatGPTHelper was not registered')
 }

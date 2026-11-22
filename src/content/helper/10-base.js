@@ -380,6 +380,8 @@ const I18N = {
         // 导出引擎按需加载
         exportEngineLoading: '正在加载导出引擎…',
         exportEngineInjectFailed: '导出引擎加载失败，请刷新页面后重试',
+        exportProtocolMismatch: '导出模块与当前页面的接口版本不兼容，请重新加载扩展并刷新页面。',
+        reloadPage: '刷新页面',
     },
     'en': {
         panelTitle: 'ChatGPT Helper',
@@ -721,6 +723,8 @@ const I18N = {
         // Lazy export engine
         exportEngineLoading: 'Loading export engine…',
         exportEngineInjectFailed: 'Failed to load the export engine. Refresh the page and try again',
+        exportProtocolMismatch: 'The export module is incompatible with this page. Reload the extension and refresh the page.',
+        reloadPage: 'Refresh page',
     }
 };
 

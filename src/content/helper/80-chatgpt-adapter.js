@@ -446,6 +446,9 @@ class ChatGPTAdapter {
         } catch (error) {
             options.signal?.throwIfAborted();
             console.warn('[ChatGPT Helper] API 加载历史会话失败，回退到侧边栏 DOM 扫描:', error);
+            const visible = this.getConversationListFromDom();
+            if (visible.length) return visible;
+            throw error;
         }
 
         return this.getConversationListFromDom();

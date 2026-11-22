@@ -63,22 +63,17 @@ try {
     ...common,
     build: {
       emptyOutDir: true,
-      outDir,
+      outDir: resolve(staging, "libs"),
       target: "es2020",
       minify: true,
       sourcemap: false,
       lib: {
         entry: resolve(root, "src/content/entries/chatgpt-exporter.tsx"),
-        name: "ChatGPTExporterContent",
-        formats: ["iife"],
-        fileName: () => "chatgpt-exporter.js",
+        formats: ["es"],
+        fileName: () => "chatgpt-export-engine.js",
       },
       rollupOptions: {
-        external: ["jszip"],
         output: {
-          globals: {
-            jszip: "JSZip",
-          },
           inlineDynamicImports: true,
         },
       },
@@ -123,11 +118,13 @@ try {
     },
   });
 
-  // Publish only after every entry compiled successfully. A failed build leaves the
-  // installed extension intact; the shared build ID guards the brief replacement window.
+  writeFileSync(join(outDir, "chatgpt-exporter.js"),
+    readFileSync(resolve(root, "src/content/entries/legacy-export-loader.js")));
+  // Publish only after every entry compiled successfully, dependencies first.
   for (const file of [
-    "content-scripts/dist/chatgpt-helper.js",
+    "libs/chatgpt-export-engine.js",
     "content-scripts/dist/chatgpt-exporter.js",
+    "content-scripts/dist/chatgpt-helper.js",
     "background/sw.js",
   ]) {
     const target = resolve(root, file);

@@ -63,7 +63,7 @@ const results = [];
 const loads = [];
 page.on("pageerror", (error) => errors.push(error.message));
 page.on("request", (request) => {
-  if (/html2canvas|jszip|chatgpt-exporter/.test(request.url()))
+  if (/html2canvas|jszip|chatgpt-export/.test(request.url()))
     loads.push(new URL(request.url()).pathname);
 });
 const conversation = (id = "fixture") => ({
@@ -150,20 +150,6 @@ const test = async (name, fn) => {
 const setup = async (modern = false) => {
   await page.goto(`${origin}/c/fixture${modern ? "?fixture=modern" : ""}`);
   await page.locator("#outline-tab").waitFor({ state: "visible" });
-  await page.evaluate(() => {
-    const files = {
-      engine: "/content-scripts/dist/chatgpt-exporter.js",
-      zip: "/libs/jszip.min.js",
-    };
-    chrome.runtime.sendMessage = (message, callback) => {
-      const script = document.createElement("script");
-      script.src = files[message.dependency || "engine"];
-      script.onload = () => callback({ ok: true });
-      script.onerror = () =>
-        callback({ ok: false, error: "fixture injection failure" });
-      document.head.append(script);
-    };
-  });
   if (!modern)
     await page.evaluate(
       (html) => {
@@ -196,6 +182,7 @@ const save = async (name) => {
 try {
   await test("export starts cold, selection snapshots are chronological and survive node replacement", async () => {
     await setup();
+    assert.deepEqual(loads, []);
     assert.equal(
       await page.evaluate(() =>
         Boolean(

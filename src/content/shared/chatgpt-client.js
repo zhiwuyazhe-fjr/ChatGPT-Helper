@@ -37,23 +37,27 @@ export class ChatGPTClient {
     this.fetcher = fetcher;
     this.cookie = cookie;
     this.timeout = timeout;
-    this.session = null;
-    this.sessionFlight = null;
-    this.account = null;
+    this.context = null;
   }
-  workspace() {
-    return (
-      this.cookie()
-        .split(";")
-        .map((part) => part.trim())
-        .find((part) => part.startsWith("_account="))
-        ?.slice(9) || ""
-    );
+  currentContext() {
+    const cookies = this.cookie().split(";").map(part => part.trim());
+    const value = name => cookies.find(part => part.startsWith(name + "="))?.slice(name.length + 1) || "";
+    const selected = value("_account");
+    const workspace = selected === "personal" ? "" : selected;
+    const epoch = value("oai-client-session-epoch");
+    if (this.context?.workspace !== workspace || this.context.epoch !== epoch) {
+      this.context = { workspace, epoch, session: null, sessionFlight: null, accountId: null };
+    }
+    return this.context;
   }
-  async token() {
-    if (this.session && this.session.expires > Date.now() + 60000)
-      return this.session.token;
-    if (!this.sessionFlight) {
+  assertCurrent(context) {
+    if (this.currentContext() !== context)
+      throw new BackendError(409, "ChatGPT workspace changed during the request");
+  }
+  async token(context) {
+    if (context.session && context.session.expires > Date.now() + 60000)
+      return context.session.token;
+    if (!context.sessionFlight) {
       const controller = new AbortController();
       const timer = setTimeout(
         () =>
@@ -62,7 +66,7 @@ export class ChatGPTClient {
           ),
         this.timeout,
       );
-      const pending = this.fetcher(`${this.origin}/api/auth/session`, {
+      context.sessionFlight = this.fetcher(`${this.origin}/api/auth/session`, {
         credentials: "include",
         signal: controller.signal,
       })
@@ -78,35 +82,40 @@ export class ChatGPTClient {
           );
           if (typeof session.accessToken !== "string" || !session.accessToken)
             throw new BackendError(401, "ChatGPT session is unavailable");
-          this.session = {
+          context.session = {
             token: session.accessToken,
+            accountId: session.account?.id,
             expires: Date.parse(session.expires) || Date.now() + 3600000,
           };
           return session.accessToken;
         })
         .finally(() => {
           clearTimeout(timer);
-          if (this.sessionFlight === pending) this.sessionFlight = null;
+          context.sessionFlight = null;
         });
-      this.sessionFlight = pending;
     }
-    return this.sessionFlight;
+    return context.sessionFlight;
   }
-  async accountId(workspace, signal) {
+  async accountId(context, signal) {
+    const { workspace } = context;
     if (!workspace) return null;
-    if (this.account?.workspace === workspace) return this.account.id;
+    if (context.session?.accountId === workspace) return workspace;
+    if (context.accountId) return context.accountId;
     const data = await this.json(
       "/accounts/check/v4-2023-04-27",
       { signal },
       false,
     );
-    const id = data?.accounts?.[workspace]?.account?.account_id;
+    const accounts = data?.accounts ?? {};
+    const id = Object.values(accounts).some(entry => entry?.account?.account_id === workspace)
+      ? workspace
+      : accounts[workspace]?.account?.account_id;
     if (!id)
       throw new BackendError(
         409,
-        "ChatGPT workspace changed; refresh before exporting",
+        "The selected ChatGPT workspace could not be resolved",
       );
-    this.account = { workspace, id };
+    context.accountId = id;
     return id;
   }
   async request(
@@ -121,7 +130,7 @@ export class ChatGPTClient {
     );
     if (url.origin !== this.origin || !url.pathname.startsWith("/backend-api/"))
       throw new TypeError("Invalid backend path");
-    const workspace = this.workspace();
+    const context = this.currentContext();
     const controller = new AbortController();
     const abort = () => controller.abort(options.signal?.reason);
     if (options.signal?.aborted) abort();
@@ -136,22 +145,19 @@ export class ChatGPTClient {
         controller.signal.throwIfAborted();
         let token;
         try {
-          token = await waitWithSignal(this.token(), controller.signal);
+          token = await waitWithSignal(this.token(context), controller.signal);
         } catch (error) {
           if (controller.signal.aborted)
             throw controller.signal
               .reason; /* Cookie auth remains valid in some workspaces. */
         }
         controller.signal.throwIfAborted();
+        this.assertCurrent(context);
         const account = includeAccount
-          ? await this.accountId(workspace, controller.signal)
+          ? await this.accountId(context, controller.signal)
           : null;
         controller.signal.throwIfAborted();
-        if (workspace !== this.workspace())
-          throw new BackendError(
-            409,
-            "ChatGPT workspace changed during the request",
-          );
+        this.assertCurrent(context);
         const headers = {
           ...options.headers,
           ...(token
@@ -168,17 +174,16 @@ export class ChatGPTClient {
           headers,
           signal: controller.signal,
         });
-        if (workspace !== this.workspace())
-          throw new BackendError(
-            409,
-            "ChatGPT workspace changed during the request",
-          );
-        if (response.status !== 401 || attempt === 1)
-          return await waitWithSignal(
+        this.assertCurrent(context);
+        if (response.status !== 401 || attempt === 1) {
+          const result = await waitWithSignal(
             Promise.resolve().then(() => read(response)),
             controller.signal,
           );
-        this.session = null;
+          this.assertCurrent(context);
+          return result;
+        }
+        if (context.session?.token === token) context.session = null;
       }
     } finally {
       clearTimeout(timeout);

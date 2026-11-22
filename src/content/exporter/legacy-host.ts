@@ -1,13 +1,16 @@
 import { conversationIdFromPath } from "../shared/conversation-context.js";
 import { ChatGPTClient } from "../shared/chatgpt-client.js";
-import { BUILD_ID, EXPORT_PROTOCOL } from "../shared/build";
+import { EXPORT_PROTOCOL } from "../shared/build";
 import { ExportContractError, validateExportHost } from "./host";
 import type { ExportHost } from "./host";
 const legacyClients = new WeakMap<object, ChatGPTClient>();
 export function acceptExportHost(input: ExportHost): ExportHost {
   if (input?.protocol != null) {
     validateExportHost(input);
-    return input;
+    // The pre-module helper's request callback still assumes workspace cookies
+    // are account-map keys. Use the same transport as a newly opened page.
+    const client = new ChatGPTClient();
+    return { ...input, request: (path, options) => client.json(path, options) };
   }
   const runtime = (globalThis as any).chrome?.runtime;
   if (
@@ -32,7 +35,6 @@ export function acceptExportHost(input: ExportHost): ExportHost {
   }
   return {
     protocol: EXPORT_PROTOCOL,
-    buildId: BUILD_ID,
     request: (path, options) => client.json(path, options),
     getContext: () => {
       const context = input.getContext();

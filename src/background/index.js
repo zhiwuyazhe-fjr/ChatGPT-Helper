@@ -1,4 +1,3 @@
-import { BUILD_ID } from '../content/shared/build';
 // ChatGPT Helper background service worker.
 // - forwards the toggle-panel keyboard command to the content script
 // - injects the export engine scripts (jszip / exporter) on demand,
@@ -25,14 +24,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (!msg || msg.type !== 'ch-helper-inject-export-deps') return;
     (async () => {
         try {
-            if (msg.buildId !== BUILD_ID) return sendResponse({ ok: false, code: 'BUILD_MISMATCH', error: '扩展版本已变化，请重新加载扩展并刷新页面。' });
             if (!Object.hasOwn(EXPORT_DEP_FILES, msg.dependency)) return sendResponse({ ok: false, error: 'Unknown dependency' });
             if (sender.tab && sender.tab.id != null) {
                 await chrome.scripting.executeScript({
                     target: { tabId: sender.tab.id, ...(sender.documentId ? { documentIds: [sender.documentId] } : { frameIds: [sender.frameId || 0] }) },
                     files: EXPORT_DEP_FILES[msg.dependency],
                 });
-                sendResponse({ ok: true, buildId: BUILD_ID });
+                sendResponse({ ok: true });
             } else {
                 sendResponse({ ok: false, error: 'missing sender tab' });
             }

@@ -1,4 +1,4 @@
-import { BUILD_ID, EXPORT_PROTOCOL } from "../shared/build";
+import { EXPORT_PROTOCOL } from "../shared/build";
 export interface MessageSnapshot {
   id: string;
   role: "user" | "assistant";
@@ -16,7 +16,6 @@ export interface ExportContext {
 }
 export interface ExportHost {
   protocol: number;
-  buildId: string;
   request<T>(path: string, options?: { signal?: AbortSignal }): Promise<T>;
   getMessages(): MessageSnapshot[];
   getSelectedMessages(): MessageSnapshot[];
@@ -26,9 +25,9 @@ export interface ExportHost {
   loadDependency(name: "zip"): Promise<any>;
 }
 export class ExportContractError extends Error {
-  code = "BUILD_MISMATCH";
+  code = "EXPORT_PROTOCOL_MISMATCH";
   constructor() {
-    super("扩展版本不一致，请重新加载扩展并刷新此页面。");
+    super("导出模块与当前页面的接口不兼容，请重新加载扩展并刷新页面。");
     this.name = "ExportContractError";
   }
 }
@@ -36,7 +35,6 @@ export function validateExportHost(host: ExportHost) {
   if (
     !host ||
     host.protocol !== EXPORT_PROTOCOL ||
-    host.buildId !== BUILD_ID ||
     [
       "request",
       "getMessages",

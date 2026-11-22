@@ -1,17 +1,15 @@
 import { render } from "preact";
 import { DirectMenu } from "./ui/DirectMenu";
-import { acceptExportHost } from "./legacy-host";
 import { ExportSession } from "./session";
 import { SessionContext } from "./ui/SessionContext";
-import { BUILD_ID, EXPORT_PROTOCOL } from "../shared/build";
 import { syncLanguageFromHelper } from "./i18n";
-import type { ExportHost } from "./host";
+import { validateExportHost, type ExportHost } from "./host";
 import "./styles/missing-tailwind.css";
 import "./styles/workspace.css";
 
 let disposeCurrent: (() => void) | undefined;
-function mount(target: Element, host: ExportHost) {
-  host = acceptExportHost(host);
+export function mount(target: Element, host: ExportHost) {
+  validateExportHost(host);
   disposeCurrent?.();
   syncLanguageFromHelper(host.getContext().language);
   const root = document.createElement("div");
@@ -54,7 +52,3 @@ function mount(target: Element, host: ExportHost) {
   }
   return controller;
 }
-const namespace = (window.__MY_EXT__ = window.__MY_EXT__ || {});
-namespace.exporter = { mount, buildId: BUILD_ID, protocol: EXPORT_PROTOCOL };
-// Diagnostic compatibility only. All application calls use the typed host contract.
-namespace.ChatGPTExporterMount = mount;

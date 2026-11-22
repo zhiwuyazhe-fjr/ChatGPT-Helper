@@ -22,6 +22,7 @@ class ConversationManager {
         this.autoSyncInterval = null;
         this.syncPromise = null;
         this.lastSyncTime = 0; // 记录上次同步时间
+        this.syncFailed = false;
         // 缓存晚就绪（慢盘/冷启动）时用磁盘真实数据替换默认结构，避免后续保存覆盖用户数据
         if (this._loadedWithUnreadyCache) this.scope.listen(window, 'ch-helper-storage-ready', () => this.reloadData(), { once: true });
         // 启动自动同步（每5分钟同步一次）
@@ -476,9 +477,10 @@ class ConversationManager {
         }
 
         if (conversations.length === 0) {
+            const unavailable = this.syncFailed && !Object.keys(this.data.conversations).length;
             container.appendChild(createElement('div', {
                 className: 'chatgpt-helper-conversations-empty'
-            }, this.t('noConversations')));
+            }, this.t(unavailable ? 'conversationSyncFailed' : 'noConversations')));
             return;
         }
 
@@ -629,8 +631,11 @@ class ConversationManager {
 
                 // 更新同步时间，避免失败时短时间内反复自动重试打扰页面。
                 this.lastSyncTime = Date.now();
+                const wasFailed = this.syncFailed;
+                this.syncFailed = false;
 
                 if (!Array.isArray(conversations) || conversations.length === 0) {
+                    if (wasFailed) this.renderConversationList();
                     this.showToast(this.t('conversationSyncNoResults') || '未加载到历史会话，请确认已登录 ChatGPT 后重试');
                     return { total: 0, newCount: 0, updatedCount: 0 };
                 }
@@ -716,6 +721,8 @@ class ConversationManager {
             } catch (error) {
                 if (controller.signal.aborted) return { total: 0, newCount: 0, updatedCount: 0 };
                 console.error('[ChatGPT Helper] 同步会话失败:', error);
+                this.syncFailed = true;
+                this.renderConversationList();
                 this.lastSyncTime = Date.now();
                 this.showToast(this.t('conversationSyncFailed') || '会话同步失败，请稍后重试');
                 return { total: 0, newCount: 0, updatedCount: 0, error };
