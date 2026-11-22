@@ -1,5 +1,5 @@
 import { COLLAPSED_BUTTON_DEFS, DEFAULT_COLLAPSED_BUTTONS_ORDER, createCollapsedButtonIconNode, createElement, createHelperLogoNode, createSvgIconNode, setButtonIcon } from './10-base.js';
-import { RuntimeScope, isHelperMutation } from './15-runtime.js';
+import { RuntimeScope, isHelperMutation, isInEditor } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper App Controls And Events
 
 
@@ -537,6 +537,7 @@ export const ControlsFeature = {
         const schedule = () => scope.schedule('host', refreshHost, 120);
         scope.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-app-shell-active-page'] }, mutations => {
             if (lastPath !== location.pathname || mutations.some(mutation => {
+                if (isInEditor(mutation.target)) return false;
                 if (mutation.type === 'attributes') return true;
                 if (isHelperMutation(mutation)) return false;
                 // Token streaming belongs to OutlineManager, not host layout/theme refresh.

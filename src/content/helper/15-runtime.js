@@ -36,6 +36,12 @@ export class RuntimeScope {
 }
 
 // Text mutations have a Text target; never call Element.closest on that target.
+export function isInEditor(node) {
+    const element = node?.nodeType === 1 ? node : node?.parentElement;
+    // Read-only widgets inside a rich-text editor are still part of its document.
+    return Boolean(element?.closest?.('textarea, #prompt-textarea, [data-composer-markdown], [contenteditable=""], [contenteditable="true" i], [contenteditable="plaintext-only" i]'));
+}
+
 export function isHelperMutation(mutation) {
     const element = mutation.target?.nodeType === 1 ? mutation.target : mutation.target?.parentElement;
     return Boolean(element?.closest('[id^="chatgpt-helper"], [data-gh-owned], .chatgpt-helper-dialog-overlay, #outline-content'));

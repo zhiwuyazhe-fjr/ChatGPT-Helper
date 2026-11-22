@@ -114,12 +114,21 @@ class PromptQuickMenu {
         return null;
     }
 
-    getComposerText(el) {
-        if (!el) return '';
+    getComposerTrigger(el) {
         if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
-            return el.value || '';
+            return parseTrigger(el.value);
         }
-        return el.textContent || '';
+        // Reading textContent joins the whole rich-text draft on every input.
+        // A command can span inline nodes, but its non-leading part is bounded.
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        let command = '';
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            const part = command ? node.data : node.data.trimStart();
+            if (command.length + part.length > TRIGGER_PREFIX.length + MAX_QUERY_LENGTH) return null;
+            command += part;
+            if (command && !command.startsWith('/')) return null;
+        }
+        return parseTrigger(command);
     }
 
     // 核心入口：每次输入后，用纯函数重新推导菜单状态。
@@ -137,7 +146,7 @@ class PromptQuickMenu {
         this.composer = e.target;
 
         const trigger = this.isEnabled()
-            ? parseTrigger(this.getComposerText(this.composer))
+            ? this.getComposerTrigger(this.composer)
             : null;
 
         if (!trigger) {

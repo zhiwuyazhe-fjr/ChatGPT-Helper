@@ -1,4 +1,5 @@
 import { ChatGPTClient } from '../shared/chatgpt-client.js';
+import { isInEditor } from './15-runtime.js';
 import { t } from './10-base.js';
 // Chrome Extension Content Script - ChatGPT Helper ChatGPT Adapter
 
@@ -272,6 +273,7 @@ class ChatGPTAdapter {
         const turns = '[data-testid^="conversation-turn-"], [data-turn="user"], [data-turn="assistant"]';
         const selector = `${legacy}, ${units}, [data-chatgpt-selection-message-id], ${turns}, [data-user-message-bubble]`;
         return Array.from(container.querySelectorAll(selector)).filter((message) => {
+            if (isInEditor(message)) return false;
             if (message.closest('#chatgpt-helper-right, [data-gh-owned]')) return false;
             if (message.closest('[hidden], [aria-hidden="true"]')) return false;
             // Prefer the semantic message inside a turn, and avoid nested duplicates.

@@ -1,5 +1,6 @@
 import { clearElement, createElement, createSvgIconNode, setButtonIcon } from './10-base.js';
 import { readingLine } from './40-scroll-managers.js';
+import { isInEditor } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper Outline Manager
 
 
@@ -205,21 +206,23 @@ class OutlineManager {
         const messages = '[data-turn-key], [data-message-id], [data-message-author-role], [data-content-search-unit-key], [data-chatgpt-search-unit-key], [data-chatgpt-selection-message-id], [data-user-message-bubble]';
         const isHelperNode = (element) => element?.closest?.('#chatgpt-helper-right, [data-gh-owned]');
         this.observer = new MutationObserver((records) => {
-            const relevant = records.some((record) => {
+            let relevant = false;
+            for (const record of records) {
                 const target = record.target.nodeType === 1 ? record.target : record.target.parentElement;
-                if (isHelperNode(target)) return false;
-                if (target?.closest(chatSelector)) return true;
+                if (isInEditor(target) || isHelperNode(target)) continue;
+                const changed = [...record.addedNodes, ...record.removedNodes];
                 // Also catch the initial mount or replacement of the conversation root.
-                return [...record.addedNodes, ...record.removedNodes].some((node) =>
+                if (!target?.closest(chatSelector) && !changed.some((node) =>
                     node.nodeType === 1 && !isHelperNode(node) &&
-                    (node.matches(chatSelector) || node.querySelector(chatSelector)));
-            });
-            if (relevant) {
-                const windowChanged = records.some(record => record.type === 'attributes' ||
-                    (record.type === 'childList' && [...record.addedNodes, ...record.removedNodes].some(node =>
-                        node.nodeType === 1 && (node.matches(messages) || node.querySelector(messages)))));
-                this.triggerAutoUpdate(windowChanged);
+                    (node.matches(chatSelector) || node.querySelector(chatSelector)))) continue;
+                relevant = true;
+                if (record.type === 'attributes' || changed.some(node =>
+                    node.nodeType === 1 && (node.matches(messages) || node.querySelector(messages)))) {
+                    this.triggerAutoUpdate(true);
+                    return;
+                }
             }
+            if (relevant) this.triggerAutoUpdate();
         });
         this.observer.observe(document.body, { childList: true, characterData: true, subtree: true,
             attributes: true, attributeFilter: ['data-message-id', 'data-chatgpt-selection-message-id',

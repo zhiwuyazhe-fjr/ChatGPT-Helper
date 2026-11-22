@@ -1,3 +1,5 @@
+import { isInEditor } from './15-runtime.js';
+
 const SOURCE_ATTRIBUTES = ['data-latex', 'data-math', 'data-formula'];
 const SOURCE_SELECTOR = SOURCE_ATTRIBUTES.map(name => `[${name}]`).join(', ');
 export const FORMULA_SELECTOR = `.katex, .katex-display, [data-d-component="math"], math, mjx-container, .MathJax, ${SOURCE_SELECTOR}`;
@@ -5,7 +7,7 @@ const CONTENT_BOUNDARY = 'body, html, main, article, p, li, td, th, [data-messag
 
 export function resolveFormulaRoot(target) {
     const element = target?.nodeType === 1 ? target : target?.parentElement;
-    if (!element?.closest || element.closest('pre, code, textarea, [contenteditable="true"]')) return null;
+    if (!element?.closest || isInEditor(element) || element.closest('pre, code')) return null;
     // KaTeX HTML and MathML are siblings. Never stop at .mathnormal or .katex-html.
     const katex = element.closest('.katex');
     if (katex) return katex;

@@ -1,5 +1,6 @@
 import { copyTextToClipboard, createSvgIconNode, setButtonIcon } from './10-base.js';
 import { FORMULA_SELECTOR, readFormulaSource, formatFormula } from './58-formula-source.js';
+import { isInEditor } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper Copy Manager
 
 
@@ -183,8 +184,9 @@ class CopyManager {
         // 使用 MutationObserver 监听新表格
         this.tableObserver = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
+                if (isInEditor(mutation.target)) return;
                 mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
+                    if (node.nodeType === Node.ELEMENT_NODE && !isInEditor(node)) {
                         // 检查新添加的节点是否是表格
                         if (node.tagName === 'TABLE') {
                             this.injectTableButton(node);
@@ -214,6 +216,7 @@ class CopyManager {
      * 为表格注入复制按钮
      */
     injectTableButton(table) {
+        if (!table.isConnected || isInEditor(table)) return;
         // 用 dataset 标记去重而不是 Set 存元素引用：
         // Set 会永久持有已脱离 DOM 的表格（及其整个子树），会话切换后内存持续增长
         if (table.dataset && table.dataset.ghTableBtn === '1') return;
@@ -320,13 +323,15 @@ class CopyManager {
         if (style) style.remove();
 
         // 清理所有注入的按钮
-        document.querySelectorAll('.chatgpt-helper-table-copy-btn').forEach(btn => btn.remove());
+        document.querySelectorAll('.chatgpt-helper-table-copy-btn').forEach(btn => {
+            if (!isInEditor(btn)) btn.remove();
+        });
         document.querySelectorAll('.chatgpt-helper-table-container').forEach(container => {
-            container.classList.remove('chatgpt-helper-table-container');
+            if (!isInEditor(container)) container.classList.remove('chatgpt-helper-table-container');
         });
         // 同时清掉去重标记，下次 init 可重新注入
         document.querySelectorAll('table[data-gh-table-btn]').forEach(table => {
-            delete table.dataset.ghTableBtn;
+            if (!isInEditor(table)) delete table.dataset.ghTableBtn;
         });
     }
 

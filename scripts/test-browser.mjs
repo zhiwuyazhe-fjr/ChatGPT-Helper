@@ -14,6 +14,7 @@ import { tmpdir } from 'node:os';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { FORMULA_SOURCES, createFormulaFixture, createFormulaTableFixture, assertFormulaRenders } from './fixtures/formulas.mjs';
 import { testVirtualOutline } from './fixtures/virtual-outline.mjs';
+import { testComposerPaste } from './fixtures/composer-paste.mjs';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const output = process.env.BROWSER_TEST_OUTPUT || await mkdtemp(join(tmpdir(), 'chatgpt-helper-browser-'));
@@ -1035,6 +1036,9 @@ try {
       await tourAction(tourPage,'next').click();await waitTourStep(tourPage,'appearance');
       await tourAction(tourPage,'finish').click();await tourRoot(tourPage).waitFor({state:'detached'});
     });
+  });
+  await test('rich-text drafts stay editable without injecting controls or redrawing pasted tables',async()=>{
+    await withTourPage('composer-paste', { chatgpt_onboarding_done: true }, testComposerPaste);
   });
   await test('copying a Markdown table preserves each formula once in its original cell',async()=>{
     await withFormulaPage('table',async formulaPage=>{

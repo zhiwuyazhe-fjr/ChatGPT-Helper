@@ -1,6 +1,6 @@
 import { copyTextToClipboard, createElement, createSvgIconNode } from './10-base.js';
 import { snapshotMessage } from './66-message-snapshot.js';
-import { isHelperMutation } from './15-runtime.js';
+import { isHelperMutation, isInEditor } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper Message Select Manager
 // 支持勾选对话中的部分消息，悬浮工具条提供 MD/JSON/TXT 导出与复制
 
@@ -29,7 +29,7 @@ class MessageSelectManager {
         this.syncTurns();
         if (typeof MutationObserver === 'function') {
             this.observer = new MutationObserver(records => {
-                if (records.some(record => !isHelperMutation(record))) this.scheduleSync();
+                if (records.some(record => !isInEditor(record.target) && !isHelperMutation(record))) this.scheduleSync();
             });
             this.observer.observe(document.body, {
                 childList: true,

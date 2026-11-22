@@ -1,5 +1,6 @@
 import { AUTHOR_GITHUB_URL, DEFAULT_THEME_CONFIG, EXTENSION_VERSION, ISSUE_URL, REPO_URL, THEME_BACKGROUND_ALLOWED_TYPES, THEME_BACKGROUND_MAX_SIZE, THEME_HOST_ATTRS, THEME_PRESETS, buildThemeSurfaceVars, clampNumber, createElement, createHelperLogoNode, createSvgIconNode, getExtensionManifestMeta, getExtensionRuntime, getThemePresetByKey, normalizeThemeConfig, openExternalLink, setButtonIcon } from './10-base.js';
 import { THEME_RUNTIME_CSS } from './21-theme-runtime.js';
+import { isInEditor } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper App Theme
 
 
@@ -138,6 +139,7 @@ export const ThemeFeature = {
         // html alone leaves DIL text and writing blocks in the previous mode.
         const scopes = new Set();
         this.adapter?.getChatContainer?.()?.querySelectorAll('[data-dil-message-id], [data-oai-writing-block-surface]').forEach(content => {
+            if (isInEditor(content)) return;
             const scope = content.closest('[data-theme]');
             if (scope && scope !== document.documentElement && scope !== document.body) scopes.add(scope);
         });
@@ -229,6 +231,7 @@ export const ThemeFeature = {
             targets.get(element).add(attr);
         };
         const clearPath = (element, stop = document.body) => {
+            if (isInEditor(element)) return;
             for (let current = element; current && current !== stop; current = current.parentElement) {
                 mark(current, 'data-gh-theme-host-clear');
             }
@@ -280,7 +283,7 @@ export const ThemeFeature = {
         // Diff role marks rather than remove/re-add all attributes every update.
         for (const attr of [...THEME_HOST_ATTRS, 'data-gh-theme-host-clear']) {
             document.querySelectorAll(`[${attr}]`).forEach(node => {
-                if (!targets.get(node)?.has(attr)) node.removeAttribute(attr);
+                if (!targets.get(node)?.has(attr) && !isInEditor(node)) node.removeAttribute(attr);
             });
         }
         for (const [node, attrs] of targets) {
@@ -324,6 +327,7 @@ export const ThemeFeature = {
             // Streaming text does not change host ancestry. Only structural changes
             // outside the extension can require another role reconciliation.
             if (!records.some(record => {
+                if (isInEditor(record.target)) return false;
                 if (record.type === 'attributes') {
                     if (record.attributeName === 'data-app-shell-active-page') return true;
                     if (record.target.matches('[data-app-shell-active-page], [data-app-shell-page-surface], main, [role="main"]')) return true;

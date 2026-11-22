@@ -1,4 +1,5 @@
 import { createElement } from './10-base.js';
+import { isInEditor } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper Scroll Managers
 
 
@@ -713,33 +714,27 @@ class ScrollLockManager {
         this._lastTouchY = null;
     }
 
+    hasNewResponseContent(mutations) {
+        let container;
+        let checked = 0;
+        for (const mutation of mutations) {
+            if (!mutation.addedNodes.length || isInEditor(mutation.target)) continue;
+            if (++checked > 10) break;
+            for (let j = 0; j < Math.min(mutation.addedNodes.length, 5); j++) {
+                const node = mutation.addedNodes[j];
+                if (node.nodeType !== 1 || isInEditor(node)) continue;
+                container ||= this.getResponseContainer();
+                if (!container) return false;
+                if (container.contains(node)) return true;
+            }
+        }
+        return false;
+    }
+
     startObserver() {
         const handleMutations = (mutations) => {
             if (!this.enabled) return;
-            const responseContainer = this.getResponseContainer();
-            if (!responseContainer) return;
-
-            let hasRelevantChange = false;
-            for (let i = 0; i < Math.min(mutations.length, 10); i++) {
-                const mutation = mutations[i];
-                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    for (let j = 0; j < Math.min(mutation.addedNodes.length, 5); j++) {
-                        const node = mutation.addedNodes[j];
-                        if (node.nodeType === 1) {
-                            try {
-                                if (responseContainer.contains(node)) {
-                                    hasRelevantChange = true;
-                                    break;
-                                }
-                            } catch (e) {
-                            }
-                        }
-                    }
-                    if (hasRelevantChange) break;
-                }
-            }
-
-            if (hasRelevantChange) {
+            if (this.hasNewResponseContent(mutations)) {
                 if (this._debounceTimer) {
                     clearTimeout(this._debounceTimer);
                 }
@@ -891,30 +886,7 @@ class ScrollLockManager {
                 return;
             }
 
-            const responseContainer = this.getResponseContainer();
-            if (!responseContainer) return;
-
-            let hasNewContent = false;
-            for (let i = 0; i < Math.min(mutations.length, 10); i++) {
-                const mutation = mutations[i];
-                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    for (let j = 0; j < Math.min(mutation.addedNodes.length, 5); j++) {
-                        const node = mutation.addedNodes[j];
-                        if (node.nodeType === 1) {
-                            try {
-                                if (responseContainer.contains(node)) {
-                                    hasNewContent = true;
-                                    break;
-                                }
-                            } catch (e) {
-                            }
-                        }
-                    }
-                    if (hasNewContent) break;
-                }
-            }
-
-            if (hasNewContent) {
+            if (this.hasNewResponseContent(mutations)) {
                 if (autoScrollDebounceTimer) {
                     clearTimeout(autoScrollDebounceTimer);
                 }

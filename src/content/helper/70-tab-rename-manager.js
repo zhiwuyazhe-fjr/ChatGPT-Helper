@@ -1,4 +1,5 @@
 
+import { isInEditor } from './15-runtime.js';
 // Chrome Extension Content Script - ChatGPT Helper Tab Rename Manager
 
 
@@ -88,7 +89,8 @@ class TabRenameManager {
         // 生成状态（⏳/✅）与完成提示音从此静默失效
         if (!container) return;
 
-        this.generationObserver = new MutationObserver(() => {
+        this.generationObserver = new MutationObserver(records => {
+            if (records.every(record => isInEditor(record.target))) return;
             const isGenerating = this.adapter.isGenerating();
             if (isGenerating && this.aiState !== 'generating') {
                 this.aiState = 'generating';
